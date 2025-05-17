@@ -1,25 +1,53 @@
 package com.example.estoquei.model;
 
 import java.math.BigDecimal;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+@Table(name = "produtos")
 public class Produto {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long codigo;
+
     private String nome;
+
+    @Enumerated(EnumType.STRING)
     private Categoria categoria;
-    private String tamanho;
+
+    @Enumerated(EnumType.STRING)
+    private Tamanho tamanho;
+
+    @Enumerated(EnumType.STRING)
+    private Genero genero;
+
     public int quantidade;
+
     public int limiteMinimo;
+
     public BigDecimal preco;
+
     public String descricao;
+
     
     public Produto(){
-
     }
 
-    public Produto(String nome, Categoria categoria,String tamanho, int quantidade, int limiteMinimo , BigDecimal preco, String descricao){
+    public Produto(String nome, Long codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao){
         this.nome=nome;
+        this.codigo=codigo;
         this.categoria=categoria;
         this.tamanho=tamanho;
+        this.genero=genero;
         this.quantidade=quantidade;
         this.limiteMinimo=limiteMinimo;
         this.preco=preco;
@@ -34,6 +62,14 @@ public class Produto {
         this.nome = nome;
     }
 
+    public Long getCodigo() {
+        return this.codigo;
+    }
+
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
+    }
+
     public Categoria getCategoria() {
         return categoria;
     }
@@ -42,16 +78,24 @@ public class Produto {
         this.categoria = categoria;
     }
 
-    public int getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public String getTamanho() {
+    public Tamanho getTamanho() {
         return this.tamanho;
     }
 
-    public void setTamanho(String tamanho) {
+    public void setTamanho(Tamanho tamanho) {
         this.tamanho = tamanho;
+    }
+
+    public Genero getGenero() {
+        return this.genero;
+    }
+
+    public void setGenero(Genero genero) {
+        this.genero = genero;
     }
 
     public int getQuantidade() {

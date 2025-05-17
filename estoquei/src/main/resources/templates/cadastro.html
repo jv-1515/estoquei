@@ -116,7 +116,7 @@ input{
 </head>
 <body>
     <h1>Cadastro de Produto</h1>
-    <form class="form-container" action="/cadastro" method="POST">
+    <form class="form-container" action="/produtos" method="POST">
         <div class="form-column">
             <label for="nome">Código*:</label>
             <input type="text" id="codigo" name="codigo" required placeholder="Código">
@@ -126,20 +126,23 @@ input{
             
             <label for="tamanho" style="padding-left:5px">Tamanho*:</label>
             <select id="tamanho" name="tamanho" required>
-                <option value="" selected disabled style="color: white; background: white">Tamanho</option>
+                <option selected disabled style="color: white; background: white">Tamanho</option>
+                <option value="U">Único</option>
                 <option value="PP">PP</option>
                 <option value="P">P</option>
                 <option value="M">M</option>
                 <option value="G">G</option>
                 <option value="GG">GG</option>
+                <option value="XG">XG</option>
+                <option value="XXG">XXG</option>
             </select>
             
             <label for="genero">Gênero*:</label>
             <select id="genero" name="genero" required>
-                <option value="" selected disabled style="color: white; background: white">Gênero</option>
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
-                <option value="unissex">Unissex</option>
+                <option  selected disabled style="color: white; background: white">Gênero</option>
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMININO">Feminino</option>
+                <option value="UNISSEX">Unissex</option>
             </select>
             
             <label for="quantidade">Quantidade*:</label>
