@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Cadastrar Produto</title>
     <style>
 body {
@@ -29,6 +30,7 @@ h1 {
     font-size: 40px;
     color: #0b5a66;
     text-align: center;
+    margin: 0 0 15px 0;
 }
 
 .form-container {
@@ -64,12 +66,17 @@ h1 {
 .image-box {
     width: 250px;
     height: 250px;
-    border: 1px solid #000;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #777;
     font-size: 12px;
+    border: dashed 2px #aaa;
+}
+
+.image-box:hover {
+    background-color: #f0f0f0;
+    border: 2px solid #000000;
 }
 
 button {
@@ -91,7 +98,7 @@ button:hover {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding-top: 25px;
+    padding-top: 23px;
 }
 
 .right-column textarea {
@@ -118,21 +125,27 @@ select#genero {
     color: #757575;
 }
 
-    </style>
+</style>
 </head>
 <body>
+    <a href="/index" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+    
     <div>
         <h1>Cadastrar Produto</h1>
-        <form class="form-container" action="/produtos" method="POST">
+        <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
                 <label for="codigo">Código*:</label>
-                <input type="text" id="codigo" name="codigo" required placeholder="XXX" readonly>
+                <input type="text" id="codigo" name="codigo" required placeholder="XXX" readonly tabindex="1">
 
                 <label for="nome">Nome*:</label>
-                <input type="text" id="nome" name="nome" required placeholder="Nome">
+                <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
 
                 <label for="categoria">Categoria*:</label>
-                <select id="categoria" name="categoria" required onchange="uptadeOptions()">
+                <select id="categoria" name="categoria" required onchange="uptadeOptions()" tabindex="3">
                     <option selected disabled style="color: white; background: white">Categoria</option>
                     <option value="CAMISA">Camisa</option>
                     <option value="CAMISETA">Camiseta</option>
@@ -144,7 +157,7 @@ select#genero {
                 </select>
 
                 <label for="tamanho">Tamanho*:</label>
-                <select id="tamanho" name="tamanho" required>
+                <select id="tamanho" name="tamanho" required tabindex="4">
                     <option selected disabled style="color: white; background: white">Tamanho</option>
                 </select>
 
@@ -172,7 +185,7 @@ select#genero {
                 </script>
                 
                 <label for="genero">Gênero*:</label>
-                <select id="genero" name="genero" required>
+                <select id="genero" name="genero" required tabindex="5">
                     <option  selected disabled style="color: white; background: white">Gênero</option>
                     <option value="MASCULINO">Masculino</option>
                     <option value="FEMININO">Feminino</option>
@@ -180,29 +193,67 @@ select#genero {
                 </select>
                 
                 <label for="quantidade">Quantidade*:</label>
-                <input type="number" id="quantidade" name="quantidade" required placeholder="10">
+                <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" min="1">
                 
                 <label for="limiteMinimo">Limite Mínimo*:</label>
-                <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10">
+                <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1">
                 
                 <label for="preco">Preço (R$)*:</label>
-                <input type="number" id="preco" name="preco" required placeholder="R$10,00">
-                
-                
-                <button type="submit">Cadastrar produto</button>
+                <input type="number" id="preco" name="preco" required placeholder="R$10,00" tabindex="8" min="1">
+                <button type="submit"  tabindex="11">Cadastrar produto</button>
             </div>
             <div class="right-column">
-                <div class="image-box">Anexar imagem</div>
+                <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
+                    <i class="fa-regular fa-image" style="font-size: 30px"></i>
+                    <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
+                </div>
                 <label for="descricao" style="margin-top: 10px;">Descrição:</label>
-                <textarea id="descricao" name="descricao" placeholder="0/300" maxlength="300"></textarea>
+                <textarea id="descricao" name="descricao" placeholder="0/300" maxlength="300" tabindex="10"></textarea>
             </div>
+            <script>
+                function upload() {
+                    document.getElementById('foto').click();
+                }
+                function previewImage(event) {
+                    const input = event.target;
+                    const preview = document.getElementById('image-preview');
+                    preview.innerHTML = '';
+                    if (input.files && input.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            preview.appendChild(img);
+                        }
+                        reader.readAsDataURL(input.files[0]);
+                    } else {
+                        preview.innerHTML = '<i class="fa-regular fa-image" style="font-size: 30px"></i>';
+                    }
+                }
+            </script>
         </form>
     </div>
+
+        <!-- sweet alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Produto cadastrado com sucesso!",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+            }).then(() => {
+                this.submit();
+            });
+        });
+    </script>
 </body>
 </html>
-
-<a href="/index" style="position: absolute; top: 20px; left: 20px;">
-    <button style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer;">
-        &#8592;
-    </button>
 
