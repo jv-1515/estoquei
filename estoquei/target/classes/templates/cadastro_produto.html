@@ -128,7 +128,7 @@ select#genero {
 </style>
 </head>
 <body>
-    <a href="/index" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <a href="/" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
             <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
         </button>
@@ -139,7 +139,7 @@ select#genero {
         <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
                 <label for="codigo">Código*:</label>
-                <input type="text" id="codigo" name="codigo" required placeholder="XXX" readonly tabindex="1">
+                <input type="text" id="codigo" name="codigo" required placeholder="XXX" tabindex="1">
 
                 <label for="nome">Nome*:</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
@@ -155,7 +155,7 @@ select#genero {
                     <option value="SAPATO">Sapato</option>
                     <option value="MEIA">Meia</option>
                 </select>
-
+                <!-- Precisa arrumar!!! Falta colocar os números como medidas no enum Tamanho.java -->
                 <label for="tamanho">Tamanho*:</label>
                 <select id="tamanho" name="tamanho" required tabindex="4">
                     <option selected disabled style="color: white; background: white">Tamanho</option>
@@ -178,7 +178,7 @@ select#genero {
                     } else {
                         const tamanhos = ['Único', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'XXG'];
                         tamanhos.forEach(t => {
-                            tamanho.innerHTML += `<option value="${t}">${t}</option>`;
+                            tamanho.innerHTML += `<option value="${t.toUpperCase()}">${t}</option>`;
                         });
                     }
                 }
