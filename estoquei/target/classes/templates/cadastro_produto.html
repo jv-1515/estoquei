@@ -28,7 +28,7 @@ textarea {
 
 h1 {
     font-size: 40px;
-    color: #277580;
+    color: #0b5a66;
     text-align: center;
     margin: 0 0 15px 0;
 }
@@ -91,7 +91,7 @@ button {
 }
 
 button:hover {
-    background-color: #277580;
+    background-color: #094a55;
 }
 
 .right-column {
@@ -103,7 +103,7 @@ button:hover {
 
 .right-column textarea {
     width: 230px;
-    height: 115px;
+    height: 116px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
@@ -128,7 +128,7 @@ select#genero {
 </style>
 </head>
 <body>
-    <a href="/" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <a href="/index" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
             <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
         </button>
@@ -139,7 +139,7 @@ select#genero {
         <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
                 <label for="codigo">Código*:</label>
-                <input type="text" id="codigo" name="codigo" required placeholder="XXX" tabindex="1">
+                <input type="text" id="codigo" name="codigo" required placeholder="XXX" readonly tabindex="1">
 
                 <label for="nome">Nome*:</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
@@ -155,7 +155,7 @@ select#genero {
                     <option value="SAPATO">Sapato</option>
                     <option value="MEIA">Meia</option>
                 </select>
-                <!-- Precisa arrumar!!! Falta colocar os números como medidas no enum Tamanho.java -->
+
                 <label for="tamanho">Tamanho*:</label>
                 <select id="tamanho" name="tamanho" required tabindex="4">
                     <option selected disabled style="color: white; background: white">Tamanho</option>
@@ -178,7 +178,7 @@ select#genero {
                     } else {
                         const tamanhos = ['Único', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'XXG'];
                         tamanhos.forEach(t => {
-                            tamanho.innerHTML += `<option value="${t.toUpperCase()}">${t}</option>`;
+                            tamanho.innerHTML += `<option value="${t}">${t}</option>`;
                         });
                     }
                 }
@@ -237,23 +237,51 @@ select#genero {
         </form>
     </div>
 
-        <!-- sweet alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
             Swal.fire({
                 title: "Sucesso!",
-                text: "Produto cadastrado com sucesso!",
+                text: "Produto cadastrado no estoque!",
                 icon: "success",
-                timer: 1500,
-                showConfirmButton: false,
-                timerProgressBar: true,
-            }).then(() => {
-                this.submit();
+                showCloseButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Visualizar Estoque',
+                cancelButtonText: 'Voltar para Início',
+                allowOutsideClick: false,
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/estoque";
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.href = "/cadastro_produto";
+                }
             });
         });
     </script>
+    <style>
+        .swal2-confirm-custom {
+            background-color: #1E94A3 !important;
+            color: #fff !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-confirm-custom:hover {
+            background-color: #277580 !important;
+        }
+        .swal2-cancel-custom {
+            background-color: #ccc !important;
+            color: #000 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-cancel-custom:hover {
+            background-color: #aaa !important;
+        }
+    </style>
 </body>
 </html>
-
