@@ -15,6 +15,6 @@ public class Router {
 
     @GetMapping("/cadastro")
     public String cadastro() {
-        return "cadastro";
+        return "cadastro_produto";
     }
 }

@@ -17,7 +17,7 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long codigo;
+    private String codigo;
 
     private String nome;
 
@@ -42,7 +42,7 @@ public class Produto {
     public Produto(){
     }
 
-    public Produto(String nome, Long codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao){
+    public Produto(String nome, String codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao){
         this.nome=nome;
         this.codigo=codigo;
         this.categoria=categoria;
@@ -62,11 +62,11 @@ public class Produto {
         this.nome = nome;
     }
 
-    public Long getCodigo() {
+    public String getCodigo() {
         return this.codigo;
     }
 
-    public void setCodigo(Long codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
