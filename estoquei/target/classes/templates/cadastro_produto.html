@@ -28,7 +28,7 @@ textarea {
 
 h1 {
     font-size: 40px;
-    color: #0b5a66;
+    color: #277580;
     text-align: center;
     margin: 0 0 15px 0;
 }
@@ -91,7 +91,7 @@ button {
 }
 
 button:hover {
-    background-color: #094a55;
+    background-color: #277580;
 }
 
 .right-column {
@@ -103,7 +103,7 @@ button:hover {
 
 .right-column textarea {
     width: 230px;
-    height: 116px;
+    height: 115px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
@@ -237,52 +237,23 @@ select#genero {
         </form>
     </div>
 
+        <!-- sweet alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault();
             Swal.fire({
                 title: "Sucesso!",
-                text: "Produto cadastrado no estoque!",
+                text: "Produto cadastrado com sucesso!",
                 icon: "success",
-                showCloseButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Visualizar Estoque',
-                cancelButtonText: 'Voltar para Início',
-                allowOutsideClick: false,
-                customClass: {
-                    confirmButton: 'swal2-confirm-custom',
-                    cancelButton: 'swal2-cancel-custom'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/estoque";
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    window.location.href = "/cadastro_produto";
-                }
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+            }).then(() => {
+                this.submit();
             });
         });
     </script>
-    <style>
-        .swal2-confirm-custom {
-            background-color: #1E94A3 !important;
-            color: #fff !important;
-            border-radius: 4px !important;
-            font-size: 12px !important;
-        }
-        .swal2-confirm-custom:hover {
-            background-color: #094a55 !important;
-        }
-        .swal2-cancel-custom {
-            background-color: #ccc !important;
-            color: #000 !important;
-            border-radius: 4px !important;
-            font-size: 12px !important;
-        }
-        .swal2-cancel-custom:hover {
-            background-color: #aaa !important;
-        }
-    </style>
 </body>
 </html>
 
