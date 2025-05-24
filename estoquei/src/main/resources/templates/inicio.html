@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Dashboard Gerente</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="../images/logo.png" type="image/png"> 
+    <style>
+        body {
+            background-color: #c0c0c0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px 15px 0px 0px;
+        }
+
+
+        h1, h2 {
+            font-size: 40px;
+            color: #277580;
+            text-align: center;
+            margin: 50px 0 5px 0;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin: 0 0 15px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            background-color: #1E94A3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .notification {
+            position: relative;
+            margin-right: 20px;
+            font-size: 24px;
+            color: black;
+        }
+
+        .notification .badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            justify-items: center;
+            padding: 0;
+            max-width: 940px;
+            align-items: center;
+        }
+
+        .card {
+            background-color: white;
+            width: 250px;
+            height: 200px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-align: center;
+        }
+
+        .card p {
+            font-size: 20px;
+            padding: 0 50px 0 50px;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card i {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="notification">
+            <i class="fa-solid fa-bell"></i>
+            <span class="badge">2</span>
+        </div>
+        <ul>
+            <li><a th:href="@{/}">Sair</a></li>
+        </ul>
+    </nav>
+
+        <h1>Olá, Gerente!</h1>
+        <h2>O que deseja acessar hoje?</h2>
+    
+
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+        <div class="container">
+            <div class="card" onclick="location.href='/fornecedores'">
+                <a href="/fornecedores" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Gerenciar Fornecedores</p>
+                    <i class="fa-regular fa-handshake"></i>
+                </a>
+            </div>
+            <div class="card" onclick="location.href='/funcionarios'">
+                <a href="/funcionarios" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Gerenciar Funcionários</p>
+                    <i class="fa-regular fa-user"></i>
+                </a>
+            </div>
+            <div class="card" onclick="location.href='/relatorio'">
+                <a href="/relatorio" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Relatório de Desempenho</p>
+                    <i class="fa-solid fa-chart-line"></i>
+                </a>
+            </div>
+            <!-- Acesso limitado ao Gerente -->
+            <div class="card" onclick="location.href='/produto'">
+                <a href="/produto" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Cadastrar Produto</p>
+                    <i class="fa-solid fa-shirt"></i>
+                </a>
+            </div>
+            <div class="card" onclick="location.href='/estoque'">
+                <a href="/estoque" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Visualizar Estoque</p>
+                    <i class="fa-solid fa-chart-bar"></i>
+                </a>
+            </div>
+            <div class="card" onclick="location.href='/reabastecimento'">
+                <a href="/reabastecimento" style="color: inherit; text-decoration: none; display: flex; flex-direction: column; align-items: center; height: 100%; width: 100%; justify-content: center;">
+                    <p>Registrar Reabastecimento</p>
+                    <i class="fa-solid fa-truck"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
