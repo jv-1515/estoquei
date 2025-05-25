@@ -2,7 +2,9 @@ package com.example.estoquei.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -19,8 +21,8 @@ public class Router {
         return "cadastrar_produto";
     }
 
-    @GetMapping("/inicio")
-    public String inicio() {
+    @PostMapping("/inicio")
+    public String processaLogin(@RequestParam String email, @RequestParam String password) {
         return "inicio";
     }
     
