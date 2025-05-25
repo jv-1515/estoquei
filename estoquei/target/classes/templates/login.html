@@ -8,6 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #277580;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -16,7 +17,7 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            background-image: url('*/images/image.png');
+            background-image: url('/images/image.png');
             background-size: cover;
 
         }
@@ -93,30 +94,31 @@
     </style>
 </head>
 <body>
-    <form class="form-container" action="/login" method="POST">
+    <form class="form-container" th:action="@{/inicio}" method="GET">
         <h1>Bem-vindo!</h1>
         <div>
-            <label for="email">Email</label>
+            <label for="email">Email:</label>
             <div class="input-group">
                 <input type="email" id="email" name="email" placeholder="Email cadastrado" required>
                 <span class="lock-open">
                     <i class="fa-solid fa-envelope"></i>
+                </span>
             </div>
         </div>
         <div>
-            <label for="password">Senha</label>
+            <label for="password">Senha:</label>
             <div class="input-group">
-            <input type="password" id="password" name="password" placeholder="Senha de 8 caracteres" required minlength="8">
-            <span class="lock-open" onclick="lockOpen()">
-                <i class="fa-solid fa-lock" id="lock-icon"></i>
-            </span>
+                <input type="password" id="password" name="password" placeholder="Senha de 8 caracteres" required minlength="8">
+                <span class="lock-open" onclick="lockOpen()">
+                    <i class="fa-solid fa-lock" id="lock-icon"></i>
+                </span>
             </div>
         </div>
         <button type="submit">Entrar</button>
         </form>
         <script>
         document.getElementById("lock-icon").addEventListener("click", function() {
-            const senhaInput = this;
+            const senhaInput = document.getElementById("password");
             const lockIcon = document.getElementById("lock-icon");
             if (senhaInput.type === "password") {
                 senhaInput.type = "text";
