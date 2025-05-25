@@ -25,12 +25,17 @@ public class Router {
     public String processaLogin(@RequestParam String email, @RequestParam String password) {
         return "inicio";
     }
+
+    @GetMapping("/inicio")
+    public String inicio() {
+        return "inicio";
+    }
     
 
-    // @GetMapping("/estoque")
-    // public String estoque() {
-    //     return "estoque";
-    // }
+    @GetMapping("/estoque")
+    public String estoque() {
+        return "estoque";
+    }
 
     // @GetMapping("/reabastecer-produto")
     // public String reabastecerProduto() {
