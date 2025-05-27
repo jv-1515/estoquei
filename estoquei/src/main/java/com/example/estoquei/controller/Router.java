@@ -11,16 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/")
 public class Router {
 
+    //login
     @GetMapping
     public String login() {
         return "login";
     }
 
-    @GetMapping("/cadastrar-produto")
-    public String cadastro() {
-        return "cadastrar_produto";
-    }
 
+    //menu inicial
     @PostMapping("/inicio")
     public String processaLogin(@RequestParam String email, @RequestParam String password) {
         return "inicio";
@@ -30,54 +28,82 @@ public class Router {
     public String inicio() {
         return "inicio";
     }
-    
 
+
+    //estoque
     @GetMapping("/estoque")
     public String estoque() {
         return "estoque";
     }
 
-    // @GetMapping("/reabastecer-produto")
-    // public String reabastecerProduto() {
-    //     return "reabastecer_produto";
-    // }
 
-    // @GetMapping("/visualizar-produto")
-    // public String visualizarProduto() {
-    //     return "visualizar_produto";
-    // }
-    
-    // @GetMapping("/editar-produto")
-    // public String editarProduto() {
-    //     return "editar_produto";
-    // }
+    //produto
+    @GetMapping("/cadastrar-produto")
+    public String cadastro() {
+        return "cadastrar_produto";
+    }
+
+    @GetMapping("/editar-produto")
+    public String editarProduto() {
+        return "editar_produto";
+    }
+
+    @GetMapping("/reabastecer-produto")
+    public String reabastecerProduto() {
+        return "reabastecer_produto";
+    }
 
 
-    // @GetMapping("/visualizar-funcionario")
-    // public String visualizarFuncionario() {
-    //     return "visualizar_funcionario";
-    // }
-    // @GetMapping("/cadastrar-funcionario")
-    // public String cadastrarFuncionario")() {
-    //     return "cadastrar_funcionario");
-    // }
+    //funcionario
+    @GetMapping("/cadastrar-funcionario")
+    public String cadastrarFuncionario() {
+        return "cadastrar_funcionario";
+    }
 
-    // @GetMapping("/editar-funcionario")
-    // public String editarFuncionario() {
-    //     return "editar_funcionario";
-    // }
+    @GetMapping("/editar-funcionario")
+    public String editarFuncionario() {
+        return "editar_funcionario";
+    }
 
-    // @GetMapping("/visualizar-fornecedor")
-    // public String visualizarFornecedor() {
-    //     return "visualizar_fornecedor";
+    @GetMapping("/gerenciar-funcionarios")
+    public String gerenciarFuncionario() {
+        return "gerenciar_funcionarios";
+    }
 
-    // @GetMapping("/cadastrar-fornecedor")
-    // public String cadastrarFornecedor() {
-    //     return "cadastrar_fornecedor";
-    // }
+    //fornecedor
+    @GetMapping("/cadastrar-fornecedor")
+    public String cadastrarFornecedor() {
+        return "cadastrar_fornecedor";
+    }
 
-    // @GetMapping("/editar-fornecedor")
-    // public String editarFornecedor() {
-    //     return "editar_fornecedor";
-    // }
+    @GetMapping("/editar-fornecedor")
+    public String editarFornecedor() {
+        return "editar_fornecedor";
+    }
+
+    @GetMapping("/gerenciar-fornecedores")
+    public String gerenciarFornecedor() {
+        return "gerenciar_fornecedores";
+    }
+
+    //relatorio
+    @GetMapping("/gerar-relatorio")
+    public String relatorio() {
+        return "relatorio";
+    }
+
+    //gerenciar relatorios
+    @GetMapping("/gerenciar-relatorios")
+    public String gerenciarRelatorios() {
+        return "gerenciar_relatorios";
+    }
 }
+    
+
+
+
+
+
+
+
+
