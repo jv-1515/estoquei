@@ -200,7 +200,7 @@
     </div>
         <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 22px;
 ">
-        <div style="display: flex; align-items: center; gap: 10px; padding-left: 7px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
             <select id="registros-select" style="padding: 5px 4px; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 46px;">
                 <option value="10">10</option>
@@ -302,13 +302,16 @@
                         ${p.limite}
                         ${
                             p.quantidade <= (p.limite + 10)
-                                ? '<span style="display:inline-block;position:relative;width:20px;height:20px;"><span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span><i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i></span>'
+                                ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
+                                    <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
+                                    </a>`
                                 : ''
                         }
                     </td>
                     <td>${p.preco}</td>
                     <td class="actions">
-                    <a th:href="@{'/produtos/editar/' + ${p.codigo}}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
+                    <a href="/editar-produto/${p.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
                     <button type="button" onclick="removerProduto('${p.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
@@ -346,7 +349,7 @@
             msgDiv = document.createElement("div");
             msgDiv.id = "no-results-msg";
             msgDiv.style.textAlign = "center";
-            msgDiv.style.padding = "20px 0";
+            msgDiv.style.padding = "0 0 10px 0";
             msgDiv.style.color = "#888";
             msgDiv.style.fontSize = "16px";
             document.querySelector(".main-container .table-space").appendChild(msgDiv);
