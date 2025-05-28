@@ -17,13 +17,14 @@
 
         h1 {
             font-size: 40px;
-            color: #0b5a66;
+            color: #277580;
             text-align: center;
+            margin: 40px 0 20px 0;
         }
 
         h2 {
             font-size: 20px;
-            color: #0b5a66;
+            color: #277580;
             text-align: left;
             margin: 0;
             padding-left: 5px;
@@ -149,15 +150,18 @@
     </style>
 </head>
 <body>
-    <h1>Gerenciar Estoque</h1>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
             <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
         </button>
     </a>
+
+    <div>
+        <h1>Gerenciar Estoque</h1>
+    </div>
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
-            <h2>Filtrar produto</h2>
+            <h2>Filtrar produtos</h2>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
                 <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" style="width: 90px;" />
                 <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
@@ -192,14 +196,13 @@
                 <button class="btn" onclick="limpar()" style="background-color: #094a55">Limpar Filtro</button>
                 <style>
                     .btn[onclick="limpar()"]:hover {
-                        background-color: #062c2f !important;
+                        background-color: #277580 !important;
                     }
                 </style>
             </div>
         </div>
     </div>
-        <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 22px;
-">
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
             <select id="registros-select" style="padding: 5px 4px; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 46px;">
@@ -243,9 +246,9 @@
         }
         tamanho.innerHTML = options;
     }
-        window.onload = function() {
-            updateOptions();
-        };
+    window.onload = function() {
+        updateOptions();
+    };
     </script>
 
     <div class="main-container">
@@ -253,7 +256,6 @@
         <table id="product-list">
         </table>
     </div>
-
     <script>
         const produtos = [
             { codigo: "000000001", nome: "Camisa Polo", categoria: "CAMISA", tamanho: "M", genero: "MASCULINO", quantidade: 10, limite: 5, preco: "99.90", imagem: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=100&q=80" },
