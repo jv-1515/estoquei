@@ -69,6 +69,11 @@
             font-size: 12px;
         }
 
+        .badge:hover {
+            background-color: darkred;
+        }
+
+
 
         .container {
             display: grid;
@@ -118,16 +123,39 @@
             width: 100%;
             justify-content: center;
         }
+        
+
+
+
+
+
+        button {
+            background-color: #1E94A3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #277580;
+        }
+        
     </style>
 </head>
 
 <body>
     <nav>
         <div class="notification">
-            <i class="fa-regular fa-bell" style="padding-top: 3px"></i>
+            <span style="display: inline-block; position: relative;">
+                <i class="fa-solid fa-bell" style="color: white; font-size: 24px; left: 0; top: 0; padding-top: 3px"></i>
+                <i class="fa-regular fa-bell" style="color: black; font-size: 25px; position: absolute; left:0; top: 0; padding-top:3px"></i>
+            </span>
             <span class="badge">2</span>
         </div>
-            <a href="#" onclick="confirmarSaida(event)">Sair</a>
+        <button onclick="confirmarSaida(event)">Sair</button>
     </nav>
 
         <h1>Olá, Gerente!</h1>
@@ -138,13 +166,13 @@
         <div class="container">
         <!-- Acesso limitado ao Gerente -->
         <div class="card">
-            <a th:href="@{/visualizar-fornecedores}">
+            <a th:href="@{/gerenciar-fornecedores}">
                 <p>Gerenciar Fornecedores</p>
                 <i class="fa-regular fa-handshake"></i>
             </a>
         </div>
         <div class="card">
-            <a th:href="@{/visualizar-funcionarios}">
+            <a th:href="@{/gerenciar-funcionarios}">
                 <p>Gerenciar Funcionários</p>
                 <i class="fa-regular fa-user"></i>
             </a>
