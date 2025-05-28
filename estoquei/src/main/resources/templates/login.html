@@ -17,8 +17,11 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            background-image: url('/images/image.png');
+            background-image: image-set(
+                url('/images/background.png') type('image/png') 1x
+            );
             background-size: cover;
+            background-attachment: fixed;
 
         }
         .form-container {
@@ -38,7 +41,7 @@
         }
         .input-group input {
             width: 100%;
-            padding: 14px 44px 14px 14px;
+            padding: 10px 44px 10px 14px;
             font-size: 12px;
             border: 1px solid #bbb;
             border-radius: 5px;
@@ -54,7 +57,7 @@
             color: #888;
         }
         h1 {
-            font-size: 40px;
+            font-size: 50px;
             color: #277580;
             text-align: center;
             margin: 0 0 15px 0;
@@ -69,7 +72,7 @@
             background-color: #1E94A3;
             color: white;
             border: none;
-            padding: 14px;
+            padding: 10px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.2s;
@@ -78,6 +81,7 @@
             background-color: #277580;
         }
         .register-link {
+            font-weight: bold;
             text-align: center;
             margin-top: 10px;
         }
@@ -87,6 +91,7 @@
         }
         .register-link a:hover {
             text-decoration: underline;
+            color:#277580;
         }
         input:focus {
             border: 2px solid black;
@@ -115,7 +120,10 @@
             </div>
         </div>
         <button type="submit">Entrar</button>
-        </form>
+        <div class="register-link" style="margin-top: 10px;">
+            <a href="#">Esqueceu sua senha? Clique aqui</a>
+        </div>
+    </form>
         <script>
         document.getElementById("lock-icon").addEventListener("click", function() {
             const senhaInput = document.getElementById("password");
