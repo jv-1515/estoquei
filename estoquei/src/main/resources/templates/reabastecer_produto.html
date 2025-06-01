@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerenciar Baixo Estoque</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ccc;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #277580;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #277580;
+            text-align: left;
+            margin: 0;
+        }
+
+        .filters-container {
+            max-width: 650px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 7px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn {
+            background-color: #1e94a3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #277580;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 10px;
+            max-width: 1030px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+
+        .actions a, .actions button {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 0;
+            margin: 0 4px;
+            cursor: pointer;
+            font-size: 12px;
+            vertical-align: middle;
+            outline: none;
+        }
+        .actions a:hover, .actions button:hover {
+            color: #1e94a3;
+        }
+
+        .produto-img {
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f3f3f3;
+            display: inline-block;
+        }
+        .produto-img.icon {
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 20px;
+            width: 30px;
+            height: 30px;
+            background: #f3f3f3;
+            border-radius: 6px;
+        }
+        .fa-trash:hover {
+            color: red;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            padding: 0 20px 20px 20px;
+            border-radius: 0px;
+            gap: 20px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .form-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-column label {
+            font-size: 12px;
+        }
+
+        .form-column input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            font-size: 12px;
+        }
+        label{
+            padding: 5px 5px 5px 0;
+        }
+
+        .image-box {
+            width: 215px;
+            height: 215px;
+            display: flex;
+            justify-content: center;
+            color: #777;
+            align-items: center;
+            border: dashed 2px #aaa;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .image-box:hover {
+            background-color: #f0f0f0;
+            border: 2px solid #000;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #1E94A3;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #277580;
+        }
+
+        .filters .filter-input {
+            width: 142px;
+            padding: 7px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        .filters .filter-select {
+            width: 142px;
+            padding: 7px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        .filters-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 600px; /* área total */
+            justify-content: center;
+        }
+
+        .form-column input,
+        .form-column select,
+        .form-column textarea {
+            padding: 7px;
+            font-size: 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+        }
+        .right-column {
+        display: flex;
+        flex-direction: column;
+        padding-top: 27px;
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+
+    <div>
+        <h1>Reabastecer Produto</h1>
+    </div>
+    <div class="filters-container">
+        <div class="filters" style="flex-direction: column; align-items: stretch;">
+            <h2>Detalhes do Produto</h2>
+            <div class="filters-group">
+                <input type="text" id="filter-codigo" placeholder="000000000" maxlength="9" class="filter-input" />
+                <input type="text" id="filter-nome" placeholder="Nome" class="filter-input" />
+
+                <select id="filter-categoria" class="filter-select" onchange="updateOptions()">
+                    <option value="">Categoria</option>
+                    <option value="CAMISA">Camisa</option>
+                    <option value="CAMISETA">Camiseta</option>
+                    <option value="BERMUDA">Bermuda</option>
+                    <option value="CALCA">Calça</option>
+                    <option value="SHORTS">Shorts</option>
+                    <option value="SAPATO">Sapato</option>
+                    <option value="MEIA">Meia</option>
+                </select>
+
+                <select id="filter-tamanho" class="filter-select">
+                    <option value="">Tamanho</option>
+                </select>
+
+                <select id="filter-genero" class="filter-select">
+                    <option value="">Gênero</option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="UNISSEX">Unissex</option>
+                </select>
+
+                <input type="number" id="filter-quantidade" placeholder="Quantidade" class="filter-input" />
+                <input type="number" id="filter-limite" placeholder="Limite Mínimo" class="filter-input" />
+                <input type="number" id="filter-preco" placeholder="Preço (R$)" class="filter-input" />
+            </div>
+        </div>
+    </div>
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
+        <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">Detalhes da compra</h2>
+
+    </div>
+    <script>
+    function updateOptions() {
+        const categoria = document.getElementById('filter-categoria').value;
+        const tamanho = document.getElementById('filter-tamanho');
+        let options = '<option value="">Tamanho</option>';
+
+        if (categoria === 'SAPATO' || categoria === 'MEIA') {
+            for (let i = 36; i <= 44; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+        } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
+            for (let i = 36; i <= 52; i += 2) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+        } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
+            const tamanhos = ['Único', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'XXG'];
+            tamanhos.forEach(t => {
+                options += `<option value="${t}">${t}</option>`;
+            });
+        } else {
+            const tamanhos = ['Único', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'XXG'];
+            for (let i = 36; i <= 44; i++) {
+                tamanhos.push(i.toString());
+            }
+            tamanhos.forEach(t => {
+                options += `<option value="${t}">${t}</option>`;
+            });
+        }
+        tamanho.innerHTML = options;
+    }
+    window.onload = function() {
+        updateOptions();
+    };
+    </script>
+
+<form>
+<div class="main-container">
+    <div class="form-column">
+        <label for="codigo-compra">Código da compra*:</label>
+        <input type="number" id="codigo-compra" name="codigo-compra" required placeholder="000000000">
+
+        <label for="quantidade">Quantidade*:</label>
+        <input type="number" id="quantidade" name="quantidade" required placeholder="Quantidade" min="1">
+
+        <label for="valor-compra">Valor da compra (R$)*:</label>
+        <input type="number" id="valor-compra" name="valor-compra" required placeholder="Valor da compra (R$)" min="0">
+
+        <label for="quantidade-final">Quantidade final:</label>
+        <input type="number" id="quantidade-final" name="quantidade-final" placeholder="Quantidade final" readonly>
+
+        <button type="submit">Confirmar Reabastecimento</button>
+    </div>
+    <div class="right-column">
+        <div onclick="upload()" id="image-preview" class="image-box" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
+            <i class="fa-regular fa-image" style="font-size: 30px"></i>
+            <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+        </div>
+    </div>
+</div>
+</form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Reabastecimento registrado!",
+                icon: "success",
+                showCloseButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Visualizar Estoque',
+                cancelButtonText: 'Voltar para Início',
+                allowOutsideClick: false,
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/baixo-estoque";
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.href = "/inicio";
+                }
+            });
+        });
+    </script>
+        <style>
+        .swal2-confirm-custom {
+            background-color: #1E94A3 !important;
+            color: #fff !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-confirm-custom:hover {
+            background-color: #277580 !important;
+        }
+        .swal2-cancel-custom {
+            background-color: #ccc !important;
+            color: #000 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-cancel-custom:hover {
+            background-color: #aaa !important;
+        }
+    </style>
+</body>
+</html>
