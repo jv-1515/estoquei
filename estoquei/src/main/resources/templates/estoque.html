@@ -196,7 +196,7 @@
                 <input type="number" id="filter-preco" placeholder="Preço (R$)" style="width: 90px;" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
-                <button class="btn" onclick="limpar()" style="background-color: #094a55">Limpar Filtro</button>
+                <button class="btn" onclick="limpar(); renderizarProdutos(lista);" style="background-color: #094a55">Limpar Filtro</button>
                 <style>
                     .btn[onclick="limpar()"]:hover {
                         background-color: #277580 !important;
@@ -302,18 +302,18 @@
                     <td>${p.categoria}</td>
                     <td>${p.tamanho}</td>
                     <td>${p.genero}</td>
-                    <td>${p.quantidade}</td>
                     <td>
-                        ${p.limite}
+                        ${p.quantidade}
                         ${
-                            p.quantidade <= (p.limite + 10)
+                            (p.quantidade - p.limite) <= 10
                                 ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                                    <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                    <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                                    </a>`
+                                        <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                                        <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
+                                </a>`
                                 : ''
                         }
                     </td>
+                    <td>${p.limite}</td>
                     <td>${p.preco}</td>
                     <td class="actions">
                     <a href="/editar-produto/${p.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
