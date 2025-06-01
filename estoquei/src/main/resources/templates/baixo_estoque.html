@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gerenciar Estoque</title>
+    <title>Gerenciar Baixo Estoque</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -160,7 +160,7 @@
     </a>
 
     <div>
-        <h1>Gerenciar Estoque</h1>
+        <h1>Registrar Reabastecimento</h1>
     </div>
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
@@ -205,7 +205,7 @@
             </div>
         </div>
     </div>
-    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 22px;">
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
             <select id="registros-select" style="padding: 5px 4px; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 46px;">
@@ -215,8 +215,8 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/cadastrar-produto'">
-            <i class="fa fa-plus" style="margin-right: 4px;"></i> Cadastrar Produto
+        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/reabastecer-produto'">
+            <i class="fa fa-box" style="margin-right: 4px;"></i> Reabastecer Produto
         </button>
     </div>
     <script>
@@ -265,10 +265,12 @@
             { codigo: "000000002", nome: "Camiseta Estampada", categoria: "CAMISETA", tamanho: "G", genero: "UNISSEX", quantidade: 15, limite: 7, preco: "59.90", imagem: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" },
             { codigo: "000000003", nome: "Calça Jeans", categoria: "CALCA", tamanho: "G", genero: "FEMININO", quantidade: 8, limite: 3, preco: "129.90", imagem: "" },
             { codigo: "000000004", nome: "Sapato Social", categoria: "SAPATO", tamanho: "42", genero: "MASCULINO", quantidade: 5, limite: 2, preco: "199.90", imagem: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 20, limite: 10, preco: "49.90", imagem: "" }
+            { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 21, limite: 10, preco: "49.90", imagem: "" }
         ];
 
         function renderizarProdutos(lista) {
+            lista = lista.filter(p => (p.quantidade - p.limite) >= 0 && (p.quantidade - p.limite) <= 10);
+
             const container = document.getElementById("product-list");
             container.innerHTML = `
             <thead>
@@ -282,47 +284,44 @@
                 <th>Quantidade</th>
                 <th>Limite Mínimo</th>
                 <th>Preço (R$)</th>
-                <th>Ações</th>
+                <th>Reabastecer</th>
                 </tr>
             </thead>
             <tbody>
                 ${lista
-                .map(
-                    (p, idx) => `
-                <tr tabindex="${idx + 1}">
-                    <td>
-                    ${
-                        p.imagem
-                        ? `<img src="${p.imagem}" alt="Foto do produto" class="produto-img" />`
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                    </td>
-                    <td>${p.codigo}</td>
-                    <td>${p.nome}</td>
-                    <td>${p.categoria}</td>
-                    <td>${p.tamanho}</td>
-                    <td>${p.genero}</td>
-                    <td>
-                        ${p.quantidade}
-                        ${
-                            (p.quantidade - p.limite) <= 10
-                                ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                                        <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                        <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                                </a>`
-                                : ''
+                    .map((p, idx) => `
+                    <tr tabindex="${idx + 1}">
+                        <td>
+                        ${p.imagem
+                            ? `<img src="${p.imagem}" alt="Foto do produto" class="produto-img" />`
+                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
                         }
-                    </td>
-                    <td>${p.limite}</td>
-                    <td>${p.preco}</td>
-                    <td class="actions">
-                    <a href="/editar-produto/${p.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
-                    <button type="button" onclick="removerProduto('${p.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-                `
-                )
-                .join("")}
+                        </td>
+                        <td>${p.codigo}</td>
+                        <td>${p.nome}</td>
+                        <td>${p.categoria}</td>
+                        <td>${p.tamanho}</td>
+                        <td>${p.genero}</td>
+                        <td>
+                            ${p.quantidade}
+                            ${
+                                (p.quantidade - p.limite) <= 10 && (p.quantidade - p.limite) >= 0
+                                    ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
+                                            <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
+                                    </a>`
+                                    : ''
+                            }
+                        </td>
+                        <td>${p.limite}</td>
+                        <td>${p.preco}</td>
+                        <td class="actions">
+                            <a href="/reabastecer-produto/${p.codigo}" title="Reabastecer" tabindex="${lista.length + idx + 1}">
+                                <i class="fa-solid fa-box"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `).join("")}
             </tbody>
             `;
         }
@@ -378,29 +377,6 @@
             document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
             renderizarProdutos(produtos);
         }
-
-        function removerProduto(codigo) {
-            Swal.fire({
-            title: 'Tem certeza?',
-            text: 'Esta ação não poderá ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#1E94A3',
-            confirmButtonText: 'Remover',
-            cancelButtonText: 'Cancelar'
-            }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                title: 'Removido!',
-                text: 'O produto foi removido.',
-                icon: 'success',
-                confirmButtonColor: '#1E94A3'
-                });
-            }
-            });
-        }
-
         renderizarProdutos(produtos);
     </script>
 </body>
