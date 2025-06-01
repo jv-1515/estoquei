@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gerenciar Baixo Estoque</title>
+    <title>Reabastecer Produto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -38,7 +38,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             padding: 20px;
             display: flex;
-            justify-content: center;
         }
 
         .filters {
@@ -46,7 +45,6 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
-            width: 100%;
             background: none;
             padding: 0;
             margin: 0;
@@ -73,16 +71,6 @@
         .btn:hover {
             background-color: #277580;
         }
-
-        .main-container {
-            background: white;
-            border-radius: 10px;
-            max-width: 1030px;
-            margin: 0 auto;
-            box-sizing: border-box;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        }
-
 
         .actions a, .actions button {
             background: none;
@@ -122,10 +110,14 @@
         }
 
         .main-container {
+            background: white;
+            border-radius: 10px;
+            margin: 0 auto;
+            box-sizing: border-box;
             display: flex;
             justify-content: center;
             padding: 0 20px 20px 20px;
-            border-radius: 0px;
+            border-radius: 0 0 10px 10px;
             gap: 20px;
             max-width: 650px;
             margin: 0 auto;
@@ -190,7 +182,7 @@
         }
 
         .filters .filter-input {
-            width: 142px;
+            width: 145px;
             padding: 7px;
             border: 1px solid #aaa;
             border-radius: 4px;
@@ -199,7 +191,7 @@
         }
 
         .filters .filter-select {
-            width: 142px;
+            width: 145px;
             padding: 7px;
             border: 1px solid #aaa;
             border-radius: 4px;
@@ -211,8 +203,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            max-width: 600px; /* área total */
-            justify-content: center;
+            max-width: 620px;
         }
 
         .form-column input,
@@ -226,7 +217,7 @@
         .right-column {
         display: flex;
         flex-direction: column;
-        padding-top: 27px;
+        padding-top: 24px;
         }
     </style>
 </head>
