@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerenciar Funcionários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ccc;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #277580;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #277580;
+            text-align: left;
+            margin: 0;
+        }
+
+        .filters-container {
+            max-width: 850px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 7px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn {
+            background-color: #1e94a3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #277580;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 10px;
+            max-width: 850px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+        table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions a, .actions button {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 0;
+            margin: 0 4px;
+            cursor: pointer;
+            font-size: 12px;
+            vertical-align: middle;
+            outline: none;
+        }
+        .actions a:hover, .actions button:hover {
+            color: #1e94a3;
+        }
+
+        .fa-trash:hover {
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+
+    <div>
+        <h1>Gerenciar Funcionários</h1>
+    </div>
+    <div class="filters-container">
+        <div class="filters" style="flex-direction: column; align-items: stretch;">
+            <h2>Filtrar Funcionários</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" style="width: 90px;" />
+                <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
+                <select id="filter-cargo" style="width: 120px;">
+                    <option selected disabled style="color: white; background: white">Cargo</option>
+                    <option value="Gerente">Gerente</option>
+                    <option value="Vendedor">Vendedor</option>
+                    <option value="Caixa">Caixa</option>
+                    <option value="Estoquista">Estoquista</option>
+                </select>
+                <input type="email" id="filter-email" placeholder="Email" style="width: 197px;" />
+
+                <button class="btn" onclick="filtrar()">Filtrar</button>
+                <button class="btn" onclick="limpar(); renderizarFuncionarios(lista);" style="background-color: #094a55">Limpar Filtro</button>
+                <style>
+                    .btn[onclick="limpar()"]:hover {
+                        background-color: #277580 !important;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="registros-select">Mostrando</label>
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 43px;">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/cadastrar-funcionario'">
+            <i class="fa fa-plus" style="margin-right: 4px;"></i> Cadastrar Funcionário
+        </button>
+    </div>
+
+
+    <div class="main-container">
+        <div class="table-space"></div>
+        <table id="product-list">
+        </table>
+    </div>
+    <script>
+        const funcionarios = [
+            { codigo: "F00001", nome: "Ana Souza", cargo: "Gerente", email: "ana.souza@email.com" },
+            { codigo: "F00002", nome: "Carlos Lima", cargo: "Vendedor", email: "carlos.lima@email.com" },
+            { codigo: "F00003", nome: "Mariana Silva", cargo: "Caixa", email: "mariana.silva@email.com" },
+            { codigo: "F00004", nome: "João Pedro", cargo: "Estoquista", email: "joao.pedro@email.com" },
+            { codigo: "F00005", nome: "Fernanda Costa", cargo: "Vendedor", email: "fernanda.costa@email.com" }
+        ];
+
+        function renderizarFuncionarios(lista) {
+            const container = document.getElementById("product-list");
+            container.innerHTML = `
+            <thead>
+            <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>E-mail</th>
+            <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            ${lista
+            .map(
+                (f, idx) => `
+            <tr tabindex="${idx + 1}">
+                <td>${f.codigo}</td>
+                <td>${f.nome}</td>
+                <td>${f.cargo}</td>
+                <td>${f.email}</td>
+                <td class="actions">
+                <a href="/editar-funcionario/${f.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
+                <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+            `
+            )
+            .join("")}
+            </tbody>
+            `;
+        }
+
+        function filtrar() {
+            const codigo = document.getElementById("filter-codigo").value;
+            const nome = document.getElementById("filter-nome").value;
+            const cargo = document.getElementById("filter-cargo").value;
+            const email = document.getElementById("filter-email").value;
+
+            const filtrados = funcionarios.filter(
+            (f) =>
+                (codigo === "" || f.codigo.includes(codigo)) &&
+                (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
+                (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
+                (email === "" || f.email.toLowerCase().includes(email.toLowerCase()))
+            );
+
+            let msgDiv = document.getElementById("no-results-msg");
+            if (!msgDiv) {
+            msgDiv = document.createElement("div");
+            msgDiv.id = "no-results-msg";
+            msgDiv.style.textAlign = "center";
+            msgDiv.style.padding = "0 0 10px 0";
+            msgDiv.style.color = "#888";
+            msgDiv.style.fontSize = "16px";
+            document.querySelector(".main-container .table-space").appendChild(msgDiv);
+            }
+
+            if (filtrados.length === 0) {
+            document.getElementById("product-list").style.display = "none";
+            msgDiv.textContent = "Nenhum funcionário encontrado com os filtros selecionados.";
+            msgDiv.style.display = "block";
+            } else {
+            document.getElementById("product-list").style.display = "";
+            msgDiv.style.display = "none";
+            renderizarFuncionarios(filtrados);
+            }
+
+            document.querySelector('.main-container').style.borderTopLeftRadius = "0";
+            document.querySelector('.main-container').style.borderTopRightRadius = "0";
+        }
+
+        function removerFuncionario(codigo) {
+            Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Esta ação não poderá ser desfeita.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#1E94A3',
+            confirmButtonText: 'Remover',
+            cancelButtonText: 'Cancelar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                title: 'Removido!',
+                text: 'O funcionário foi removido.',
+                icon: 'success',
+                confirmButtonColor: '#1E94A3'
+                });
+            }
+            });
+        }
+
+        function limpar() {
+            document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
+            renderizarFuncionarios(funcionarios);
+        }
+
+        renderizarFuncionarios(funcionarios);
+    </script>
+</body>
+</html>
