@@ -36,6 +36,11 @@ public class Router {
         return "estoque";
     }
 
+    @GetMapping("/baixo-estoque")
+    public String reabastecerProduto() {
+        return "baixo_estoque";
+    }
+
 
     //produto
     @GetMapping("/cadastrar-produto")
