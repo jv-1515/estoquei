@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerenciar Funcionários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ccc;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #277580;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #277580;
+            text-align: left;
+            margin: 0;
+        }
+
+        .filters-container {
+            max-width: 850px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 7px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn {
+            background-color: #1e94a3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #277580;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 10px;
+            max-width: 850px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+        table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions a, .actions button {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 0;
+            margin: 0 4px;
+            cursor: pointer;
+            font-size: 12px;
+            vertical-align: middle;
+            outline: none;
+        }
+        .actions a:hover, .actions button:hover {
+            color: #1e94a3;
+        }
+
+        .fa-trash:hover {
+            color: red;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container textarea {
+            padding: 7px;
+            font-size: 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        label {
+            padding: 5px 5px 5px 0;
+        }
+        
+        select#cargo,
+        select#cad-cargo,
+        select#edit-cargo {
+        padding-left: 1px;
+        }
+
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+
+    <div>
+        <h1>Gerenciar Funcionários</h1>
+    </div>
+    <div class="filters-container">
+        <div class="filters" style="flex-direction: column; align-items: stretch;">
+            <h2>Filtrar Funcionários</h2>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" style="width: 90px;" />
+                <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
+                <select id="filter-cargo" style="width: 120px;">
+                    <option selected disabled style="color: white; background: white">Cargo</option>
+                    <option value="Gerente">Gerente</option>
+                    <option value="Vendedor">Vendedor</option>
+                    <option value="Caixa">Caixa</option>
+                    <option value="Estoquista">Estoquista</option>
+                </select>
+                <input type="email" id="filter-email" placeholder="Email" style="width: 197px;" />
+
+                <button class="btn" onclick="filtrar()">Filtrar</button>
+                <button class="btn" onclick="limpar(); renderizarFuncionarios(lista);" style="background-color: #094a55">Limpar Filtro</button>
+                <style>
+                    .btn[onclick="limpar()"]:hover {
+                        background-color: #277580 !important;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="registros-select">Mostrando</label>
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 43px;">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <button class="btn" style="margin-left: auto;" onclick="abrirCadastroFuncionario()">
+            <i class="fa fa-plus" style="margin-right: 4px;"></i> Cadastrar Funcionário
+        </button>
+        </div>
+        <!--Cadastro de Funcionário -->
+        <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+        <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
+            <button type="button" onclick="fecharCadastroFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
+            <label for="cad-codigo">Código*:</label>
+            <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
+
+            <label for="nome">Nome*:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2" />
+
+            <label for="cad-cargo">Cargo*:</label>
+            <select id="cad-cargo" name="cargo" required tabindex="3">
+                <option selected disabled style="color: white; background: white">Cargo</option>
+                <option value="Gerente">Gerente</option>
+                <option value="Vendedor">Vendedor</option>
+                <option value="Caixa">Caixa</option>
+                <option value="Estoquista">Estoquista</option>
+            </select>
+
+            <label for="cad-email">Email*:</label>
+            <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" />
+
+            <label for="cad-senha">Senha Provisória*:</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="cad-senha" name="senha" readonly style="width:60%" tabindex="5" />
+                <button class="btn" style="font-size:10px; width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
+            </div>
+
+            <label for="cad-cpf">CPF*:</label>
+            <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" tabindex="7" />
+
+            <label for="cad-nascimento">Data de Nascimento*:</label>
+            <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
+
+            <label for="cad-contato">Número de Contato*:</label>
+            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00)00000-0000" tabindex="9" />
+            <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
+        </form>
+        </span>
+
+        <!-- editar de Funcionário -->
+        <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+            <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
+            <button type="button" onclick="fecharEdicaoFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
+
+            <label for="edit-codigo">Código*:</label>
+            <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly />
+
+            <label for="edit-nome">Nome*:</label>
+            <input type="text" id="edit-nome" name="nome" required />
+
+            <label for="edit-cargo">Cargo*:</label>
+            <select id="edit-cargo" name="cargo" required>
+                <option selected disabled style="color: white; background: white">Cargo</option>
+                <option value="Gerente">Gerente</option>
+                <option value="Vendedor">Vendedor</option>
+                <option value="Caixa">Caixa</option>
+                <option value="Estoquista">Estoquista</option>
+            </select>
+
+            <label for="edit-email">Email*:</label>
+            <input type="email" id="edit-email" name="email" required />
+
+            <label for="edit-senha">Senha*:</label>
+            <input type="password" id="edit-senha" name="senha" readonly />
+
+            <label for="edit-cpf">CPF*:</label>
+            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required readonly />
+
+            <label for="edit-nascimento">Data de Nascimento*:</label>
+            <input type="date" id="edit-nascimento" name="nascimento" required readonly />
+
+            <label for="edit-contato">Número de Contato*:</label>
+            <input type="text" id="edit-contato" name="contato" maxlength="15" required />
+
+            <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
+            </form>
+        </span>
+
+    <div class="main-container">
+        <div class="table-space"></div>
+        <table id="product-list">
+        </table>
+    </div>
+    <script>
+        const funcionarios = [
+            {
+                codigo: "F00001",
+                nome: "Ana Souza",
+                cargo: "Gerente",
+                email: "ana.souza@email.com",
+                senha: "Abc12345",
+                cpf: "123.456.789-00",
+                nascimento: "1985-04-12",
+                contato: "(11)91234-5678"
+            },
+            {
+                codigo: "F00002",
+                nome: "Carlos Lima",
+                cargo: "Vendedor",
+                email: "carlos.lima@email.com",
+                senha: "Xyz98765",
+                cpf: "234.567.890-11",
+                nascimento: "1990-08-25",
+                contato: "(21)99876-5432"
+            },
+            {
+                codigo: "F00003",
+                nome: "Mariana Silva",
+                cargo: "Caixa",
+                email: "mariana.silva@email.com",
+                senha: "Qwe45678",
+                cpf: "345.678.901-22",
+                nascimento: "1995-12-10",
+                contato: "(31)93456-7890"
+            },
+            {
+                codigo: "F00004",
+                nome: "João Pedro",
+                cargo: "Estoquista",
+                email: "joao.pedro@email.com",
+                senha: "Zxc32109",
+                cpf: "456.789.012-33",
+                nascimento: "1988-02-18",
+                contato: "(41)97654-3210"
+            },
+            {
+                codigo: "F00005",
+                nome: "Fernanda Costa",
+                cargo: "Vendedor",
+                email: "fernanda.costa@email.com",
+                senha: "Mnb65432",
+                cpf: "567.890.123-44",
+                nascimento: "1992-06-30",
+                contato: "(51)96543-2109"
+            }
+        ];
+
+        function renderizarFuncionarios(lista) {
+            const container = document.getElementById("product-list");
+            container.innerHTML = `
+            <thead>
+            <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>E-mail</th>
+            <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            ${lista
+            .map(
+                (f, idx) => `
+            <tr tabindex="${idx + 1}">
+                <td>${f.codigo}</td>
+                <td>${f.nome}</td>
+                <td>${f.cargo}</td>
+                <td>${f.email}</td>
+                <td class="actions">
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+                <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+            `
+            )
+            .join("")}
+            </tbody>
+            `;
+        }
+
+        function filtrar() {
+            const codigo = document.getElementById("filter-codigo").value;
+            const nome = document.getElementById("filter-nome").value;
+            const cargo = document.getElementById("filter-cargo").value;
+            const email = document.getElementById("filter-email").value;
+
+            const filtrados = funcionarios.filter(
+            (f) =>
+                (codigo === "" || f.codigo.includes(codigo)) &&
+                (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
+                (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
+                (email === "" || f.email.toLowerCase().includes(email.toLowerCase()))
+            );
+
+            let msgDiv = document.getElementById("no-results-msg");
+            if (!msgDiv) {
+            msgDiv = document.createElement("div");
+            msgDiv.id = "no-results-msg";
+            msgDiv.style.textAlign = "center";
+            msgDiv.style.padding = "0 0 10px 0";
+            msgDiv.style.color = "#888";
+            msgDiv.style.fontSize = "16px";
+            document.querySelector(".main-container .table-space").appendChild(msgDiv);
+            }
+
+            if (filtrados.length === 0) {
+            document.getElementById("product-list").style.display = "none";
+            msgDiv.textContent = "Nenhum funcionário encontrado com os filtros selecionados.";
+            msgDiv.style.display = "block";
+            } else {
+            document.getElementById("product-list").style.display = "";
+            msgDiv.style.display = "none";
+            renderizarFuncionarios(filtrados);
+            }
+
+            document.querySelector('.main-container').style.borderTopLeftRadius = "0";
+            document.querySelector('.main-container').style.borderTopRightRadius = "0";
+        }
+
+        function removerFuncionario(codigo) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Esta ação não poderá ser desfeita.',
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: 'Sim',
+                cancelButtonText: 'Não',
+                allowOutsideClick: false,
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Remove o funcionário do array
+                    const idx = funcionarios.findIndex(f => f.codigo === codigo);
+                    if (idx !== -1) {
+                        funcionarios.splice(idx, 1);
+                        renderizarFuncionarios(funcionarios);
+                    }
+                    Swal.fire({
+                        title: "Funcionário removido!",
+                        icon: "success",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Visualizar Funcionários',
+                        cancelButtonText: 'Voltar para Início',
+                        allowOutsideClick: false,
+                        customClass: {
+                            confirmButton: 'swal2-confirm-custom',
+                            cancelButton: 'swal2-cancel-custom'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Apenas fecha o alerta, já está na tela de funcionários
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = "/inicio";
+                        }
+                    });
+                }
+            });
+        }
+
+        function limpar() {
+            document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
+            renderizarFuncionarios(funcionarios);
+        }
+
+        renderizarFuncionarios(funcionarios);
+
+        //gera senha
+        function gerarSenhaProvisoria() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+        let senha = '';
+        for (let i = 0; i < 8; i++) {
+            senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('cad-senha').value = senha;
+        }
+        function abrirCadastroFuncionario() {
+        document.getElementById('cadastro-funcionario').style.display = 'flex';
+        gerarSenhaProvisoria();
+        }
+        function fecharCadastroFuncionario() {
+        document.getElementById('cadastro-funcionario').style.display = 'none';
+        }
+        function cadastrarFuncionario() {
+        // enviar os dados do formulário
+        Swal.fire('Funcionário cadastrado!', '', 'success');
+        fecharCadastroFuncionario();
+        }
+
+
+        //editar funcionario
+        function abrirEdicaoFuncionario(codigo) {
+            const funcionario = funcionarios.find(f => f.codigo === codigo);
+            if (!funcionario) return;
+
+            // Preenche os campos do form
+            document.getElementById('edit-codigo').value = funcionario.codigo;
+            document.getElementById('edit-nome').value = funcionario.nome;
+            document.getElementById('edit-cargo').value = funcionario.cargo;
+            document.getElementById('edit-email').value = funcionario.email;
+            document.getElementById('edit-senha').value = funcionario.senha;
+            document.getElementById('edit-cpf').value = funcionario.cpf;
+            document.getElementById('edit-nascimento').value = funcionario.nascimento;
+            document.getElementById('edit-contato').value = funcionario.contato;
+
+
+            // Mostra o modal de edição
+            document.getElementById('editar-funcionario').style.display = 'flex';
+        }
+
+        function fecharEdicaoFuncionario() {
+            document.getElementById('editar-funcionario').style.display = 'none';
+        }
+        function salvarEdicaoFuncionario() {
+            const codigo = document.getElementById('edit-codigo').value;
+            const nome = document.getElementById('edit-nome').value;
+            const cargo = document.getElementById('edit-cargo').value;
+            const email = document.getElementById('edit-email').value;
+
+            Swal.fire({
+            title: 'Tem certeza?',
+            text: 'As alterações não poderão ser desfeitas.',
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Não',
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+            }).then((result) => {
+            if (result.isConfirmed) {
+                const idx = funcionarios.findIndex(f => f.codigo === codigo);
+                if (idx !== -1) {
+                funcionarios[idx].nome = nome;
+                funcionarios[idx].cargo = cargo;
+                funcionarios[idx].email = email;
+
+                Swal.fire({
+                    title: "Alterações salvas!",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                renderizarFuncionarios(funcionarios);
+                fecharEdicaoFuncionario();
+                } else {
+                Swal.fire('Erro!', 'Funcionário não encontrado.', 'error');
+                }
+            }
+            });
+        }
+
+    </script>
+    <style>
+        .swal2-confirm-custom {
+            background-color: #1E94A3 !important;
+            color: #fff !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-confirm-custom:hover {
+            background-color: #277580 !important;
+        }
+        .swal2-cancel-custom {
+            background-color: #ccc !important;
+            color: #000 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-cancel-custom:hover {
+            background-color: #aaa !important;
+        }
+    </style>
+</body>
+</html>
