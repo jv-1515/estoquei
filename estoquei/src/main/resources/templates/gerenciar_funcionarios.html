@@ -120,6 +120,7 @@
             font-size: 12px;
             vertical-align: middle;
             outline: none;
+            text-decoration:none;
         }
         .actions a:hover, .actions button:hover {
             color: #1e94a3;
@@ -163,7 +164,7 @@
 </head>
 <body>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
-        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
             <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
         </button>
     </a>
@@ -213,7 +214,7 @@
         <!--Cadastro de Funcionário -->
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
         <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
-            <button type="button" onclick="fecharCadastroFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <button type="button" onclick="fecharCadastroFuncionario()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
             <label for="cad-codigo">Código*:</label>
             <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
@@ -254,11 +255,10 @@
         <!-- editar de Funcionário -->
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
-            <button type="button" onclick="fecharEdicaoFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <button type="button" onclick="fecharEdicaoFuncionario()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
-
-            <label for="edit-codigo">Código*:</label>
-            <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly />
+            <label for="edit-codigo" style="color: #757575;">Código*:</label>
+            <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly style="color: #757575;"/>
 
             <label for="edit-nome">Nome*:</label>
             <input type="text" id="edit-nome" name="nome" required />
@@ -275,21 +275,21 @@
             <label for="edit-email">Email*:</label>
             <input type="email" id="edit-email" name="email" required />
 
-            <label for="edit-senha">Senha*:</label>
-            <input type="password" id="edit-senha" name="senha" readonly />
+            <label for="edit-senha" style="color: #757575;">Senha*:</label>
+            <input type="password" id="edit-senha" name="senha" readonly style="color: #757575;"/>
 
-            <label for="edit-cpf">CPF*:</label>
-            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required readonly />
+            <label for="edit-cpf" style="color: #757575;">CPF*:</label>
+            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required readonly style="color: #757575;"/>
 
-            <label for="edit-nascimento">Data de Nascimento*:</label>
-            <input type="date" id="edit-nascimento" name="nascimento" required readonly />
+            <label for="edit-nascimento" style="color: #757575;">Data de Nascimento*:</label>
+            <input type="date" id="edit-nascimento" name="nascimento" required readonly style="color: #757575;"/>
 
             <label for="edit-contato">Número de Contato*:</label>
             <input type="text" id="edit-contato" name="contato" maxlength="15" required />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
             </form>
-        </span>
+            </span>
 
     <div class="main-container">
         <div class="table-space"></div>
