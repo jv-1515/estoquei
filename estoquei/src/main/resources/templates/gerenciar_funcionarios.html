@@ -146,10 +146,17 @@
             border-radius: 4px;
             box-sizing: border-box;
             width: 100%;
+            font-family: Arial, sans-serif;
         }
 
         label {
             padding: 5px 5px 5px 0;
+        }
+        
+        select#cargo,
+        select#cad-cargo,
+        select#edit-cargo {
+        padding-left: 1px;
         }
 
     </style>
@@ -203,10 +210,11 @@
             <i class="fa fa-plus" style="margin-right: 4px;"></i> Cadastrar Funcionário
         </button>
         </div>
-        <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center;">
-        <form class="form-container" style="background:white; border-radius:10px; max-width:400px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
+        <!--Cadastro de Funcionário -->
+        <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+        <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
             <button type="button" onclick="fecharCadastroFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
-            <h2 style="margin-bottom:10px;">Cadastrar Funcionário</h2>
+            <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
             <label for="cad-codigo">Código*:</label>
             <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
 
@@ -215,7 +223,7 @@
 
             <label for="cad-cargo">Cargo*:</label>
             <select id="cad-cargo" name="cargo" required tabindex="3">
-                <option value="" disabled selected>Selecione</option>
+                <option selected disabled style="color: white; background: white">Cargo</option>
                 <option value="Gerente">Gerente</option>
                 <option value="Vendedor">Vendedor</option>
                 <option value="Caixa">Caixa</option>
@@ -227,44 +235,61 @@
 
             <label for="cad-senha">Senha Provisória*:</label>
             <div style="display: flex; gap: 8px;">
-                <input type="text" id="cad-senha" name="senha" readonly style="width:100%" tabindex="5" />
-                <button type="button" onclick="gerarSenhaProvisoria()" style="font-size:11px;" tabindex="6">Gerar Nova Senha</button>
+                <input type="text" id="cad-senha" name="senha" readonly style="width:60%" tabindex="5" />
+                <button class="btn" style="font-size:10px; width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
             </div>
 
             <label for="cad-cpf">CPF*:</label>
-            <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="CPF" tabindex="7" />
+            <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" tabindex="7" />
 
             <label for="cad-nascimento">Data de Nascimento*:</label>
             <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
 
             <label for="cad-contato">Número de Contato*:</label>
-            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="Número de Contato" tabindex="9" />
+            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00)00000-0000" tabindex="9" />
             <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
         </form>
-        <script>
-            function gerarSenhaProvisoria() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-            let senha = '';
-            for (let i = 0; i < 8; i++) {
-                senha += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('cad-senha').value = senha;
-            }
-            function abrirCadastroFuncionario() {
-            document.getElementById('cadastro-funcionario').style.display = 'flex';
-            gerarSenhaProvisoria();
-            }
-            function fecharCadastroFuncionario() {
-            document.getElementById('cadastro-funcionario').style.display = 'none';
-            }
-            function cadastrarFuncionario() {
-            // enviar os dados do formulário
-            Swal.fire('Funcionário cadastrado!', '', 'success');
-            fecharCadastroFuncionario();
-            }
-        </script>
         </span>
 
+        <!-- editar de Funcionário -->
+        <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+            <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
+            <button type="button" onclick="fecharEdicaoFuncionario()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
+
+            <label for="edit-codigo">Código*:</label>
+            <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly />
+
+            <label for="edit-nome">Nome*:</label>
+            <input type="text" id="edit-nome" name="nome" required />
+
+            <label for="edit-cargo">Cargo*:</label>
+            <select id="edit-cargo" name="cargo" required>
+                <option selected disabled style="color: white; background: white">Cargo</option>
+                <option value="Gerente">Gerente</option>
+                <option value="Vendedor">Vendedor</option>
+                <option value="Caixa">Caixa</option>
+                <option value="Estoquista">Estoquista</option>
+            </select>
+
+            <label for="edit-email">Email*:</label>
+            <input type="email" id="edit-email" name="email" required />
+
+            <label for="edit-senha">Senha*:</label>
+            <input type="password" id="edit-senha" name="senha" readonly />
+
+            <label for="edit-cpf">CPF*:</label>
+            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required readonly />
+
+            <label for="edit-nascimento">Data de Nascimento*:</label>
+            <input type="date" id="edit-nascimento" name="nascimento" required readonly />
+
+            <label for="edit-contato">Número de Contato*:</label>
+            <input type="text" id="edit-contato" name="contato" maxlength="15" required />
+
+            <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
+            </form>
+        </span>
 
     <div class="main-container">
         <div class="table-space"></div>
@@ -273,11 +298,56 @@
     </div>
     <script>
         const funcionarios = [
-            { codigo: "F00001", nome: "Ana Souza", cargo: "Gerente", email: "ana.souza@email.com" },
-            { codigo: "F00002", nome: "Carlos Lima", cargo: "Vendedor", email: "carlos.lima@email.com" },
-            { codigo: "F00003", nome: "Mariana Silva", cargo: "Caixa", email: "mariana.silva@email.com" },
-            { codigo: "F00004", nome: "João Pedro", cargo: "Estoquista", email: "joao.pedro@email.com" },
-            { codigo: "F00005", nome: "Fernanda Costa", cargo: "Vendedor", email: "fernanda.costa@email.com" }
+            {
+                codigo: "F00001",
+                nome: "Ana Souza",
+                cargo: "Gerente",
+                email: "ana.souza@email.com",
+                senha: "Abc12345",
+                cpf: "123.456.789-00",
+                nascimento: "1985-04-12",
+                contato: "(11)91234-5678"
+            },
+            {
+                codigo: "F00002",
+                nome: "Carlos Lima",
+                cargo: "Vendedor",
+                email: "carlos.lima@email.com",
+                senha: "Xyz98765",
+                cpf: "234.567.890-11",
+                nascimento: "1990-08-25",
+                contato: "(21)99876-5432"
+            },
+            {
+                codigo: "F00003",
+                nome: "Mariana Silva",
+                cargo: "Caixa",
+                email: "mariana.silva@email.com",
+                senha: "Qwe45678",
+                cpf: "345.678.901-22",
+                nascimento: "1995-12-10",
+                contato: "(31)93456-7890"
+            },
+            {
+                codigo: "F00004",
+                nome: "João Pedro",
+                cargo: "Estoquista",
+                email: "joao.pedro@email.com",
+                senha: "Zxc32109",
+                cpf: "456.789.012-33",
+                nascimento: "1988-02-18",
+                contato: "(41)97654-3210"
+            },
+            {
+                codigo: "F00005",
+                nome: "Fernanda Costa",
+                cargo: "Vendedor",
+                email: "fernanda.costa@email.com",
+                senha: "Mnb65432",
+                cpf: "567.890.123-44",
+                nascimento: "1992-06-30",
+                contato: "(51)96543-2109"
+            }
         ];
 
         function renderizarFuncionarios(lista) {
@@ -302,7 +372,9 @@
                 <td>${f.cargo}</td>
                 <td>${f.email}</td>
                 <td class="actions">
-                <a href="/editar-funcionario/${f.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
                 <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>
@@ -354,23 +426,46 @@
 
         function removerFuncionario(codigo) {
             Swal.fire({
-            title: 'Tem certeza?',
-            text: 'Esta ação não poderá ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#1E94A3',
-            confirmButtonText: 'Remover',
-            cancelButtonText: 'Cancelar'
+                title: 'Tem certeza?',
+                text: 'Esta ação não poderá ser desfeita.',
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: 'Sim',
+                cancelButtonText: 'Não',
+                allowOutsideClick: false,
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
             }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                title: 'Removido!',
-                text: 'O funcionário foi removido.',
-                icon: 'success',
-                confirmButtonColor: '#1E94A3'
-                });
-            }
+                if (result.isConfirmed) {
+                    // Remove o funcionário do array
+                    const idx = funcionarios.findIndex(f => f.codigo === codigo);
+                    if (idx !== -1) {
+                        funcionarios.splice(idx, 1);
+                        renderizarFuncionarios(funcionarios);
+                    }
+                    Swal.fire({
+                        title: "Funcionário removido!",
+                        icon: "success",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Visualizar Funcionários',
+                        cancelButtonText: 'Voltar para Início',
+                        allowOutsideClick: false,
+                        customClass: {
+                            confirmButton: 'swal2-confirm-custom',
+                            cancelButton: 'swal2-cancel-custom'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Apenas fecha o alerta, já está na tela de funcionários
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = "/inicio";
+                        }
+                    });
+                }
             });
         }
 
@@ -380,6 +475,116 @@
         }
 
         renderizarFuncionarios(funcionarios);
+
+        //gera senha
+        function gerarSenhaProvisoria() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+        let senha = '';
+        for (let i = 0; i < 8; i++) {
+            senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('cad-senha').value = senha;
+        }
+        function abrirCadastroFuncionario() {
+        document.getElementById('cadastro-funcionario').style.display = 'flex';
+        gerarSenhaProvisoria();
+        }
+        function fecharCadastroFuncionario() {
+        document.getElementById('cadastro-funcionario').style.display = 'none';
+        }
+        function cadastrarFuncionario() {
+        // enviar os dados do formulário
+        Swal.fire('Funcionário cadastrado!', '', 'success');
+        fecharCadastroFuncionario();
+        }
+
+
+        //editar funcionario
+        function abrirEdicaoFuncionario(codigo) {
+            const funcionario = funcionarios.find(f => f.codigo === codigo);
+            if (!funcionario) return;
+
+            // Preenche os campos do form
+            document.getElementById('edit-codigo').value = funcionario.codigo;
+            document.getElementById('edit-nome').value = funcionario.nome;
+            document.getElementById('edit-cargo').value = funcionario.cargo;
+            document.getElementById('edit-email').value = funcionario.email;
+            document.getElementById('edit-senha').value = funcionario.senha;
+            document.getElementById('edit-cpf').value = funcionario.cpf;
+            document.getElementById('edit-nascimento').value = funcionario.nascimento;
+            document.getElementById('edit-contato').value = funcionario.contato;
+
+
+            // Mostra o modal de edição
+            document.getElementById('editar-funcionario').style.display = 'flex';
+        }
+
+        function fecharEdicaoFuncionario() {
+            document.getElementById('editar-funcionario').style.display = 'none';
+        }
+        function salvarEdicaoFuncionario() {
+            const codigo = document.getElementById('edit-codigo').value;
+            const nome = document.getElementById('edit-nome').value;
+            const cargo = document.getElementById('edit-cargo').value;
+            const email = document.getElementById('edit-email').value;
+
+            Swal.fire({
+            title: 'Tem certeza?',
+            text: 'As alterações não poderão ser desfeitas.',
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Não',
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+            }).then((result) => {
+            if (result.isConfirmed) {
+                const idx = funcionarios.findIndex(f => f.codigo === codigo);
+                if (idx !== -1) {
+                funcionarios[idx].nome = nome;
+                funcionarios[idx].cargo = cargo;
+                funcionarios[idx].email = email;
+
+                Swal.fire({
+                    title: "Alterações salvas!",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                renderizarFuncionarios(funcionarios);
+                fecharEdicaoFuncionario();
+                } else {
+                Swal.fire('Erro!', 'Funcionário não encontrado.', 'error');
+                }
+            }
+            });
+        }
+
     </script>
+    <style>
+        .swal2-confirm-custom {
+            background-color: #1E94A3 !important;
+            color: #fff !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-confirm-custom:hover {
+            background-color: #277580 !important;
+        }
+        .swal2-cancel-custom {
+            background-color: #ccc !important;
+            color: #000 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+        }
+        .swal2-cancel-custom:hover {
+            background-color: #aaa !important;
+        }
+    </style>
 </body>
 </html>
