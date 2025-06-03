@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
             background-color: #277580;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -22,6 +22,8 @@
             );
             background-size: cover;
             background-attachment: fixed;
+            scrollbar-gutter: stable;
+
 
         }
         .form-container {
@@ -96,10 +98,14 @@
         input:focus {
             border: 2px solid black;
         }
+        .swal2-container {
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
     </style>
 </head>
 <body>
-    <form class="form-container" th:action="@{/inicio}" method="post">
+    <form class="form-container" th:action="@{/admin/login}"  method="post">
         <h1>Bem-vindo!</h1>
         <div>
             <label for="email">Email:</label>
@@ -111,9 +117,9 @@
             </div>
         </div>
         <div>
-            <label for="password">Senha:</label>
+            <label for="senha">Senha:</label>
             <div class="input-group">
-                <input type="password" id="password" name="password" placeholder="Senha de 8 caracteres" required minlength="8">
+                <input type="password" id="senha" name="senha" placeholder="Senha de 8 caracteres" required minlength="8">
                 <span class="lock-open" onclick="lockOpen()">
                     <i class="fa-solid fa-lock" id="lock-icon"></i>
                 </span>
@@ -124,6 +130,19 @@
             <a href="#">Esqueceu sua senha? Clique aqui</a>
         </div>
     </form>
+        <script th:if="${erro}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script th:if="${erro}" th:inline="javascript">
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro ao logar',
+                text: '[[${erro}]]',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                scrollbarPadding: false
+            });
+        </script>
         <script>
         document.getElementById("lock-icon").addEventListener("click", function() {
             const senhaInput = document.getElementById("password");

@@ -2,10 +2,9 @@ package com.example.estoquei.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/")
@@ -17,89 +16,122 @@ public class Router {
         return "login";
     }
 
-
-    //menu inicial
-    @PostMapping("/inicio")
-    public String processaLogin(@RequestParam String email, @RequestParam String password) {
-        return "inicio";
-    }
-
+    //Inicio
     @GetMapping("/inicio")
-    public String inicio() {
+    public String inicio(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "inicio";
     }
 
 
     //estoque
     @GetMapping("/estoque")
-    public String estoque() {
+    public String estoque(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "estoque";
     }
 
     @GetMapping("/baixo-estoque")
-    public String baixoEstoque() {
+    public String baixoEstoque(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "baixo_estoque";
     }
 
 
     //produto
     @GetMapping("/cadastrar-produto")
-    public String cadastro() {
+    public String cadastro(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "cadastrar_produto";
     }
 
     @GetMapping("/editar-produto")
-    public String editarProduto() {
+    public String editarProduto(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "editar_produto";
     }
 
     @GetMapping("/reabastecer-produto")
-    public String reabastecerProduto() {
+    public String reabastecerProduto(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "reabastecer_produto";
     }
 
 
     //funcionario
     @GetMapping("/cadastrar-funcionario")
-    public String cadastrarFuncionario() {
+    public String cadastrarFuncionario(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "cadastrar_funcionario";
     }
 
     @GetMapping("/editar-funcionario")
-    public String editarFuncionario() {
+    public String editarFuncionario(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "editar_funcionario";
     }
 
     @GetMapping("/gerenciar-funcionarios")
-    public String gerenciarFuncionario() {
+    public String gerenciarFuncionario(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "gerenciar_funcionarios";
     }
 
     //fornecedor
     @GetMapping("/cadastrar-fornecedor")
-    public String cadastrarFornecedor() {
+    public String cadastrarFornecedor(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "cadastrar_fornecedor";
     }
 
     @GetMapping("/editar-fornecedor")
-    public String editarFornecedor() {
+    public String editarFornecedor(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "editar_fornecedor";
     }
 
     @GetMapping("/gerenciar-fornecedores")
-    public String gerenciarFornecedor() {
+    public String gerenciarFornecedor(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "gerenciar_fornecedores";
     }
 
     //relatorio
     @GetMapping("/gerar-relatorio")
-    public String relatorio() {
+    public String relatorio(HttpSession session) {
         return "relatorio";
     }
 
     //gerenciar relatorios
     @GetMapping("/gerenciar-relatorios")
-    public String gerenciarRelatorios() {
+    public String gerenciarRelatorios(HttpSession session) {
+        if (session.getAttribute("isActive") == null) {
+            return "redirect:/";
+        }
         return "gerenciar_relatorios";
     }
     
