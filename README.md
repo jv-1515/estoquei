@@ -9,7 +9,7 @@ O objetivo do projeto é fornecer uma aplicação robusta e eficiente para contr
 - Java
 - Spring Boot
 - Spring Data JPA
-- MySQL (ou outro banco relacional, conforme configuração)
+- MySQL
 - Maven
 
 ## Desenvolvedores
