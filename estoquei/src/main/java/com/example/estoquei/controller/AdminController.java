@@ -1,19 +1,19 @@
 package com.example.estoquei.controller;
 
+import com.example.estoquei.model.Usuario;
+import com.example.estoquei.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    private static final String ATRIBUTO_ADMIN = "isAdmin";
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping("/login")
     public String exibirLogin() {
@@ -21,32 +21,33 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public String processarLogin(@RequestParam String usuario,
+    public String processarLogin(@RequestParam String email,
                                  @RequestParam String senha,
                                  HttpSession session,
                                  Model model) {
-        if ("admin".equals(usuario) && "123".equals(senha)) {
-            session.setAttribute(ATRIBUTO_ADMIN, true);
-            return "redirect:/admin/dashboard";
+        Usuario usuario = usuarioService.autenticar(email, senha);
+        if (usuario != null) {
+            session.setAttribute("isActive", usuario);
+            return "redirect:/inicio";
         } else {
-            model.addAttribute("erro", "Usuário ou senha inválidos.");
+            model.addAttribute("erro", "Email ou senha inválidos.");
             return "login";
         }
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session) {
-        Boolean autenticado = (Boolean) session.getAttribute(ATRIBUTO_ADMIN);
-        if (Boolean.TRUE.equals(autenticado)) {
-            return "dashboard";
+    @GetMapping("/inicio")
+    public String inicio(HttpSession session) {
+        Usuario usuario = (Usuario) session.getAttribute("isActive");
+        if (usuario != null) {
+            return "inicio";
         } else {
-            return "acesso-negado";
+            return "redirect:/";
         }
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/admin/login";
+        return "redirect:/";
     }
 }
