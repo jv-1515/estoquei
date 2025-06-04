@@ -144,17 +144,16 @@
         </script>
         <script>
         document.getElementById("fa-eye-slash").addEventListener("click", function() {
-            const senhaInput = document.getElementById("password");
-            const lockIcon = document.getElementById("fa-eye-slash");
+            const senhaInput = document.getElementById("senha");
+            const eyeIcon = document.getElementById("fa-eye-slash");
             if (senhaInput.type === "password") {
                 senhaInput.type = "text";
-                lockIcon.classList.remove("fa-eye-slash");
-                lockIcon.classList.add("fa-eye");
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
             } else {
                 senhaInput.type = "password";
-                lockIcon.classList.remove("fa-eye");
-                lockIcon.classList.add("fa-eye-slash");
-                lockIcon.style.transform = "";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
             }
         });
         </script>
