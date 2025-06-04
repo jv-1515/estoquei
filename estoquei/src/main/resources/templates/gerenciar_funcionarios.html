@@ -69,9 +69,16 @@
             font-size: 12px;
             cursor: pointer;
         }
-
         .btn:hover {
             background-color: #277580;
+        }
+
+        .limpar {
+            background-color: #094a55;
+        }
+
+        .limpar:hover {
+            background-color: #1e94a3;
         }
 
         .main-container {
@@ -102,7 +109,7 @@
         }
 
         th {
-            color: #ccc;
+            color: #333;
             font-weight: bold;
         }
 
@@ -152,8 +159,11 @@
 
         label {
             padding: 5px 5px 5px 0;
-            color: #ccc;
-            font-weigth: bold;
+        }
+        
+        span label {
+            color: #333;
+            font-weight: bold;
         }
         
         select#cargo,
@@ -190,12 +200,7 @@
                 <input type="email" id="filter-email" placeholder="Email" style="width: 197px;" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
-                <button class="btn" onclick="limpar(); renderizarFuncionarios(lista);" style="background-color: #094a55">Limpar Filtro</button>
-                <style>
-                    .btn[onclick="limpar()"]:hover {
-                        background-color: #277580 !important;
-                    }
-                </style>
+                <button class="btn limpar" onclick="limpar(); renderizarFuncionarios(lista);">Limpar Filtro</button>
             </div>
         </div>
     </div>
@@ -496,7 +501,14 @@
         }
         function cadastrarFuncionario() {
         // enviar os dados do formulário
-        Swal.fire('Funcionário cadastrado!', '', 'success');
+        Swal.fire({
+            title: 'Funcionário cadastrado!',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
         fecharCadastroFuncionario();
         }
 
@@ -554,7 +566,7 @@
                     title: "Alterações salvas!",
                     icon: "success",
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 1500,
                     timerProgressBar: true,
                     allowOutsideClick: false
                 });
