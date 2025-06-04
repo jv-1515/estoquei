@@ -72,6 +72,14 @@
             background-color: #277580;
         }
 
+        .limpar {
+            background-color: #094a55;
+        }
+
+        .limpar:hover {
+            background-color: #1e94a3;
+        }
+
         .main-container {
             background: white;
             border-radius: 10px;
@@ -193,12 +201,7 @@
                 <input type="number" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
-                <button class="btn" onclick="limpar(); renderizarProdutos(lista);" style="background-color: #094a55">Limpar Filtro</button>
-                <style>
-                    .btn[onclick="limpar()"]:hover {
-                        background-color: #277580 !important;
-                    }
-                </style>
+                <button class="btn limpar" onclick="limpar(); renderizarProdutos(lista);">Limpar Filtro</button>
             </div>
         </div>
     </div>
