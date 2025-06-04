@@ -66,7 +66,7 @@
         }
         label {
             color: #333;
-            font-weight: 600;
+            font-weight: bold;
             margin-bottom: 6px;
             display: block;
         }
@@ -112,7 +112,6 @@
             <div class="input-group">
                 <input type="email" id="email" name="email" placeholder="Email cadastrado" required>
                 <span class="lock-open">
-                    <i class="fa-solid fa-envelope"></i>
                 </span>
             </div>
         </div>
@@ -121,7 +120,7 @@
             <div class="input-group">
                 <input type="password" id="senha" name="senha" placeholder="Senha de 8 caracteres" required minlength="8">
                 <span class="lock-open" onclick="lockOpen()">
-                    <i class="fa-solid fa-lock" id="lock-icon"></i>
+                    <i class="fa-solid fa-eye-slash" id="fa-eye-slash"></i>
                 </span>
             </div>
         </div>
@@ -144,18 +143,17 @@
             });
         </script>
         <script>
-        document.getElementById("lock-icon").addEventListener("click", function() {
+        document.getElementById("fa-eye-slash").addEventListener("click", function() {
             const senhaInput = document.getElementById("password");
-            const lockIcon = document.getElementById("lock-icon");
+            const lockIcon = document.getElementById("fa-eye-slash");
             if (senhaInput.type === "password") {
                 senhaInput.type = "text";
-                lockIcon.classList.remove("fa-lock");
-                lockIcon.classList.add("fa-lock-open");
-                lockIcon.style.transform = "scaleX(-1)";
+                lockIcon.classList.remove("fa-eye-slash");
+                lockIcon.classList.add("fa-eye");
             } else {
                 senhaInput.type = "password";
-                lockIcon.classList.remove("fa-lock-open");
-                lockIcon.classList.add("fa-lock");
+                lockIcon.classList.remove("fa-eye");
+                lockIcon.classList.add("fa-eye-slash");
                 lockIcon.style.transform = "";
             }
         });
