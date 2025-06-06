@@ -229,11 +229,7 @@
                 function previewImage(event) {
                     const input = event.target;
                     const preview = document.getElementById('image-preview');
-                    Array.from(preview.childNodes).forEach(child => {
-                        if (!(child.tagName === 'INPUT' && child.id === 'foto')) {
-                            preview.removeChild(child);
-                        }
-                    });
+                    preview.innerHTML = '';
                     if (input.files && input.files[0]) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
@@ -242,14 +238,11 @@
                             img.style.width = '100%';
                             img.style.height = '100%';
                             img.style.objectFit = 'cover';
-                            preview.insertBefore(img, input);
+                            preview.appendChild(img);
                         }
                         reader.readAsDataURL(input.files[0]);
                     } else {
-                        const icon = document.createElement('i');
-                        icon.className = 'fa-regular fa-image';
-                        icon.style.fontSize = '30px';
-                        preview.insertBefore(icon, input);
+                        preview.innerHTML = '<i class="fa-regular fa-image" style="font-size: 30px"></i>';
                     }
                 }
             </script>

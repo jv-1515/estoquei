@@ -30,21 +30,19 @@ public class Produto {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    private int quantidade;
+    public int quantidade;
 
-    private int limiteMinimo;
+    public int limiteMinimo;
 
-    private BigDecimal preco;
+    public BigDecimal preco;
 
-    private String descricao;
-
-    private String url_imagem;
+    public String descricao;
 
     
     public Produto(){
     }
 
-    public Produto(String nome, String codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao, String url_imagem) {
+    public Produto(String nome, String codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao){
         this.nome=nome;
         this.codigo=codigo;
         this.categoria=categoria;
@@ -54,7 +52,6 @@ public class Produto {
         this.limiteMinimo=limiteMinimo;
         this.preco=preco;
         this.descricao=descricao;
-        this.url_imagem = url_imagem;
     }
 
     public String getNome() {
@@ -131,14 +128,6 @@ public class Produto {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public String getUrl_imagem() {
-        return this.url_imagem;
-    }
-
-    public void setUrl_imagem(String url_imagem) {
-        this.url_imagem = url_imagem;
     }
 
 }
