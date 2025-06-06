@@ -1,9 +1,6 @@
 package com.example.estoquei.resources;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.service.ProdutoService;
@@ -32,27 +27,9 @@ public class ProdutoResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> salvar(
-            @ModelAttribute Produto produto,
-            @RequestParam("foto") MultipartFile foto
-    ) {
-        try {
-            System.out.println("Iniciando o upload da imagem: " + (foto != null ? foto.getOriginalFilename() : "Nenhuma imagem enviada"));
-            Produto produtoSalvo = produtoService.salvar(produto, foto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
-        } catch (IOException e) {
-            System.err.println("Erro no upload da imagem: " + e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Falha no upload da imagem");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        } catch (Exception e) {
-            System.err.println("Erro ao salvar produto: " + e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Falha ao salvar produto");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }
+    public ResponseEntity<Produto> salvar(@ModelAttribute Produto produto) {
+        Produto produtoSalvo = produtoService.salvar(produto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
     }
 
     @GetMapping
@@ -71,30 +48,12 @@ public class ProdutoResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(
-            @PathVariable Long id,
-            @ModelAttribute Produto produtoAtualizado,
-            @RequestParam("foto") MultipartFile foto
-    ) {
-        try {
-            Produto atualizado = produtoService.atualizar(id, produtoAtualizado, foto);
-            if (atualizado != null) {
-                return ResponseEntity.ok(atualizado);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (IOException e) {
-            System.err.println("Erro no upload da imagem ao atualizar: " + e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Falha no upload da imagem ao atualizar");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        } catch (Exception e) {
-            System.err.println("Erro ao atualizar produto: " + e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Falha ao atualizar produto");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @ModelAttribute Produto produtoAtualizado) {
+        Produto atualizado = produtoService.atualizar(id, produtoAtualizado);
+        if (atualizado != null) {
+            return ResponseEntity.ok(atualizado);
         }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
