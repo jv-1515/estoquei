@@ -290,7 +290,7 @@
             <td th:text="${p.tamanho}"></td>
             <td th:text="${p.genero}"></td>
             <td>
-                <span th:text="${p.quantidade}"></span>
+                <span th:text="${p.quantidade}" style="padding-left:23px"></span>
                 <a th:if="${(p.quantidade - p.limiteMinimo) <= 10}" 
                 th:href="@{'/reabastecer-produto/' + ${p.codigo}}" 
                 title="Reabastecer produto"
