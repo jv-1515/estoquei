@@ -75,62 +75,49 @@
     <div class="main-container">
         <div class="table-space"></div>
         <table id="product-list">
-        <thead>
-            <tr>
-            <th>Produto</th>
-            <th>Código</th>
-            <th>Nome</th>
-            <th>Categoria</th>
-            <th>Tamanho</th>
-            <th>Gênero</th>
-            <th>Quantidade</th>
-            <th>Limite Mínimo</th>
-            <th>Preço (R$)</th>
-            <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="p, iterStat : ${produtos}" tabindex="${iterStat.count}">
-            <td>
-                <span th:if="${p.imagem != null}">
-                <img th:src="@{/uploads/{imagem}(imagem=${p.imagem})}" alt="Foto do produto" class="produto-img" />
-                </span>
-                <span th:if="${p.imagem == null}" class="produto-img icon">
-                <i class="fa-regular fa-image" style="padding-top:5px"></i>
-                </span>
-            </td>
-            <td th:text="${p.codigo}"></td>
-            <td th:text="${p.nome}"></td>
-            <td th:text="${p.categoria}"></td>
-            <td th:text="${p.tamanho}"></td>
-            <td th:text="${p.genero}"></td>
-            <td>
-                <span th:text="${p.quantidade}" th:style="${(p.quantidade - p.limiteMinimo) <= 10} ? 'padding-left:23px' : ''"></span>
-                <a th:if="${(p.quantidade - p.limiteMinimo) <= 10}" 
-                    th:href="@{'/reabastecer-produto/' + ${p.codigo}}" 
-                    title="Reabastecer produto"
-                    style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                     <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                     <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                </a>
-            </td>
-            <td th:text="${p.limiteMinimo}"></td>
-            <td th:text="${p.preco}"></td>
-            <td class="actions">
-                <a th:href="@{'/editar-produto/' + ${p.codigo}}" title="Editar" tabindex="${produtos.size() + iterStat.count}">
-                <i class="fa-solid fa-pen"></i>
-                </a>
-                <button type="button"
-                        th:onclick="removerProduto([[${p.id}]])"
-                        title="Excluir"
-                        tabindex="[[${2 * produtos.size()} + ${iterStat.count}]]">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                </form>
-            </td>
-            </tr>
-        </tbody>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Tamanho</th>
+                    <th>Gênero</th>
+                    <th>Quantidade</th>
+                    <th>Limite Mínimo</th>
+                    <th>Preço (R$)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+                <tr>
+                    <td colspan="10" style="text-align: center;">Carregando produtos...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
+    <script>
+        window.onload = function() {
+            carregarProdutos();
+        };
+
+        function carregarProdutos() {
+            fetch('/produtos')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(produtos => {
+                    renderizarProdutos(produtos);
+                })
+                .catch(error => {
+                    console.error('Erro na API:', error);
+                    const tbody = document.getElementById('product-table-body');
+                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+                });
+        }
+    </script>
 </body>
 </html>

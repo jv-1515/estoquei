@@ -1,26 +1,14 @@
 package com.example.estoquei.controller;
 
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.ui.Model;
-
-import com.example.estoquei.model.Produto;
-import com.example.estoquei.service.ProdutoService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/")
 public class Router {
-
-    private final ProdutoService produtoService;
-
-    public Router(ProdutoService produtoService) {
-        this.produtoService = produtoService;
-    }
 
     //login
     @GetMapping
@@ -40,12 +28,10 @@ public class Router {
 
     //estoque
     @GetMapping("/estoque")
-    public String estoque(HttpSession session, Model model) {
+    public String estoque(HttpSession session) {
         if (session.getAttribute("isActive") == null) {
             return "redirect:/";
         }
-        List<Produto> produtos = produtoService.listarTodos();
-        model.addAttribute("produtos", produtos);
         return "estoque";
     }
 
@@ -150,10 +136,3 @@ public class Router {
     }
     
 }
-
-
-
-
-
-
-
