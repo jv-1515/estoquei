@@ -28,6 +28,7 @@ public class AdminController {
         Usuario usuario = usuarioService.autenticar(email, senha);
         if (usuario != null) {
             session.setAttribute("isActive", usuario);
+            System.out.println("Usuário logado: " + usuario.getNome() + " - Tipo: " + usuario.getTipo());
             return "redirect:/inicio";
         } else {
             model.addAttribute("erro", "Email ou senha inválidos.");
