@@ -117,5 +117,58 @@ window.onload = function() {
             }
         });
     }
+
+    function renderizarProdutos(produtos) {
+        const tbody = document.getElementById('product-table-body');
+        tbody.innerHTML = '';
+
+        if (produtos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum produto encontrado.</td></tr>`;
+            return;
+        }
+
+        produtos.forEach(p => {
+            const imageUrl = p.url_imagem;
+            const precoFormatado = p.preco.toFixed(2).replace('.', ',');
+            const precisaReabastecer = p.quantidade <= p.limiteMinimo;
+
+            const rowHtml = `
+                <tr>
+                    <td>
+                        ${imageUrl 
+                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img loading="lazy" />` 
+                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
+                        }
+                    </td>
+                    <td>${p.codigo}</td>
+                    <td>${p.nome}</td>
+                    <td>${p.categoria}</td>
+                    <td>${p.tamanho}</td>
+                    <td>${p.genero}</td>
+                    <td>
+                        <span>${p.quantidade}</span>
+                        ${precisaReabastecer 
+                            ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display: inline-block; text-decoration: none;">
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;"></i>
+                                </a>`
+                            : ''
+                        }
+                    </td>
+                    <td>${p.limiteMinimo}</td>
+                    <td>R$ ${precoFormatado}</td>
+                    <td class="actions">
+                        <a href="/editar-produto/${p.id}" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += rowHtml;
+        });
+    }
+
     renderizarProdutos(produtos);
 
