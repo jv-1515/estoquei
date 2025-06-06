@@ -78,13 +78,13 @@
         </table>
     </div>
     <script>
-        // const produtos = [
-        //     { codigo: "000000001", nome: "Camisa Polo", categoria: "CAMISA", tamanho: "M", genero: "MASCULINO", quantidade: 10, limite: 5, preco: "99.90", imagem: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=100&q=80" },
-        //     { codigo: "000000002", nome: "Camiseta Estampada", categoria: "CAMISETA", tamanho: "G", genero: "UNISSEX", quantidade: 15, limite: 7, preco: "59.90", imagem: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" },
-        //     { codigo: "000000003", nome: "Calça Jeans", categoria: "CALCA", tamanho: "G", genero: "FEMININO", quantidade: 8, limite: 3, preco: "129.90", imagem: "" },
-        //     { codigo: "000000004", nome: "Sapato Social", categoria: "SAPATO", tamanho: "42", genero: "MASCULINO", quantidade: 5, limite: 2, preco: "199.90", imagem: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=100&q=80" },
-        //     { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 21, limite: 10, preco: "49.90", imagem: "" }
-        // ];
+        const produtos = [
+            { codigo: "000000001", nome: "Camisa Polo", categoria: "CAMISA", tamanho: "M", genero: "MASCULINO", quantidade: 10, limite: 5, preco: "99.90", imagem: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=100&q=80" },
+            { codigo: "000000002", nome: "Camiseta Estampada", categoria: "CAMISETA", tamanho: "G", genero: "UNISSEX", quantidade: 15, limite: 7, preco: "59.90", imagem: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" },
+            { codigo: "000000003", nome: "Calça Jeans", categoria: "CALCA", tamanho: "G", genero: "FEMININO", quantidade: 8, limite: 3, preco: "129.90", imagem: "" },
+            { codigo: "000000004", nome: "Sapato Social", categoria: "SAPATO", tamanho: "42", genero: "MASCULINO", quantidade: 5, limite: 2, preco: "199.90", imagem: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=100&q=80" },
+            { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 21, limite: 10, preco: "49.90", imagem: "" }
+        ];
 
         function renderizarProdutos(lista) {
             lista = lista.filter(p => (p.quantidade - p.limite) >= 0 && (p.quantidade - p.limite) <= 10);
