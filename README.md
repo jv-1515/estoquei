@@ -11,7 +11,7 @@ O objetivo do projeto é fornecer uma aplicação robusta e eficiente para contr
 - Spring Data JPA
 - MySQL
 - Maven
-- Firebase Bucket
+- Firebase Storage
 
 ## Desenvolvedores
 
