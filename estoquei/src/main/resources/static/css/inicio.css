@@ -1,0 +1,128 @@
+body {
+    background-color: #ccc;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 15px 0px 0px;
+}
+
+
+h1, h2 {
+    font-size: 50px;
+    color: #277580;
+    text-align: center;
+    margin: 10px 0 0 0;
+}
+
+h2 {
+    font-size: 24px;
+    margin: 0 0 15px 0;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    background-color: #1E94A3;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.notification {
+    position: relative;
+    margin-right: 20px;
+    font-size: 24px;
+}
+
+.notification .badge {
+    position: absolute;
+    top: -5px;
+    right: -9px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.badge:hover {
+    background-color: darkred;
+}
+
+
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    justify-items: center;
+    padding: 0;
+    max-width: 940px;
+    align-items: center;
+}
+
+.card {
+    background-color: white;
+    width: 250px;
+    height: 200px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    text-align: center;
+    font-weight: bold;
+}
+
+.card p {
+    font-size: 20px;
+    padding: 0 50px 0 50px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card i {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+.card a {
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+}
+button {
+    background-color: #1E94A3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #277580;
+}
