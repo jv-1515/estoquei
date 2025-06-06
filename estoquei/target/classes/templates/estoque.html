@@ -128,6 +128,7 @@
             font-size: 12px;
             vertical-align: middle;
             outline: none;
+            text-decoration: none;
         }
         .actions a:hover, .actions button:hover {
             color: #1e94a3;
@@ -259,76 +260,64 @@
     <div class="main-container">
         <div class="table-space"></div>
         <table id="product-list">
+        <thead>
+            <tr>
+            <th>Produto</th>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Tamanho</th>
+            <th>Gênero</th>
+            <th>Quantidade</th>
+            <th>Limite Mínimo</th>
+            <th>Preço (R$)</th>
+            <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p, iterStat : ${produtos}" tabindex="${iterStat.count}">
+            <td>
+                <span th:if="${p.imagem != null}">
+                <img th:src="@{/uploads/{imagem}(imagem=${p.imagem})}" alt="Foto do produto" class="produto-img" />
+                </span>
+                <span th:if="${p.imagem == null}" class="produto-img icon">
+                <i class="fa-regular fa-image" style="padding-top:5px"></i>
+                </span>
+            </td>
+            <td th:text="${p.codigo}"></td>
+            <td th:text="${p.nome}"></td>
+            <td th:text="${p.categoria}"></td>
+            <td th:text="${p.tamanho}"></td>
+            <td th:text="${p.genero}"></td>
+            <td>
+                <span th:text="${p.quantidade}"></span>
+                <a th:if="${(p.quantidade - p.limiteMinimo) <= 10}" 
+                th:href="@{'/reabastecer-produto/' + ${p.codigo}}" 
+                title="Reabastecer produto"
+                style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
+                <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
+                </a>
+            </td>
+            <td th:text="${p.limiteMinimo}"></td>
+            <td th:text="${p.preco}"></td>
+            <td class="actions">
+                <a th:href="@{'/editar-produto/' + ${p.codigo}}" title="Editar" tabindex="${produtos.size() + iterStat.count}">
+                <i class="fa-solid fa-pen"></i>
+                </a>
+                <button type="button"
+                        th:onclick="removerProduto([[${p.id}]])"
+                        title="Excluir"
+                        tabindex="[[${2 * produtos.size()} + ${iterStat.count}]]">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                </form>
+            </td>
+            </tr>
+        </tbody>
         </table>
     </div>
     <script>
-        const produtos = [
-            { codigo: "000000001", nome: "Camisa Polo", categoria: "CAMISA", tamanho: "M", genero: "MASCULINO", quantidade: 10, limite: 5, preco: "99.90", imagem: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000002", nome: "Camiseta Estampada", categoria: "CAMISETA", tamanho: "G", genero: "UNISSEX", quantidade: 15, limite: 7, preco: "59.90", imagem: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000003", nome: "Calça Jeans", categoria: "CALCA", tamanho: "G", genero: "FEMININO", quantidade: 8, limite: 3, preco: "129.90", imagem: "" },
-            { codigo: "000000004", nome: "Sapato Social", categoria: "SAPATO", tamanho: "42", genero: "MASCULINO", quantidade: 5, limite: 2, preco: "199.90", imagem: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 20, limite: 10, preco: "49.90", imagem: "" }
-        ];
-
-        function renderizarProdutos(lista) {
-            const container = document.getElementById("product-list");
-            container.innerHTML = `
-            <thead>
-                <tr>
-                <th>Produto</th>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Categoria</th>
-                <th>Tamanho</th>
-                <th>Gênero</th>
-                <th>Quantidade</th>
-                <th>Limite Mínimo</th>
-                <th>Preço (R$)</th>
-                <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${lista
-                .map(
-                    (p, idx) => `
-                <tr tabindex="${idx + 1}">
-                    <td>
-                    ${
-                        p.imagem
-                        ? `<img src="${p.imagem}" alt="Foto do produto" class="produto-img" />`
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                    </td>
-                    <td>${p.codigo}</td>
-                    <td>${p.nome}</td>
-                    <td>${p.categoria}</td>
-                    <td>${p.tamanho}</td>
-                    <td>${p.genero}</td>
-                    <td>
-                        ${p.quantidade}
-                        ${
-                            (p.quantidade - p.limite) <= 10
-                                ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                                        <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                        <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                                </a>`
-                                : ''
-                        }
-                    </td>
-                    <td>${p.limite}</td>
-                    <td>${p.preco}</td>
-                    <td class="actions">
-                    <a href="/editar-produto/${p.codigo}" title="Editar" tabindex="${lista.length + idx + 1}"><i class="fa-solid fa-pen"></i></a>
-                    <button type="button" onclick="removerProduto('${p.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-                `
-                )
-                .join("")}
-            </tbody>
-            `;
-        }
-
         function filtrar() {
             const codigo = document.getElementById("filter-codigo").value;
             const nome = document.getElementById("filter-nome").value;
@@ -381,27 +370,42 @@
             renderizarProdutos(produtos);
         }
 
-        function removerProduto(codigo) {
+        function removerProduto(id) {
             Swal.fire({
-            title: 'Tem certeza?',
-            text: 'Esta ação não poderá ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#1E94A3',
-            confirmButtonText: 'Remover',
-            cancelButtonText: 'Cancelar'
+                title: 'Tem certeza?',
+                text: 'Esta ação não poderá ser desfeita.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#1E94A3',
+                confirmButtonText: 'Remover',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                title: 'Removido!',
-                text: 'O produto foi removido.',
-                icon: 'success',
-                confirmButtonColor: '#1E94A3'
-                });
-            }
+                if (result.isConfirmed) {
+
+                    fetch('/produtos/' + id, {
+                        method: 'DELETE'
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                title: 'Removendo...',
+                                text: 'Aguarde enquanto o produto é removido.',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                timer: 1500,
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Erro!', 'Não foi possível remover.', 'error');
+                        }
+                    });
+                }
             });
         }
+
+
 
         renderizarProdutos(produtos);
     </script>
