@@ -38,6 +38,8 @@ public class Produto {
 
     public String descricao;
 
+    public String imagem;
+
     
     public Produto(){
     }
@@ -128,6 +130,14 @@ public class Produto {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getImagem() {
+        return this.imagem;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
     }
 
 }
