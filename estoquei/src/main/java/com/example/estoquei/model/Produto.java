@@ -30,15 +30,15 @@ public class Produto {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    public int quantidade;
+    private int quantidade;
 
-    public int limiteMinimo;
+    private int limiteMinimo;
 
-    public BigDecimal preco;
+    private BigDecimal preco;
 
-    public String descricao;
+    private String descricao;
 
-    public String imagem;
+    private String url_imagem;
 
     
     public Produto(){
@@ -132,12 +132,12 @@ public class Produto {
         this.descricao = descricao;
     }
 
-    public String getImagem() {
-        return this.imagem;
+    public String getUrl_imagem() {
+        return this.url_imagem;
     }
 
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
+    public void setUrl_imagem(String url_imagem) {
+        this.url_imagem = url_imagem;
     }
 
 }
