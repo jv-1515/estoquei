@@ -105,13 +105,13 @@
             <td th:text="${p.tamanho}"></td>
             <td th:text="${p.genero}"></td>
             <td>
-                <span th:text="${p.quantidade}" style="padding-left:23px"></span>
+                <span th:text="${p.quantidade}" th:style="${(p.quantidade - p.limiteMinimo) <= 10} ? 'padding-left:23px' : ''"></span>
                 <a th:if="${(p.quantidade - p.limiteMinimo) <= 10}" 
-                th:href="@{'/reabastecer-produto/' + ${p.codigo}}" 
-                title="Reabastecer produto"
-                style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
+                    th:href="@{'/reabastecer-produto/' + ${p.codigo}}" 
+                    title="Reabastecer produto"
+                    style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
+                     <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                     <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
                 </a>
             </td>
             <td th:text="${p.limiteMinimo}"></td>
