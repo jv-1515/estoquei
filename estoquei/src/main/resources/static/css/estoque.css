@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ccc;
+    margin: 0;
+    padding: 20px;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 40px;
+    color: #277580;
+    text-align: center;
+    margin: 40px 0 20px 0;
+}
+
+h2 {
+    font-size: 20px;
+    color: #277580;
+    text-align: left;
+    margin: 0;
+}
+
+.filters-container {
+    width: 1200px;
+    margin: 0 auto 24px auto;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filters input,
+.filters select {
+    padding: 7px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.btn {
+    background-color: #1e94a3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: #277580;
+}
+
+.limpar {
+    background-color: #094a55;
+}
+
+.limpar:hover {
+    background-color: #1e94a3;
+}
+
+.main-container {
+    background: white;
+    border-radius: 10px;
+    width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+table {
+    width: 100%;
+    background-color: white;
+    border-collapse: collapse;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    font-size: 12px;
+    margin: 0;
+}
+
+th,
+td {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    color: #333;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.actions a, .actions button {
+    background: none;
+    border: none;
+    color: #555;
+    padding: 0;
+    margin: 0 4px;
+    cursor: pointer;
+    font-size: 12px;
+    vertical-align: middle;
+    outline: none;
+    text-decoration: none;
+}
+.actions a:hover, .actions button:hover {
+    color: #1e94a3;
+}
+
+.produto-img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f3f3f3;
+    display: inline-block;
+    vertical-align: middle;
+}
+.produto-img.icon {
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+    background: #f3f3f3;
+    border-radius: 6px;
+    vertical-align: middle;
+}
+.fa-trash:hover {
+    color: red;
+}
