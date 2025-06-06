@@ -25,26 +25,28 @@
         <button onclick="confirmarSaida(event)">Sair</button>
     </nav>
 
-        <h1>Olá, Gerente!</h1>
+        <h1 th:if="${tipo == 'FUNCIONARIO'}">Olá, Funcionário!</h1>
+        <h1 th:if="${tipo == 'GERENTE'}">Olá, Gerente!</h1>
+        <h1 th:if="${tipo == 'ADMIN'}">Olá, Administrador!</h1>
         <h2>O que deseja acessar hoje?</h2>
     
 
     <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
         <div class="container">
         <!-- Acesso limitado ao Gerente -->
-        <div class="card">
+        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/inicio}">
                 <p>Gerenciar Fornecedores</p>
                 <i class="fa-regular fa-handshake"></i>
             </a>
         </div>
-        <div class="card">
+        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-funcionarios}">
                 <p>Gerenciar Funcionários</p>
                 <i class="fa-regular fa-user"></i>
             </a>
         </div>
-        <div class="card">
+        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/inicio}">
                 <p>Relatório de Desempenho</p>
                 <i class="fa-solid fa-chart-line"></i>
