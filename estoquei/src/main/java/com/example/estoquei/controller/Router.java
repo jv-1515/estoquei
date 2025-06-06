@@ -3,6 +3,7 @@ package com.example.estoquei.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
 
 import com.example.estoquei.model.TipoUsuario;
 import com.example.estoquei.model.Usuario;
@@ -25,9 +26,10 @@ public class Router {
 
     //Inicio
     @GetMapping("/inicio")
-    public String inicio(HttpSession session) {
+    public String inicio(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
+        model.addAttribute("tipo", usuario.getTipo().name());
         return "inicio";
     }
 
