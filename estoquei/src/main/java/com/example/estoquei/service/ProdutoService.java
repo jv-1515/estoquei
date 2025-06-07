@@ -31,8 +31,13 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    
     public List<Produto> listarTodos() {
         return produtoRepository.findAll();
+    }
+
+    public List<Produto> buscar(Produto filtro) {
+        return produtoRepository.findAndFilter(filtro);
     }
 
     public Produto buscarPorId(Long id) {

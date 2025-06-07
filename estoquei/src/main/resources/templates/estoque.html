@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/estoque.css" />
     <script src="/js/estoque.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -54,7 +53,7 @@
                 <input type="number" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
-                <button class="btn limpar" onclick="limpar(); renderizarProdutos(lista);">Limpar Filtro</button>
+                <button class="btn limpar" onclick="limpar(); renderizarProdutos(produtos);">Limpar Filtro</button>
             </div>
         </div>
     </div>
@@ -97,6 +96,7 @@
         </table>
     </div>
     <script>
+        let produtos = [];
         window.onload = function() {
             carregarProdutos();
         };
@@ -109,7 +109,8 @@
                     }
                     return response.json();
                 })
-                .then(produtos => {
+                .then(data => {
+                    produtos = data;
                     renderizarProdutos(produtos);
                 })
                 .catch(error => {
