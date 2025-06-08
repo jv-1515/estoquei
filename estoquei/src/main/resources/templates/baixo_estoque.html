@@ -54,7 +54,7 @@
                 <input type="number" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
-                <button class="btn limpar" onclick="limpar(); renderizarProdutos(lista);">Limpar Filtro</button>
+                <button class="btn limpar" onclick="limpar(); renderizarProdutos(produtos);">Limpar Filtro</button>
             </div>
         </div>
     </div>
@@ -75,74 +75,26 @@
     <div class="main-container">
         <div class="table-space"></div>
         <table id="product-list">
-        </table>
-    </div>
-    <script>
-        const produtos = [
-            { codigo: "000000001", nome: "Camisa Polo", categoria: "CAMISA", tamanho: "M", genero: "MASCULINO", quantidade: 10, limite: 5, preco: "99.90", imagem: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000002", nome: "Camiseta Estampada", categoria: "CAMISETA", tamanho: "G", genero: "UNISSEX", quantidade: 15, limite: 7, preco: "59.90", imagem: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000003", nome: "Calça Jeans", categoria: "CALCA", tamanho: "G", genero: "FEMININO", quantidade: 8, limite: 3, preco: "129.90", imagem: "" },
-            { codigo: "000000004", nome: "Sapato Social", categoria: "SAPATO", tamanho: "42", genero: "MASCULINO", quantidade: 5, limite: 2, preco: "199.90", imagem: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=100&q=80" },
-            { codigo: "000000005", nome: "Shorts Esportivo", categoria: "SHORTS", tamanho: "M", genero: "UNISSEX", quantidade: 21, limite: 10, preco: "49.90", imagem: "" }
-        ];
-
-        function renderizarProdutos(lista) {
-            lista = lista.filter(p => (p.quantidade - p.limite) >= 0 && (p.quantidade - p.limite) <= 10);
-
-            const container = document.getElementById("product-list");
-            container.innerHTML = `
             <thead>
                 <tr>
-                <th>Produto</th>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Categoria</th>
-                <th>Tamanho</th>
-                <th>Gênero</th>
-                <th>Quantidade</th>
-                <th>Limite Mínimo</th>
-                <th>Preço (R$)</th>
-                <th>Reabastecer</th>
+                    <th>Produto</th>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Tamanho</th>
+                    <th>Gênero</th>
+                    <th>Quantidade</th>
+                    <th>Limite Mínimo</th>
+                    <th>Preço (R$)</th>
+                    <th>Reabastecer</th>
                 </tr>
             </thead>
-            <tbody>
-                ${lista
-                    .map((p, idx) => `
-                    <tr tabindex="${idx + 1}">
-                        <td>
-                        ${p.imagem
-                            ? `<img src="${p.imagem}" alt="Foto do produto" class="produto-img" />`
-                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                        }
-                        </td>
-                        <td>${p.codigo}</td>
-                        <td>${p.nome}</td>
-                        <td>${p.categoria}</td>
-                        <td>${p.tamanho}</td>
-                        <td>${p.genero}</td>
-                        <td>
-                            ${p.quantidade}
-                            ${
-                                (p.quantidade - p.limite) <= 10 && (p.quantidade - p.limite) >= 0
-                                    ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" style="display:inline-block;position:relative;width:20px;height:20px;text-decoration:none;">
-                                            <span style="background:#000;width:5px;height:7px;position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                                    </a>`
-                                    : ''
-                            }
-                        </td>
-                        <td>${p.limite}</td>
-                        <td>${p.preco}</td>
-                        <td class="actions">
-                            <a href="/reabastecer-produto/${p.codigo}" title="Reabastecer" tabindex="${lista.length + idx + 1}">
-                                <i class="fa-solid fa-box"></i>
-                            </a>
-                        </td>
-                    </tr>
-                `).join("")}
+            <tbody id="product-table-body">
+                <tr>
+                    <td colspan="10" style="text-align: center;">Carregando produtos...</td>
+                </tr>
             </tbody>
-            `;
-        }
-    </script>
+        </table>
+    </div>
 </body>
 </html>

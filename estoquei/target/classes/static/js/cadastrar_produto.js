@@ -63,3 +63,33 @@ document.querySelector('form').addEventListener('submit', function(event) {
     });
 
 });
+
+                function upload() {
+                    document.getElementById('foto').click();
+                }
+                function previewImage(event) {
+                    const input = event.target;
+                    const preview = document.getElementById('image-preview');
+                    Array.from(preview.childNodes).forEach(node => {
+                        if (node.tagName !== 'INPUT') {
+                            preview.removeChild(node);
+                        }
+                    });
+                    if (input.files && input.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            preview.insertBefore(img, input);
+                        }
+                        reader.readAsDataURL(input.files[0]);
+                    } else {
+                        const icon = document.createElement('i');
+                        icon.className = 'fa-regular fa-image';
+                        icon.style.fontSize = '30px';
+                        preview.insertBefore(icon, input);
+                    }
+                }

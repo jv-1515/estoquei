@@ -22,7 +22,7 @@
         <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
                 <label for="codigo">Código*:</label>
-                <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1">
+                <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" min="9" maxlength="9" pattern="\d{9}">
 
                 <label for="nome">Nome*:</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
@@ -33,7 +33,7 @@
                     <option value="CAMISA">Camisa</option>
                     <option value="CAMISETA">Camiseta</option>
                     <option value="BERMUDA">Bermuda</option>
-                    <option value="CALCA">Calça</option>
+                    <option value="CALÇA">Calça</option>
                     <option value="SHORTS">Shorts</option>
                     <option value="SAPATO">Sapato</option>
                     <option value="MEIA">Meia</option>
@@ -103,37 +103,6 @@
                 <label for="descricao" style="margin-top: 10px;">Descrição:</label>
                 <textarea id="descricao" name="descricao" placeholder="0/300" maxlength="300" tabindex="10"></textarea>
             </div>
-            <script>
-                function upload() {
-                    document.getElementById('foto').click();
-                }
-                function previewImage(event) {
-                    const input = event.target;
-                    const preview = document.getElementById('image-preview');
-                    Array.from(preview.childNodes).forEach(node => {
-                        if (node.tagName !== 'INPUT') {
-                            preview.removeChild(node);
-                        }
-                    });
-                    if (input.files && input.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            img.style.width = '100%';
-                            img.style.height = '100%';
-                            img.style.objectFit = 'cover';
-                            preview.insertBefore(img, input);
-                        }
-                        reader.readAsDataURL(input.files[0]);
-                    } else {
-                        const icon = document.createElement('i');
-                        icon.className = 'fa-regular fa-image';
-                        icon.style.fontSize = '30px';
-                        preview.insertBefore(icon, input);
-                    }
-                }
-            </script>
         </form>
     </div>
 </body>
