@@ -23,7 +23,7 @@
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Filtrar produtos</h2>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="filter-codigo" placeholder="000000000" maxlength="9" style="width: 90px;" />
+                <input type="text" id="filter-codigo" placeholder="000000000" maxlength="9" minlength="9" style="width: 90px;" />
                 <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
 
                 <select id="filter-categoria" style="width: 110px;" onchange="updateOptions()">
@@ -50,7 +50,7 @@
 
                 <input type="number" id="filter-quantidade" placeholder="Quantidade" style="width: 90px;" />
                 <input type="number" id="filter-limite" placeholder="Limite Mínimo" style="width: 110px;" />
-                <input type="number" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" />
+                <input type="text" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" oninput="mascaraPreco(this)"/>
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
                 <button class="btn limpar" onclick="limpar(); renderizarProdutos(produtos);">Limpar Filtro</button>
@@ -95,30 +95,5 @@
             </tbody>
         </table>
     </div>
-    <script>
-        let produtos = [];
-        window.onload = function() {
-            carregarProdutos();
-        };
-
-        function carregarProdutos() {
-            fetch('/produtos')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    produtos = data;
-                    renderizarProdutos(produtos);
-                })
-                .catch(error => {
-                    console.error('Erro na API:', error);
-                    const tbody = document.getElementById('product-table-body');
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-                });
-        }
-    </script>
 </body>
 </html>
