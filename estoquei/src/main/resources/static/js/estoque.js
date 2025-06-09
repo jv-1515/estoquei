@@ -13,47 +13,62 @@ function updateOptions() {
     const categoria = document.getElementById('filter-categoria').value;
     const tamanho = document.getElementById('filter-tamanho');
     const valorSelecionado = tamanho.value;
-    const tamLetra = ['Único', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'XXG'];
+    const tamLetra = [
+        { value: 'ÚNICO', label: 'Único' },
+        { value: 'PP', label: 'PP' },
+        { value: 'P', label: 'P' },
+        { value: 'M', label: 'M' },
+        { value: 'G', label: 'G' },
+        { value: 'GG', label: 'GG' },
+        { value: 'XG', label: 'XG' },
+        { value: 'XGG', label: 'XGG' },
+        { value: 'XXG', label: 'XXG' }
+    ];
     const tamNumero = [];
-    for (let i = 36; i <= 52; i++) {
-        tamNumero.push(i.toString());
+    for (let i = 36; i <= 56; i++) {
+        tamNumero.push(i);
     }
 
     let options = '<option value="">Tamanho</option>';
 
     if (!categoria) {
-        [...tamLetra, ...tamNumero].forEach(t => {
-            options += `<option value="${t}">${t}</option>`;
+        tamLetra.forEach(t => {
+            options += `<option value="${t.value}">${t.label}</option>`;
+        });
+        tamNumero.forEach(n => {
+            options += `<option value="_${n}">${n}</option>`;
         });
     } else {
         if (categoria === 'SAPATO' || categoria === 'MEIA') {
             for (let i = 36; i <= 44; i++) {
-                options += `<option value="${i}">${i}</option>`;
+                options += `<option value="_${i}">${i}</option>`;
             }
         } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
-            for (let i = 36; i <= 52; i += 2) {
-                options += `<option value="${i}">${i}</option>`;
+            for (let i = 36; i <= 56; i += 2) {
+                options += `<option value="_${i}">${i}</option>`;
             }
         } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
             tamLetra.forEach(t => {
-                options += `<option value="${t}">${t}</option>`;
+                options += `<option value="${t.value}">${t.label}</option>`;
             });
         } else {
-            [...tamLetra, ...tamNumero].forEach(t => {
-                options += `<option value="${t}">${t}</option>`;
+            tamLetra.forEach(t => {
+                options += `<option value="${t.value}">${t.label}</option>`;
+            });
+            tamNumero.forEach(n => {
+                options += `<option value="_${n}">${n}</option>`;
             });
         }
     }
 
     tamanho.innerHTML = options;
     tamanho.value = valorSelecionado;
-
 }
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
-};
+});
 
     function filtrar() {
         let codigo = document.getElementById("filter-codigo").value;
@@ -144,7 +159,7 @@ window.onload = function() {
         tbody.innerHTML = '';
 
         if (produtos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
             return;
         }
 
