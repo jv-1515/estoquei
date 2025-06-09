@@ -154,6 +154,27 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+    function carregarProdutos() {
+    fetch('/produtos')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            produtos = data;
+            renderizarProdutos(produtos);
+        })
+        .catch(error => {
+            console.error('Erro na API:', error);
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+        });
+}
+
+
     function renderizarProdutos(produtos) {
         const tbody = document.getElementById('product-table-body');
         tbody.innerHTML = '';
@@ -225,26 +246,7 @@ window.addEventListener('DOMContentLoaded', function() {
 }
 
 
-        let produtos = [];
-        window.onload = function() {
-            carregarProdutos();
-        };
-
-        function carregarProdutos() {
-            fetch('/produtos')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    produtos = data;
-                    renderizarProdutos(produtos);
-                })
-                .catch(error => {
-                    console.error('Erro na API:', error);
-                    const tbody = document.getElementById('product-table-body');
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-                });
-        }
+let produtos = [];
+window.onload = function() {
+    carregarProdutos();
+};

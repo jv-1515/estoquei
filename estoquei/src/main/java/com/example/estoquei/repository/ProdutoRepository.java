@@ -1,17 +1,20 @@
 package com.example.estoquei.repository;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.example.estoquei.model.Categoria;
+import com.example.estoquei.model.Genero;
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Tamanho;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Repository;
-import com.example.estoquei.model.Categoria;
-import com.example.estoquei.model.Genero;
-import com.example.estoquei.model.Tamanho;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 @Transactional
@@ -30,12 +33,10 @@ public class ProdutoRepository {
         return produto;
     }
 
-
     public List<Produto> findAll() {
         return entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
     }
 
-    
     public List<Produto> findAndFilter(Produto produto) {
         String query = "SELECT p FROM Produto p";
         List<String> whereClause = new ArrayList<>();
@@ -104,6 +105,11 @@ public class ProdutoRepository {
             typedQuery.setParameter("preco", preco);
         }
         return typedQuery.getResultList();
+    }
+
+    public List<Produto> filterMinLimit() {
+        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
+        return entityManager.createQuery(query, Produto.class).getResultList();
     }
 
     public Produto findById(Long id) {
