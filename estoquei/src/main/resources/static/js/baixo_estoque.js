@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (quantidade === "") quantidade = null;
         if (limiteMinimo === "") limiteMinimo = null;
 
-        fetch('/produtos/filtrar', {
+        fetch('/produtos/baixo-estoque', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -121,7 +121,24 @@ window.addEventListener('DOMContentLoaded', function() {
         filtrar();
     }
 
-
+    function carregarProdutos() {
+        fetch('/produtos/baixo-estoque')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                produtos = data;
+                renderizarProdutos(produtos);
+            })
+            .catch(error => {
+                console.error('Erro na API:', error);
+                const tbody = document.getElementById('product-table-body');
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+            });
+    }
 
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
@@ -132,15 +149,7 @@ function renderizarProdutos(produtos) {
         return;
     }
 
-    // Filtra apenas produtos que precisam reabastecer
-    const produtosParaReabastecer = produtos.filter(p => p.quantidade <= (2 * p.limiteMinimo));
-
-    if (produtosParaReabastecer.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum produto precisa de reabastecimento.</td></tr>`;
-        return;
-    }
-
-    produtosParaReabastecer.forEach(p => {
+    produtos.forEach(p => {
         const imageUrl = p.url_imagem;
         const precoFormatado = p.preco ? Number(p.preco).toFixed(2).replace('.', ',') : '';
 
@@ -192,26 +201,7 @@ function renderizarProdutos(produtos) {
 }
 
 
-        let produtos = [];
-        window.onload = function() {
-            carregarProdutos();
-        };
-
-        function carregarProdutos() {
-            fetch('/produtos')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    produtos = data;
-                    renderizarProdutos(produtos);
-                })
-                .catch(error => {
-                    console.error('Erro na API:', error);
-                    const tbody = document.getElementById('product-table-body');
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-                });
-        }
+let produtos = [];
+window.onload = function() {
+    carregarProdutos();
+};
