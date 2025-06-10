@@ -33,10 +33,12 @@ public class ProdutoRepository {
         return produto;
     }
 
+    //estoque
     public List<Produto> findAll() {
         return entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
     }
 
+    //filtro estoque
     public List<Produto> findAndFilter(Produto produto) {
         String query = "SELECT p FROM Produto p";
         List<String> whereClause = new ArrayList<>();
@@ -107,10 +109,83 @@ public class ProdutoRepository {
         return typedQuery.getResultList();
     }
 
+    
+    //baixo estoque
     public List<Produto> filterMinLimit() {
         String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
         return entityManager.createQuery(query, Produto.class).getResultList();
     }
+
+    //filtro baixo estoque
+    public List<Produto> findAndFilterMinLimit(Produto produto) {
+    String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
+    List<String> whereClause = new ArrayList<>();
+
+    String codigo = produto.getCodigo();
+    String nome = produto.getNome();
+    Categoria categoria = produto.getCategoria();
+    Tamanho tamanho = produto.getTamanho();
+    Genero genero = produto.getGenero();
+    Integer quantidade = produto.getQuantidade();
+    Integer limiteMinimo = produto.getLimiteMinimo();
+    BigDecimal preco = produto.getPreco();
+
+    if(codigo != null && !codigo.isEmpty()) {
+        whereClause.add("p.codigo = :cd");
+    }
+    if(nome != null && !nome.isEmpty()) {
+        whereClause.add("p.nome LIKE :nm");
+    }
+    if(categoria != null) {
+        whereClause.add("p.categoria = :cat");
+    }
+    if(tamanho != null) {
+        whereClause.add("p.tamanho = :tam");
+    }
+    if(genero != null) {
+        whereClause.add("p.genero = :gen");
+    }
+    if(quantidade != null && quantidade > 0) {
+        whereClause.add("p.quantidade = :qt");
+    }
+    if(limiteMinimo != null && limiteMinimo > 0) {
+        whereClause.add("p.limiteMinimo = :lim");
+    }
+    if(preco != null) {
+        whereClause.add("p.preco = :preco");
+    }
+
+    if (!whereClause.isEmpty()) {
+        query += " AND " + String.join(" AND ", whereClause);
+    }
+
+    TypedQuery<Produto> typedQuery = entityManager.createQuery(query, Produto.class);
+    if(codigo != null && !codigo.isEmpty()) {
+        typedQuery.setParameter("cd", codigo);
+    }
+    if(nome != null && !nome.isEmpty()) {
+        typedQuery.setParameter("nm", "%" + nome + "%");
+    }
+    if(categoria != null) {
+        typedQuery.setParameter("cat",  categoria);
+    }
+    if(tamanho != null) {
+        typedQuery.setParameter("tam", tamanho);
+    }
+    if(genero != null) {
+        typedQuery.setParameter("gen", genero);
+    }
+    if(quantidade != null && quantidade > 0) {
+        typedQuery.setParameter("qt", quantidade);
+    }
+    if(limiteMinimo != null && limiteMinimo > 0) {
+        typedQuery.setParameter("lim", limiteMinimo);
+    }
+    if(preco != null) {
+        typedQuery.setParameter("preco", preco);
+    }
+    return typedQuery.getResultList();
+}
 
     public Produto findById(Long id) {
         return entityManager.find(Produto.class, id);
