@@ -71,6 +71,18 @@ public class ProdutoResource {
         return ResponseEntity.ok(produtos);
     }
 
+    @GetMapping("/baixo-estoque")
+    public ResponseEntity<List<Produto>> listarBaixoEstoque() {
+        List<Produto> produtos = produtoService.listarBaixoEstoque();
+        return ResponseEntity.ok(produtos);
+    }
+
+    @PostMapping("/baixo-estoque/filtrar")
+    public ResponseEntity<List<Produto>> filtrarBaixoEstoque(@RequestBody Produto filtro) {
+        List<Produto> produtos = produtoService.filtrarBaixoEstoque(filtro);
+        return ResponseEntity.ok(produtos);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
         Produto produto = produtoService.buscarPorId(id);

@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (quantidade === "") quantidade = null;
         if (limiteMinimo === "") limiteMinimo = null;
 
-        fetch('/produtos/filtrar', {
+        fetch('/produtos/baixo-estoque/filtrar', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -121,7 +121,31 @@ window.addEventListener('DOMContentLoaded', function() {
         filtrar();
     }
 
+    function carregarProdutos() {
+        fetch('/produtos/baixo-estoque')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                produtos = data;
+                renderizarProdutos(produtos);
+            })
+            .catch(error => {
+                console.error('Erro na API:', error);
+                const tbody = document.getElementById('product-table-body');
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+            });
+    }
 
+
+function exibirTamanho(tamanho) {
+    if (tamanho === 'ÚNICO') return 'Único';
+    if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
+    return tamanho;
+}
 
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
@@ -132,17 +156,13 @@ function renderizarProdutos(produtos) {
         return;
     }
 
-    // Filtra apenas produtos que precisam reabastecer
-    const produtosParaReabastecer = produtos.filter(p => p.quantidade <= (2 * p.limiteMinimo));
-
-    if (produtosParaReabastecer.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum produto precisa de reabastecimento.</td></tr>`;
-        return;
-    }
-
-    produtosParaReabastecer.forEach(p => {
+    produtos.forEach(p => {
         const imageUrl = p.url_imagem;
-        const precoFormatado = p.preco ? Number(p.preco).toFixed(2).replace('.', ',') : '';
+        const precoFormatado = p.preco.toFixed(2).replace('.', ',');
+        const tamanhoExibido = exibirTamanho(p.tamanho);
+        p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
+        p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
+
 
         const rowHtml = `
             <tr>
@@ -155,7 +175,7 @@ function renderizarProdutos(produtos) {
                 <td>${p.codigo}</td>
                 <td>${p.nome}</td>
                 <td class="categoria">${p.categoria}</td>
-                <td>${p.tamanho}</td>
+                <td>${tamanhoExibido}</td>
                 <td class="genero">${p.genero}</td>
                 <td style="position: relative; text-align: center;">
                     <span style="display: inline-block;">${p.quantidade}</span>
@@ -192,26 +212,7 @@ function renderizarProdutos(produtos) {
 }
 
 
-        let produtos = [];
-        window.onload = function() {
-            carregarProdutos();
-        };
-
-        function carregarProdutos() {
-            fetch('/produtos')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    produtos = data;
-                    renderizarProdutos(produtos);
-                })
-                .catch(error => {
-                    console.error('Erro na API:', error);
-                    const tbody = document.getElementById('product-table-body');
-                    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-                });
-        }
+let produtos = [];
+window.onload = function() {
+    carregarProdutos();
+};
