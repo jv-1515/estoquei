@@ -40,6 +40,10 @@ public class ProdutoService {
     return produtoRepository.filterMinLimit();
     }
 
+    public List<Produto> filtrarBaixoEstoque(Produto produto) {
+    return produtoRepository.findAndFilterMinLimit(produto);
+    }
+
     public List<Produto> buscar(Produto filtro) {
         return produtoRepository.findAndFilter(filtro);
     }

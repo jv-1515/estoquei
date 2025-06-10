@@ -43,40 +43,6 @@
                 <select id="tamanho" name="tamanho" required tabindex="4">
                     <option selected disabled style="color: white; background: white">Tamanho</option>
                 </select>
-
-                <script>
-                function updateOptions() {
-                    const categoria = document.getElementById('categoria').value;
-                    const tamanho = document.getElementById('tamanho');
-                    tamanho.innerHTML = '<option selected style="color: white; background: white">Tamanho</option>';
-
-                    if (categoria === 'SAPATO' || categoria === 'MEIA') {
-                        for (let i = 36; i <= 44; i++) {
-                            tamanho.innerHTML += `<option value="_${i}">${i}</option>`;
-                        }
-                    } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
-                        for (let i = 36; i <= 52; i += 2) {
-                            tamanho.innerHTML += `<option value="_${i}">${i}</option>`;
-                        }
-                    } else {
-                        const tamanhos = [
-                            { value: 'ÚNICO', label: 'Único' },
-                            { value: 'PP', label: 'PP' },
-                            { value: 'P', label: 'P' },
-                            { value: 'M', label: 'M' },
-                            { value: 'G', label: 'G' },
-                            { value: 'GG', label: 'GG' },
-                            { value: 'XG', label: 'XG' },
-                            { value: 'XGG', label: 'XGG' },
-                            { value: 'XXG', label: 'XXG' }
-                        ];
-                        tamanhos.forEach(t => {
-                            tamanho.innerHTML += `<option value="${t.value}">${t.label}</option>`;
-                        });
-                    }
-                }
-                </script>
-                
                 <label for="genero">Gênero*:</label>
                 <select id="genero" name="genero" required tabindex="5">
                     <option  selected disabled style="color: white; background: white">Gênero</option>

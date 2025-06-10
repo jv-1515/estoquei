@@ -1,4 +1,3 @@
-
 function confirmarSaida(event) {
     event.preventDefault();
     Swal.fire({
@@ -19,4 +18,33 @@ function confirmarSaida(event) {
             window.location.href = '/admin/logout';
         }
     });
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+});
+function atualizarBadgeBaixoEstoque() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+
+    badge.style.display = 'none'; // Oculta sempre no início
+
+    fetch('/produtos/baixo-estoque')
+        .then(res => res.json())
+        .then(produtos => {
+            const qtd = produtos.length;
+            if (qtd <= 0) return;
+
+            badge.textContent = qtd > 98 ? '99+' : qtd;
+            badge.removeAttribute('style');
+            badge.style.display = 'inline-block';
+
+            if (qtd > 98) {
+                badge.style.padding = '6px 4px';
+                badge.style.fontSize = '8px';
+            } else if (qtd > 9) {
+                badge.style.padding = '6px 6px';
+                badge.style.fontSize = '10px';
+            }
+        });
 }

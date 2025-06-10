@@ -174,7 +174,11 @@ window.addEventListener('DOMContentLoaded', function() {
         });
 }
 
-
+function exibirTamanho(tamanho) {
+    if (tamanho === 'ÚNICO') return 'Único';
+    if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
+    return tamanho;
+}
     function renderizarProdutos(produtos) {
         const tbody = document.getElementById('product-table-body');
         tbody.innerHTML = '';
@@ -188,6 +192,10 @@ window.addEventListener('DOMContentLoaded', function() {
             const imageUrl = p.url_imagem;
             const precoFormatado = p.preco.toFixed(2).replace('.', ',');
             const precisaReabastecer = p.quantidade <= (2 * p.limiteMinimo);
+            const tamanhoExibido = exibirTamanho(p.tamanho);
+            p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
+            p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
+
 
             const rowHtml = `
                 <tr>
@@ -200,7 +208,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     <td>${p.codigo}</td>
                     <td>${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
-                    <td>${p.tamanho}</td>
+                    <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
                     <span style="display: inline-block;">${p.quantidade}</span>
