@@ -141,3 +141,10 @@ function previewImage(event) {
         preview.insertBefore(icon, input);
     }
 }
+
+
+function atualizarContador() {
+const textarea = document.getElementById('descricao');
+const contador = document.getElementById('contador');
+contador.textContent = `${textarea.value.length}/300`;
+}
