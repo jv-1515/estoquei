@@ -50,14 +50,10 @@ h1 {
     border-radius: 4px;
 }
 
-.form-column textarea {
-    resize: none;
-    height: 100px;
-}
 
 .image-box {
-    width: 250px;
-    height: 250px;
+    width: 235px;
+    height: 235px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -94,12 +90,13 @@ button:hover {
 }
 
 .right-column textarea {
-    width: 230px;
-    height: 116px;
+    width: 216px;
+    height: 141px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
     padding: 10px;
+    resize: none;
 }
 
 label {
