@@ -45,7 +45,7 @@ function updateOptions() {
         for (let i = 36; i <= 44; i++) {
             options += `<option value="_${i}">${i}</option>`;
         }
-    } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
+    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
         for (let i = 36; i <= 56; i += 2) {
             options += `<option value="_${i}">${i}</option>`;
         }
