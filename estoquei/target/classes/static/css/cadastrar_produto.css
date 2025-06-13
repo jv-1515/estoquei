@@ -52,8 +52,8 @@ h1 {
 
 
 .image-box {
-    width: 235px;
-    height: 235px;
+    width: 230px;
+    height: 230px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -90,8 +90,8 @@ button:hover {
 }
 
 .right-column textarea {
-    width: 216px;
-    height: 91px;
+    width: 211px;
+    height: 96px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;

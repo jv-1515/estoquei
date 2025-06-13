@@ -7,7 +7,7 @@ function updateOptions() {
         for (let i = 36; i <= 44; i++) {
             options += `<option value="${i}">${i}</option>`;
         }
-    } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
+    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
         for (let i = 36; i <= 52; i += 2) {
             options += `<option value="${i}">${i}</option>`;
         }
@@ -56,7 +56,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
     Swal.fire({
         title: "Sucesso!",
-        text: "Reabastecimento registrado!",
+        text: "Abastecimento registrado!",
         icon: "success",
         showCloseButton: true,
         showCancelButton: true,

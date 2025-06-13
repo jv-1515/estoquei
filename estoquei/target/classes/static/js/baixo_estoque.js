@@ -166,45 +166,45 @@ function renderizarProdutos(produtos) {
 
         const rowHtml = `
             <tr>
-                <td>
-                    ${imageUrl 
-                        ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                </td>
-                <td>${p.codigo}</td>
-                <td>${p.nome}</td>
-                <td class="categoria">${p.categoria}</td>
-                <td>${tamanhoExibido}</td>
-                <td class="genero">${p.genero}</td>
-                <td style="position: relative; text-align: center;">
-                    <span style="display: inline-block;">${p.quantidade}</span>
-                    <a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" 
-                        style="
-                            position: absolute;
-                            top: 50%;
-                            right: 0;
-                            transform: translateY(-50%);
-                            width: 20px;
-                            height: 20px;
-                            text-decoration: none;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            pointer-events: auto;
-                            padding-right: 23px;
-                        ">
-                        <span style="background:#000;width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                        <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                    </a>
-                </td>
-                <td>${p.limiteMinimo}</td>
-                <td>R$ ${precoFormatado}</td>
-                <td class="actions">
-                    <a href="/reabastecer-produto/${p.codigo}" title="Reabastecer">
-                        <i class="fa-solid fa-box"></i>
-                    </a>
-                </td>
+            <td>
+                ${imageUrl 
+                ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
+                : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
+                }
+            </td>
+            <td>${p.codigo}</td>
+            <td>${p.nome}</td>
+            <td class="categoria">${p.categoria}</td>
+            <td>${tamanhoExibido}</td>
+            <td class="genero">${p.genero}</td>
+            <td style="position: relative; text-align: center;">
+                <span style="display: inline-block;">${p.quantidade}</span>
+                <a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
+                style="
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
+                    width: 20px;
+                    height: 20px;
+                    text-decoration: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    pointer-events: auto;
+                    padding-right: 23px;
+                ">
+                <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
+                </a>
+            </td>
+            <td>${p.limiteMinimo}</td>
+            <td>R$ ${precoFormatado}</td>
+            <td class="actions">
+                <a href="/abastecer-produto/${p.codigo}" title="Abastecer">
+                <i class="fa-solid fa-box"></i>
+                </a>
+            </td>
             </tr>
         `;
         tbody.innerHTML += rowHtml;

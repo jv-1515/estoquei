@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Registrar Reabastecimento</title>
+    <title>Gerenciar Abastecimento</title>
     <link rel="icon" type="image/png" href="/images/logo_icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -19,7 +19,7 @@
     </a>
 
     <div>
-        <h1>Registrar Reabastecimento</h1>
+        <h1>Gerenciar Abastecimento</h1>
     </div>
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
@@ -69,8 +69,8 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/reabastecer-produto'">
-            <i class="fa fa-box" style="margin-right: 4px;"></i> Reabastecer Produto
+        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/abastecer-produto'">
+            <i class="fa fa-box" style="margin-right: 4px;"></i> Abastecer Produto
         </button>
     </div>
     <div class="main-container">
@@ -87,7 +87,7 @@
                     <th>Quantidade</th>
                     <th>Limite Mínimo</th>
                     <th>Preço (R$)</th>
-                    <th>Reabastecer</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody id="product-table-body">
