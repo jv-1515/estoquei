@@ -91,7 +91,7 @@ button:hover {
 
 .right-column textarea {
     width: 216px;
-    height: 141px;
+    height: 91px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
@@ -113,6 +113,10 @@ select#categoria,
 select#tamanho,
 select#genero {
     padding-left: 1px;
+}
+
+input#quantidade {
+    color: #757575;
 }
 
 .swal2-confirm-custom {

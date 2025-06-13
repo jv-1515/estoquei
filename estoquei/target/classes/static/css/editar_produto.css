@@ -112,7 +112,6 @@ select#categoria,
 select#tamanho,
 select#genero {
     padding-left: 1px;
-    color: #757575;
 }
 
 .trash-icon {

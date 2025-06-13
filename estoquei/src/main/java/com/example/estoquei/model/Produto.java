@@ -1,14 +1,14 @@
 package com.example.estoquei.model;
 
 import java.math.BigDecimal;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "produtos")
@@ -30,7 +30,7 @@ public class Produto {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    private int quantidade;
+    private int quantidade = 0;
 
     private int limiteMinimo;
 
