@@ -1,9 +1,9 @@
 package com.example.estoquei.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.ui.Model;
 
 import com.example.estoquei.model.TipoUsuario;
 import com.example.estoquei.model.Usuario;
@@ -65,11 +65,11 @@ public class Router {
         return "editar_produto";
     }
 
-    @GetMapping("/reabastecer-produto")
-    public String reabastecerProduto(HttpSession session) {
+    @GetMapping("/abastecer-produto")
+    public String abastecerProduto(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
-        return "reabastecer_produto";
+        return "abastecer_produto";
     }
 
 

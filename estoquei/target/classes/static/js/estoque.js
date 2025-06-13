@@ -191,7 +191,7 @@ function exibirTamanho(tamanho) {
         produtos.forEach(p => {
             const imageUrl = p.url_imagem;
             const precoFormatado = p.preco.toFixed(2).replace('.', ',');
-            const precisaReabastecer = p.quantidade <= (2 * p.limiteMinimo);
+            const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
             const tamanhoExibido = exibirTamanho(p.tamanho);
             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
@@ -213,29 +213,31 @@ function exibirTamanho(tamanho) {
                     <td style="position: relative; text-align: center;">
                     <span style="display: inline-block;">${p.quantidade}</span>
 
-                    ${precisaReabastecer
-                        ? `<a href="/reabastecer-produto/${p.codigo}" title="Reabastecer produto" 
-                            style="
-                                position: absolute;
-                                top: 50%;
-                                right: 0;
-                                transform: translateY(-50%);
-                                width: 20px;
-                                height: 20px;
-                                text-decoration: none;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                pointer-events: auto;
-                                padding-right: 23px;
-                            ">
-                                <span style="background:#000;width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d;position:relative;z-index:1;"></i>
-                        </a>`
-                        : ''
+                    ${
+                        precisaAbastecer
+                            ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
+                                style="
+                                    position: absolute;
+                                    top: 50%;
+                                    right: 0;
+                                    transform: translateY(-50%);
+                                    width: 20px;
+                                    height: 20px;
+                                    text-decoration: none;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    pointer-events: auto;
+                                    padding-right: 23px;
+                                ">
+                                    <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:${
+                                        p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
+                                    };position:relative;z-index:1;"></i>
+                            </a>`
+                            : ''
                     }
                     </td>
-
 
                     <td>${p.limiteMinimo}</td>
                     <td>R$ ${precoFormatado}</td>

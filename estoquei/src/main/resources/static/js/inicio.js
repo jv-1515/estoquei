@@ -20,14 +20,12 @@ function confirmarSaida(event) {
     });
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    atualizarBadgeBaixoEstoque();
-});
+
 function atualizarBadgeBaixoEstoque() {
     const badge = document.querySelector('.badge');
     if (!badge) return;
 
-    badge.style.display = 'none'; // Oculta sempre no início
+    badge.style.display = 'none';
 
     fetch('/produtos/baixo-estoque')
         .then(res => res.json())
@@ -48,3 +46,7 @@ function atualizarBadgeBaixoEstoque() {
             }
         });
 }
+
+window.addEventListener('pageshow', function() {
+    atualizarBadgeBaixoEstoque();
+});
