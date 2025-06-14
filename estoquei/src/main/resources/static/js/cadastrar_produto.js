@@ -22,7 +22,7 @@ form.addEventListener('submit', function(e) {
 function updateOptions() {
     const categoria = document.getElementById('categoria').value;
     const tamanho = document.getElementById('tamanho');
-    let options = '<option value="">Tamanho</option>';
+    let options = '<option value="" disabled selected hidden>Tamanho</option>';
 
     const tamLetra = [
         { value: 'ÚNICO', label: 'Único' },
