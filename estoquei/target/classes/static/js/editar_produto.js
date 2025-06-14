@@ -62,27 +62,45 @@ document.querySelector('form').addEventListener('submit', function(event) {
     });
 });
 
-function removerProduto(codigo) {
-    Swal.fire({
-    title: 'Tem certeza?',
-    text: 'Esta ação não poderá ser desfeita.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#1E94A3',
-    confirmButtonText: 'Remover',
-    cancelButtonText: 'Cancelar'
-    }).then((result) => {
-    if (result.isConfirmed) {
+    function removerProduto(id) {
         Swal.fire({
-        title: 'Removido!',
-        text: 'O produto foi removido.',
-        icon: 'success',
-        confirmButtonColor: '#1E94A3'
+            title: 'Tem certeza?',
+            text: 'Esta ação não poderá ser desfeita.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#1E94A3',
+            confirmButtonText: 'Remover',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                fetch('/produtos/' + id, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'Removendo...',
+                            text: 'Aguarde enquanto o produto é removido.',
+                            icon: 'info',
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            timer: 1500,
+                        }).then(() => {
+                            history.back();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Não foi possível remover.',
+                            icon: 'error',
+                            confirmButtonColor: '#1E94A3'
+                        });
+                    }
+                });
+            }
         });
     }
-    });
-}
 
 function atualizarContador() {
 const textarea = document.getElementById('descricao');
