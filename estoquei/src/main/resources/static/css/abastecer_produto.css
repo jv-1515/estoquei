@@ -227,3 +227,8 @@ padding-top: 24px;
 #data-compra:valid {
     color: #000;
 }
+#filter-genero,
+#filter-categoria,
+#filter-tamanho {
+  color: #757575;
+}
