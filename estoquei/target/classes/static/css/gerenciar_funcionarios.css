@@ -181,3 +181,27 @@ padding-left: 1px;
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
 }
+#cad-cargo option[disabled][hidden],
+#edit-cargo option[disabled][hidden],
+#filter-cargo option[disabled][hidden] {
+    display: none;
+}
+
+#cad-cargo,
+#cad-nascimento,
+#edit-cargo,
+#edit-nascimento,
+#filter-cargo {
+    color: #757575;
+}
+
+#cad-cargo:valid,
+#cad-nascimento:valid,
+#edit-cargo:valid,
+#edit-nascimento:valid {
+    color: #000;
+}
+
+#filter-cargo{
+    color: #757575;
+}

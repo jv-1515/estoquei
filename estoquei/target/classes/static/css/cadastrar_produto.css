@@ -113,10 +113,6 @@ select#genero {
     padding-left: 1px;
 }
 
-input#quantidade {
-    color: #757575;
-}
-
 .swal2-confirm-custom {
     background-color: #1E94A3 !important;
     color: #fff !important;
@@ -134,4 +130,22 @@ input#quantidade {
 }
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
+}
+
+#genero option[disabled][hidden],
+#categoria option[disabled][hidden],
+#tamanho option[disabled][hidden] {
+  display: none;
+}
+
+#genero,
+#categoria,
+#tamanho {
+  color: #757575;
+}
+
+#genero:valid,
+#categoria:valid,
+#tamanho:valid {
+  color: #000;
 }
