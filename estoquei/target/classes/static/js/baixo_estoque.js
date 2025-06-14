@@ -29,7 +29,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="">Tamanho</option>';
+    let options = '<option value="" selected disabled hidden>Tamanho</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {
@@ -121,16 +121,19 @@ window.addEventListener('DOMContentLoaded', function() {
         filtrar();
     }
 
-    function carregarProdutos() {
-        fetch('/produtos/baixo-estoque')
+    function carregarProdutos(top) {
+        let url = '/produtos/baixo-estoque';
+        if (top && top !== "") {
+            url += `?top=${top}`;
+        }
+        fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Falha ao buscar produtos. Status: ' + response.status);
                 }
                 return response.json();
             })
-            .then(data => {
-                produtos = data;
+            .then(produtos => {
                 renderizarProdutos(produtos);
             })
             .catch(error => {
@@ -212,7 +215,10 @@ function renderizarProdutos(produtos) {
 }
 
 
-let produtos = [];
 window.onload = function() {
-    carregarProdutos();
+    const select = document.getElementById('registros-select');
+    carregarProdutos(select.value);
+    select.addEventListener('change', function() {
+        carregarProdutos(this.value);
+    });
 };
