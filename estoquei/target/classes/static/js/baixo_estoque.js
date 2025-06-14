@@ -199,7 +199,7 @@ function renderizarProdutos(produtos) {
                 </a>
             </td>
             <td>${p.limiteMinimo}</td>
-            <td>R$ ${precoFormatado}</td>
+            <td>${precoFormatado}</td>
             <td class="actions">
                 <a href="/abastecer-produto/${p.codigo}" title="Abastecer">
                 <i class="fa-solid fa-box"></i>
