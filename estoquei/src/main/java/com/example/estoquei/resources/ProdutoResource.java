@@ -57,8 +57,13 @@ public class ProdutoResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos() {
-        List<Produto> produtos = produtoService.listarTodos();
+    public ResponseEntity<List<Produto>> listarTodos(@RequestParam(required = false) Integer top) {
+    List<Produto> produtos;
+        if (top != null) {
+            produtos = produtoService.listarTop(top);
+        } else {
+            produtos = produtoService.listarTodos();
+        }
         return ResponseEntity.ok(produtos);
     }
 
@@ -72,8 +77,13 @@ public class ProdutoResource {
     }
 
     @GetMapping("/baixo-estoque")
-    public ResponseEntity<List<Produto>> listarBaixoEstoque() {
-        List<Produto> produtos = produtoService.listarBaixoEstoque();
+    public ResponseEntity<List<Produto>> listarBaixoEstoque(@RequestParam(required = false) Integer top) {
+        List<Produto> produtos;
+        if (top != null) {
+            produtos = produtoService.listarTopBaixoEstoque(top);
+        } else {
+            produtos = produtoService.listarBaixoEstoque();
+        }
         return ResponseEntity.ok(produtos);
     }
 
