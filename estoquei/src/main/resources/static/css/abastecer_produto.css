@@ -220,3 +220,15 @@ padding-top: 24px;
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
 }
+#data-compra {
+    color: #757575;
+}
+
+#data-compra:valid {
+    color: #000;
+}
+#filter-genero,
+#filter-categoria,
+#filter-tamanho {
+  color: #757575;
+}

@@ -145,3 +145,15 @@ tr:hover {
 .fa-trash:hover {
     color: red;
 }
+
+#filter-genero option[disabled][hidden],
+#filter-categoria option[disabled][hidden],
+#filter-tamanho option[disabled][hidden] {
+    display: none;
+}
+
+#filter-genero,
+#filter-categoria,
+#filter-tamanho {
+    color: #757575;
+}
