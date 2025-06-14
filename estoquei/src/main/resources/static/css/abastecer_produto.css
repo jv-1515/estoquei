@@ -115,7 +115,9 @@ h2 {
     padding: 8px;
     border: 1px solid #ccc;
     font-size: 12px;
+    font-family: Arial, sans-serif;
 }
+
 label{
     padding: 5px 5px 5px 0;
     color: #333;
@@ -123,8 +125,8 @@ label{
 }
 
 .image-box {
-    width: 215px;
-    height: 215px;
+    width: 268px;
+    height: 268px;
     display: flex;
     justify-content: center;
     color: #777;
