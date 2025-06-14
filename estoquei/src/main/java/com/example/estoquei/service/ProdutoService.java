@@ -36,9 +36,17 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
+    public List<Produto> listarTop(int top) {
+        return produtoRepository.findTop(top);
+    }
+
     public List<Produto> listarBaixoEstoque() {
     return produtoRepository.filterMinLimit();
     }
+
+    public List<Produto> listarTopBaixoEstoque(int top) {
+    return produtoRepository.findTopBaixoEstoque(top);
+}
 
     public List<Produto> filtrarBaixoEstoque(Produto produto) {
     return produtoRepository.findAndFilterMinLimit(produto);
