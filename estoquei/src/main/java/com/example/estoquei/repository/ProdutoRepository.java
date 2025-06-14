@@ -38,6 +38,13 @@ public class ProdutoRepository {
         return entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
     }
 
+    //mostrando top
+    public List<Produto> findTop(int top) {
+    return entityManager.createQuery("SELECT p FROM Produto p", Produto.class)
+        .setMaxResults(top)
+        .getResultList();
+    }
+
     //filtro estoque
     public List<Produto> findAndFilter(Produto produto) {
         String query = "SELECT p FROM Produto p";
@@ -114,6 +121,14 @@ public class ProdutoRepository {
     public List<Produto> filterMinLimit() {
         String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
         return entityManager.createQuery(query, Produto.class).getResultList();
+    }
+
+    //mostrando top baixo estoque
+    public List<Produto> findTopBaixoEstoque(int top) {
+    return entityManager.createQuery(
+        "SELECT p FROM Produto p WHERE p.quantidade <= p.limiteMinimo", Produto.class)
+        .setMaxResults(top)
+        .getResultList();
     }
 
     //filtro baixo estoque
