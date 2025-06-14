@@ -29,7 +29,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="">Tamanho</option>';
+    let options = '<option value="" disabled hidden selected>Tamanho</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {
@@ -261,8 +261,33 @@ function exibirTamanho(tamanho) {
         });
 }
 
+function carregarProdutos(top) {
+    let url = '/produtos';
+    if (top && top !== "") {
+        url += `?top=${top}`;
+    }
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(produtos => {
+            renderizarProdutos(produtos);
+        })
+        .catch(error => {
+            console.error('Erro na API:', error);
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+        });
+}
 
-let produtos = [];
+
 window.onload = function() {
-    carregarProdutos();
-};
+    const select = document.getElementById('registros-select');
+    carregarProdutos(select.value);
+    select.addEventListener('change', function() {
+        carregarProdutos(this.value);
+    });
+}
