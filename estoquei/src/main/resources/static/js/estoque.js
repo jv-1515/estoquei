@@ -140,14 +140,20 @@ window.addEventListener('DOMContentLoaded', function() {
                             title: 'Removendo...',
                             text: 'Aguarde enquanto o produto é removido.',
                             icon: 'info',
-                            showConfirmButton: false,
+                            showConfirmButton: true,
+                            confirmButtonColor: '#1E94A3',
                             allowOutsideClick: false,
                             timer: 1500,
                         }).then(() => {
                             location.reload();
                         });
                     } else {
-                        Swal.fire('Erro!', 'Não foi possível remover.', 'error');
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: 'Não foi possível remover.',
+                            icon: 'error',
+                            confirmButtonColor: '#1E94A3'
+                        });
                     }
                 });
             }
@@ -240,7 +246,7 @@ function exibirTamanho(tamanho) {
                     </td>
 
                     <td>${p.limiteMinimo}</td>
-                    <td>R$ ${precoFormatado}</td>
+                    <td>${precoFormatado}</td>
                     <td class="actions">
                         <a href="/editar-produto/${p.id}" title="Editar">
                             <i class="fa-solid fa-pen"></i>
