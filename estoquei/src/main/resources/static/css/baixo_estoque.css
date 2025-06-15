@@ -157,3 +157,25 @@ tr:hover {
 #filter-tamanho {
     color: #757575;
 }
+
+th.ordenar {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+th.ordenar .sort-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    pointer-events: none;
+    font-size: 10px;
+    color: #888;
+    transition: color 0.2s;
+}
+th.ordenar:hover .sort-icon,
+th.ordenar.sorted .sort-icon {
+    display: inline-block;
+    color: #1E94A3;
+}
