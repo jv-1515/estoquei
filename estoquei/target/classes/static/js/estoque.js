@@ -70,8 +70,10 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
 });
 
-
+//var global e controle de paginação
 let produtos = [];
+let paginaAtual = 1;
+let itensPorPagina = 10;
 
 function filtrar() {
     let codigo = document.getElementById("filter-codigo").value;
@@ -109,6 +111,9 @@ function filtrar() {
     })
     .then(data => {
         produtos = data;
+        const select = document.getElementById('registros-select');
+        itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
+        paginaAtual = 1;
         renderizarProdutos(produtos);
     })
     .catch(error => {
@@ -175,19 +180,29 @@ function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     tbody.innerHTML = '';
 
-    if (produtos.length === 0) {
+
+    const select = document.getElementById('registros-select');
+    //verifica se o select está vazio ou se o valor é inválido
+    itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
+    
+    const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const produtosPagina = produtos.slice(inicio, fim);
+
+    if (produtosPagina.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
+        document.getElementById('paginacao').innerHTML = '';
         return;
     }
 
-    produtos.forEach(p => {
+    produtosPagina.forEach(p => {
         const imageUrl = p.url_imagem;
         const precoFormatado = p.preco.toFixed(2).replace('.', ',');
         const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
         const tamanhoExibido = exibirTamanho(p.tamanho);
         p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
         p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
-
 
         const rowHtml = `
             <tr>
@@ -204,7 +219,6 @@ function renderizarProdutos(produtos) {
                 <td class="genero">${p.genero}</td>
                 <td style="position: relative; text-align: center;">
                 <span style="display: inline-block;">${p.quantidade}</span>
-
                 ${
                     precisaAbastecer
                         ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
@@ -230,7 +244,6 @@ function renderizarProdutos(produtos) {
                         : ''
                 }
                 </td>
-
                 <td>${p.limiteMinimo}</td>
                 <td>${precoFormatado}</td>
                 <td class="actions">
@@ -245,6 +258,24 @@ function renderizarProdutos(produtos) {
         `;
         tbody.innerHTML += rowHtml;
     });
+
+    renderizarPaginacao(totalPaginas);
+}
+
+function renderizarPaginacao(totalPaginas) {
+    const paginacaoDiv = document.getElementById('paginacao');
+    paginacaoDiv.innerHTML = '';
+    if (totalPaginas <= 1) return;
+    for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
+            paginaAtual = i;
+            renderizarProdutos(produtos);
+        };
+        paginacaoDiv.appendChild(btn);
+    }
 }
 
 function carregarProdutos(top) {
@@ -270,12 +301,13 @@ function carregarProdutos(top) {
     }
 
 
-
 window.onload = function() {
     const select = document.getElementById('registros-select');
     carregarProdutos(select.value);
     select.addEventListener('change', function() {
-        carregarProdutos(this.value);
+        itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
+        paginaAtual = 1;
+        renderizarProdutos(produtos);
     });
 
     //campos para ordenação

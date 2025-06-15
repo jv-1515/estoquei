@@ -179,3 +179,23 @@ th.ordenar.sorted .sort-icon {
     display: inline-block;
     color: #1E94A3;
 }
+#paginacao button {
+    margin: 0 3px 9px 3px;
+    padding: 5px 10px;
+    border: 1px solid #1E94A3;
+    background: #fff;
+    color: #1E94A3;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background 0.2s, color 0.2s;
+}
+#paginacao button.pagina-ativa {
+    background: #1E94A3;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #1E94A3;
+}
+#paginacao button:hover:not(.pagina-ativa) {
+    background: #e0f7fa;
+}
