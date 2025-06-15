@@ -72,6 +72,8 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 let produtos = [];
+let paginaAtual = 1;
+let itensPorPagina = 10;
 
     function filtrar() {
         let codigo = document.getElementById("filter-codigo").value;
@@ -153,12 +155,21 @@ function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     tbody.innerHTML = '';
 
-    if (!produtos || produtos.length === 0) {
+    const select = document.getElementById('registros-select');
+    itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
+    
+    const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const produtosPagina = produtos.slice(inicio, fim);
+
+    if (produtosPagina.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
+        document.getElementById('paginacao').innerHTML = '';
         return;
     }
 
-    produtos.forEach(p => {
+    produtosPagina.forEach(p => {
         const imageUrl = p.url_imagem;
         const precoFormatado = p.preco.toFixed(2).replace('.', ',');
         const tamanhoExibido = exibirTamanho(p.tamanho);
@@ -211,14 +222,34 @@ function renderizarProdutos(produtos) {
         `;
         tbody.innerHTML += rowHtml;
     });
+
+        renderizarPaginacao(totalPaginas);
 }
 
+function renderizarPaginacao(totalPaginas) {
+    const paginacaoDiv = document.getElementById('paginacao');
+    paginacaoDiv.innerHTML = '';
+    if (totalPaginas <= 1) return;
+    for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
+            paginaAtual = i;
+            renderizarProdutos(produtos);
+        };
+        paginacaoDiv.appendChild(btn);
+    }
+    
+}
 
 window.onload = function() {
     const select = document.getElementById('registros-select');
     carregarProdutos(select.value);
     select.addEventListener('change', function() {
-        carregarProdutos(this.value);
+        itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
+        paginaAtual = 1;
+        renderizarProdutos(produtos);
     });
 
     //campos para ordenação
