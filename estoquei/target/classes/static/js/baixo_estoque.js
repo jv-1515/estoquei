@@ -71,6 +71,7 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
 });
 
+let produtos = [];
 
     function filtrar() {
         let codigo = document.getElementById("filter-codigo").value;
@@ -106,7 +107,8 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             return response.json();
         })
-        .then(produtos => {
+        .then(data => {
+            produtos = data;
             renderizarProdutos(produtos);
         })
         .catch(error => {
@@ -122,27 +124,24 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     function carregarProdutos(top) {
-        let url = '/produtos/baixo-estoque';
-        if (top && top !== "") {
-            url += `?top=${top}`;
-        }
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(produtos => {
-                renderizarProdutos(produtos);
-            })
-            .catch(error => {
-                console.error('Erro na API:', error);
-                const tbody = document.getElementById('product-table-body');
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-            });
+    fetch('/produtos/baixo-estoque')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            produtos = data;
+            renderizarProdutos(produtos);
+        })
+        .catch(error => {
+            console.error('Erro na API:', error);
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+        });
     }
-
+    
 
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
@@ -220,5 +219,60 @@ window.onload = function() {
     carregarProdutos(select.value);
     select.addEventListener('change', function() {
         carregarProdutos(this.value);
+    });
+
+    //campos para ordenação
+        const campos = [
+        'codigo',   
+        'nome',       
+        'categoria',  
+        'tamanho',    
+        'genero',    
+        'quantidade',
+        'limiteMinimo',
+        'preco'       
+    ];
+
+    //inicia como true (decrescente)
+    let estadoOrdenacao = Array(campos.length).fill(true);
+
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        const icon = th.querySelector('.sort-icon');
+        th.addEventListener('mouseenter', function() {
+            icon.style.display = 'inline-block';
+        });
+        th.addEventListener('mouseleave', function() {
+            if (!th.classList.contains('sorted')) {
+                icon.style.display = 'none';
+            }
+        });
+        //ao clicar remover todos os outros campos e add o ícone de ordenação
+        th.addEventListener('click', function() {
+            document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
+            th.classList.add('sorted');
+
+            const campo = campos[idx];
+            produtos.sort((a, b) => {
+                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
+                    // numérico
+                    return estadoOrdenacao[idx]
+                        ? b[campo] - a[campo]
+                        : a[campo] - b[campo];
+                } else {
+                    // alfabético
+                    return estadoOrdenacao[idx]
+                        ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
+                        : b[campo].localeCompare(a[campo], undefined, { numeric: true });
+                }
+            });
+            //inverte o estado de ordenação
+            estadoOrdenacao[idx] = !estadoOrdenacao[idx];
+            icon.innerHTML = estadoOrdenacao[idx]
+                // se for true, seta o ícone de descrescente, senão crescente
+                ? '<i class="fa-solid fa-arrow-down"></i>'
+                : '<i class="fa-solid fa-arrow-up"></i>';
+            renderizarProdutos(produtos);
+            icon.style.display = 'inline-block';
+        });
     });
 };
