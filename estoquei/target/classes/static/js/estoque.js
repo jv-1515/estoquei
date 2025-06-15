@@ -70,218 +70,205 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
 });
 
-    function filtrar() {
-        let codigo = document.getElementById("filter-codigo").value;
-        let nome = document.getElementById("filter-nome").value;
-        let categoria = document.getElementById("filter-categoria").value;
-        let tamanho = document.getElementById("filter-tamanho").value;
-        let genero = document.getElementById("filter-genero").value;
-        let quantidade = document.getElementById("filter-quantidade").value;
-        let limiteMinimo = document.getElementById("filter-limite").value;
-        let preco = document.getElementById("filter-preco").value;
-        preco = preco.replace(/[^\d,]/g, '').replace(',', '.');
-        if (preco === "") preco = null;
-        else preco = parseFloat(preco);
 
-        if (codigo === "") codigo = null;
-        if (nome === "") nome = null;
-        if (categoria === "") categoria = null;
-        if (tamanho === "") tamanho = null;
-        if (genero === "") genero = null;
-        if (quantidade === "") quantidade = null;
-        if (limiteMinimo === "") limiteMinimo = null;
+let produtos = [];
 
-        fetch('/produtos/filtrar', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ nome, codigo, categoria, tamanho, genero, quantidade, limiteMinimo, preco })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(produtos => {
-            renderizarProdutos(produtos);
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-        });
-    }    
+function filtrar() {
+    let codigo = document.getElementById("filter-codigo").value;
+    let nome = document.getElementById("filter-nome").value;
+    let categoria = document.getElementById("filter-categoria").value;
+    let tamanho = document.getElementById("filter-tamanho").value;
+    let genero = document.getElementById("filter-genero").value;
+    let quantidade = document.getElementById("filter-quantidade").value;
+    let limiteMinimo = document.getElementById("filter-limite").value;
+    let preco = document.getElementById("filter-preco").value;
+    preco = preco.replace(/[^\d,]/g, '').replace(',', '.');
+    if (preco === "") preco = null;
+    else preco = parseFloat(preco);
 
-    function limpar() {
-        document.querySelectorAll(".filters input, .filters select").forEach(el => el.value = "");
-        filtrar();
-    }
+    if (codigo === "") codigo = null;
+    if (nome === "") nome = null;
+    if (categoria === "") categoria = null;
+    if (tamanho === "") tamanho = null;
+    if (genero === "") genero = null;
+    if (quantidade === "") quantidade = null;
+    if (limiteMinimo === "") limiteMinimo = null;
 
-    function removerProduto(id) {
-        Swal.fire({
-            title: 'Tem certeza?',
-            text: 'Esta ação não poderá ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#1E94A3',
-            confirmButtonText: 'Remover',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
+    fetch('/produtos/filtrar', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, codigo, categoria, tamanho, genero, quantidade, limiteMinimo, preco })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        produtos = data;
+        renderizarProdutos(produtos);
+    })
+    .catch(error => {
+        console.error('Erro na API:', error);
+        const tbody = document.getElementById('product-table-body');
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+    });
+}    
 
-                fetch('/produtos/' + id, {
-                    method: 'DELETE'
-                }).then(response => {
-                    if (response.ok) {
-                        Swal.fire({
-                            title: 'Removendo...',
-                            text: 'Aguarde enquanto o produto é removido.',
-                            icon: 'info',
-                            showConfirmButton: true,
-                            confirmButtonColor: '#1E94A3',
-                            allowOutsideClick: false,
-                            timer: 1500,
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: 'Não foi possível remover.',
-                            icon: 'error',
-                            confirmButtonColor: '#1E94A3'
-                        });
-                    }
-                });
-            }
-        });
-    }
-
-
-    function carregarProdutos() {
-    fetch('/produtos')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            produtos = data;
-            renderizarProdutos(produtos);
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-        });
+function limpar() {
+    document.querySelectorAll("#filter-codigo, #filter-nome, #filter-categoria, #filter-tamanho, #filter-genero, #filter-quantidade, #filter-limite, #filter-preco").forEach(el => el.value = "");
+    carregarProdutos(document.getElementById('registros-select').value);
 }
+
+function removerProduto(id) {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            fetch('/produtos/' + id, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Removendo...',
+                        text: 'Aguarde enquanto o produto é removido.',
+                        icon: 'info',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#1E94A3',
+                        allowOutsideClick: false,
+                        timer: 1500,
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Não foi possível remover.',
+                        icon: 'error',
+                        confirmButtonColor: '#1E94A3'
+                    });
+                }
+            });
+        }
+    });
+}
+
 
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
     return tamanho;
 }
-    function renderizarProdutos(produtos) {
-        const tbody = document.getElementById('product-table-body');
-        tbody.innerHTML = '';
 
-        if (produtos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
-            return;
-        }
+function renderizarProdutos(produtos) {
+    const tbody = document.getElementById('product-table-body');
+    tbody.innerHTML = '';
 
-        produtos.forEach(p => {
-            const imageUrl = p.url_imagem;
-            const precoFormatado = p.preco.toFixed(2).replace('.', ',');
-            const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
-            const tamanhoExibido = exibirTamanho(p.tamanho);
-            p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
-            p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
+    if (produtos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
+        return;
+    }
+
+    produtos.forEach(p => {
+        const imageUrl = p.url_imagem;
+        const precoFormatado = p.preco.toFixed(2).replace('.', ',');
+        const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
+        const tamanhoExibido = exibirTamanho(p.tamanho);
+        p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
+        p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
 
 
-            const rowHtml = `
-                <tr>
-                    <td>
-                        ${imageUrl 
-                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
-                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                        }
-                    </td>
-                    <td>${p.codigo}</td>
-                    <td>${p.nome}</td>
-                    <td class="categoria">${p.categoria}</td>
-                    <td>${tamanhoExibido}</td>
-                    <td class="genero">${p.genero}</td>
-                    <td style="position: relative; text-align: center;">
-                    <span style="display: inline-block;">${p.quantidade}</span>
-
-                    ${
-                        precisaAbastecer
-                            ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
-                                style="
-                                    position: absolute;
-                                    top: 50%;
-                                    right: 0;
-                                    transform: translateY(-50%);
-                                    width: 20px;
-                                    height: 20px;
-                                    text-decoration: none;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    pointer-events: auto;
-                                    padding-right: 23px;
-                                ">
-                                    <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                    <i class="fa-solid fa-triangle-exclamation" style="color:${
-                                        p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
-                                    };position:relative;z-index:1;"></i>
-                            </a>`
-                            : ''
+        const rowHtml = `
+            <tr>
+                <td>
+                    ${imageUrl 
+                        ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
+                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
                     }
-                    </td>
+                </td>
+                <td>${p.codigo}</td>
+                <td>${p.nome}</td>
+                <td class="categoria">${p.categoria}</td>
+                <td>${tamanhoExibido}</td>
+                <td class="genero">${p.genero}</td>
+                <td style="position: relative; text-align: center;">
+                <span style="display: inline-block;">${p.quantidade}</span>
 
-                    <td>${p.limiteMinimo}</td>
-                    <td>${precoFormatado}</td>
-                    <td class="actions">
-                        <a href="/editar-produto/${p.id}" title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
-                        <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += rowHtml;
-        });
+                ${
+                    precisaAbastecer
+                        ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
+                            style="
+                                position: absolute;
+                                top: 50%;
+                                right: 0;
+                                transform: translateY(-50%);
+                                width: 20px;
+                                height: 20px;
+                                text-decoration: none;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                pointer-events: auto;
+                                padding-right: 23px;
+                            ">
+                                <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                                <i class="fa-solid fa-triangle-exclamation" style="color:${
+                                    p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
+                                };position:relative;z-index:1;"></i>
+                        </a>`
+                        : ''
+                }
+                </td>
+
+                <td>${p.limiteMinimo}</td>
+                <td>${precoFormatado}</td>
+                <td class="actions">
+                    <a href="/editar-produto/${p.id}" title="Editar">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += rowHtml;
+    });
 }
 
 function carregarProdutos(top) {
-    let url = '/produtos';
-    if (top && top !== "") {
-        url += `?top=${top}`;
+        if (top && top !== "") {
+            url += `?top=${top}`;
+        }
+        fetch('/produtos')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                produtos = data;
+                renderizarProdutos(produtos);
+            })
+            .catch(error => {
+                console.error('Erro na API:', error);
+                const tbody = document.getElementById('product-table-body');
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+            });
     }
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(produtos => {
-            renderizarProdutos(produtos);
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-        });
-}
+
 
 
 window.onload = function() {
@@ -290,4 +277,60 @@ window.onload = function() {
     select.addEventListener('change', function() {
         carregarProdutos(this.value);
     });
+
+    //campos para ordenação
+    const campos = [
+        'codigo',   
+        'nome',       
+        'categoria',  
+        'tamanho',    
+        'genero',    
+        'quantidade',
+        'limiteMinimo',
+        'preco'       
+    ];
+
+    //inicia com true (decrescente)
+    let estadoOrdenacao = Array(campos.length).fill(true);
+
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        const icon = th.querySelector('.sort-icon');
+        th.addEventListener('mouseenter', function() {
+            icon.style.display = 'inline-block';
+        });
+        th.addEventListener('mouseleave', function() {
+            if (!th.classList.contains('sorted')) {
+                icon.style.display = 'none';
+            }
+        });
+        th.addEventListener('click', function() {
+            document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
+            th.classList.add('sorted');
+
+            const campo = campos[idx];
+            produtos.sort((a, b) => {
+                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
+                    // numérico
+                    return estadoOrdenacao[idx]
+                        ? b[campo] - a[campo]
+                        : a[campo] - b[campo];
+                } else {
+                    // alfabético
+                    return estadoOrdenacao[idx]
+                        ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
+                        : b[campo].localeCompare(a[campo], undefined, { numeric: true });
+                }
+            });
+            //altera o estado de ordenação
+            estadoOrdenacao[idx] = !estadoOrdenacao[idx];
+            icon.innerHTML = estadoOrdenacao[idx]
+                // true seta para baixo (decrescente) false seta para cima (crescente)
+                ? '<i class="fa-solid fa-arrow-down"></i>'
+                : '<i class="fa-solid fa-arrow-up"></i>';
+            renderizarProdutos(produtos);
+            icon.style.display = 'inline-block';
+        });
+    });
+
 }
+
