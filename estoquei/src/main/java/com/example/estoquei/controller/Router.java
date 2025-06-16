@@ -180,5 +180,21 @@ public class Router {
 
         return "redirect:/inicio";
     }
+
+    //erro
+    @GetMapping("/erro")
+    public String erro(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario==null) return "redirect:/";
+        return "erro_404";
+    }
+
+    //andamento
+    @GetMapping("/andamento")
+    public String andamento(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario==null) return "redirect:/";
+        return "andamento";
+    }
     
 }
