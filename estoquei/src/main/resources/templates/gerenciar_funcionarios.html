@@ -28,7 +28,7 @@
                 <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" style="width: 90px;" />
                 <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
                 <select id="filter-cargo" style="width: 120px;">
-                    <option value="" selected disabled hidden style="color: white; background: white">Cargo</option>
+                    <option value="" selected disabled hidden>Cargo</option>
                     <option value="Gerente">Gerente</option>
                     <option value="Vendedor">Vendedor</option>
                     <option value="Caixa">Caixa</option>
@@ -58,7 +58,7 @@
         <!--Cadastro de Funcionário -->
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
         <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
-            <button type="button" onclick="fecharCadastroFuncionario()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
             <label for="cad-codigo">Código*:</label>
             <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
@@ -68,7 +68,7 @@
 
             <label for="cad-cargo">Cargo*:</label>
             <select id="cad-cargo" name="cargo" required tabindex="3">
-                <option value="" selected disabled hidden style="color: white; background: white">Cargo</option>
+                <option value="" selected disabled hidden>Cargo</option>
                 <option value="Gerente">Gerente</option>
                 <option value="Vendedor">Vendedor</option>
                 <option value="Caixa">Caixa</option>
@@ -99,7 +99,7 @@
         <!-- editar de Funcionário -->
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
-            <button type="button" onclick="fecharEdicaoFuncionario()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+            <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
             <label for="edit-codigo" style="color: #757575;">Código*:</label>
             <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly style="color: #757575;"/>
@@ -109,8 +109,8 @@
 
             <label for="edit-cargo">Cargo*:</label>
             <select id="edit-cargo" name="cargo" required>
-                <option value="" selected disabled hidden style="color: white; background: white">Cargo</option>
-                <option value="Gerente">Gerente</option>
+                <option value="" selected disabled hidden>Cargo</option>
+                <option disabled value="Gerente">Gerente</option>
                 <option value="Vendedor">Vendedor</option>
                 <option value="Caixa">Caixa</option>
                 <option value="Estoquista">Estoquista</option>
