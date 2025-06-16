@@ -55,7 +55,10 @@
                     <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
                 </div>
                 <label for="descricao">Descrição:</label>
-                <textarea id="descricao" name="descricao" maxlength="300" placeholder="0/300" tabindex="10"></textarea>
+                <div style="position: relative; display: inline-block;">
+                    <textarea id="descricao" maxlength="200"></textarea>
+                    <span id="contador-descricao">0/200</span>
+                </div>
             </div>
         </form>
     </div>
