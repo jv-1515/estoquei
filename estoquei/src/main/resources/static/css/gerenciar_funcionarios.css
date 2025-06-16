@@ -163,6 +163,50 @@ select#edit-cargo {
 padding-left: 1px;
 }
 
+#cad-cargo,
+#cad-nascimento,
+#edit-cargo,
+#edit-nascimento,
+#filter-cargo {
+    color: #757575;
+}
+
+#cad-cargo:valid,
+#cad-nascimento:valid,
+#edit-cargo:valid,
+#edit-nascimento:valid {
+    color: #000;
+}
+
+#filter-cargo{
+    color: #757575;
+}
+
+#cad-cargo option[disabled][hidden],
+#edit-cargo option[disabled][hidden],
+#filter-cargo option[disabled][hidden],
+#cad-genero option[disabled][hidden],
+#edit-genero option[disabled][hidden],
+#filter-genero option[disabled][hidden] {
+    display: none;
+}
+
+.botao-fechar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.2s;
+    color: #333;
+}
+
+.botao-fechar:hover {
+    color: #f27474;
+}
+
 .swal2-confirm-custom {
     background-color: #1E94A3 !important;
     color: #fff !important;
@@ -185,23 +229,4 @@ padding-left: 1px;
 #edit-cargo option[disabled][hidden],
 #filter-cargo option[disabled][hidden] {
     display: none;
-}
-
-#cad-cargo,
-#cad-nascimento,
-#edit-cargo,
-#edit-nascimento,
-#filter-cargo {
-    color: #757575;
-}
-
-#cad-cargo:valid,
-#cad-nascimento:valid,
-#edit-cargo:valid,
-#edit-nascimento:valid {
-    color: #000;
-}
-
-#filter-cargo{
-    color: #757575;
 }

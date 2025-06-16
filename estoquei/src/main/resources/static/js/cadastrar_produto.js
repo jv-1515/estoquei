@@ -143,8 +143,14 @@ function previewImage(event) {
 }
 
 
-function atualizarContador() {
-const textarea = document.getElementById('descricao');
-const contador = document.getElementById('contador');
-contador.textContent = `${textarea.value.length}/300`;
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('descricao');
+    const contador = document.getElementById('contador-descricao');
+    if (textarea && contador) {
+        const max = textarea.maxLength || 200;
+        contador.textContent = `${textarea.value.length}/${max}`;
+        textarea.addEventListener('input', function() {
+            contador.textContent = `${this.value.length}/${max}`;
+        });
+    }
+});
