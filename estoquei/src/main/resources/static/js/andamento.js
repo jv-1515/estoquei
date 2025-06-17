@@ -11,11 +11,13 @@
             progressBar.textContent = progress + '%';
             progress++;
             setTimeout(animateProgress, 30);
-        } else if (progress > 80) {
-            progressBar.style.display = 'none';
-            backButton.style.display = 'block'; 
-            document.getElementsByClassName('progress-bar-bg')[0].style.backgroundColor = 'white';
-            document.getElementsByClassName('progress-bar-bg')[0].style.margin = '0';
-        }
+                } else if (progress > 80) {
+                    setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    backButton.style.display = 'block'; 
+                    document.getElementsByClassName('progress-bar-bg')[0].style.backgroundColor = 'white';
+                    document.getElementsByClassName('progress-bar-bg')[0].style.margin = '0';
+                    }, 1500);
+                }
     }
     animateProgress();
