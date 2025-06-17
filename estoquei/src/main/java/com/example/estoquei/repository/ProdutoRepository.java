@@ -33,6 +33,15 @@ public class ProdutoRepository {
         return produto;
     }
 
+    //valida codigo
+    public boolean existsByCodigo(String codigo) {
+        String jpql = "SELECT COUNT(p) FROM Produto p WHERE p.codigo = :codigo";
+        Long count = entityManager.createQuery(jpql, Long.class)
+            .setParameter("codigo", codigo)
+            .getSingleResult();
+        return count > 0;
+}
+
     //estoque
     public List<Produto> findAll() {
         return entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
