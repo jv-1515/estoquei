@@ -23,7 +23,7 @@
         <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
                 <label for="codigo">Código*:</label>
-                <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" maxlength="9" pattern="\d{9}">
+                <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" maxlength="9" minlength="9" pattern="\d{9}">
 
                 <label for="nome">Nome*:</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
@@ -57,6 +57,7 @@
                 
                 <label for="preco">Preço (R$)*:</label>
                 <input type="text" id="preco" name="preco" required placeholder="R$10,00" tabindex="8" min="1" max="999">
+
                 <button type="submit"  tabindex="11">Cadastrar produto</button>
             </div>
             <div class="right-column">
