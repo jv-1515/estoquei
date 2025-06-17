@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,12 @@ public class ProdutoResource {
 
     public ProdutoResource(ProdutoService produtoService) {
         this.produtoService = produtoService;
+    }
+
+    @GetMapping("/codigo-existe")
+    @ResponseBody
+    public boolean codigoProdutoExiste(@RequestParam String codigo) {
+        return produtoService.codigoExiste(codigo);
     }
 
     @PostMapping
