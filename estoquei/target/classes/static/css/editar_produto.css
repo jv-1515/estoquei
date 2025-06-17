@@ -8,8 +8,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 12px
-    ;
+    font-size: 12px;
+}
+
+html body.swal2-height-auto {
+    height: 100vh !important;
 }
 
 textarea {
