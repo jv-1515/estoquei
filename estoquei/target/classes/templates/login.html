@@ -41,11 +41,13 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Erro ao logar',
-                text: '[[${erro}]]',
-                timer: 3000,
+                text: 'Email ou senha inválidos. Tente novamente.',
+                timer: 2000,
                 timerProgressBar: true,
                 showConfirmButton: false,
-                scrollbarPadding: false
+                scrollbarPadding: false,
+                width: 350,
+                height: 350,
             });
         </script>
 </body>

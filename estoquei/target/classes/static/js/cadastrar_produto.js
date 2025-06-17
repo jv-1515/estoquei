@@ -76,6 +76,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
         if (!data.ok) {
             throw new Error('Falha de conexão');
         }   
+        document.querySelector('form').reset();
         Swal.fire({
             title: "Sucesso!",
             text: "Produto cadastrado no estoque!",
@@ -151,6 +152,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const observer = new MutationObserver(function() {
             if (preview.querySelector('img')) {
                 editIcon.style.color = '#555';
+                editIcon.addEventListener('mouseenter', function() {
+                    editIcon.style.color = '#1e94a3';
+                });
+                editIcon.addEventListener('mouseleave', function() {
+                    editIcon.style.color = '#555';
+                });
             } else {
                 editIcon.style.color = 'white';
             }
