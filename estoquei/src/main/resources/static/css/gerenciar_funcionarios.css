@@ -190,7 +190,13 @@ padding-left: 1px;
 #filter-genero option[disabled][hidden] {
     display: none;
 }
-
+input[readonly] {
+    cursor: default !important;
+}
+input:focus[readonly] {
+    outline: none !important;
+    box-shadow: none !important;
+}
 .botao-fechar {
     position: absolute;
     top: 15px;
