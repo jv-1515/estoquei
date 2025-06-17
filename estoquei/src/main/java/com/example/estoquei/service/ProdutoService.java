@@ -31,6 +31,9 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    public boolean codigoExiste(String codigo) {
+        return produtoRepository.existsByCodigo(codigo);
+    }
     
     public List<Produto> listarTodos() {
         return produtoRepository.findAll();
