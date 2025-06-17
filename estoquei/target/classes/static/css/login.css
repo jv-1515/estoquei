@@ -21,10 +21,12 @@ body {
 .form-container {
     background-color: #fff;
     border-radius: 12px;
-    padding: 40px 32px 32px 32px;
+    padding: 20px;
     box-shadow: 0 0 18px rgba(0,0,0,0.13);
     max-width: 350px;
-    width: 100%;
+    width: 350px;
+    max-height: 350px;
+    height: 350px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -35,7 +37,7 @@ body {
 }
 .input-group input {
     width: 100%;
-    padding: 10px 44px 10px 14px;
+    padding: 10px;
     font-size: 12px;
     border: 1px solid #bbb;
     border-radius: 5px;
@@ -54,7 +56,7 @@ h1 {
     font-size: 50px;
     color: #277580;
     text-align: center;
-    margin: 0 0 15px 0;
+    margin: 20px 0 15px 0;
 }
 label {
     color: #333;

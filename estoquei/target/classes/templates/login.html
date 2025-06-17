@@ -14,7 +14,7 @@
     <form class="form-container" th:action="@{/admin/login}"  method="post">
         <h1>Bem-vindo!</h1>
         <div>
-            <label for="email">Email:</label>
+            <label for="email">Email*:</label>
             <div class="input-group">
                 <input type="email" id="email" name="email" placeholder="Email cadastrado" required>
                 <span class="lock-open">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div>
-            <label for="senha">Senha:</label>
+            <label for="senha">Senha*:</label>
             <div class="input-group">
                 <input type="password" id="senha" name="senha" placeholder="Senha de 8 caracteres" required minlength="8">
                 <span class="lock-open" onclick="lockOpen()">
