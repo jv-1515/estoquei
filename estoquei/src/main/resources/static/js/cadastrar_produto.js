@@ -142,6 +142,35 @@ function previewImage(event) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const editIcon = document.querySelector('.edit-icon');
+    if (editIcon) {
+        editIcon.style.color = 'white';
+
+        const preview = document.getElementById('image-preview');
+        const observer = new MutationObserver(function() {
+            if (preview.querySelector('img')) {
+                editIcon.style.color = '#555';
+            } else {
+                editIcon.style.color = 'white';
+            }
+        });
+        observer.observe(preview, { childList: true });
+
+        editIcon.addEventListener('click', function() {
+            const img = preview.querySelector('img');
+            if (img) preview.removeChild(img);
+            if (!preview.querySelector('.fa-image')) {
+                const icon = document.createElement('i');
+                icon.className = 'fa-regular fa-image';
+                icon.style.fontSize = '30px';
+                preview.insertBefore(icon, preview.firstChild);
+            }
+            upload();
+        });
+    }
+});
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const textarea = document.getElementById('descricao');
@@ -151,6 +180,32 @@ document.addEventListener('DOMContentLoaded', function() {
         contador.textContent = `${textarea.value.length}/${max}`;
         textarea.addEventListener('input', function() {
             contador.textContent = `${this.value.length}/${max}`;
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const codigoInput = document.getElementById('codigo');
+    if (codigoInput) {
+        codigoInput.addEventListener('blur', function() {
+            const codigo = this.value.trim();
+            if (!codigo) return;
+
+            fetch(`/produtos/codigo-existe?codigo=${encodeURIComponent(codigo)}`)
+                .then(response => response.json())
+                .then(existe => {
+                    if (existe) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código já cadastrado!',
+                            text: 'Informe outro código.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        this.value = '';
+                        this.focus();
+                    }
+                });
         });
     }
 });
