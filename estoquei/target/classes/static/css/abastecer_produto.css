@@ -49,22 +49,6 @@ h2 {
     font-size: 12px;
 }
 
-.actions a, .actions button {
-    background: none;
-    border: none;
-    color: #555;
-    padding: 0;
-    margin: 0 4px;
-    cursor: pointer;
-    font-size: 12px;
-    vertical-align: middle;
-    outline: none;
-    text-decoration: none;
-}
-.actions a:hover, .actions button:hover {
-    color: #1e94a3;
-}
-
 .produto-img {
     width: 30px;
     height: 30px;
@@ -133,13 +117,11 @@ label{
     align-items: center;
     border: dashed 2px #aaa;
     background-color: #f9f9f9;
-    cursor: pointer;
     overflow: hidden;
 }
 
 .image-box:hover {
     background-color: #f0f0f0;
-    border: 2px solid #000;
 }
 
 .image-box img {
@@ -231,4 +213,12 @@ padding-top: 24px;
 #filter-categoria,
 #filter-tamanho {
   color: #757575;
+}
+
+input[readonly] {
+    cursor: default !important;
+}
+input:focus[readonly] {
+    outline: none !important;
+    box-shadow: none !important;
 }
