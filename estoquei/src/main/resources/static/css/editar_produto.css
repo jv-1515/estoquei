@@ -135,6 +135,13 @@ select#genero {
     color: red;
 }
 
+input[readonly] {
+    cursor: default !important;
+}
+input:focus[readonly] {
+    outline: none !important;
+    box-shadow: none !important;
+}
 .swal2-confirm-custom {
     background-color: #1E94A3 !important;
     color: #fff !important;
