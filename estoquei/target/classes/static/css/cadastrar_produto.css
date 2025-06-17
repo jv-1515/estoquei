@@ -9,8 +9,12 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 12px;
-    overflow-y: scroll;
     scrollbar-gutter: stable;
+    background-attachment: fixed;
+}
+
+html body.swal2-height-auto {
+    height: 100vh !important;
 }
 
 textarea {
