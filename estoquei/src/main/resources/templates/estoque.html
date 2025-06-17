@@ -24,7 +24,7 @@
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Filtrar produtos</h2>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" style="width: 90px;" />
+                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" pattern="\d{9}" style="width: 90px;" />
                 <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
 
                 <select id="filter-categoria" style="width: 110px;" onchange="updateOptions()">
