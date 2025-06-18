@@ -10,6 +10,7 @@ function mascaraPreco(input) {
     }
 }
 
+
 function updateOptions() {
     const categoria = document.getElementById('filter-categoria').value;
     const tamanho = document.getElementById('filter-tamanho');
@@ -379,3 +380,17 @@ function visualizarImagem(url, titulo) {
         }
     });
 }
+
+window.addEventListener('DOMContentLoaded', function() {
+    function limitarInput999(input) {
+        input.addEventListener('input', function() {
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (this.value > 999) this.value = 999;
+        });
+    }
+
+    ['filter-quantidade', 'filter-limite'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) limitarInput999(input);
+    });
+});
