@@ -208,7 +208,7 @@ function renderizarProdutos(produtos) {
             <tr>
                 <td>
                     ${imageUrl 
-                        ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
+                        ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}')" class="produto-img" loading="lazy" />` 
                         : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
                     }
                 </td>
@@ -366,3 +366,15 @@ window.onload = function() {
 
 }
 
+function visualizarImagem(url, titulo) {
+    console.log('Apertou o botão');
+    Swal.fire({
+        title: titulo,
+        html: `<img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>`,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'swal-popup'
+        }
+    });
+}
