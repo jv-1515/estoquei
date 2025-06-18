@@ -217,3 +217,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+window.addEventListener('DOMContentLoaded', function() {
+    const limiteInput = document.getElementById('limiteMinimo');
+    if (limiteInput) {
+        limiteInput.addEventListener('input', function() {
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (this.value > 999) this.value = 999;
+        });
+    }
+});
