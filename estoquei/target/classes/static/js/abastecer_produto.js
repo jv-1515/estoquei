@@ -2,6 +2,7 @@ function formatarPrecoInput(input) {
     if (!input) return;
     input.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 5) value = value.slice(0, 5);
         if (value.length > 0) {
             value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
             e.target.value = 'R$' + value;
