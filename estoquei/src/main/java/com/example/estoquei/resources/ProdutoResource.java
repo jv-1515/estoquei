@@ -113,7 +113,7 @@ public class ProdutoResource {
     public ResponseEntity<?> atualizar(
             @PathVariable Long id,
             @ModelAttribute Produto produtoAtualizado,
-            @RequestParam("foto") MultipartFile foto
+           @RequestParam(value = "foto", required = false) MultipartFile foto
     ) {
         try {
             Produto atualizado = produtoService.atualizar(id, produtoAtualizado, foto);

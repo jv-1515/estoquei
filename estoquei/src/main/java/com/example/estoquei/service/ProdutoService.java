@@ -89,10 +89,10 @@ public class ProdutoService {
                 p.setUrl_imagem(novaImageUrl);
             }
             else if (novoProduto.getUrl_imagem() == null || novoProduto.getUrl_imagem().isEmpty()) {
-                if (p.getUrl_imagem() != null && !p.getUrl_imagem().isEmpty()) {
-                    firebaseStorageService.deleteFileByFirebaseUrl(p.getUrl_imagem());
-                }
-                p.setUrl_imagem(null);
+                // if (p.getUrl_imagem() != null && !p.getUrl_imagem().isEmpty()) {
+                //     firebaseStorageService.deleteFileByFirebaseUrl(p.getUrl_imagem());
+                // }
+                // p.setUrl_imagem(null);
             }
 
 
