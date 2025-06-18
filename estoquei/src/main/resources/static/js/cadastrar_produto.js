@@ -68,6 +68,8 @@ function updateOptions() {
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('save').disabled = true;
+    document.getElementById('save').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...';
     event.preventDefault();
     const formData = new FormData(this);
     fetch(this.action, {
@@ -109,6 +111,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 confirmButton: 'swal2-confirm-custom'
             }
         });
+        
+        document.getElementById('save').disabled = false;
+        document.getElementById('save').innerHTML = 'Cadastrar produto';
         return;
     });
 

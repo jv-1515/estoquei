@@ -248,7 +248,7 @@ function renderizarProdutos(produtos) {
                 <td>${p.limiteMinimo}</td>
                 <td>${precoFormatado}</td>
                 <td class="actions">
-                    <a href="/editar-produto/${p.id}" title="Editar">
+                    <a href="/editar-produto?id=${p.id}" title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </a>
                     <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
