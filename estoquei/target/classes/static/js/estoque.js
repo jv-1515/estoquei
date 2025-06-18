@@ -1,6 +1,7 @@
 // Função para aplicar máscara de preço (R$xx,xx)
 function mascaraPreco(input) {
     let value = input.value.replace(/\D/g, '');
+    if (value.length > 5) value = value.slice(0, 5);
     if (value.length > 0) {
         value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
         input.value = 'R$' + value;
