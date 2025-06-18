@@ -50,8 +50,8 @@
                     <option value="UNISSEX">Unissex</option>
                 </select>
 
-                <input type="number" id="filter-quantidade" placeholder="Quantidade" style="width: 90px;" />
-                <input type="number" id="filter-limite" placeholder="Limite Mínimo" style="width: 110px;" />
+                <input type="number" id="filter-quantidade" placeholder="Quantidade" style="width: 90px;" max="999"/>
+                <input type="number" id="filter-limite" placeholder="Limite Mínimo" style="width: 110px;" max="999"/>
                 <input type="string" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" oninput="mascaraPreco(this)" />
 
                 <button class="btn" onclick="filtrar()">Filtrar</button>
