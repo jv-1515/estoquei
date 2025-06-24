@@ -1,7 +1,7 @@
 function getFiltros() {
     return {
-        codigo: document.getElementById('filter-codigo').value,
-        nome: document.getElementById('filter-nome').value,
+        // codigo: document.getElementById('filter-codigo').value,
+        // nome: document.getElementById('filter-nome').value,
         categoria: document.getElementById('filter-categoria').value,
         tamanho: document.getElementById('filter-tamanho').value,
         genero: document.getElementById('filter-genero').value,

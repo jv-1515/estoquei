@@ -124,7 +124,7 @@ function fillFields(product) {
         generoSelect.value = product.genero;
     }
 
-    document.getElementById('quantidade').value = product.quantidade || '';
+    document.getElementById('quantidade').value = (product.quantidade !== undefined && product.quantidade !== null) ? product.quantidade : '';
     document.getElementById('limiteMinimo').value = product.limiteMinimo || '';
 
     if (product.preco !== undefined && product.preco !== null) {
@@ -176,9 +176,9 @@ function fillFields(product) {
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
-    document.getElementById('save').disabled = true;
-    document.getElementById('save').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
-    
+    const saveBtn = document.getElementById('save');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = 'Salvando <i class="fa-solid fa-spinner fa-spin"></i> ';
     event.preventDefault();
 
     Swal.fire({
@@ -201,8 +201,6 @@ document.querySelector('form').addEventListener('submit', function(event) {
             const formData = new FormData(this);
             formData.set('descricao', document.getElementById('descricao').value); // Garante que a descrição está no FormData
             
-
-
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
 
@@ -212,10 +210,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 return;
             }
 
-            // A CORREÇÃO ESTÁ AQUI:
             fetch(`/produtos/${id}`, {
                 method: 'PUT',
-                body: formData // PASSE o FormData DIRETAMENTE
+                body: formData
             })
             .then(response => {
                 if (!response.ok) {
@@ -238,6 +235,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
                         cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Salvar alterações';
                     if (result.isConfirmed) {
                         window.location.href = "/estoque";
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -253,10 +252,12 @@ document.querySelector('form').addEventListener('submit', function(event) {
                     icon: 'error',
                     confirmButtonColor: '#1E94A3'
                 });
-                precoInput.dispatchEvent(new Event('input'));
-                document.getElementById('save').disabled = false;
-                document.getElementById('save').innerHTML = 'Salvar alterações';
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Salvar alterações';
             });
+        } else {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Salvar alterações';
         }
     });
 });
@@ -366,6 +367,27 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmButtonColor: '#1E94A3'
         }).then(() => {
             history.back();
+        });
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const editIcon = document.querySelector('.edit-icon');
+    const preview = document.getElementById('image-preview');
+
+    if (editIcon && preview) {
+        editIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const img = preview.querySelector('img');
+            if (img) preview.removeChild(img);
+            if (!preview.querySelector('.fa-image')) {
+                const icon = document.createElement('i');
+                icon.className = 'fa-regular fa-image';
+                icon.style.fontSize = '30px';
+                preview.insertBefore(icon, preview.firstChild);
+            }
+            upload();
         });
     }
 });

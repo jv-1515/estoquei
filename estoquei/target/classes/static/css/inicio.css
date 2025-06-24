@@ -126,3 +126,6 @@ button {
 button:hover {
     background-color: #277580;
 }
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
+}

@@ -145,5 +145,3 @@ public class ProdutoResource {
         return ResponseEntity.notFound().build();
     }
 }
-
-

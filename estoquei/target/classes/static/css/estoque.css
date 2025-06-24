@@ -72,6 +72,7 @@ h2 {
 .limpar:hover {
     background-color: #1e94a3;
 }
+
 .main-container {
     background: white;
     border-radius: 10px;
@@ -132,6 +133,7 @@ tbody tr:hover {
     background: #f3f3f3;
     display: inline-block;
     vertical-align: middle;
+    outline: none;
 }
 .produto-img.icon {
     align-items: center;
@@ -211,11 +213,12 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-img.produto-img:hover,
-img.produto-img:focus {
+img.produto-img:hover {
     cursor: pointer;
     opacity: 0.5;
     transition: opacity 0.2s;
-    outline: 2px solid #1E94A3;
-    outline-offset: 2px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
 }

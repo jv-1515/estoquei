@@ -93,4 +93,6 @@ input:focus {
 .swal2-container {
     position: fixed !important;
     z-index: 9999 !important;
+    backdrop-filter: blur(2px) !important;
+
 }

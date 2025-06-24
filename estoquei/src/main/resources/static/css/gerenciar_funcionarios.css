@@ -237,3 +237,6 @@ input:focus[readonly] {
 #filter-cargo option[disabled][hidden] {
     display: none;
 }
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
+}

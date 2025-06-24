@@ -223,7 +223,7 @@ function renderizarProdutos(produtos) {
             <span style="display: inline-block;">${p.quantidade}</span>
             ${
             precisaAbastecer
-            ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
+            ? `<a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
             style="
             position: absolute;
             top: 50%;
