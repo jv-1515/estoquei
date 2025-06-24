@@ -59,9 +59,10 @@ public class Router {
     }
 
     @GetMapping("/editar-produto")
-    public String editarProduto(HttpSession session) {
+    public String editarProduto(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
+        model.addAttribute("tipo", usuario.getTipo().name());
         return "editar_produto";
     }
 
@@ -71,7 +72,6 @@ public class Router {
         if (usuario==null) return "redirect:/";
         return "abastecer_produto";
     }
-
 
     //funcionario
     @GetMapping("/cadastrar-funcionario")
@@ -179,14 +179,6 @@ public class Router {
         }
 
         return "redirect:/inicio";
-    }
-
-    //erro
-    @GetMapping("/erro")
-    public String erro(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-        return "erro_404";
     }
 
     //andamento
