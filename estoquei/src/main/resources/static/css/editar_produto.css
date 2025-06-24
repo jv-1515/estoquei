@@ -65,19 +65,14 @@ h1 {
 }
 
 .image-box {
-    width: 227px;
-    height: 227px;
+    width: 230px;
+    height: 230px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #777;
     font-size: 12px;
     border: dashed 2px #aaa;
-}
-
-.image-box:hover {
-    background-color: #f0f0f0;
-    border: 2px solid #000000;
 }
 
 .form-container button {
@@ -103,7 +98,7 @@ button:hover {
 }
 
 .right-column textarea {
-    width: 209px;
+    width: 212px;
     height: 145px;
     resize: none;
     border: 1px solid #aaa;
@@ -128,14 +123,21 @@ select#genero {
     padding-left: 1px;
 }
 
-.trash-icon {
+.trash-icon, .edit-icon {
     color:#555;
 }
 .trash-icon:hover {
+    transition: color 0.2s;
     color: red;
 }
 
+.edit-icon:hover {
+    transition: color 0.2s;
+    color: #1E94A3;
+}
+
 input[readonly] {
+    color: #999 !important;
     cursor: default !important;
 }
 input:focus[readonly] {

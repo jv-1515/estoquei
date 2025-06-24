@@ -68,8 +68,9 @@ function updateOptions() {
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
-    document.getElementById('save').disabled = true;
-    document.getElementById('save').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...';
+    const saveBtn = document.getElementById('save');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = 'Cadastrando <i class="fa-solid fa-spinner fa-spin"></i>';
     event.preventDefault();
     const formData = new FormData(this);
     fetch(this.action, {
@@ -80,6 +81,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
             throw new Error('Falha de conexão');
         }   
         document.querySelector('form').reset();
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Cadastrar produto';
         Swal.fire({
             title: "Sucesso!",
             text: "Produto cadastrado no estoque!",
@@ -111,12 +114,10 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 confirmButton: 'swal2-confirm-custom'
             }
         });
-        
-        document.getElementById('save').disabled = false;
-        document.getElementById('save').innerHTML = 'Cadastrar produto';
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Cadastrar produto';
         return;
     });
-
 });
 
 function upload() {
@@ -152,8 +153,6 @@ function previewImage(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const editIcon = document.querySelector('.edit-icon');
     if (editIcon) {
-        editIcon.style.color = 'white';
-
         const preview = document.getElementById('image-preview');
         const observer = new MutationObserver(function() {
             if (preview.querySelector('img')) {

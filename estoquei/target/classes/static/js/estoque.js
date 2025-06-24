@@ -151,7 +151,6 @@ function removerProduto(id) {
                         title: 'Removendo...',
                         text: 'Aguarde enquanto o produto é removido.',
                         icon: 'info',
-                        showConfirmButton: true,
                         confirmButtonColor: '#1E94A3',
                         allowOutsideClick: false,
                         timer: 1500,
@@ -208,54 +207,54 @@ function renderizarProdutos(produtos) {
 
         const rowHtml = `
             <tr>
-                <td>
-                    ${imageUrl 
-                        ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}')" class="produto-img" loading="lazy" />` 
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                </td>
-                <td>${p.codigo}</td>
-                <td>${p.nome}</td>
-                <td class="categoria">${p.categoria}</td>
-                <td>${tamanhoExibido}</td>
-                <td class="genero">${p.genero}</td>
-                <td style="position: relative; text-align: center;">
-                <span style="display: inline-block;">${p.quantidade}</span>
-                ${
-                    precisaAbastecer
-                        ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
-                            style="
-                                position: absolute;
-                                top: 50%;
-                                right: 0;
-                                transform: translateY(-50%);
-                                width: 20px;
-                                height: 20px;
-                                text-decoration: none;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                pointer-events: auto;
-                                padding-right: 23px;
-                            ">
-                                <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                <i class="fa-solid fa-triangle-exclamation" style="color:${
-                                    p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
-                                };position:relative;z-index:1;"></i>
-                        </a>`
-                        : ''
-                }
-                </td>
-                <td>${p.limiteMinimo}</td>
-                <td>${precoFormatado}</td>
-                <td class="actions">
-                    <a href="/editar-produto?id=${p.id}" title="Editar">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
+            <td>
+            ${imageUrl 
+            ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
+            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
+            }
+            </td>
+            <td>${p.codigo}</td>
+            <td>${p.nome}</td>
+            <td class="categoria">${p.categoria}</td>
+            <td>${tamanhoExibido}</td>
+            <td class="genero">${p.genero}</td>
+            <td style="position: relative; text-align: center;">
+            <span style="display: inline-block;">${p.quantidade}</span>
+            ${
+            precisaAbastecer
+            ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
+            style="
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            padding-right: 23px;
+            ">
+            <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+            <i class="fa-solid fa-triangle-exclamation" style="color:${
+            p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
+            };position:relative;z-index:1;"></i>
+            </a>`
+            : ''
+            }
+            </td>
+            <td>${p.limiteMinimo}</td>
+            <td>${precoFormatado}</td>
+            <td class="actions">
+            <a href="/editar-produto?id=${p.id}" title="Editar">
+            <i class="fa-solid fa-pen"></i>
+            </a>
+            <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
+            <i class="fa-solid fa-trash"></i>
+            </button>
+            </td>
             </tr>
         `;
         tbody.innerHTML += rowHtml;
@@ -368,17 +367,24 @@ window.onload = function() {
 
 }
 
-function visualizarImagem(url, titulo) {
-    console.log('Apertou o botão');
+function visualizarImagem(url, titulo, descricao) {
     Swal.fire({
         title: titulo,
-        html: `<img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>`,
+        html: `
+            <img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>
+            ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
+        `,
         showCloseButton: true,
         showConfirmButton: false,
         customClass: {
             popup: 'swal-popup'
         }
     });
+
+    const closeBtn = document.querySelector('.swal2-close');
+    if (closeBtn) {
+        closeBtn.style.boxShadow = 'none';
+    }
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -393,4 +399,24 @@ window.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById(id);
         if (input) limitarInput999(input);
     });
+});
+
+//botão voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
 });

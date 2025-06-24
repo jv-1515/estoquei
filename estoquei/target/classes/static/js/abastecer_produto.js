@@ -44,6 +44,16 @@ window.addEventListener('DOMContentLoaded', function() {
     const quantidadeInput = document.getElementById('quantidade');
     const quantidadeFinalInput = document.getElementById('quantidade-final');
 
+    function limitarInput999(input) {
+        input.addEventListener('input', function() {
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (parseInt(this.value) > 999) this.value = 999;
+        });
+    }
+
+    if (quantidadeInput) limitarInput999(quantidadeInput);
+    if (quantidadeFinalInput) limitarInput999(quantidadeFinalInput);
+
     function limitarSoma() {
         let quantidade = parseInt(quantidadeInput.value) || 0;
         let quantidadeFinal = parseInt(quantidadeFinalInput.value) || 0;

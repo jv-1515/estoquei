@@ -182,7 +182,7 @@ function renderizarProdutos(produtos) {
             <tr>
             <td>
                 ${imageUrl 
-                ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
+                ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
                 : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
                 }
             </td>
@@ -321,4 +321,44 @@ window.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById(id);
         if (input) limitarInput999(input);
     });
+});
+
+function visualizarImagem(url, titulo, descricao) {
+    Swal.fire({
+        title: titulo,
+        html: `
+            <img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>
+            ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
+        `,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'swal-popup'
+        }
+    });
+
+    const closeBtn = document.querySelector('.swal2-close');
+    if (closeBtn) {
+        closeBtn.style.boxShadow = 'none';
+    }
+}
+
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
 });
