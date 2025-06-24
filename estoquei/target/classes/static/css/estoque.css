@@ -104,7 +104,11 @@ th {
     font-weight: bold;
 }
 
+<<<<<<< HEAD
 tbody tr:hover {
+=======
+tr:hover {
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     background-color: #f1f1f1;
 }
 
