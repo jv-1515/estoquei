@@ -14,8 +14,14 @@ precoInput.addEventListener('input', function(e) {
 const form = document.querySelector('form');
 
 form.addEventListener('submit', function(e) {
-    let rawValue = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.'); 
-    precoInput.value = rawValue; // Ex: 'R$12,34' -> '12.34'
+    let rawValue = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+    let hidden = form.querySelector('input[name="preco_real"]');
+    if (hidden) hidden.remove();
+    hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'preco';
+    hidden.value = rawValue;
+    form.appendChild(hidden);
 });
 
 
@@ -72,7 +78,12 @@ document.querySelector('form').addEventListener('submit', function(event) {
     saveBtn.disabled = true;
     saveBtn.innerHTML = 'Cadastrando <i class="fa-solid fa-spinner fa-spin"></i>';
     event.preventDefault();
+
+    const precoInput = document.getElementById('preco');
+    const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
+    formData.set('preco', precoLimpo); // sobrescreve só no envio!
+
     fetch(this.action, {
         method: this.method,
         body: formData
