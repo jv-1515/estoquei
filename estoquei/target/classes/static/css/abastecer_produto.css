@@ -218,6 +218,7 @@ padding-top: 24px;
 input[readonly] {
     cursor: default !important;
 }
+
 input:focus[readonly] {
     outline: none !important;
     box-shadow: none !important;
