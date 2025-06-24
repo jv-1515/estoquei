@@ -151,7 +151,6 @@ function removerProduto(id) {
                         title: 'Removendo...',
                         text: 'Aguarde enquanto o produto é removido.',
                         icon: 'info',
-                        showConfirmButton: true,
                         confirmButtonColor: '#1E94A3',
                         allowOutsideClick: false,
                         timer: 1500,
@@ -256,54 +255,6 @@ function renderizarProdutos(produtos) {
             <i class="fa-solid fa-trash"></i>
             </button>
             </td>
-                <td>
-                    ${imageUrl 
-                        ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}')" class="produto-img" loading="lazy" />` 
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                </td>
-                <td>${p.codigo}</td>
-                <td>${p.nome}</td>
-                <td class="categoria">${p.categoria}</td>
-                <td>${tamanhoExibido}</td>
-                <td class="genero">${p.genero}</td>
-                <td style="position: relative; text-align: center;">
-                <span style="display: inline-block;">${p.quantidade}</span>
-                ${
-                    precisaAbastecer
-                        ? `<a href="/abastecer-produto/${p.codigo}" title="Abastecer produto" 
-                            style="
-                                position: absolute;
-                                top: 50%;
-                                right: 0;
-                                transform: translateY(-50%);
-                                width: 20px;
-                                height: 20px;
-                                text-decoration: none;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                pointer-events: auto;
-                                padding-right: 23px;
-                            ">
-                                <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                <i class="fa-solid fa-triangle-exclamation" style="color:${
-                                    p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'
-                                };position:relative;z-index:1;"></i>
-                        </a>`
-                        : ''
-                }
-                </td>
-                <td>${p.limiteMinimo}</td>
-                <td>${precoFormatado}</td>
-                <td class="actions">
-                    <a href="/editar-produto?id=${p.id}" title="Editar">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
             </tr>
         `;
         tbody.innerHTML += rowHtml;
@@ -468,4 +419,65 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+    // Pega o id da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if (!id) {
+        Swal.fire('Erro!', 'ID do produto não encontrado na URL.', 'error');
+        return;
+    }
+
+    // Busca o produto
+    fetch(`/produtos/${id}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Produto não encontrado');
+            return response.json();
+        })
+        .then(produto => {
+            // Preenche os campos de exibição
+            document.getElementById('filter-codigo') && (document.getElementById('filter-codigo').value = produto.codigo || '');
+            document.getElementById('filter-nome') && (document.getElementById('filter-nome').value = produto.nome || '');
+            document.getElementById('filter-categoria') && (document.getElementById('filter-categoria').value = produto.categoria || '');
+            document.getElementById('filter-tamanho') && (document.getElementById('filter-tamanho').value = produto.tamanho || '');
+            document.getElementById('filter-genero') && (document.getElementById('filter-genero').value = produto.genero || '');
+            document.getElementById('filter-quantidade') && (document.getElementById('filter-quantidade').value = produto.quantidade || '');
+            document.getElementById('filter-limite') && (document.getElementById('filter-limite').value = produto.limiteMinimo || '');
+            document.getElementById('filter-preco') && (document.getElementById('filter-preco').value =
+                produto.preco !== undefined
+                    ? 'R$' + Number(produto.preco).toFixed(2).replace('.', ',')
+                    : '');
+
+            // Preenche quantidade final (opcional)
+            document.getElementById('quantidade-final') && (document.getElementById('quantidade-final').value = produto.quantidade || '');
+
+            // Imagem
+            const preview = document.getElementById('image-preview');
+            if (preview) {
+                // Remove ícone antigo se houver
+                Array.from(preview.childNodes).forEach(node => {
+                    if (node.tagName !== 'INPUT' && node.nodeType === Node.ELEMENT_NODE) {
+                        preview.removeChild(node);
+                    }
+                });
+                if (produto.url_imagem) {
+                    const img = document.createElement('img');
+                    img.src = produto.url_imagem;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    preview.insertBefore(img, document.getElementById('foto'));
+                } else {
+                    const icon = document.createElement('i');
+                    icon.className = 'fa-regular fa-image';
+                    icon.style.fontSize = '30px';
+                    preview.insertBefore(icon, document.getElementById('foto'));
+                }
+            }
+        })
+        .catch(error => {
+            Swal.fire('Erro!', error.message, 'error');
+        });
 });
