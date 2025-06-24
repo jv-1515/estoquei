@@ -108,6 +108,15 @@ label{
     font-weight: bold;
 }
 
+input[readonly] {
+    cursor: default !important;
+    color: #999 !important;
+}
+input:focus[readonly] {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .image-box {
     width: 268px;
     height: 268px;

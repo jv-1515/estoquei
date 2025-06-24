@@ -144,9 +144,6 @@ select#genero {
     color: #1E94A3;
 }
 
-input[readonly] {
-    color: #999 !important;
-}
 .trash-icon {
     color:#555;
 }
@@ -156,6 +153,7 @@ input[readonly] {
 
 input[readonly] {
     cursor: default !important;
+    color: #999 !important;
 }
 input:focus[readonly] {
     outline: none !important;
