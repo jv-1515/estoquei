@@ -7,7 +7,6 @@
     <link rel="icon" type="image/png" href="/images/logo_icon.png">
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="icon" href="../images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/inicio.css"/>
     <script src="/js/inicio.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -47,7 +46,7 @@
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/andamento}">
+            <a th:href="@{/gerenciar-relatorios}">
                 <p>Relatório de Desempenho</p>
                 <i class="fa-solid fa-chart-line"></i>
             </a>
