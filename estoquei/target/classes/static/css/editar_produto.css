@@ -65,8 +65,13 @@ h1 {
 }
 
 .image-box {
+<<<<<<< HEAD
     width: 230px;
     height: 230px;
+=======
+    width: 227px;
+    height: 227px;
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,6 +80,14 @@ h1 {
     border: dashed 2px #aaa;
 }
 
+<<<<<<< HEAD
+=======
+.image-box:hover {
+    background-color: #f0f0f0;
+    border: 2px solid #000000;
+}
+
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
 .form-container button {
     background-color: #1E94A3;
     color: white;
@@ -98,7 +111,11 @@ button:hover {
 }
 
 .right-column textarea {
+<<<<<<< HEAD
     width: 212px;
+=======
+    width: 209px;
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     height: 145px;
     resize: none;
     border: 1px solid #aaa;
@@ -123,6 +140,7 @@ select#genero {
     padding-left: 1px;
 }
 
+<<<<<<< HEAD
 .trash-icon, .edit-icon {
     color:#555;
 }
@@ -138,6 +156,16 @@ select#genero {
 
 input[readonly] {
     color: #999 !important;
+=======
+.trash-icon {
+    color:#555;
+}
+.trash-icon:hover {
+    color: red;
+}
+
+input[readonly] {
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     cursor: default !important;
 }
 input:focus[readonly] {

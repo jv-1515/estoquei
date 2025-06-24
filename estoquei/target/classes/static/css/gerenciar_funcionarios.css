@@ -191,7 +191,10 @@ padding-left: 1px;
     display: none;
 }
 input[readonly] {
+<<<<<<< HEAD
     color: #999 !important;
+=======
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     cursor: default !important;
 }
 input:focus[readonly] {

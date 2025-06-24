@@ -272,6 +272,7 @@ function salvarEdicaoFuncionario() {
     }
     });
 }
+<<<<<<< HEAD
 
 //botao voltar ao topo
 window.addEventListener('scroll', function() {
@@ -292,3 +293,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+=======
+>>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
