@@ -67,15 +67,31 @@ public class ProdutoService {
         Produto p = produtoRepository.findById(id);
 
         if (p != null) {
-            p.setNome(novoProduto.getNome());
-            p.setCodigo(novoProduto.getCodigo());
-            p.setCategoria(novoProduto.getCategoria());
-            p.setTamanho(novoProduto.getTamanho());
-            p.setGenero(novoProduto.getGenero());
+            // Só atualiza se vier preenchido (campos String)
+            if (novoProduto.getNome() != null && !novoProduto.getNome().isEmpty())
+                p.setNome(novoProduto.getNome());
+
+            if (novoProduto.getCodigo() != null && !novoProduto.getCodigo().isEmpty())
+                p.setCodigo(novoProduto.getCodigo());
+
+            if (novoProduto.getCategoria() != null)
+                p.setCategoria(novoProduto.getCategoria());
+
+            if (novoProduto.getTamanho() != null)
+                p.setTamanho(novoProduto.getTamanho());
+
+            if (novoProduto.getGenero() != null)
+                p.setGenero(novoProduto.getGenero());
+
+            // Sempre atualiza campos numéricos (int não aceita null)
             p.setQuantidade(novoProduto.getQuantidade());
             p.setLimiteMinimo(novoProduto.getLimiteMinimo());
-            p.setPreco(novoProduto.getPreco());
-            p.setDescricao(novoProduto.getDescricao());
+
+            if (novoProduto.getPreco() != null)
+                p.setPreco(novoProduto.getPreco());
+
+            if (novoProduto.getDescricao() != null)
+                p.setDescricao(novoProduto.getDescricao());
 
             if (foto != null && !foto.isEmpty()) {
                 if (p.getUrl_imagem() != null && !p.getUrl_imagem().isEmpty()) {
@@ -87,14 +103,13 @@ public class ProdutoService {
                 }
                 String novaImageUrl = firebaseStorageService.uploadFile(foto, "produtos");
                 p.setUrl_imagem(novaImageUrl);
-            }
-            else if (novoProduto.getUrl_imagem() == null || novoProduto.getUrl_imagem().isEmpty()) {
+            } else if (novoProduto.getUrl_imagem() == null || novoProduto.getUrl_imagem().isEmpty()) {
+                // Se quiser remover a imagem caso o campo venha vazio, descomente abaixo:
                 // if (p.getUrl_imagem() != null && !p.getUrl_imagem().isEmpty()) {
                 //     firebaseStorageService.deleteFileByFirebaseUrl(p.getUrl_imagem());
                 // }
                 // p.setUrl_imagem(null);
             }
-
 
             return produtoRepository.save(p);
         }

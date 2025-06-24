@@ -219,3 +219,6 @@ img.produto-img:focus {
     outline: 2px solid #1E94A3;
     outline-offset: 2px;
 }
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
+}
