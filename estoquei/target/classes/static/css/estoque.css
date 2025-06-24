@@ -72,7 +72,6 @@ h2 {
 .limpar:hover {
     background-color: #1e94a3;
 }
-
 .main-container {
     background: white;
     border-radius: 10px;
@@ -104,11 +103,7 @@ th {
     font-weight: bold;
 }
 
-<<<<<<< HEAD
 tbody tr:hover {
-=======
-tr:hover {
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
     background-color: #f1f1f1;
 }
 
@@ -216,8 +211,11 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-img.produto-img:hover {
+img.produto-img:hover,
+img.produto-img:focus {
     cursor: pointer;
     opacity: 0.5;
     transition: opacity 0.2s;
+    outline: 2px solid #1E94A3;
+    outline-offset: 2px;
 }

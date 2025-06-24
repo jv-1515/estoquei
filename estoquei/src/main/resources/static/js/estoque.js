@@ -151,10 +151,7 @@ function removerProduto(id) {
                         title: 'Removendo...',
                         text: 'Aguarde enquanto o produto é removido.',
                         icon: 'info',
-<<<<<<< HEAD
-=======
                         showConfirmButton: true,
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
                         confirmButtonColor: '#1E94A3',
                         allowOutsideClick: false,
                         timer: 1500,
@@ -211,7 +208,6 @@ function renderizarProdutos(produtos) {
 
         const rowHtml = `
             <tr>
-<<<<<<< HEAD
             <td>
             ${imageUrl 
             ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
@@ -260,7 +256,6 @@ function renderizarProdutos(produtos) {
             <i class="fa-solid fa-trash"></i>
             </button>
             </td>
-=======
                 <td>
                     ${imageUrl 
                         ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}')" class="produto-img" loading="lazy" />` 
@@ -309,7 +304,6 @@ function renderizarProdutos(produtos) {
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
             </tr>
         `;
         tbody.innerHTML += rowHtml;
@@ -422,7 +416,6 @@ window.onload = function() {
 
 }
 
-<<<<<<< HEAD
 function visualizarImagem(url, titulo, descricao) {
     Swal.fire({
         title: titulo,
@@ -430,27 +423,17 @@ function visualizarImagem(url, titulo, descricao) {
             <img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>
             ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
         `,
-=======
-function visualizarImagem(url, titulo) {
-    console.log('Apertou o botão');
-    Swal.fire({
-        title: titulo,
-        html: `<img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>`,
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
         showCloseButton: true,
         showConfirmButton: false,
         customClass: {
             popup: 'swal-popup'
         }
     });
-<<<<<<< HEAD
 
     const closeBtn = document.querySelector('.swal2-close');
     if (closeBtn) {
         closeBtn.style.boxShadow = 'none';
     }
-=======
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -465,7 +448,6 @@ window.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById(id);
         if (input) limitarInput999(input);
     });
-<<<<<<< HEAD
 });
 
 //botão voltar ao topo
@@ -486,6 +468,4 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
-=======
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
 });
