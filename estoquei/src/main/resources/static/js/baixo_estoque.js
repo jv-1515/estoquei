@@ -182,11 +182,7 @@ function renderizarProdutos(produtos) {
             <tr>
             <td>
                 ${imageUrl 
-<<<<<<< HEAD
-                ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
-=======
-                ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" loading="lazy" />` 
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
+                ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />`
                 : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
                 }
             </td>
@@ -325,7 +321,6 @@ window.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById(id);
         if (input) limitarInput999(input);
     });
-<<<<<<< HEAD
 });
 
 function visualizarImagem(url, titulo, descricao) {
@@ -366,6 +361,4 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
-=======
->>>>>>> 0471c9f5c97393e78562c4b522839e3794878469
 });
