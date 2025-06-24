@@ -44,9 +44,13 @@ window.addEventListener('DOMContentLoaded', function() {
     // Pega o id da URL
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
+
     if (!id) {
-        Swal.fire('Erro!', 'ID do produto não encontrado na URL.', 'error');
-        return;
+        // Se não tem id, mostra o select de produtos imediatamente
+        mostrarSelectProdutos();
+        // E oculta o input de código
+        document.getElementById('filter-codigo').style.display = 'none';
+        return; // Não tenta buscar produto
     }
 
     // Busca o produto
@@ -132,8 +136,11 @@ window.addEventListener('DOMContentLoaded', function() {
         quantidadeFinalInput.addEventListener('input', limitarSoma);
     }
 
+    // Guarde o input original
     const codigoInput = document.getElementById('filter-codigo');
     let selectProdutos = null;
+    let codigoInputParent = codigoInput.parentNode;
+    let codigoInputNext = codigoInput.nextSibling;
 
     // Função para preencher os campos com um produto
     function preencherCampos(produto) {
@@ -204,47 +211,85 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Mostra select de produtos se código estiver vazio
+    // Função para mostrar o select e ocultar o input
     function mostrarSelectProdutos() {
-        if (selectProdutos) {
-            selectProdutos.style.display = '';
-            return;
-        }
         fetch('/produtos')
             .then(response => response.json())
             .then(produtos => {
-                selectProdutos = document.createElement('select');
-                selectProdutos.id = 'select-produtos';
-                selectProdutos.innerHTML = '<option value="">Selecione um produto</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.id}">${prod.codigo} - ${prod.nome}</option>`;
-                });
-                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
+                let selectProdutos = document.getElementById('select-produtos');
+                if (!selectProdutos) {
+                    selectProdutos = document.createElement('select');
+                    selectProdutos.id = 'select-produtos';
+                    selectProdutos.className = 'filter-select';
+                    selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
+                    produtos.forEach(prod => {
+                        selectProdutos.innerHTML += `<option value="${prod.id}">${prod.codigo} - ${prod.nome}</option>`;
+                    });
 
-                selectProdutos.addEventListener('change', function() {
-                    const id = this.value;
-                    if (id) {
-                        fetch(`/produtos/${id}`)
-                            .then(response => response.json())
-                            .then(produto => preencherCampos(produto));
-                    }
-                });
+                    // Insere o select logo após o input
+                    const codigoInput = document.getElementById('filter-codigo');
+                    codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
+
+                    // Evento: ao selecionar, atualiza a URL
+                    selectProdutos.addEventListener('change', function() {
+                        const id = this.value;
+                        if (id) {
+                            window.location.search = '?id=' + id;
+                        }
+                    });
+
+                    // Evento: ao sair do select, volta o input de código
+                    selectProdutos.addEventListener('blur', function() {
+                        // Mostra o input novamente e oculta o select
+                        const codigoInput = document.getElementById('filter-codigo');
+                        codigoInput.style.display = '';
+                        selectProdutos.style.display = 'none';
+                        // Opcional: coloca o foco de volta no input
+                        codigoInput.focus();
+                        // Se não tem produto selecionado, mostra o select de novo
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (!urlParams.get('id')) {
+                            setTimeout(mostrarSelectProdutos, 100); // pequeno delay para evitar conflito de foco
+                        }
+                    });
+
+                    // Evento: ao sair do select com mouse, volta o input de código se já houver produto selecionado
+                    selectProdutos.addEventListener('mouseleave', function() {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('id')) {
+                            const codigoInput = document.getElementById('filter-codigo');
+                            codigoInput.style.display = '';
+                            selectProdutos.style.display = 'none';
+                            codigoInput.focus();
+                        }
+                    });
+                } else {
+                    selectProdutos.style.display = '';
+                }
+                // Oculta o input
+                document.getElementById('filter-codigo').style.display = 'none';
             });
     }
 
-    // Evento ao sair do campo código
-    codigoInput.addEventListener('blur', function() {
-        const codigo = codigoInput.value.trim();
-        if (codigo) {
-            if (selectProdutos) selectProdutos.style.display = 'none';
-            buscarPorCodigo(codigo);
-        } else {
+    // Sempre mostra o select se não houver produto selecionado
+    function mostrarSelectProdutosSempre() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (!id) {
             mostrarSelectProdutos();
+            document.getElementById('filter-codigo').style.display = 'none';
         }
+    }
+
+    // Mostra o select ao passar o mouse sobre o input de código
+    codigoInput.addEventListener('mouseover', function() {
+        mostrarSelectProdutos();
     });
 
-    // Evento ao digitar no campo código (opcional: esconde select)
-    codigoInput.addEventListener('input', function() {
+    // Quando recarregar a página (após selecionar), mostre o input normalmente
+    window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('filter-codigo').style.display = '';
+        const selectProdutos = document.getElementById('select-produtos');
         if (selectProdutos) selectProdutos.style.display = 'none';
     });
 });
@@ -291,7 +336,7 @@ function atualizarQuantidadeFinal() {
             icon: 'warning',
             title: 'Limite atingido!',
             text: `Você só pode abastecer até ${maxPermitido} unidades.`,
-            timer: 3000,
+            timer: 2500,
             showConfirmButton: false
         });
         return;

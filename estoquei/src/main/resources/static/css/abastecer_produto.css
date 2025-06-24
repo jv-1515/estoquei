@@ -172,6 +172,10 @@ button:hover {
     box-sizing: border-box;
 }
 
+#select-produtos option[disabled][hidden] {
+    display: none;
+}
+
 .filters-group {
     display: flex;
     flex-wrap: wrap;
@@ -231,4 +235,7 @@ input[readonly] {
 input:focus[readonly] {
     outline: none !important;
     box-shadow: none !important;
+}
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
 }

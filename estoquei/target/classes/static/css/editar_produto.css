@@ -177,3 +177,6 @@ input:focus[readonly] {
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
 }
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
+}
