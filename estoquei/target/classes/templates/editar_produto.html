@@ -29,14 +29,6 @@
 
             <label for="categoria" th:style="${tipo == 'ADMIN'} ? 'color: #757575;' : ''">Categoria*:</label>
             <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3" th:disabled="${tipo == 'ADMIN'}">
-            <label for="codigo">Código*:</label>
-            <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" >
-
-            <label for="nome">Nome*:</label>
-            <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2" >
-
-            <label for="categoria">Categoria*:</label>
-            <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3">
                 <option value="" disabled selected hidden>Categoria</option>
                 <option value="CAMISA">Camisa</option>
                 <option value="CAMISETA">Camiseta</option>
@@ -54,13 +46,6 @@
 
             <label for="genero" th:style="${tipo == 'ADMIN'} ? 'color: #757575;' : ''">Gênero*</label>
             <select id="genero" name="genero" required tabindex="5" th:disabled="${tipo == 'ADMIN'}">
-            <label for="tamanho">Tamanho*:</label>
-            <select id="tamanho" name="tamanho" required tabindex="4">
-                <option value="" disabled selected hidden>Tamanho</option>
-            </select>
-
-            <label for="genero">Gênero*</label>
-            <select id="genero" name="genero" required tabindex="5">
                 <option value="" disabled selected hidden>Gênero</option>
                 <option value="MASCULINO">Masculino</option>
                 <option value="FEMININO">Feminino</option>
@@ -69,8 +54,6 @@
             
             <label for="quantidade" th:style="${tipo == 'ADMIN'} ? 'color: #757575;' : ''">Quantidade*:</label>
             <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" th:readonly="${tipo == 'ADMIN'}">
-            <label for="quantidade">Quantidade*:</label>
-            <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" >
             
             <label for="limiteMinimo">Limite Mínimo*:</label>
             <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">
@@ -85,17 +68,12 @@
                     <i class="fa-solid fa-trash trash-icon" onclick="removerProduto()"></i>
                 </div>
                 <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center; position: relative;">
-                <div style="display: flex; justify-content: flex-end; margin: 0 1px 5px 0;">
-                    <i class="fa-solid fa-trash trash-icon" onclick="removerProduto()"></i>
-                </div>
-                <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
                     <i class="fa-regular fa-image" style="font-size: 30px"></i>
                     <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
                 </div>
                 <label for="descricao">Descrição:</label>
                 <div style="position: relative; display: inline-block;">
                     <textarea id="descricao" name="descricao" maxlength="200"></textarea>
-                    <textarea id="descricao" maxlength="200"></textarea>
                     <span id="contador-descricao">0/200</span>
                 </div>
             </div>
