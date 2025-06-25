@@ -31,7 +31,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="" disabled hidden selected>Tamanho</option>';
+    let options = '<option value="" selected>Todos</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {
@@ -393,27 +393,86 @@ function renderizarRelatorios(relatorios) {
     relatorios.forEach(r => {
         tbody.innerHTML += `
             <tr>
-                <td>${r.nome}</td>
-                <td>${r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString() : ''}</td>
-                <td>${r.periodo || ''}</td>
-                <td>
-                    <button onclick="baixarRelatorio('${r.id}')">Baixar</button>
-                </td>
+            <td>
+            ${r.nome}
+            </td>
+            <td>${r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString() : ''}</td>
+            <td>${r.periodo || ''}</td>
+            <td class="actions">
+            <a href="#" title="Baixar" onclick="baixarRelatorio('${r.id}'); return false;">
+            <i class="fa-solid fa-download"></i>
+            </a>
+            <a href="#" title="Renomear" onclick="renomearRelatorio('${r.id}'); return false;">
+            <i class="fa-solid fa-pen"></i>
+            </a>
+            <a href="#" title="Excluir" onclick="excluirRelatorio('${r.id}'); return false;">
+            <i class="fa-solid fa-trash"></i>
+            </a>
+            </td>
             </tr>
         `;
     });
 }
 
-window.baixarRelatorio = function(id) {
+// SweetAlert para remover relatório
+window.excluirRelatorio = function(id) {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.relatoriosGerados = window.relatoriosGerados.filter(r => r.id != id);
+            localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+            renderizarRelatorios(window.relatoriosGerados);
+            Swal.fire('Removido!', '', 'success');
+        }
+    });
+};
+
+// Renomear relatório
+window.renomearRelatorio = function(id) {
     const relatorio = window.relatoriosGerados.find(r => r.id == id);
-    if (relatorio && relatorio.base64) {
-        const a = document.createElement('a');
-        a.href = relatorio.base64;
-        a.download = relatorio.nome;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
+    if (!relatorio) return;
+    Swal.fire({
+        title: 'Renomear Relatório',
+        input: 'text',
+        inputValue: relatorio.nome,
+        showCloseButton: true,
+        inputPlaceholder: 'Digite o novo nome do relatório',
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#1E94A3',
+        cancelButtonColor: '#d33'
+    }).then(result => {
+        if (result.isConfirmed && result.value) {
+            // Verifica se já existe outro relatório com o mesmo nome
+            const nomeExiste = window.relatoriosGerados.some(r => r.nome === result.value && r.id !== id);
+            if (nomeExiste) {
+                Swal.fire({
+                    title: 'Nome já existe!',
+                    text: 'Já existe um relatório com esse nome.',
+                    icon: 'error',
+                    confirmButtonColor: '#1E94A3'
+                });
+                return;
+            }
+            relatorio.nome = result.value;
+            localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+            renderizarRelatorios(window.relatoriosGerados);
+            Swal.fire({
+                title: 'Renomeado!',
+                icon: 'success',
+                confirmButtonColor: '#1E94A3'
+            });
+        }
+    });
 };
 
 window.onload = function() {
