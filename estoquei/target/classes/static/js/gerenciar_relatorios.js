@@ -430,7 +430,13 @@ window.excluirRelatorio = function(id) {
             window.relatoriosGerados = window.relatoriosGerados.filter(r => r.id != id);
             localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
             renderizarRelatorios(window.relatoriosGerados);
-            Swal.fire('Removido!', '', 'success');
+            Swal.fire({
+                title: 'Removido!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
+            });
         }
     });
 };
@@ -459,7 +465,12 @@ window.renomearRelatorio = function(id) {
                     title: 'Nome já existe!',
                     text: 'Já existe um relatório com esse nome.',
                     icon: 'error',
-                    confirmButtonColor: '#1E94A3'
+                    confirmButtonColor: '#1E94A3',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.renomearRelatorio(id);
                 });
                 return;
             }
