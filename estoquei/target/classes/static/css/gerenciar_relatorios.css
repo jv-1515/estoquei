@@ -51,6 +51,12 @@ h2 {
     font-size: 12px;
 }
 
+#filter-data-inicio,
+#filter-data-fim {
+    font-family: Arial, sans-serif;
+    color: #757575;
+}
+
 .btn {
     background-color: #1e94a3;
     color: white;
