@@ -304,68 +304,7 @@ function carregarProdutos(top) {
 
 
 window.onload = function() {
-    const select = document.getElementById('registros-select');
-    carregarProdutos(select.value);
-    select.addEventListener('change', function() {
-        itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
-        paginaAtual = 1;
-        renderizarProdutos(produtos);
-    });
-
-    //campos para ordenação
-    const campos = [
-        'codigo',   
-        'nome',       
-        'categoria',  
-        'tamanho',    
-        'genero',    
-        'quantidade',
-        'limiteMinimo',
-        'preco'       
-    ];
-
-    //inicia com true (decrescente)
-    let estadoOrdenacao = Array(campos.length).fill(true);
-
-    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
-        const icon = th.querySelector('.sort-icon');
-        th.addEventListener('mouseenter', function() {
-            icon.style.display = 'inline-block';
-        });
-        th.addEventListener('mouseleave', function() {
-            if (!th.classList.contains('sorted')) {
-                icon.style.display = 'none';
-            }
-        });
-        th.addEventListener('click', function() {
-            document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
-            th.classList.add('sorted');
-
-            const campo = campos[idx];
-            produtos.sort((a, b) => {
-                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
-                    // numérico
-                    return estadoOrdenacao[idx]
-                        ? b[campo] - a[campo]
-                        : a[campo] - b[campo];
-                } else {
-                    // alfabético
-                    return estadoOrdenacao[idx]
-                        ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
-                        : b[campo].localeCompare(a[campo], undefined, { numeric: true });
-                }
-            });
-            //altera o estado de ordenação
-            estadoOrdenacao[idx] = !estadoOrdenacao[idx];
-            icon.innerHTML = estadoOrdenacao[idx]
-                // true seta para baixo (decrescente) false seta para cima (crescente)
-                ? '<i class="fa-solid fa-arrow-down"></i>'
-                : '<i class="fa-solid fa-arrow-up"></i>';
-            renderizarProdutos(produtos);
-            icon.style.display = 'inline-block';
-        });
-    });
-
+    renderizarRelatorios(window.relatoriosGerados);
 }
 
 function visualizarImagem(url, titulo, descricao) {
@@ -421,3 +360,62 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Carrega relatórios do localStorage ao abrir a página
+window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+
+window.adicionarRelatorio = function(relatorio) {
+    // Salva o blob como base64 para persistir no localStorage
+    fetch(relatorio.blobUrl)
+        .then(res => res.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                relatorio.base64 = reader.result; // base64 do PDF
+                delete relatorio.blobUrl; // não precisa mais da URL temporária
+
+                // Atualiza lista e salva no localStorage
+                window.relatoriosGerados.push(relatorio);
+                localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+                renderizarRelatorios(window.relatoriosGerados);
+            };
+            reader.readAsDataURL(blob);
+        });
+};
+
+function renderizarRelatorios(relatorios) {
+    const tbody = document.getElementById('product-table-body');
+    tbody.innerHTML = '';
+    if (!relatorios || relatorios.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum relatório encontrado</td></tr>`;
+        return;
+    }
+    relatorios.forEach(r => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${r.nome}</td>
+                <td>${r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString() : ''}</td>
+                <td>${r.periodo || ''}</td>
+                <td>
+                    <button onclick="baixarRelatorio('${r.id}')">Baixar</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+window.baixarRelatorio = function(id) {
+    const relatorio = window.relatoriosGerados.find(r => r.id == id);
+    if (relatorio && relatorio.base64) {
+        const a = document.createElement('a');
+        a.href = relatorio.base64;
+        a.download = relatorio.nome;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+};
+
+window.onload = function() {
+    renderizarRelatorios(window.relatoriosGerados);
+};
