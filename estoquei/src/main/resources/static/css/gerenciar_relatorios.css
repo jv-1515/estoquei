@@ -21,7 +21,7 @@ h2 {
 }
 
 .filters-container {
-    width: 1200px;
+    width: 900px;
     margin: 0 auto 24px auto;
     box-sizing: border-box;
     background: white;
@@ -30,6 +30,11 @@ h2 {
     padding: 20px;
     display: flex;
     justify-content: center;
+}
+
+div.filters label {
+    color: #333;
+    font-weight: bold;
 }
 
 .filters {
@@ -81,7 +86,7 @@ h2 {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 1200px;
+    width: 900px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -118,7 +123,7 @@ tbody tr:hover {
     border: none;
     color: #555;
     padding: 0;
-    margin: 0 4px;
+    margin: 0 2px;
     cursor: pointer;
     font-size: 12px;
     vertical-align: middle;
@@ -164,6 +169,7 @@ tbody tr:hover {
 #filter-categoria,
 #filter-tamanho {
     color: #757575;
+    padding-left: 1px;
 }
 
 th.ordenar {
