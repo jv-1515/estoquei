@@ -385,11 +385,32 @@ window.adicionarRelatorio = function(relatorio) {
 
 function renderizarRelatorios(relatorios) {
     const tbody = document.getElementById('product-table-body');
+    const thead = document.getElementById('relatorios-thead');
     tbody.innerHTML = '';
     if (!relatorios || relatorios.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum relatório encontrado</td></tr>`;
+        if (thead) thead.style.display = 'none';
+        tbody.innerHTML = `<tr>
+            <td colspan="4" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+                Nenhum relatório encontrado
+            </td>
+        </tr>`;
         return;
     }
+    if (thead) thead.style.display = '';
+
+    relatorios = relatorios.slice().sort((a, b) => {
+        const campo = campoOrdenacaoRel[indiceOrdenacaoAtual];
+        let valA = a[campo], valB = b[campo];
+        if (campo === 'dataCriacao') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
+        if (estadoOrdenacaoRel[indiceOrdenacaoAtual]) {
+            return valB > valA ? 1 : valB < valA ? -1 : 0;
+        } else {
+            return valA > valB ? 1 : valA < valB ? -1 : 0;
+        }
+    });
     relatorios.forEach(r => {
         tbody.innerHTML += `
             <tr>
@@ -445,10 +466,12 @@ window.excluirRelatorio = function(id) {
 window.renomearRelatorio = function(id) {
     const relatorio = window.relatoriosGerados.find(r => r.id == id);
     if (!relatorio) return;
+    // Mostra só o nome sem .pdf
+    const nomeSemExtensao = relatorio.nome.replace(/\.pdf$/i, '');
     Swal.fire({
         title: 'Renomear Relatório',
         input: 'text',
-        inputValue: relatorio.nome,
+        inputValue: nomeSemExtensao,
         showCloseButton: true,
         inputPlaceholder: 'Digite o novo nome do relatório',
         showCancelButton: true,
@@ -457,15 +480,17 @@ window.renomearRelatorio = function(id) {
         confirmButtonColor: '#1E94A3',
         cancelButtonColor: '#d33'
     }).then(result => {
-        if (result.isConfirmed && result.value) {
-            // Verifica se já existe outro relatório com o mesmo nome
-            const nomeExiste = window.relatoriosGerados.some(r => r.nome === result.value && r.id !== id);
-            if (nomeExiste) {
+        if (result.isConfirmed) {
+            const novoNome = (result.value || '').trim();
+            // Não pode salvar vazio, só espaços, só .pdf ou caracteres especiais
+            const nomeValido = novoNome.length > 0 
+                && !/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(novoNome) // permite letras, números, espaço, underline, hífen e acentos
+                && novoNome.toLowerCase() !== 'pdf';
+            if (!nomeValido) {
                 Swal.fire({
-                    title: 'Nome já existe!',
-                    text: 'Já existe um relatório com esse nome.',
+                    title: 'Nome inválido!',
+                    text: 'O nome não pode ser vazio, só ".pdf" ou conter caracteres especiais.',
                     icon: 'error',
-                    confirmButtonColor: '#1E94A3',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true
@@ -474,7 +499,24 @@ window.renomearRelatorio = function(id) {
                 });
                 return;
             }
-            relatorio.nome = result.value;
+            // Monta nome final com .pdf
+            const nomeFinal = `${novoNome}.pdf`;
+            // Verifica se já existe outro relatório com o mesmo nome
+            const nomeExiste = window.relatoriosGerados.some(r => r.nome === nomeFinal && r.id !== id);
+            if (nomeExiste) {
+                Swal.fire({
+                    title: 'Nome não disponível!',
+                    text: 'Já existe um relatório com esse nome. Escolha outro.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.renomearRelatorio(id);
+                });
+                return;
+            }
+            relatorio.nome = nomeFinal;
             localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
             renderizarRelatorios(window.relatoriosGerados);
             Swal.fire({
@@ -489,3 +531,48 @@ window.renomearRelatorio = function(id) {
 window.onload = function() {
     renderizarRelatorios(window.relatoriosGerados);
 };
+
+window.baixarRelatorio = function(id) {
+    const relatorio = window.relatoriosGerados.find(r => r.id == id);
+    if (!relatorio || !relatorio.base64) return;
+
+    // Cria um link temporário para download
+    const a = document.createElement('a');
+    a.href = relatorio.base64;
+    a.download = relatorio.nome;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
+
+let estadoOrdenacaoRel = [true, true, true]; // para cada coluna ordenável
+let campoOrdenacaoRel = ['nome', 'dataCriacao', 'periodo'];
+let indiceOrdenacaoAtual = 1; // Começa por data de criação (índice 1)
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        th.style.cursor = 'pointer';
+        th.onclick = function() {
+            if (indiceOrdenacaoAtual === idx) {
+                estadoOrdenacaoRel[idx] = !estadoOrdenacaoRel[idx];
+            } else {
+                indiceOrdenacaoAtual = idx;
+            }
+            renderizarRelatorios(window.relatoriosGerados);
+            atualizarSetasOrdenacao();
+        };
+    });
+    atualizarSetasOrdenacao();
+});
+
+function atualizarSetasOrdenacao() {
+    document.querySelectorAll('th.ordenar .sort-icon').forEach((icon, idx) => {
+        if (indiceOrdenacaoAtual === idx) {
+            icon.innerHTML = estadoOrdenacaoRel[idx]
+                ? '<i class="fa-solid fa-arrow-down"></i>'
+                : '<i class="fa-solid fa-arrow-up"></i>';
+        } else {
+            icon.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+        }
+    });
+}
