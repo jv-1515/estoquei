@@ -185,8 +185,10 @@ function gerar() {
                     nome: nomeArquivo,
                     dataCriacao: new Date(),
                     periodo: (filtros.dataInicio && filtros.dataFim)
-                        ? `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`
-                        : 'Completo',
+                        ? (filtros.dataInicio === filtros.dataFim
+                            ? formatarDataBR(filtros.dataInicio)
+                            : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
+                        : formatarDataBR(new Date().toISOString().slice(0, 10)),
                     blobUrl
                 });
             }
