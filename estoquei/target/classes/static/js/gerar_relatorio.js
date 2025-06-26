@@ -75,7 +75,7 @@ function gerar() {
 
         // LOGO (ajuste o caminho se necessário)
         const logoImg = new Image();
-        logoImg.src = '/images/logo_icon.png'; // ajuste o caminho conforme seu projeto
+        logoImg.src = './images/logo_icon.png'; // ajuste o caminho conforme seu projeto
 
         // Cabeçalho com logo (carrega o logo antes de gerar o resto)
         logoImg.onload = function () {
