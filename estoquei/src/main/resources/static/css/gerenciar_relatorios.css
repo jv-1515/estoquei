@@ -33,8 +33,9 @@ h2 {
 }
 
 div.filters label {
-    color: #333;
+    color: #757575;
     font-weight: bold;
+    margin-bottom: 2px;
 }
 
 .filters {
@@ -56,10 +57,20 @@ div.filters label {
     font-size: 12px;
 }
 
+.filters input,
+.filters select,
+.filters button,
+.filters .btn {
+    height: 32px !important;
+}
+
 #filter-data-inicio,
 #filter-data-fim {
     font-family: Arial, sans-serif;
     color: #757575;
+    height: 30px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .btn {
