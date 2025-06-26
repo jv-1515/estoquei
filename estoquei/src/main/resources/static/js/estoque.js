@@ -421,3 +421,70 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+window.addEventListener('DOMContentLoaded', function() {
+    const codigoInput = document.getElementById('filter-codigo');
+    let selectProdutos = null;
+
+    codigoInput.addEventListener('mouseenter', function() {
+        // Cria o select só uma vez
+        if (!selectProdutos) {
+            selectProdutos = document.createElement('select');
+            // Copia id, name, class e style do input
+            selectProdutos.id = codigoInput.id;
+            selectProdutos.name = codigoInput.name || '';
+            selectProdutos.className = codigoInput.className;
+            selectProdutos.setAttribute('style', codigoInput.getAttribute('style') || '');
+            // Copia atributos de acessibilidade se houver
+            if (codigoInput.hasAttribute('aria-label')) {
+                selectProdutos.setAttribute('aria-label', codigoInput.getAttribute('aria-label'));
+            }
+            // Copia largura real computada
+            const computed = window.getComputedStyle(codigoInput);
+            selectProdutos.style.width = computed.width;
+            selectProdutos.style.height = computed.height;
+            selectProdutos.style.fontSize = computed.fontSize;
+            selectProdutos.style.boxSizing = computed.boxSizing;
+            selectProdutos.style.padding = computed.padding;
+            selectProdutos.style.border = computed.border;
+            selectProdutos.style.borderRadius = computed.borderRadius;
+
+            selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
+            codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
+
+            // Ao selecionar, apenas armazena o valor selecionado
+            let ultimoSelecionado = "";
+
+            selectProdutos.addEventListener('change', function() {
+                ultimoSelecionado = this.value;
+            });
+
+            // Ao sair do select, preenche o input se algo foi selecionado
+            selectProdutos.addEventListener('blur', function() {
+                if (ultimoSelecionado) {
+                    // Pega só o código da opção selecionada
+                    codigoInput.value = ultimoSelecionado;
+                }
+                ultimoSelecionado = "";
+                selectProdutos.selectedIndex = 0; // volta para o placeholder
+                selectProdutos.style.display = 'none';
+                codigoInput.style.display = '';
+                codigoInput.focus();
+            });
+        }
+
+        // Preenche o select com os produtos
+        fetch('/produtos')
+            .then(res => res.json())
+            .then(produtos => {
+                selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
+                produtos.forEach(prod => {
+                    selectProdutos.innerHTML += `<option value="${prod.codigo}">${prod.codigo} - ${prod.nome}</option>`;
+                });
+                // Troca input por select
+                codigoInput.style.display = 'none';
+                selectProdutos.style.display = '';
+                selectProdutos.focus();
+            });
+    });
+});
