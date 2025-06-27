@@ -109,7 +109,6 @@ nav a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
     width: 100%;
     justify-content: center;
 }
@@ -125,7 +124,9 @@ button {
 
 button:hover {
     background-color: #277580;
+    transition: background 0.2s, color 0.2s;
 }
+
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
