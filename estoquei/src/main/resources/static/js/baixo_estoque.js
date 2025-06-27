@@ -154,11 +154,19 @@ function exibirTamanho(tamanho) {
 
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
-    tbody.innerHTML = '';
+    // Mostra o loading imediatamente
+    tbody.innerHTML = `<tr>
+        <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
+                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
+            </span>
+            <span id="loading-text">Carregando produtos</span>
+        </td>
+    </tr>`;
 
     const select = document.getElementById('registros-select');
     itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
-    
+
     const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
     const inicio = (paginaAtual - 1) * itensPorPagina;
     const fim = inicio + itensPorPagina;
@@ -170,70 +178,80 @@ function renderizarProdutos(produtos) {
         return;
     }
 
-    produtosPagina.forEach(p => {
-        const imageUrl = p.url_imagem;
-        const precoFormatado = p.preco.toFixed(2).replace('.', ',');
-        const tamanhoExibido = exibirTamanho(p.tamanho);
-        p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
-        p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
-
-
-        const precisaAbastecer = p.quantidade <= p.limiteMinimo;
-
-        const rowHtml = `
-            <tr>
-                <td>
-                    ${imageUrl 
-                        ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
-                        : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
-                    }
-                </td>
-                <td>${p.codigo}</td>
-                <td>${p.nome}</td>
-                <td class="categoria">${p.categoria}</td>
-                <td>${tamanhoExibido}</td>
-                <td class="genero">${p.genero}</td>
-                <td style="position: relative; text-align: center;">
-                    <span style="display: inline-block;">${p.quantidade}</span>
-                    ${
-                        precisaAbastecer
-                            ? `<a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
-                                style="
-                                    position: absolute;
-                                    top: 50%;
-                                    right: 0;
-                                    transform: translateY(-50%);
-                                    width: 20px;
-                                    height: 20px;
-                                    text-decoration: none;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    pointer-events: auto;
-                                    padding-right: 23px;
-                                ">
-                                    <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                                    <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
-                            </a>`
-                            : ''
-                    }
-                </td>
-                <td>${p.limiteMinimo}</td>
-                <td>${precoFormatado}</td>
-                <td class="actions">
-                    <a href="/editar-produto?id=${p.id}" title="Editar">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += rowHtml;
+    // Aguarda todas as imagens carregarem antes de renderizar as linhas
+    const promessasImagens = produtosPagina.map(p => {
+        return new Promise(resolve => {
+            if (p.url_imagem) {
+                const img = new Image();
+                img.src = p.url_imagem;
+                img.onload = () => resolve();
+                img.onerror = () => resolve();
+            } else {
+                resolve();
+            }
+        });
     });
 
+    Promise.all(promessasImagens).then(() => {
+        tbody.innerHTML = ''; // Limpa o loading
+        produtosPagina.forEach(p => {
+            const imageUrl = p.url_imagem;
+            const precoFormatado = p.preco.toFixed(2).replace('.', ',');
+            const tamanhoExibido = exibirTamanho(p.tamanho);
+            p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
+            p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
+
+            const rowHtml = `
+                <tr>
+                    <td>
+                        ${imageUrl 
+                            ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
+                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
+                        }
+                    </td>
+                    <td>${p.codigo}</td>
+                    <td>${p.nome}</td>
+                    <td class="categoria">${p.categoria}</td>
+                    <td>${tamanhoExibido}</td>
+                    <td class="genero">${p.genero}</td>
+                    <td style="position: relative; text-align: center;">
+                        <span style="display: inline-block;">${p.quantidade}</span>
+                        <a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
+                            style="
+                                position: absolute;
+                                top: 50%;
+                                right: 0;
+                                transform: translateY(-50%);
+                                width: 20px;
+                                height: 20px;
+                                text-decoration: none;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                pointer-events: auto;
+                                padding-right: 23px;
+                            ">
+                            <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
+                        </a>
+                    </td>
+                    <td>${p.limiteMinimo}</td>
+                    <td>${precoFormatado}</td>
+                    <td class="actions">
+                        <a href="/editar-produto?id=${p.id}" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += rowHtml;
+        });
+
         renderizarPaginacao(totalPaginas);
+    });
 }
 
 function renderizarPaginacao(totalPaginas) {
@@ -412,10 +430,11 @@ window.addEventListener('DOMContentLoaded', function() {
             });
 
             // Ao sair do select, preenche o input se algo foi selecionado
-            selectProdutos.addEventListener('blur', function() {
+            selectProdutos.addEventListener('mouseleave', function() {
                 if (ultimoSelecionado) {
                     // Pega só o código da opção selecionada
                     codigoInput.value = ultimoSelecionado;
+                    codigoInput.style.color = 'black'; // <-- sempre preto ao receber valor
                 }
                 ultimoSelecionado = "";
                 selectProdutos.selectedIndex = 0; // volta para o placeholder
@@ -440,3 +459,30 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     });
 });
+
+function aplicarCorSelectFiltro(ids) {
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        // Atualiza cor ao carregar
+        el.style.color = el.value ? 'black' : '#757575';
+        // Atualiza cor ao mudar
+        el.addEventListener('change', function() {
+            this.style.color = this.value ? 'black' : '#757575';
+        });
+    });
+}
+
+// Use para os filtros desejados
+aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
+
+// Para voltar ao cinza ao limpar, adicione no seu método limpar():
+function limpar() {
+    document.querySelectorAll(".filters input, .filters select").forEach(el => {
+        el.value = "";
+        if (['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho'].includes(el.id)) {
+            el.style.color = '#757575';
+        }
+    });
+    filtrar();
+}

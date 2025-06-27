@@ -213,6 +213,11 @@ input:focus[readonly] {
 .botao-fechar:hover {
     color: #f27474;
 }
+.actions a:hover,
+.actions button:hover,
+.fa-trash:hover {
+    transition: background 0.2s, color 0.2s;
+}
 
 .swal2-confirm-custom {
     background-color: #1E94A3 !important;

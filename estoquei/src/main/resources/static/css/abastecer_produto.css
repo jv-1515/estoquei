@@ -52,7 +52,6 @@ h2 {
 .produto-img {
     width: 30px;
     height: 30px;
-    object-fit: cover;
     border-radius: 6px;
     background: #f3f3f3;
     display: inline-block;
@@ -135,8 +134,10 @@ input:focus[readonly] {
 
 .image-box img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+}
+button:hover,
+.fa-trash:hover {
+    transition: background 0.2s, color 0.2s;
 }
 
 button {
