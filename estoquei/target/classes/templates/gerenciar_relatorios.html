@@ -33,7 +33,7 @@
             <div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: flex-end;">
                 <div style="display: flex; flex-direction: column;">
                     <label for="filter-categoria">Categoria</label>
-                    <select id="filter-categoria" style="width: 140px; font-size: 10px;" onchange="updateOptions()">
+                    <select id="filter-categoria" style="width: 140px" onchange="updateOptions()">
                         <option value="" selected>Todas</option>
                         <option value="CAMISA">Camisa</option>
                         <option value="CAMISETA">Camiseta</option>
@@ -47,14 +47,14 @@
 
                 <div style="display: flex; flex-direction: column;">
                     <label for="filter-tamanho">Tamanho</label>
-                    <select id="filter-tamanho" style="width: 107px; font-size: 10px;">
+                    <select id="filter-tamanho" style="width: 107px">
                         <option value="" selected>Todos</option>
                     </select>
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
                     <label for="filter-genero">Gênero</label>
-                    <select id="filter-genero" style="width: 105px; font-size: 10px;">
+                    <select id="filter-genero" style="width: 105px">
                         <option value="" selected>Todos</option>
                         <option value="MASCULINO">Masculino</option>
                         <option value="FEMININO">Feminino</option>
@@ -64,12 +64,12 @@
 
                 <div style="display: flex; flex-direction: column;">
                     <label for="filter-data-inicio">Data Início</label>
-                    <input type="date" id="filter-data-inicio" style="width: 160px; font-size: 10px;" />
+                    <input type="date" id="filter-data-inicio" style="width: 160px" />
                 </div>
 
                 <div style="display: flex; flex-direction: column;">
                     <label for="filter-data-fim">Data Fim</label>
-                    <input type="date" id="filter-data-fim" style="width: 160px; font-size: 10px;" />
+                    <input type="date" id="filter-data-fim" style="width: 160px" />
                 </div>
 
                 <button class="btn" style="height: 32px; align-self: flex-end; margin-bottom: 0;" onclick="gerar()">Gerar Relatório</button>
