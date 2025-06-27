@@ -22,7 +22,7 @@
         <form class="form-container" action="/produtos/" method="POST" enctype="multipart/form-data">
             <div class="form-column">
             <label for="codigo" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Código*:</label>
-            <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" th:readonly="${tipo == 'FUNCIONARIO'}">
+            <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" th:readonly="${tipo == 'FUNCIONARIO'}" maxlength="9" minlength="9" pattern="\d{9}">
 
             <label for="nome" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Nome*:</label>
             <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
@@ -53,7 +53,7 @@
             </select>
             
             <label for="quantidade" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Quantidade*:</label>
-            <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" th:readonly="${tipo == 'FUNCIONARIO'}">
+            <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" th:readonly="${tipo == 'FUNCIONARIO'}" min="1" max="999">
             
             <label for="limiteMinimo">Limite Mínimo*:</label>
             <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">
