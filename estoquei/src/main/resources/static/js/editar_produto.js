@@ -391,3 +391,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+window.addEventListener('DOMContentLoaded', function() {
+    const limiteInput = document.getElementById('limiteMinimo');
+    if (limiteInput) {
+        limiteInput.addEventListener('input', function() {
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (this.value > 999) this.value = 999;
+        });
+    }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+    const quantidadeInput = document.getElementById('quantidade');
+    if (quantidadeInput) {
+        quantidadeInput.addEventListener('input', function() {
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (this.value > 999) this.value = 999;
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const codigoInput = document.getElementById('codigo');
+    if (codigoInput) {
+        codigoInput.addEventListener('blur', function() {
+            const codigo = this.value.trim();
+            if (!codigo) return;
+
+            fetch(`/produtos/codigo-existe?codigo=${encodeURIComponent(codigo)}`)
+                .then(response => response.json())
+                .then(existe => {
+                    if (existe) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código já cadastrado!',
+                            text: 'Informe outro código.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        this.value = '';
+                        this.focus();
+                    }
+                });
+        });
+    }
+});
