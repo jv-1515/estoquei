@@ -144,12 +144,17 @@ tbody tr:hover {
 .actions a:hover, .actions button:hover {
     color: #1e94a3;
 }
-
+.btn:hover,
+.limpar:hover,
+.actions a:hover,
+.actions button:hover,
+.fa-trash:hover {
+    transition: background 0.2s, color 0.2s;
+}
 
 .produto-img {
     width: 30px;
     height: 30px;
-    object-fit: cover;
     border-radius: 6px;
     background: #f3f3f3;
     display: inline-block;
