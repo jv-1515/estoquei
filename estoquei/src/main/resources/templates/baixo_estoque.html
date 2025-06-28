@@ -29,37 +29,91 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Filtrar produtos</h2>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" pattern="\d{9}" style="width: 90px;" />
-                <input type="text" id="filter-nome" placeholder="Nome" style="width: 160px;" />
-
-                <select id="filter-categoria" style="width: 110px;" onchange="updateOptions()">
-                    <option value="" disabled selected hidden>Categoria</option>
-                    <option value="CAMISA">Camisa</option>
-                    <option value="CAMISETA">Camiseta</option>
-                    <option value="BERMUDA">Bermuda</option>
-                    <option value="CALCA">Calça</option>
-                    <option value="SHORTS">Shorts</option>
-                    <option value="SAPATO">Sapato</option>
-                    <option value="MEIA">Meia</option>
-                </select>
-
-                <select id="filter-tamanho" style="width: 95px;">
-                    <option value="" disabled selected hidden>Tamanho</option>
-                </select>
-
-                <select id="filter-genero" style="width: 90px;">
-                    <option value="" disabled selected hidden>Gênero</option>
-                    <option value="MASCULINO">Masculino</option>
-                    <option value="FEMININO">Feminino</option>
-                    <option value="UNISSEX">Unissex</option>
-                </select>
-
-                <input type="number" id="filter-quantidade" placeholder="Quantidade" style="width: 90px;" max="999"/>
-                <input type="number" id="filter-limite" placeholder="Limite Mínimo" style="width: 110px;" max="999"/>
-                <input type="text" id="filter-preco" placeholder="Preço (R$)" style="width: 100px;" oninput="mascaraPreco(this)" />
-
-                <button class="btn" onclick="filtrar()">Filtrar</button>
+            <div class="filters-row">
+                <div class="input-group">
+                    <label for="filter-codigo">Código</label>
+                    <input type="text" id="filter-codigo" placeholder="Todos" maxlength="9" minlength="9" pattern="\d{9}" />
+                </div>
+                <div class="input-group">
+                    <label for="filter-nome">Nome</label>
+                    <input type="text" id="filter-nome" placeholder="Todos" />
+                </div>
+                <div class="input-group">
+                    <label for="filter-categoria">Categoria</label>
+                    <select id="filter-categoria" onchange="updateOptions()">
+                        <option value="" selected>Todas</option>
+                        <option value="CAMISA">Camisa</option>
+                        <option value="CAMISETA">Camiseta</option>
+                        <option value="BERMUDA">Bermuda</option>
+                        <option value="CALCA">Calça</option>
+                        <option value="SHORTS">Shorts</option>
+                        <option value="SAPATO">Sapato</option>
+                        <option value="MEIA">Meia</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="filter-tamanho">Tamanho</label>
+                    <select id="filter-tamanho">
+                        <option value="" selected>Todos</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="filter-genero">Gênero</label>
+                    <select id="filter-genero">
+                        <option value="" selected>Todos</option>
+                        <option value="MASCULINO">Masculino</option>
+                        <option value="FEMININO">Feminino</option>
+                        <option value="UNISSEX">Unissex</option>
+                    </select>
+                </div>
+                <div class="input-group" style="min-width:137px;">
+                    <label for="filter-quantidade">Quantidade</label>
+                    <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
+                    <div id="quantidade-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;margin-bottom: 2px;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group" style="min-width:137px;">
+                    <label for="filter-limite">Limite Mínimo</label>
+                    <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
+                    <div id="limite-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="limite-min" maxlength="3" placeholder="1" style="text-align:right;margin-bottom: 2px;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="limite-max" maxlength="3" placeholder="999" style="text-align:right;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group" style="min-width:137px;">
+                    <label for="filter-preco">Preço</label>
+                    <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+                    <div id="preco-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:90px;margin-bottom: 2px;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:90px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="btn limpar" onclick="limpar(); renderizarProdutos(produtos);">Limpar Filtro</button>
             </div>
         </div>
