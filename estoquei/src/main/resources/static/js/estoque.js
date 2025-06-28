@@ -30,7 +30,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="" disabled hidden selected>Tamanho</option>';
+    let options = '<option value="" selected>Todos</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {
@@ -69,6 +69,27 @@ function updateOptions() {
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
+
+    // Filtros automáticos: inputs normais (exceto popups) filtram ao blur, selects ao change
+    document.querySelectorAll('.filters input').forEach(el => {
+        if (!['filter-preco', 'preco-min', 'preco-max', 'filter-quantidade', 'qtd-min', 'qtd-max', 'filter-limite', 'limite-min', 'limite-max'].includes(el.id)) {
+            el.addEventListener('blur', filtrar);
+        }
+    });
+    document.querySelectorAll('.filters select').forEach(el => {
+        el.addEventListener('change', filtrar);
+    });
+
+    // Limita quantidade e limite mínimo a 999
+    ['filter-quantidade', 'filter-limite'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function() {
+                if (this.value.length > 3) this.value = this.value.slice(0, 3);
+                if (this.value > 999) this.value = 999;
+            });
+        }
+    });
 });
 
 //var global e controle de paginação
@@ -77,58 +98,65 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
-    let codigo = document.getElementById("filter-codigo").value;
-    let nome = document.getElementById("filter-nome").value;
+    let codigo = document.getElementById("filter-codigo").value.trim();
+    let nome = document.getElementById("filter-nome").value.trim();
     let categoria = document.getElementById("filter-categoria").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
-    let quantidade = document.getElementById("filter-quantidade").value;
-    let limiteMinimo = document.getElementById("filter-limite").value;
-    let preco = document.getElementById("filter-preco").value;
-    preco = preco.replace(/[^\d,]/g, '').replace(',', '.');
-    if (preco === "") preco = null;
-    else preco = parseFloat(preco);
 
-    if (codigo === "") codigo = null;
-    if (nome === "") nome = null;
-    if (categoria === "") categoria = null;
-    if (tamanho === "") tamanho = null;
-    if (genero === "") genero = null;
-    if (quantidade === "") quantidade = null;
-    if (limiteMinimo === "") limiteMinimo = null;
+    // Faixas
+    let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
+    let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
+    if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
 
-    fetch('/produtos/filtrar', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ nome, codigo, categoria, tamanho, genero, quantidade, limiteMinimo, preco })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        produtos = data;
-        const select = document.getElementById('registros-select');
-        itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
-        paginaAtual = 1;
-        renderizarProdutos(produtos);
-    })
-    .catch(error => {
-        console.error('Erro na API:', error);
-        const tbody = document.getElementById('product-table-body');
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+    let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
+    let limiteMaxVal = parseInt(document.getElementById("limite-max").value) || 999;
+    if (limiteMinVal > limiteMaxVal) [limiteMinVal, limiteMaxVal] = [limiteMaxVal, limiteMinVal];
+
+    // Preço faixa
+    let precoMin = document.getElementById("preco-min").value.replace(/\D/g, '');
+    let precoMax = document.getElementById("preco-max").value.replace(/\D/g, '');
+    precoMin = precoMin ? parseInt(precoMin) / 100 : null;
+    precoMax = precoMax ? parseInt(precoMax) / 100 : null;
+    if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
+
+    // Filtro em memória
+    let filtrados = produtos.filter(p => {
+        if (codigo && !p.codigo.includes(codigo)) return false;
+        if (nome && !p.nome.toLowerCase().includes(nome.toLowerCase())) return false;
+        if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
+        if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
+        if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
+        if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
+        if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
+        if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
+        if (limiteMaxVal !== null && p.limiteMinimo > limiteMaxVal) return false;
+        if (precoMin !== null && p.preco < precoMin) return false;
+        if (precoMax !== null && p.preco > precoMax) return false;
+        return true;
     });
+
+    paginaAtual = 1;
+    renderizarProdutos(filtrados);
 }    
 
-    function limpar() {
-        document.querySelectorAll(".filters input, .filters select").forEach(el => el.value = "");
-        filtrar();
-    }
-
+function limpar() {
+    document.querySelectorAll(".filters input, .filters select").forEach(el => {
+        el.value = "";
+        if (el.dataset) el.dataset.valor = "";
+    });
+    precoMin.value = "";
+    precoMax.value = "";
+    qtdMin.value = "";
+    qtdMax.value = "";
+    limiteMin.value = "";
+    limiteMax.value = "";
+    precoInput.value = "";
+    qtdInput.value = "";
+    limiteInput.value = "";
+    carregarProdutos(document.getElementById('registros-select').value);
+    setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
+}
 
 function removerProduto(id) {
     Swal.fire({
@@ -171,7 +199,6 @@ function removerProduto(id) {
     });
 }
 
-
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
@@ -181,7 +208,7 @@ function exibirTamanho(tamanho) {
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     // Mostra o loading imediatamente
-    tbody.innerHTML = `<tr>
+    tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
@@ -199,7 +226,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -302,27 +329,27 @@ function renderizarPaginacao(totalPaginas) {
 }
 
 function carregarProdutos(top) {
-        if (top && top !== "") {
-            url += `?top=${top}`;
-        }
-        fetch('/produtos')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                produtos = data;
-                renderizarProdutos(produtos);
-            })
-            .catch(error => {
-                console.error('Erro na API:', error);
-                const tbody = document.getElementById('product-table-body');
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-            });
+    let url = '/produtos';
+    if (top && top !== "") {
+        url += `?top=${top}`;
     }
-
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            produtos = data;
+            renderizarProdutos(produtos);
+        })
+        .catch(error => {
+            console.error('Erro na API:', error);
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+        });
+}
 
 window.onload = function() {
     const select = document.getElementById('registros-select');
@@ -389,127 +416,82 @@ window.onload = function() {
 
 }
 
-function visualizarImagem(url, titulo, descricao) {
-    Swal.fire({
-        title: titulo,
-        html: `
-            <img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>
-            ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
-        `,
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'swal-popup'
-        }
-    });
+// --- PREÇO FAIXA SEM SETINHAS ---
+const precoInput = document.getElementById('filter-preco');
+const precoPopup = document.getElementById('preco-faixa-popup');
+const precoMin = document.getElementById('preco-min');
+const precoMax = document.getElementById('preco-max');
 
-    const closeBtn = document.querySelector('.swal2-close');
-    if (closeBtn) {
-        closeBtn.style.boxShadow = 'none';
+// Máscara para 000,00 até 999,99
+function mascaraPrecoFaixa(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 5) value = value.slice(0, 5);
+    if (value.length > 0) {
+        value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
+        input.value = 'R$ ' + value;
+    } else {
+        input.value = '';
     }
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    function limitarInput999(input) {
-        input.addEventListener('input', function() {
-            if (this.value.length > 3) this.value = this.value.slice(0, 3);
-            if (this.value > 999) this.value = 999;
-        });
+precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+
+precoInput.addEventListener('click', function(e) {
+    precoPopup.style.display = 'block';
+    precoMin.focus();
+    e.stopPropagation();
+});
+
+// Função para aplicar o filtro só ao fechar o popup
+function aplicarFiltroPrecoFaixa() {
+    let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        precoInput.value = '';
+        precoPopup.style.display = 'none';
+        filtrar();
+        return;
     }
 
-    ['filter-quantidade', 'filter-limite'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) limitarInput999(input);
-    });
-});
+    // Se só "de" preenchido, assume até 999,99
+    if (min && !max) max = '999.99';
+    // Se só "até" preenchido, assume de 000,00
+    if (!min && max) min = '0.00';
 
-//botão voltar ao topo
-window.addEventListener('scroll', function() {
-    const btn = document.getElementById('btn-topo');
-    if (window.scrollY > 100) {
-        btn.style.display = 'block';
-    } else {
-        btn.style.display = 'none';
+    // Converte para número para comparar
+    let minNum = parseFloat(min) || 0;
+    let maxNum = parseFloat(max) || 999.99;
+
+    // Inverte se min > max
+    if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
+
+    // Formata de volta para string
+    min = minNum.toFixed(2).replace('.', ',');
+    max = maxNum.toFixed(2).replace('.', ',');
+
+    precoInput.value = `R$ ${min} - R$ ${max}`;
+    precoPopup.style.display = 'none';
+    filtrar();
+}
+
+// Fecha popup ao clicar fora e aplica filtro
+document.addEventListener('mousedown', function(e) {
+    if (precoPopup.style.display === 'block' && !precoPopup.contains(e.target) && e.target !== precoInput) {
+        aplicarFiltroPrecoFaixa();
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.getElementById('btn-topo');
-    if (btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-});
+// Limpa campos ao limpar filtros
+function limparFaixaPreco() {
+    precoMin.value = '';
+    precoMax.value = '';
+    precoInput.value = '';
+}
 
-window.addEventListener('DOMContentLoaded', function() {
-    const codigoInput = document.getElementById('filter-codigo');
-    let selectProdutos = null;
-
-    codigoInput.addEventListener('mouseenter', function() {
-        // Cria o select só uma vez
-        if (!selectProdutos) {
-            selectProdutos = document.createElement('select');
-            // Copia id, name, class e style do input
-            selectProdutos.id = codigoInput.id;
-            selectProdutos.name = codigoInput.name || '';
-            selectProdutos.className = codigoInput.className;
-            selectProdutos.setAttribute('style', codigoInput.getAttribute('style') || '');
-            // Copia atributos de acessibilidade se houver
-            if (codigoInput.hasAttribute('aria-label')) {
-                selectProdutos.setAttribute('aria-label', codigoInput.getAttribute('aria-label'));
-            }
-            // Copia largura real computada
-            const computed = window.getComputedStyle(codigoInput);
-            selectProdutos.style.width = computed.width;
-            selectProdutos.style.height = computed.height;
-            selectProdutos.style.fontSize = computed.fontSize;
-            selectProdutos.style.boxSizing = computed.boxSizing;
-            selectProdutos.style.padding = computed.padding;
-            selectProdutos.style.border = computed.border;
-            selectProdutos.style.borderRadius = computed.borderRadius;
-
-            selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-            codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-
-            // Ao selecionar, apenas armazena o valor selecionado
-            let ultimoSelecionado = "";
-
-            selectProdutos.addEventListener('change', function() {
-                ultimoSelecionado = this.value;
-            });
-
-            // Ao sair do select, preenche o input se algo foi selecionado
-            selectProdutos.addEventListener('mouseleave', function() {
-                if (ultimoSelecionado) {
-                    codigoInput.value = ultimoSelecionado;
-                    codigoInput.style.color = 'black';
-                }
-                ultimoSelecionado = "";
-                selectProdutos.selectedIndex = 0; // volta para o placeholder
-                selectProdutos.style.display = 'none';
-                codigoInput.style.display = '';
-                codigoInput.focus();
-            });
-        }
-
-        // Preenche o select com os produtos
-        fetch('/produtos')
-            .then(res => res.json())
-            .then(produtos => {
-                selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.codigo}">${prod.codigo} - ${prod.nome}</option>`;
-                });
-                // Troca input por select
-                codigoInput.style.display = 'none';
-                selectProdutos.style.display = '';
-                selectProdutos.focus();
-            });
-    });
-});
-
+// Cor dos selects
 function aplicarCorSelectFiltro(ids) {
     ids.forEach(id => {
         const el = document.getElementById(id);
@@ -522,17 +504,146 @@ function aplicarCorSelectFiltro(ids) {
         });
     });
 }
-
-// Use para os filtros desejados
 aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
 
-// Para voltar ao cinza ao limpar, adicione no seu método limpar():
-function limpar() {
-    document.querySelectorAll(".filters input, .filters select").forEach(el => {
-        el.value = "";
-        if (['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho'].includes(el.id)) {
-            el.style.color = '#757575';
-        }
-    });
+// --- QUANTIDADE FAIXA ---
+const qtdInput = document.getElementById('filter-quantidade');
+const qtdPopup = document.getElementById('quantidade-faixa-popup');
+const qtdMin = document.getElementById('quantidade-min');
+const qtdMax = document.getElementById('quantidade-max');
+
+qtdInput.addEventListener('click', function(e) {
+    qtdPopup.style.display = 'block';
+    qtdMin.focus();
+    e.stopPropagation();
+});
+qtdMin.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+});
+qtdMax.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+});
+function aplicarFiltroQtdFaixa() {
+    let min = qtdMin.value;
+    let max = qtdMax.value;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        qtdInput.value = '';
+        qtdPopup.style.display = 'none';
+        filtrar();
+        return;
+    }
+
+    min = parseInt(min) || 0;
+    max = parseInt(max) || 999;
+    if (min > max) [min, max] = [max, min];
+    qtdMin.value = min;
+    qtdMax.value = max;
+    qtdInput.value = `${min} - ${max}`;
+    qtdPopup.style.display = 'none';
     filtrar();
 }
+document.addEventListener('mousedown', function(e) {
+    if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+        aplicarFiltroQtdFaixa();
+    }
+});
+
+// --- LIMITE MÍNIMO FAIXA ---
+const limiteInput = document.getElementById('filter-limite');
+const limitePopup = document.getElementById('limite-faixa-popup');
+const limiteMin = document.getElementById('limite-min');
+const limiteMax = document.getElementById('limite-max');
+
+limiteInput.addEventListener('click', function(e) {
+    limitePopup.style.display = 'block';
+    limiteMin.focus();
+    e.stopPropagation();
+});
+limiteMin.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+});
+limiteMax.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+});
+function aplicarFiltroLimiteFaixa() {
+    let min = limiteMin.value;
+    let max = limiteMax.value;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        limiteInput.value = '';
+        limitePopup.style.display = 'none';
+        filtrar();
+        return;
+    }
+
+    min = parseInt(min) || 1;
+    max = parseInt(max) || 999;
+    if (min > max) [min, max] = [max, min];
+    limiteMin.value = min;
+    limiteMax.value = max;
+    limiteInput.value = `${min} - ${max}`;
+    limitePopup.style.display = 'none';
+    filtrar();
+}
+document.addEventListener('mousedown', function(e) {
+    if (limitePopup.style.display === 'block' && !limitePopup.contains(e.target) && e.target !== limiteInput) {
+        aplicarFiltroLimiteFaixa();
+    }
+});
+
+// --- SUGESTÃO DE CÓDIGOS "LIKE" ---
+const codigoInput = document.getElementById('filter-codigo');
+
+// Cria o container das sugestões
+let sugestaoContainer = document.createElement('div');
+sugestaoContainer.id = 'codigo-sugestoes';
+
+codigoInput.parentNode.appendChild(sugestaoContainer);
+
+codigoInput.addEventListener('input', function() {
+    // Permite apenas números
+    this.value = this.value.replace(/\D/g, '');
+    const termo = this.value.trim();
+    sugestaoContainer.innerHTML = '';
+    if (!termo) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    // Busca códigos que contenham o termo digitado
+    const encontrados = produtos.filter(p => p.codigo.includes(termo));
+    if (encontrados.length === 0) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    encontrados.forEach(p => {
+        const div = document.createElement('div');
+        div.textContent = `${p.codigo} - ${p.nome}`;
+        div.style.padding = '4px 8px';
+        div.style.cursor = 'pointer';
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            codigoInput.value = p.codigo;
+            sugestaoContainer.style.display = 'none';
+            filtrar();
+        });
+        sugestaoContainer.appendChild(div);
+    });
+    // Posiciona o container logo abaixo do input
+    const rect = codigoInput.getBoundingClientRect();
+    sugestaoContainer.style.top = (codigoInput.offsetTop + codigoInput.offsetHeight) + 'px';
+    sugestaoContainer.style.left = codigoInput.offsetLeft + 'px';
+    sugestaoContainer.style.display = 'block';
+    filtrar();
+});
+
+// Esconde sugestões ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
+        sugestaoContainer.style.display = 'none';
+    }
+});
