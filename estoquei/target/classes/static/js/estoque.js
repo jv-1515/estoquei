@@ -448,6 +448,14 @@ function aplicarFiltroPrecoFaixa() {
     let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
     let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
 
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        precoInput.value = '';
+        precoPopup.style.display = 'none';
+        filtrar();
+        return;
+    }
+
     // Se só "de" preenchido, assume até 999,99
     if (min && !max) max = '999.99';
     // Se só "até" preenchido, assume de 000,00
@@ -458,9 +466,7 @@ function aplicarFiltroPrecoFaixa() {
     let maxNum = parseFloat(max) || 999.99;
 
     // Inverte se min > max
-    if (minNum > maxNum) {
-        [minNum, maxNum] = [maxNum, minNum];
-    }
+    if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
 
     // Formata de volta para string
     min = minNum.toFixed(2).replace('.', ',');
@@ -518,11 +524,20 @@ qtdMax.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 3);
 });
 function aplicarFiltroQtdFaixa() {
-    let min = parseInt(qtdMin.value) || 0;
-    let max = parseInt(qtdMax.value) || 999;
-    // Inverte se min > max
+    let min = qtdMin.value;
+    let max = qtdMax.value;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        qtdInput.value = '';
+        qtdPopup.style.display = 'none';
+        filtrar();
+        return;
+    }
+
+    min = parseInt(min) || 0;
+    max = parseInt(max) || 999;
     if (min > max) [min, max] = [max, min];
-    // Atualiza os campos do popup também
     qtdMin.value = min;
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
@@ -553,8 +568,19 @@ limiteMax.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 3);
 });
 function aplicarFiltroLimiteFaixa() {
-    let min = parseInt(limiteMin.value) || 1;
-    let max = parseInt(limiteMax.value) || 999;
+    let min = limiteMin.value;
+    let max = limiteMax.value;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        limiteInput.value = '';
+        limitePopup.style.display = 'none';
+        filtrar();
+        return;
+    }
+
+    min = parseInt(min) || 1;
+    max = parseInt(max) || 999;
     if (min > max) [min, max] = [max, min];
     limiteMin.value = min;
     limiteMax.value = max;
@@ -611,7 +637,6 @@ codigoInput.addEventListener('input', function() {
     const rect = codigoInput.getBoundingClientRect();
     sugestaoContainer.style.top = (codigoInput.offsetTop + codigoInput.offsetHeight) + 'px';
     sugestaoContainer.style.left = codigoInput.offsetLeft + 'px';
-    sugestaoContainer.style.width = codigoInput.offsetWidth + 'px';
     sugestaoContainer.style.display = 'block';
     filtrar();
 });
