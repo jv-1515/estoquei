@@ -73,6 +73,12 @@ h2 {
     background-color: #1e94a3;
 }
 
+.btn.limpar {
+    height: 30px;
+    align-self: flex-end;
+    display: flex;
+}
+
 .main-container {
     background: white;
     border-radius: 10px;
@@ -226,6 +232,42 @@ button:hover,
 .fa-trash:hover,
 .edit-icon:hover {
     transition: background-color 0.2s, color 0.2s;
+}
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+.filters-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    position: relative;
+    flex: 1 1 90px;
+    min-width: 90px;
+    max-width: 160px;
+}
+
+.input-group label {
+    font-size: 10px;
+    color: #333;
+    background: #fff;
+    padding: 2px 0;
+    pointer-events: none;
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    margin-top: 2px;
 }
 
 .swal2-container {

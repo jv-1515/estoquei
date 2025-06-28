@@ -30,7 +30,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="" selected disabled hidden>Tamanho</option>';
+    let options = '<option value="" selected>Todos</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {

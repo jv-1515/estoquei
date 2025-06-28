@@ -30,7 +30,7 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="" disabled hidden selected>Tamanho</option>';
+    let options = '<option value="" selected>Todos</option>';
 
     if (!categoria) {
         tamLetra.forEach(t => {
@@ -536,3 +536,10 @@ function limpar() {
     });
     filtrar();
 }
+
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.filters input, .filters select').forEach(el => {
+        el.addEventListener('input', filtrar);
+        el.addEventListener('change', filtrar);
+    });
+});
