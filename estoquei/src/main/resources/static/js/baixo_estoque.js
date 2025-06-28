@@ -155,7 +155,7 @@ function exibirTamanho(tamanho) {
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     // Mostra o loading imediatamente
-    tbody.innerHTML = `<tr>
+    tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
