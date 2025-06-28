@@ -67,19 +67,53 @@
                 </div>
                 <div class="input-group">
                     <label for="filter-quantidade">Quantidade</label>
-                    <input type="number" id="filter-quantidade" placeholder="Quantidade" max="999" />
+                    <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
+                    <div id="quantidade-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="width:75px; text-align:right;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="width:75px; text-align:right;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="filter-limite">Limite Mínimo</label>
-                    <input type="number" id="filter-limite" placeholder="Limite Mínimo" max="999"/>
+                    <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
+                    <div id="limite-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="limite-min" maxlength="3" placeholder="1" style="width:75px; text-align:right;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="limite-max" maxlength="3" placeholder="999" style="width:75px; text-align:right;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="input-group">
-                    <label for="filter-preco">Preço (R$)</label>
-                    <input type="text" id="filter-preco" placeholder="Preço (R$)" oninput="mascaraPreco(this)"/>
+                    <label for="filter-preco">Preço</label>
+                    <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+                    <div id="preco-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:75px;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:75px;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <button class="btn limpar" onclick="limpar(); renderizarProdutos(produtos);">Limpar Filtros</button>
-            </div>
+            <button class="btn limpar" onclick="limpar()">Limpar Filtros</button>            </div>
         </div>
     </div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
