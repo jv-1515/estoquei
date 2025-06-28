@@ -105,28 +105,32 @@ function filtrar() {
     let genero = document.getElementById("filter-genero").value;
 
     // Faixas
-    let qtdMin = parseInt(document.getElementById("quantidade-min").value) || null;
-    let qtdMax = parseInt(document.getElementById("quantidade-max").value) || null;
-    let limiteMin = parseInt(document.getElementById("limite-min").value) || null;
-    let limiteMax = parseInt(document.getElementById("limite-max").value) || null;
+    let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
+    let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
+    if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
+
+    let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
+    let limiteMaxVal = parseInt(document.getElementById("limite-max").value) || 999;
+    if (limiteMinVal > limiteMaxVal) [limiteMinVal, limiteMaxVal] = [limiteMaxVal, limiteMinVal];
 
     // Preço faixa
     let precoMin = document.getElementById("preco-min").value.replace(/\D/g, '');
     let precoMax = document.getElementById("preco-max").value.replace(/\D/g, '');
     precoMin = precoMin ? parseInt(precoMin) / 100 : null;
     precoMax = precoMax ? parseInt(precoMax) / 100 : null;
+    if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
 
     // Filtro em memória
     let filtrados = produtos.filter(p => {
         if (codigo && !p.codigo.includes(codigo)) return false;
         if (nome && !p.nome.toLowerCase().includes(nome.toLowerCase())) return false;
-        if (categoria && p.categoria !== categoria) return false;
-        if (tamanho && p.tamanho !== tamanho) return false;
-        if (genero && p.genero !== genero) return false;
-        if (qtdMin !== null && p.quantidade < qtdMin) return false;
-        if (qtdMax !== null && p.quantidade > qtdMax) return false;
-        if (limiteMin !== null && p.limiteMinimo < limiteMin) return false;
-        if (limiteMax !== null && p.limiteMinimo > limiteMax) return false;
+        if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
+        if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
+        if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
+        if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
+        if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
+        if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
+        if (limiteMaxVal !== null && p.limiteMinimo > limiteMaxVal) return false;
         if (precoMin !== null && p.preco < precoMin) return false;
         if (precoMax !== null && p.preco > precoMax) return false;
         return true;
@@ -204,7 +208,7 @@ function exibirTamanho(tamanho) {
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     // Mostra o loading imediatamente
-    tbody.innerHTML = `<tr>
+    tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
@@ -222,7 +226,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">Nenhum produto encontrado</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -441,22 +445,30 @@ precoInput.addEventListener('click', function(e) {
 
 // Função para aplicar o filtro só ao fechar o popup
 function aplicarFiltroPrecoFaixa() {
-    let min = precoMin.value;
-    let max = precoMax.value;
+    let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
 
     // Se só "de" preenchido, assume até 999,99
-    if (min && !max) max = '999,99';
+    if (min && !max) max = '999.99';
     // Se só "até" preenchido, assume de 000,00
-    if (!min && max) min = '000,00';
+    if (!min && max) min = '0.00';
 
-    if (min || max) {
-        precoInput.value = `R$ ${min || '000,00'} - R$ ${max || '999,99'}`;
-    } else {
-        precoInput.value = '';
+    // Converte para número para comparar
+    let minNum = parseFloat(min) || 0;
+    let maxNum = parseFloat(max) || 999.99;
+
+    // Inverte se min > max
+    if (minNum > maxNum) {
+        [minNum, maxNum] = [maxNum, minNum];
     }
+
+    // Formata de volta para string
+    min = minNum.toFixed(2).replace('.', ',');
+    max = maxNum.toFixed(2).replace('.', ',');
+
+    precoInput.value = `R$ ${min} - R$ ${max}`;
     precoPopup.style.display = 'none';
-    // Só dispara filtro se algum campo foi preenchido
-    if (min || max) filtrar();
+    filtrar();
 }
 
 // Fecha popup ao clicar fora e aplica filtro
@@ -472,74 +484,6 @@ function limparFaixaPreco() {
     precoMax.value = '';
     precoInput.value = '';
 }
-
-// --- SELECT DO CÓDIGO ---
-window.addEventListener('DOMContentLoaded', function() {
-    const codigoInput = document.getElementById('filter-codigo');
-    let selectProdutos = null;
-
-    codigoInput.addEventListener('mouseenter', function() {
-        // Cria o select só uma vez
-        if (!selectProdutos) {
-            selectProdutos = document.createElement('select');
-            // Copia id, name, class e style do input
-            selectProdutos.id = codigoInput.id;
-            selectProdutos.name = codigoInput.name || '';
-            selectProdutos.className = codigoInput.className;
-            selectProdutos.setAttribute('style', codigoInput.getAttribute('style') || '');
-            // Copia atributos de acessibilidade se houver
-            if (codigoInput.hasAttribute('aria-label')) {
-                selectProdutos.setAttribute('aria-label', codigoInput.getAttribute('aria-label'));
-            }
-            // Copia largura real computada
-            const computed = window.getComputedStyle(codigoInput);
-            selectProdutos.style.width = computed.width;
-            selectProdutos.style.height = computed.height;
-            selectProdutos.style.fontSize = computed.fontSize;
-            selectProdutos.style.boxSizing = computed.boxSizing;
-            selectProdutos.style.padding = computed.padding;
-            selectProdutos.style.border = computed.border;
-            selectProdutos.style.borderRadius = computed.borderRadius;
-
-            selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-            codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-
-            // Ao selecionar, apenas armazena o valor selecionado
-            let ultimoSelecionado = "";
-
-            selectProdutos.addEventListener('change', function() {
-                ultimoSelecionado = this.value;
-            });
-
-            // Ao sair do select, preenche o input se algo foi selecionado
-            selectProdutos.addEventListener('mouseleave', function() {
-                if (ultimoSelecionado) {
-                    codigoInput.value = ultimoSelecionado;
-                    codigoInput.style.color = 'black';
-                }
-                ultimoSelecionado = "";
-                selectProdutos.selectedIndex = 0; // volta para o placeholder
-                selectProdutos.style.display = 'none';
-                codigoInput.style.display = '';
-                codigoInput.focus();
-            });
-        }
-
-        // Preenche o select com os produtos
-        fetch('/produtos')
-            .then(res => res.json())
-            .then(produtos => {
-                selectProdutos.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.codigo}">${prod.codigo} - ${prod.nome}</option>`;
-                });
-                // Troca input por select
-                codigoInput.style.display = 'none';
-                selectProdutos.style.display = '';
-                selectProdutos.focus();
-            });
-    });
-});
 
 // Cor dos selects
 function aplicarCorSelectFiltro(ids) {
@@ -574,21 +518,16 @@ qtdMax.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 3);
 });
 function aplicarFiltroQtdFaixa() {
-    let min = qtdMin.value;
-    let max = qtdMax.value;
-    if (min && !max) max = '999';
-    if (!min && max) min = '0';
-
-    // Mostra o texto no input para o usuário
-    if (min || max) {
-        qtdInput.value = `${min || '0'} - ${max || '999'}`;
-    } else {
-        qtdInput.value = '';
-    }
+    let min = parseInt(qtdMin.value) || 0;
+    let max = parseInt(qtdMax.value) || 999;
+    // Inverte se min > max
+    if (min > max) [min, max] = [max, min];
+    // Atualiza os campos do popup também
+    qtdMin.value = min;
+    qtdMax.value = max;
+    qtdInput.value = `${min} - ${max}`;
     qtdPopup.style.display = 'none';
-
-    qtdInput.dataset.valor = min || max || '';
-    if (min || max) filtrar();
+    filtrar();
 }
 document.addEventListener('mousedown', function(e) {
     if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
@@ -614,23 +553,72 @@ limiteMax.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').slice(0, 3);
 });
 function aplicarFiltroLimiteFaixa() {
-    let min = limiteMin.value;
-    let max = limiteMax.value;
-    if (min && !max) max = '999';
-    if (!min && max) min = '1';
-
-    if (min || max) {
-        limiteInput.value = `${min || '1'} - ${max || '999'}`;
-    } else {
-        limiteInput.value = '';
-    }
+    let min = parseInt(limiteMin.value) || 1;
+    let max = parseInt(limiteMax.value) || 999;
+    if (min > max) [min, max] = [max, min];
+    limiteMin.value = min;
+    limiteMax.value = max;
+    limiteInput.value = `${min} - ${max}`;
     limitePopup.style.display = 'none';
-
-    limiteInput.dataset.valor = min || max || '';
-    if (min || max) filtrar();
+    filtrar();
 }
 document.addEventListener('mousedown', function(e) {
     if (limitePopup.style.display === 'block' && !limitePopup.contains(e.target) && e.target !== limiteInput) {
         aplicarFiltroLimiteFaixa();
+    }
+});
+
+// --- SUGESTÃO DE CÓDIGOS "LIKE" ---
+const codigoInput = document.getElementById('filter-codigo');
+
+// Cria o container das sugestões
+let sugestaoContainer = document.createElement('div');
+sugestaoContainer.id = 'codigo-sugestoes';
+
+codigoInput.parentNode.appendChild(sugestaoContainer);
+
+codigoInput.addEventListener('input', function() {
+    // Permite apenas números
+    this.value = this.value.replace(/\D/g, '');
+    const termo = this.value.trim();
+    sugestaoContainer.innerHTML = '';
+    if (!termo) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    // Busca códigos que contenham o termo digitado
+    const encontrados = produtos.filter(p => p.codigo.includes(termo));
+    if (encontrados.length === 0) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    encontrados.forEach(p => {
+        const div = document.createElement('div');
+        div.textContent = `${p.codigo} - ${p.nome}`;
+        div.style.padding = '4px 8px';
+        div.style.cursor = 'pointer';
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            codigoInput.value = p.codigo;
+            sugestaoContainer.style.display = 'none';
+            filtrar();
+        });
+        sugestaoContainer.appendChild(div);
+    });
+    // Posiciona o container logo abaixo do input
+    const rect = codigoInput.getBoundingClientRect();
+    sugestaoContainer.style.top = (codigoInput.offsetTop + codigoInput.offsetHeight) + 'px';
+    sugestaoContainer.style.left = codigoInput.offsetLeft + 'px';
+    sugestaoContainer.style.width = codigoInput.offsetWidth + 'px';
+    sugestaoContainer.style.display = 'block';
+    filtrar();
+});
+
+// Esconde sugestões ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
+        sugestaoContainer.style.display = 'none';
     }
 });
