@@ -100,7 +100,6 @@ table {
 th,
 td {
     padding: 5px;
-    border-bottom: 1px solid #ddd;
     text-align: center;
     vertical-align: middle;
 }
@@ -110,7 +109,12 @@ th {
     font-weight: bold;
 }
 
-tbody tr:hover {
+tbody tr:hover,
+tbody tr:nth-child(odd):hover {
+    background-color: #e0e0e0;
+}
+
+tbody tr:nth-child(odd) {
     background-color: #f1f1f1;
 }
 
@@ -286,4 +290,32 @@ button:hover,
     z-index: 10;
     min-width: 100%;
     box-sizing: border-box;
+}
+
+.input-group:has(#filter-preco) {
+    min-width: 137px;
+}
+
+.input-group:has(#filter-nome) {
+    min-width: 180px;
+}
+
+
+#codigo-sugestoes {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #aaa;
+    z-index: 1000;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    font-size: 12px;
+    left: 0;
+    top: 100%;
+}
+
+#codigo-sugestoes .sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #333;
 }

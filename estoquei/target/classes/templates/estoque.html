@@ -30,11 +30,11 @@
             <div class="filters-row">
                 <div class="input-group">
                     <label for="filter-codigo">Código</label>
-                    <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" pattern="\d{9}" />
+                    <input type="text" id="filter-codigo" placeholder="Todos" maxlength="9" minlength="9" pattern="\d{9}" />
                 </div>
                 <div class="input-group">
                     <label for="filter-nome">Nome</label>
-                    <input type="text" id="filter-nome" placeholder="Nome" />
+                    <input type="text" id="filter-nome" placeholder="Todos" />
                 </div>
                 <div class="input-group">
                     <label for="filter-categoria">Categoria</label>
@@ -72,11 +72,11 @@
                         <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="width:75px; text-align:right;">
+                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
                             </div>
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="width:75px; text-align:right;">
+                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
                             </div>
                         </div>
                     </div>
@@ -88,11 +88,11 @@
                         <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="limite-min" maxlength="3" placeholder="1" style="width:75px; text-align:right;">
+                                <input type="text" id="limite-min" maxlength="3" placeholder="1" style="text-align:right;">
                             </div>
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="limite-max" maxlength="3" placeholder="999" style="width:75px; text-align:right;">
+                                <input type="text" id="limite-max" maxlength="3" placeholder="999" style="text-align:right;">
                             </div>
                         </div>
                     </div>
@@ -104,11 +104,11 @@
                         <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:75px;">
+                                <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:90px;">
                             </div>
                             <div style="display: flex; align-items: center;">
                                 <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:75px;">
+                                <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:90px;">
                             </div>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                     <th class="ordenar">Gênero <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Quantidade <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Limite Mínimo<span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Preço <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Preço (R$)<span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th>Ações</th>
                 </tr>
             </thead>
