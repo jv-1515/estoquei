@@ -119,7 +119,7 @@
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
-            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 55px; color: #757575;">
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; height:30px; width: 55px; color: #757575;">
                 <option value=""> Todos</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -127,7 +127,7 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/cadastrar-produto'">
+        <button class="btn" style="margin-left: auto; height:30px;" onclick="window.location.href='/cadastrar-produto'">
             <i class="fa fa-plus" style="margin-right: 4px;"></i> Cadastrar Produto
         </button>
     </div>
@@ -136,7 +136,7 @@
         <table id="product-list">
             <thead>
                 <tr>
-                    <th>Produto</th>
+                    <th></th>
                     <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Categoria <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>

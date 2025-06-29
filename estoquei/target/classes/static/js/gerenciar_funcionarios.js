@@ -51,37 +51,65 @@ const funcionarios = [
     }
 ];
 
+function getIniciais(nome) {
+    const partes = nome.trim().split(' ');
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function corAvatar(str) {
+    // Gera uma cor pastel baseada no nome
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 60%, 80%)`;
+}
+
 function renderizarFuncionarios(lista) {
     const container = document.getElementById("product-list");
     container.innerHTML = `
     <thead>
     <tr>
-    <th>Código</th>
-    <th>Nome</th>
-    <th>Cargo</th>
-    <th>E-mail</th>
-    <th>Ações</th>
+        <th style="width:48px"></th>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>E-mail</th>
+        <th>Ações</th>
     </tr>
     </thead>
     <tbody>
     ${lista
-    .map(
-        (f, idx) => `
-    <tr tabindex="${idx + 1}">
-        <td>${f.codigo}</td>
-        <td>${f.nome}</td>
-        <td>${f.cargo}</td>
-        <td>${f.email}</td>
-        <td class="actions">
-        <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
-            <i class="fa-solid fa-pen"></i>
-        </a>
-        <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    `
-    )
-    .join("")}
+        .map(
+            (f, idx) => `
+        <tr tabindex="${idx + 1}">
+            <td>
+                <div style="
+                    width:30px;height:30px;
+                    border-radius:50%;
+                    background:${corAvatar(f.nome)};
+                    display:flex;align-items:center;justify-content:center;
+                    font-weight:bold;font-size:12px;
+                    color: rgba(0,0,0,0.65);
+                    margin:0 auto;
+                    ">
+                    ${getIniciais(f.nome)}
+                </div>
+            </td>
+            <td>${f.codigo}</td>
+            <td>${f.nome}</td>
+            <td>${f.cargo}</td>
+            <td>${f.email}</td>
+            <td class="actions">
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+                <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+        `
+        )
+        .join("")}
     </tbody>
     `;
 }
@@ -292,3 +320,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+

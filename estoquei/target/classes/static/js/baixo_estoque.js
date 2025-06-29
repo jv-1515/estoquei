@@ -64,103 +64,126 @@ function updateOptions() {
 
     tamanho.innerHTML = options;
     tamanho.value = valorSelecionado;
-
 }
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
+
+    // Filtros automáticos: inputs normais (exceto popups) filtram ao blur, selects ao change
+    document.querySelectorAll('.filters input').forEach(el => {
+        if (!['filter-preco', 'preco-min', 'preco-max', 'filter-quantidade', 'qtd-min', 'qtd-max', 'filter-limite', 'limite-min', 'limite-max'].includes(el.id)) {
+            el.addEventListener('blur', filtrar);
+        }
+    });
+    document.querySelectorAll('.filters select').forEach(el => {
+        el.addEventListener('change', filtrar);
+    });
+
+    // Limita quantidade e limite mínimo a 999
+    ['filter-quantidade', 'filter-limite'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function() {
+                if (this.value.length > 3) this.value = this.value.slice(0, 3);
+                if (this.value > 999) this.value = 999;
+            });
+        }
+    });
 });
 
 let produtos = [];
 let paginaAtual = 1;
 let itensPorPagina = 10;
 
-    function filtrar() {
-        let codigo = document.getElementById("filter-codigo").value;
-        let nome = document.getElementById("filter-nome").value;
-        let categoria = document.getElementById("filter-categoria").value;
-        let tamanho = document.getElementById("filter-tamanho").value;
-        let genero = document.getElementById("filter-genero").value;
+function filtrar() {
+    let codigo = document.getElementById("filter-codigo").value;
+    let nome = document.getElementById("filter-nome").value;
+    let categoria = document.getElementById("filter-categoria").value;
+    let tamanho = document.getElementById("filter-tamanho").value;
+    let genero = document.getElementById("filter-genero").value;
 
-        let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
-        let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
-        if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
+    let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
+    let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
+    if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
 
-        let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
-        let limiteMaxVal = parseInt(document.getElementById("limite-max").value) || 999;
-        if (limiteMinVal > limiteMaxVal) [limiteMinVal, limiteMaxVal] = [limiteMaxVal, limiteMinVal];
+    let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
+    let limiteMaxVal = parseInt(document.getElementById("limite-max").value) || 999;
+    if (limiteMinVal > limiteMaxVal) [limiteMinVal, limiteMaxVal] = [limiteMaxVal, limiteMinVal];
 
-        let precoMinVal = document.getElementById("preco-min").value.replace(/\D/g, '');
-        let precoMaxVal = document.getElementById("preco-max").value.replace(/\D/g, '');
-        precoMinVal = precoMinVal ? parseInt(precoMinVal) / 100 : null;
-        precoMaxVal = precoMaxVal ? parseInt(precoMaxVal) / 100 : null;
-        if (precoMinVal !== null && precoMaxVal !== null && precoMinVal > precoMaxVal) [precoMinVal, precoMaxVal] = [precoMaxVal, precoMinVal];
+    let precoMinVal = document.getElementById("preco-min").value.replace(/\D/g, '');
+    let precoMaxVal = document.getElementById("preco-max").value.replace(/\D/g, '');
+    precoMinVal = precoMinVal ? parseInt(precoMinVal) / 100 : null;
+    precoMaxVal = precoMaxVal ? parseInt(precoMaxVal) / 100 : null;
+    if (precoMinVal !== null && precoMaxVal !== null && precoMinVal > precoMaxVal) [precoMinVal, precoMaxVal] = [precoMaxVal, precoMinVal];
 
-        if (codigo === "") codigo = null;
-        if (nome === "") nome = null;
-        if (categoria === "") categoria = null;
-        if (tamanho === "") tamanho = null;
-        if (genero === "") genero = null;
-        if (quantidade === "") quantidade = null;
-        if (limiteMinimo === "") limiteMinimo = null;
+    if (codigo === "") codigo = null;
+    if (nome === "") nome = null;
+    if (categoria === "") categoria = null;
+    if (tamanho === "") tamanho = null;
+    if (genero === "") genero = null;
 
-        fetch('/produtos/baixo-estoque/filtrar', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nome, codigo, categoria, tamanho, genero,
-                quantidadeMin: qtdMinVal,
-                quantidadeMax: qtdMaxVal,
-                limiteMin: limiteMinVal,
-                limiteMax: limiteMaxVal,
-                precoMin: precoMinVal,
-                precoMax: precoMaxVal
-            })
+    fetch('/produtos/baixo-estoque/filtrar', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nome, codigo, categoria, tamanho, genero,
+            quantidadeMin: qtdMinVal,
+            quantidadeMax: qtdMaxVal,
+            limiteMin: limiteMinVal,
+            limiteMax: limiteMaxVal,
+            precoMin: precoMinVal,
+            precoMax: precoMaxVal
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            produtos = data;
-            renderizarProdutos(produtos);
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-        });
-    }    
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        produtos = data;
+        renderizarProdutos(produtos);
+    })
+    .catch(error => {
+        console.error('Erro na API:', error);
+        const tbody = document.getElementById('product-table-body');
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+    });
+}    
 
-    function limpar() {
-        document.querySelectorAll(".filters input, .filters select").forEach(el => el.value = "");
-        filtrar();
-    }
+function limpar() {
+    document.querySelectorAll(".filters input, .filters select").forEach(el => el.value = "");
+    // Limpa popups de faixa
+    ['quantidade-min','quantidade-max','limite-min','limite-max','preco-min','preco-max'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+    filtrar();
+}
 
-    function carregarProdutos(top) {
-    fetch('/produtos/baixo-estoque')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            produtos = data;
-            renderizarProdutos(produtos);
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
-        });
-    }
-    
+function carregarProdutos(top) {
+fetch('/produtos/baixo-estoque')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha ao buscar produtos. Status: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        produtos = data;
+        renderizarProdutos(produtos);
+    })
+    .catch(error => {
+        console.error('Erro na API:', error);
+        const tbody = document.getElementById('product-table-body');
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size:16px">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+    });
+}
+
 
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
@@ -217,6 +240,7 @@ function renderizarProdutos(produtos) {
             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
 
+            const quantidadeVermelha = p.quantidade <= p.limiteMinimo;
             const rowHtml = `
                 <tr>
                     <td>
@@ -231,7 +255,7 @@ function renderizarProdutos(produtos) {
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
-                        <span style="display: inline-block;">${p.quantidade}</span>
+                        <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         <a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
                             style="
                                 position: absolute;
@@ -486,6 +510,11 @@ function limpar() {
         if (['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho'].includes(el.id)) {
             el.style.color = '#757575';
         }
+    });
+    // Limpa popups de faixa
+    ['quantidade-min','quantidade-max','limite-min','limite-max','preco-min','preco-max'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
     });
     filtrar();
 }
