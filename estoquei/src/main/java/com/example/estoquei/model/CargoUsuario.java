@@ -1,5 +1,5 @@
 package com.example.estoquei.model;
 
 public enum CargoUsuario {
-    GERENTE, VENDEDOR, CAIXA, ESTOQUISTA
+    ADMIN, GERENTE, VENDEDOR, CAIXA, ESTOQUISTA
 }

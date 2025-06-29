@@ -40,13 +40,13 @@
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/gerenciar-funcionarios}">
+            <a th:href="@{/admin/gerenciar-funcionarios}">
                 <p>Gerenciar Funcionários</p>
                 <i class="fa-solid fa-users"></i>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/gerenciar-relatorios}">
+            <a th:href="@{/admin/gerenciar-relatorios}">
                 <p>Relatório de Desempenho</p>
                 <i class="fa-solid fa-chart-line"></i>
             </a>
