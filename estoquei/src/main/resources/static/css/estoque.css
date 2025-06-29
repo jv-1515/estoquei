@@ -348,8 +348,8 @@ button:hover,
     font-size: 12px;
     left: 0;
     top: 100%;
-    width: 299px;
-    height: 299px;
+    min-width: 299px;
+    max-height: 299px;
 }
 
 #codigo-sugestoes .sugestao {
