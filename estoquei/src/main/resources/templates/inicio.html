@@ -42,7 +42,7 @@
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-funcionarios}">
                 <p>Gerenciar Funcionários</p>
-                <i class="fa-regular fa-user"></i>
+                <i class="fa-solid fa-users"></i>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
@@ -61,7 +61,7 @@
         </div>
         <div class="card">
             <a th:href="@{/estoque}">
-                <p>Gerenciar Estoque</p>
+                <p>Acessar Estoque</p>
                 <i class="fa-solid fa-chart-bar"></i>
             </a>
         </div>
