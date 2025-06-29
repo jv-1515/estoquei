@@ -1,60 +1,4 @@
-const funcionarios = [
-    {
-        codigo: "F00001",
-        nome: "Ana Souza",
-        cargo: "Gerente",
-        email: "ana.souza@email.com",
-        senha: "Abc12345",
-        cpf: "123.456.789-00",
-        nascimento: "1985-04-12",
-        contato: "(11)91234-5678",
-        ativo: true
-    },
-    {
-        codigo: "F00002",
-        nome: "Carlos Lima",
-        cargo: "Vendedor",
-        email: "carlos.lima@email.com",
-        senha: "Xyz98765",
-        cpf: "234.567.890-11",
-        nascimento: "1990-08-25",
-        contato: "(21)99876-5432",
-        ativo: true
-    },
-    {
-        codigo: "F00003",
-        nome: "Mariana Silva",
-        cargo: "Caixa",
-        email: "mariana.silva@email.com",
-        senha: "Qwe45678",
-        cpf: "345.678.901-22",
-        nascimento: "1995-12-10",
-        contato: "(31)93456-7890",
-        ativo: false
-    },
-    {
-        codigo: "F00004",
-        nome: "João Pedro",
-        cargo: "Estoquista",
-        email: "joao.pedro@email.com",
-        senha: "Zxc32109",
-        cpf: "456.789.012-33",
-        nascimento: "1988-02-18",
-        contato: "(41)97654-3210",
-        ativo: true
-    },
-    {
-        codigo: "F00005",
-        nome: "Fernanda Costa",
-        cargo: "Vendedor",
-        email: "fernanda.costa@email.com",
-        senha: "Mnb65432",
-        cpf: "567.890.123-44",
-        nascimento: "1992-06-30",
-        contato: "(51)96543-2109",
-        ativo: false
-    }
-];
+let funcionarios = [];
 
 function getIniciais(nome) {
     const partes = nome.trim().split(' ');
@@ -188,39 +132,41 @@ function removerFuncionario(codigo) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Remove o funcionário do array
-            const idx = funcionarios.findIndex(f => f.codigo === codigo);
-            if (idx !== -1) {
-                funcionarios.splice(idx, 1);
-                renderizarFuncionarios(funcionarios);
-            }
-            Swal.fire({
-                title: "Funcionário removido!",
-                icon: "success",
-                showCloseButton: true,
-                showCancelButton: true,
-                showConfirmButton: true,
-                confirmButtonText: 'Visualizar Funcionários',
-                cancelButtonText: 'Voltar para Início',
-                allowOutsideClick: false,
-                customClass: {
-                    confirmButton: 'swal2-confirm-custom',
-                    cancelButton: 'swal2-cancel-custom'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Apenas fecha o alerta, já está na tela de funcionários
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    window.location.href = "/inicio";
-                }
-            });
+            fetch(`/usuarios/${codigo}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) {
+                        carregarFuncionarios();
+                        Swal.fire({
+                            title: "Funcionário removido!",
+                            icon: "success",
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'Visualizar Funcionários',
+                            cancelButtonText: 'Voltar para Início',
+                            allowOutsideClick: false,
+                            customClass: {
+                                confirmButton: 'swal2-confirm-custom',
+                                cancelButton: 'swal2-cancel-custom'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Apenas fecha o alerta, já está na tela de funcionários
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                window.location.href = "/inicio";
+                            }
+                        });
+                    } else {
+                        Swal.fire('Erro!', 'Não foi possível remover o funcionário.', 'error');
+                    }
+                });
         }
     });
 }
 
 function limpar() {
     document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
-    renderizarFuncionarios(funcionarios);
+    carregarFuncionarios();
 }
 
 renderizarFuncionarios(funcionarios);
@@ -242,40 +188,72 @@ function fecharCadastroFuncionario() {
 document.getElementById('cadastro-funcionario').style.display = 'none';
 }
 function cadastrarFuncionario() {
-// enviar os dados do formulário
-Swal.fire({
-    title: 'Funcionário cadastrado!',
-    icon: 'success',
-    showConfirmButton: false,
-    timer: 1500,
-    timerProgressBar: true,
-    allowOutsideClick: false
-});
-fecharCadastroFuncionario();
+    const funcionario = {
+        codigo: document.getElementById('cad-codigo').value,
+        nome: document.getElementById('cad-nome').value,
+        cargo: document.getElementById('cad-cargo').value,
+        email: document.getElementById('cad-email').value,
+        senha: document.getElementById('cad-senha').value,
+        cpf: document.getElementById('cad-cpf').value,
+        dataNascimento: document.getElementById('cad-nascimento').value,
+        telefone: document.getElementById('cad-contato').value,
+        ativo: true
+    };
+
+    fetch('/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(funcionario)
+    })
+    .then(res => {
+        if (res.ok) {
+            Swal.fire({
+                title: 'Funcionário cadastrado!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            fecharCadastroFuncionario();
+            carregarFuncionarios();
+        } else {
+            Swal.fire('Erro!', 'Não foi possível cadastrar o funcionário.', 'error');
+        }
+    });
 }
 
 
 //editar funcionario
 function abrirEdicaoFuncionario(codigo) {
     const funcionario = funcionarios.find(f => f.codigo === codigo);
-    if (!funcionario) return;
+    const id = funcionario.id;
 
-    // Preenche os campos do form
-    document.getElementById('edit-codigo').value = funcionario.codigo;
-    document.getElementById('edit-nome').value = funcionario.nome;
-    document.getElementById('edit-cargo').value = funcionario.cargo;
-    document.getElementById('edit-email').value = funcionario.email;
-    document.getElementById('edit-senha').value = funcionario.senha;
-    document.getElementById('edit-cpf').value = funcionario.cpf;
-    document.getElementById('edit-nascimento').value = funcionario.nascimento;
-    document.getElementById('edit-contato').value = funcionario.contato;
-    document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
-    document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
-    document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
+    fetch(`/usuarios/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(funcionario => {
+        // Preenche os campos do form
+        document.getElementById('edit-codigo').value = funcionario.codigo;
+        document.getElementById('edit-nome').value = funcionario.nome;
+        document.getElementById('edit-cargo').value = funcionario.cargo;
+        document.getElementById('edit-email').value = funcionario.email;
+        document.getElementById('edit-senha').value = funcionario.senha;
+        document.getElementById('edit-cpf').value = funcionario.cpf;
+        document.getElementById('edit-contato').value = funcionario.telefone || '';
+        document.getElementById('edit-nascimento').value = funcionario.dataNascimento
+            ? funcionario.dataNascimento.substring(0, 10)
+            : '';
+        document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
+        document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
+        document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
 
-    // Mostra o modal de edição
-    document.getElementById('editar-funcionario').style.display = 'flex';
+        // Mostra o modal de edição
+        document.getElementById('editar-funcionario').style.display = 'flex';
+    });
 }
 
 function fecharEdicaoFuncionario() {
@@ -283,46 +261,57 @@ function fecharEdicaoFuncionario() {
 }
 function salvarEdicaoFuncionario() {
     const codigo = document.getElementById('edit-codigo').value;
-    const nome = document.getElementById('edit-nome').value;
-    const cargo = document.getElementById('edit-cargo').value;
-    const email = document.getElementById('edit-email').value;
-    const ativo = document.getElementById('edit-ativo').checked;
+    const funcionario = funcionarios.find(f => f.codigo === codigo);
+    const id = funcionario.id;
+
+    const funcionarioObj = {
+        codigo: codigo, // adicione se o backend espera
+        nome: document.getElementById('edit-nome').value,
+        cargo: document.getElementById('edit-cargo').value,
+        email: document.getElementById('edit-email').value,
+        senha: document.getElementById('edit-senha').value, // adicione a senha
+        cpf: document.getElementById('edit-cpf').value,
+        dataNascimento: document.getElementById('edit-nascimento').value,
+        telefone: document.getElementById('edit-contato').value,
+        ativo: document.getElementById('edit-ativo').checked
+    };
 
     Swal.fire({
-    title: 'Tem certeza?',
-    text: 'As alterações não poderão ser desfeitas.',
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: 'Sim',
-    cancelButtonText: 'Não',
-    allowOutsideClick: false,
-    customClass: {
-        confirmButton: 'swal2-confirm-custom',
-        cancelButton: 'swal2-cancel-custom'
-    }
-    }).then((result) => {
-    if (result.isConfirmed) {
-        const idx = funcionarios.findIndex(f => f.codigo === codigo);
-        if (idx !== -1) {
-        funcionarios[idx].nome = nome;
-        funcionarios[idx].cargo = cargo;
-        funcionarios[idx].email = email;
-        funcionarios[idx].ativo = ativo;
-
-        Swal.fire({
-            title: "Alterações salvas!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        renderizarFuncionarios(funcionarios);
-        fecharEdicaoFuncionario();
-        } else {
-        Swal.fire('Erro!', 'Funcionário não encontrado.', 'error');
+        title: 'Tem certeza?',
+        text: 'As alterações não poderão ser desfeitas.',
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-confirm-custom',
+            cancelButton: 'swal2-cancel-custom'
         }
-    }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/usuarios/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(funcionarioObj)
+            })
+            .then(res => {
+                if (res.ok) {
+                    Swal.fire({
+                        title: "Alterações salvas!",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    carregarFuncionarios();
+                    fecharEdicaoFuncionario();
+                } else {
+                    Swal.fire('Erro!', 'Não foi possível salvar as alterações.', 'error');
+                }
+            });
+        }
     });
 }
 
@@ -398,6 +387,23 @@ document.querySelectorAll('.filters input').forEach(el => {
 });
 document.querySelectorAll('.filters select').forEach(el => {
     el.addEventListener('change', filtrar);
+});
+
+function carregarFuncionarios() {
+    fetch('/usuarios')
+        .then(res => res.json())
+        .then(data => {
+            funcionarios = data;
+            renderizarFuncionarios(funcionarios);
+        })
+        .catch(() => {
+            funcionarios = [];
+            renderizarFuncionarios([]);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFuncionarios();
 });
 
 
