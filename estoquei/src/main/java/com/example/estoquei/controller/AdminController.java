@@ -1,12 +1,17 @@
 package com.example.estoquei.controller;
 
-import com.example.estoquei.model.Usuario;
-import com.example.estoquei.service.UsuarioService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.estoquei.model.Usuario;
+import com.example.estoquei.service.UsuarioService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
@@ -50,5 +55,12 @@ public class AdminController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
+    }
+
+    @GetMapping("/gerenciar-funcionarios")
+    public String gerenciarFuncionarios(Model model, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        model.addAttribute("usuarioLogado", usuarioLogado);
+        return "gerenciar_funcionarios";
     }
 }
