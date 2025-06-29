@@ -1,8 +1,16 @@
 package com.example.estoquei.model;
 
-import jakarta.persistence.*;
-
 import java.sql.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
@@ -75,4 +83,10 @@ public class Usuario {
     public boolean getIc_excluido() { return ic_excluido; }
     public void setIc_excluido(boolean ic_excluido) { this.ic_excluido = ic_excluido; }
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = new java.sql.Date(System.currentTimeMillis());
+        }
+    }
 }
