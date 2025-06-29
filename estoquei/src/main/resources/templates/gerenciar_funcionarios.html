@@ -35,7 +35,6 @@
                 </select>
                 <input type="email" id="filter-email" placeholder="Email" style="width: 197px;" />
 
-                <button class="btn" onclick="filtrar()">Filtrar</button>
                 <button class="btn limpar" onclick="limpar(); renderizarFuncionarios(lista);">Limpar Filtro</button>
             </div>
         </div>
@@ -97,11 +96,30 @@
 
         <!-- editar de Funcionário -->
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+            
             <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
             <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
-            <label for="edit-codigo" style="color: #757575;">Código*:</label>
-            <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly style="color: #757575;"/>
+            
+            <!-- LINHA: Código + Switch Ativo -->
+            <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">
+                <div style="flex:1;">
+                    <label for="edit-codigo" style="color: #757575;">Código*:</label>
+                    <input type="text" id="edit-codigo" name="codigo" maxlength="9" required readonly style="color: #757575; width:100%; margin-top:5px" />
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-start; margin-top:18px;">
+                    <!-- Label fixo -->
+                    <span id="label-ativo" style="font-weight:bold;color:#43b04a;">Ativo</span>
+                    <div class="switch-container">
+                        <label class="switch">
+                            <input type="checkbox" id="edit-ativo" name="ativo">
+                            <span class="slider"></span>
+                        </label>
+                        <!-- Texto dinâmico ao lado do switch -->
+                    </div>
+                </div>
+            </div>
+
             <label for="edit-nome">Nome*:</label>
             <input type="text" id="edit-nome" name="nome" required />
 

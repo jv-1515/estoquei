@@ -7,7 +7,8 @@ const funcionarios = [
         senha: "Abc12345",
         cpf: "123.456.789-00",
         nascimento: "1985-04-12",
-        contato: "(11)91234-5678"
+        contato: "(11)91234-5678",
+        ativo: true
     },
     {
         codigo: "F00002",
@@ -17,7 +18,8 @@ const funcionarios = [
         senha: "Xyz98765",
         cpf: "234.567.890-11",
         nascimento: "1990-08-25",
-        contato: "(21)99876-5432"
+        contato: "(21)99876-5432",
+        ativo: true
     },
     {
         codigo: "F00003",
@@ -27,7 +29,8 @@ const funcionarios = [
         senha: "Qwe45678",
         cpf: "345.678.901-22",
         nascimento: "1995-12-10",
-        contato: "(31)93456-7890"
+        contato: "(31)93456-7890",
+        ativo: false
     },
     {
         codigo: "F00004",
@@ -37,7 +40,8 @@ const funcionarios = [
         senha: "Zxc32109",
         cpf: "456.789.012-33",
         nascimento: "1988-02-18",
-        contato: "(41)97654-3210"
+        contato: "(41)97654-3210",
+        ativo: true
     },
     {
         codigo: "F00005",
@@ -47,7 +51,8 @@ const funcionarios = [
         senha: "Mnb65432",
         cpf: "567.890.123-44",
         nascimento: "1992-06-30",
-        contato: "(51)96543-2109"
+        contato: "(51)96543-2109",
+        ativo: false
     }
 ];
 
@@ -75,6 +80,7 @@ function renderizarFuncionarios(lista) {
         <th>Nome</th>
         <th>Cargo</th>
         <th>E-mail</th>
+        <th>Status</th>
         <th>Ações</th>
     </tr>
     </thead>
@@ -100,6 +106,18 @@ function renderizarFuncionarios(lista) {
             <td>${f.nome}</td>
             <td>${f.cargo}</td>
             <td>${f.email}</td>
+            <td>
+                <span style="
+                    display:inline-block;
+                    padding:2px 10px;
+                    border-radius:12px;
+                    font-size:12px;
+                    color:#fff;
+                    background:${f.ativo ? '#43b04a' : '#888'};
+                ">
+                    ${f.ativo ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
             <td class="actions">
                 <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
                     <i class="fa-solid fa-pen"></i>
@@ -249,6 +267,9 @@ function abrirEdicaoFuncionario(codigo) {
     document.getElementById('edit-cpf').value = funcionario.cpf;
     document.getElementById('edit-nascimento').value = funcionario.nascimento;
     document.getElementById('edit-contato').value = funcionario.contato;
+    document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
+    document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
 
     // Mostra o modal de edição
@@ -263,6 +284,7 @@ function salvarEdicaoFuncionario() {
     const nome = document.getElementById('edit-nome').value;
     const cargo = document.getElementById('edit-cargo').value;
     const email = document.getElementById('edit-email').value;
+    const ativo = document.getElementById('edit-ativo').checked;
 
     Swal.fire({
     title: 'Tem certeza?',
@@ -283,6 +305,7 @@ function salvarEdicaoFuncionario() {
         funcionarios[idx].nome = nome;
         funcionarios[idx].cargo = cargo;
         funcionarios[idx].email = email;
+        funcionarios[idx].ativo = ativo;
 
         Swal.fire({
             title: "Alterações salvas!",
@@ -319,5 +342,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+});
+
+document.getElementById('edit-ativo').addEventListener('change', function() {
+    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').style.color = this.checked ? '#43b04a' : '#888';
 });
 
