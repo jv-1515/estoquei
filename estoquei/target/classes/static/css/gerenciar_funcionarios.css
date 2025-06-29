@@ -193,6 +193,7 @@ tbody tr:nth-child(odd) {
 span label {
     color: #333;
     font-weight: bold;
+    padding: 5px 5px 5px 0;
 }
 
 select#cargo,
