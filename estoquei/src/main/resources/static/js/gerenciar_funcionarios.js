@@ -7,7 +7,8 @@ const funcionarios = [
         senha: "Abc12345",
         cpf: "123.456.789-00",
         nascimento: "1985-04-12",
-        contato: "(11)91234-5678"
+        contato: "(11)91234-5678",
+        ativo: true
     },
     {
         codigo: "F00002",
@@ -17,7 +18,8 @@ const funcionarios = [
         senha: "Xyz98765",
         cpf: "234.567.890-11",
         nascimento: "1990-08-25",
-        contato: "(21)99876-5432"
+        contato: "(21)99876-5432",
+        ativo: true
     },
     {
         codigo: "F00003",
@@ -27,7 +29,8 @@ const funcionarios = [
         senha: "Qwe45678",
         cpf: "345.678.901-22",
         nascimento: "1995-12-10",
-        contato: "(31)93456-7890"
+        contato: "(31)93456-7890",
+        ativo: false
     },
     {
         codigo: "F00004",
@@ -37,7 +40,8 @@ const funcionarios = [
         senha: "Zxc32109",
         cpf: "456.789.012-33",
         nascimento: "1988-02-18",
-        contato: "(41)97654-3210"
+        contato: "(41)97654-3210",
+        ativo: true
     },
     {
         codigo: "F00005",
@@ -47,41 +51,83 @@ const funcionarios = [
         senha: "Mnb65432",
         cpf: "567.890.123-44",
         nascimento: "1992-06-30",
-        contato: "(51)96543-2109"
+        contato: "(51)96543-2109",
+        ativo: false
     }
 ];
+
+function getIniciais(nome) {
+    const partes = nome.trim().split(' ');
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function corAvatar(str) {
+    // Gera uma cor pastel baseada no nome
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 60%, 80%)`;
+}
 
 function renderizarFuncionarios(lista) {
     const container = document.getElementById("product-list");
     container.innerHTML = `
     <thead>
     <tr>
-    <th>Código</th>
-    <th>Nome</th>
-    <th>Cargo</th>
-    <th>E-mail</th>
-    <th>Ações</th>
+        <th style="width:48px"></th>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>E-mail</th>
+        <th>Status</th>
+        <th>Ações</th>
     </tr>
     </thead>
     <tbody>
     ${lista
-    .map(
-        (f, idx) => `
-    <tr tabindex="${idx + 1}">
-        <td>${f.codigo}</td>
-        <td>${f.nome}</td>
-        <td>${f.cargo}</td>
-        <td>${f.email}</td>
-        <td class="actions">
-        <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
-            <i class="fa-solid fa-pen"></i>
-        </a>
-        <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-        </td>
-    </tr>
-    `
-    )
-    .join("")}
+        .map(
+            (f, idx) => `
+        <tr tabindex="${idx + 1}">
+            <td>
+                <div style="
+                    width:30px;height:30px;
+                    border-radius:50%;
+                    background:${corAvatar(f.nome)};
+                    display:flex;align-items:center;justify-content:center;
+                    font-weight:bold;font-size:12px;
+                    color: rgba(0,0,0,0.65);
+                    margin:0 auto;
+                    ">
+                    ${getIniciais(f.nome)}
+                </div>
+            </td>
+            <td>${f.codigo}</td>
+            <td>${f.nome}</td>
+            <td>${f.cargo}</td>
+            <td>${f.email}</td>
+            <td>
+                <span style="
+                    display:inline-block;
+                    padding:2px 10px;
+                    border-radius:12px;
+                    font-size:12px;
+                    color:#fff;
+                    background:${f.ativo ? '#43b04a' : '#888'};
+                ">
+                    ${f.ativo ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
+            <td class="actions">
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+                <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+        `
+        )
+        .join("")}
     </tbody>
     `;
 }
@@ -91,13 +137,15 @@ function filtrar() {
     const nome = document.getElementById("filter-nome").value;
     const cargo = document.getElementById("filter-cargo").value;
     const email = document.getElementById("filter-email").value;
+    const status = document.getElementById("filter-status").value;
 
     const filtrados = funcionarios.filter(
-    (f) =>
-        (codigo === "" || f.codigo.includes(codigo)) &&
-        (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
-        (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
-        (email === "" || f.email.toLowerCase().includes(email.toLowerCase()))
+        (f) =>
+            (codigo === "" || f.codigo.includes(codigo)) &&
+            (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
+            (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
+            (email === "" || f.email.toLowerCase().includes(email.toLowerCase())) &&
+            (status === "" || (status === "ativo" ? f.ativo : !f.ativo))
     );
 
     let msgDiv = document.getElementById("no-results-msg");
@@ -221,6 +269,9 @@ function abrirEdicaoFuncionario(codigo) {
     document.getElementById('edit-cpf').value = funcionario.cpf;
     document.getElementById('edit-nascimento').value = funcionario.nascimento;
     document.getElementById('edit-contato').value = funcionario.contato;
+    document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
+    document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
 
     // Mostra o modal de edição
@@ -235,6 +286,7 @@ function salvarEdicaoFuncionario() {
     const nome = document.getElementById('edit-nome').value;
     const cargo = document.getElementById('edit-cargo').value;
     const email = document.getElementById('edit-email').value;
+    const ativo = document.getElementById('edit-ativo').checked;
 
     Swal.fire({
     title: 'Tem certeza?',
@@ -255,6 +307,7 @@ function salvarEdicaoFuncionario() {
         funcionarios[idx].nome = nome;
         funcionarios[idx].cargo = cargo;
         funcionarios[idx].email = email;
+        funcionarios[idx].ativo = ativo;
 
         Swal.fire({
             title: "Alterações salvas!",
@@ -292,3 +345,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.getElementById('edit-ativo').addEventListener('change', function() {
+    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').style.color = this.checked ? '#43b04a' : '#888';
+});
+
+// Sugestão de códigos igual ao estoque
+const codigoInput = document.getElementById('filter-codigo');
+const codigoGroup = codigoInput.closest('.input-group');
+let sugestaoContainer = document.createElement('div');
+sugestaoContainer.id = 'codigo-sugestoes';
+codigoGroup.appendChild(sugestaoContainer);
+
+codigoInput.addEventListener('input', function() {
+    const termo = this.value.trim().toUpperCase();
+    sugestaoContainer.innerHTML = '';
+    if (!termo) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    const encontrados = funcionarios.filter(f => f.codigo.toUpperCase().includes(termo));
+    if (encontrados.length === 0) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    encontrados.forEach(f => {
+        const div = document.createElement('div');
+        div.textContent = `${f.codigo} - ${f.nome}`;
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            codigoInput.value = f.codigo;
+            sugestaoContainer.style.display = 'none';
+            filtrar();
+        });
+        sugestaoContainer.appendChild(div);
+    });
+    sugestaoContainer.style.display = 'block';
+    filtrar();
+});
+
+document.addEventListener('mousedown', function(e) {
+    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
+        sugestaoContainer.style.display = 'none';
+    }
+});
+
+document.querySelectorAll('.filters input').forEach(el => {
+    el.addEventListener('input', filtrar);
+});
+document.querySelectorAll('.filters select').forEach(el => {
+    el.addEventListener('change', filtrar);
+});
+
+

@@ -255,6 +255,7 @@ function renderizarProdutos(produtos) {
             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
 
+            const quantidadeVermelha = p.quantidade <= p.limiteMinimo;
             const rowHtml = `
                 <tr>
                     <td>
@@ -268,31 +269,27 @@ function renderizarProdutos(produtos) {
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
-            <td style="position: relative; text-align: center;">
-            <span style="display: inline-block;">${p.quantidade}</span>
-            ${
-            precisaAbastecer
-            ? `<a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
-                style="
-                    position: absolute;
-                    top: 50%;
-                    right: 0;
-                    transform: translateY(-50%);
-                    width: 20px;
-                    height: 20px;
-                    text-decoration: none;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    pointer-events: auto;
-                    padding-right: 23px;
-                ">
-                <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
-            </a>`
-            : ''
-            }
-            </td>
+                    <td style="position: relative; text-align: center;">
+                        <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
+                        <a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
+                            style="
+                                position: absolute;
+                                top: 50%;
+                                right: 0;
+                                transform: translateY(-50%);
+                                width: 20px;
+                                height: 20px;
+                                text-decoration: none;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                pointer-events: auto;
+                                padding-right: 23px;
+                            ">
+                            <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
+                        </a>
+                    </td>
                     <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
                     <td class="actions">
