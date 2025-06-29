@@ -137,13 +137,15 @@ function filtrar() {
     const nome = document.getElementById("filter-nome").value;
     const cargo = document.getElementById("filter-cargo").value;
     const email = document.getElementById("filter-email").value;
+    const status = document.getElementById("filter-status").value;
 
     const filtrados = funcionarios.filter(
-    (f) =>
-        (codigo === "" || f.codigo.includes(codigo)) &&
-        (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
-        (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
-        (email === "" || f.email.toLowerCase().includes(email.toLowerCase()))
+        (f) =>
+            (codigo === "" || f.codigo.includes(codigo)) &&
+            (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
+            (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
+            (email === "" || f.email.toLowerCase().includes(email.toLowerCase())) &&
+            (status === "" || (status === "ativo" ? f.ativo : !f.ativo))
     );
 
     let msgDiv = document.getElementById("no-results-msg");
@@ -348,4 +350,54 @@ document.getElementById('edit-ativo').addEventListener('change', function() {
     document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
     document.getElementById('label-ativo').style.color = this.checked ? '#43b04a' : '#888';
 });
+
+// Sugestão de códigos igual ao estoque
+const codigoInput = document.getElementById('filter-codigo');
+const codigoGroup = codigoInput.closest('.input-group');
+let sugestaoContainer = document.createElement('div');
+sugestaoContainer.id = 'codigo-sugestoes';
+codigoGroup.appendChild(sugestaoContainer);
+
+codigoInput.addEventListener('input', function() {
+    const termo = this.value.trim().toUpperCase();
+    sugestaoContainer.innerHTML = '';
+    if (!termo) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    const encontrados = funcionarios.filter(f => f.codigo.toUpperCase().includes(termo));
+    if (encontrados.length === 0) {
+        sugestaoContainer.style.display = 'none';
+        filtrar();
+        return;
+    }
+    encontrados.forEach(f => {
+        const div = document.createElement('div');
+        div.textContent = `${f.codigo} - ${f.nome}`;
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            codigoInput.value = f.codigo;
+            sugestaoContainer.style.display = 'none';
+            filtrar();
+        });
+        sugestaoContainer.appendChild(div);
+    });
+    sugestaoContainer.style.display = 'block';
+    filtrar();
+});
+
+document.addEventListener('mousedown', function(e) {
+    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
+        sugestaoContainer.style.display = 'none';
+    }
+});
+
+document.querySelectorAll('.filters input').forEach(el => {
+    el.addEventListener('input', filtrar);
+});
+document.querySelectorAll('.filters select').forEach(el => {
+    el.addEventListener('change', filtrar);
+});
+
 
