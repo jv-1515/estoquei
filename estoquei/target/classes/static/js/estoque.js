@@ -411,6 +411,41 @@ window.onload = function() {
         });
     });
 
+    const btnFiltrarProdutos = document.getElementById('btn-filtrar-produtos');
+    const filtrosAvancados = document.getElementById('filtros-avancados');
+    const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+
+    // Sempre começa oculto
+    filtrosAvancados.style.display = 'none';
+
+    // Botão "Filtrar Produtos"
+    btnFiltrarProdutos.addEventListener('click', function() {
+        if (filtrosAvancados.style.display === 'none') {
+            filtrosAvancados.style.display = 'flex';
+        }
+    });
+
+    // Botão "Limpar Filtros"
+    btnLimparFiltros.addEventListener('click', function(e) {
+        e.preventDefault();
+        filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+            if (el.type === 'select-one') el.selectedIndex = 0;
+            else el.value = '';
+        });
+        filtrosAvancados.style.display = 'none';
+        filtrar();
+    });
+
+    // Clicou fora, esconde
+    document.addEventListener('mousedown', function(e) {
+        if (
+            filtrosAvancados.style.display === 'flex' &&
+            !filtrosAvancados.contains(e.target) &&
+            e.target !== btnFiltrarProdutos
+        ) {
+            filtrosAvancados.style.display = 'none';
+        }
+    });
 }
 
 // --- PREÇO FAIXA SEM SETINHAS ---
@@ -642,6 +677,103 @@ codigoInput.addEventListener('input', function() {
 document.addEventListener('mousedown', function(e) {
     if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
         sugestaoContainer.style.display = 'none';
+    }
+});
+
+const buscaInput = document.getElementById('busca-produto');
+const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
+const btnFiltrarProdutos = document.getElementById('btn-filtrar-produtos');
+const filtrosAvancados = document.getElementById('filtros-avancados');
+const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+const buscaSugestoes = document.getElementById('busca-sugestoes');
+
+// Sugestão dinâmica
+buscaInput.addEventListener('input', function() {
+    const termo = this.value.trim();
+    buscaSugestoes.innerHTML = '';
+    if (!termo) {
+        buscaSugestoes.style.display = 'none';
+        return;
+    }
+    let encontrados;
+    if (/^\d+$/.test(termo)) {
+        encontrados = produtos.filter(p => p.codigo.includes(termo));
+        encontrados.forEach(p => {
+            const div = document.createElement('div');
+            div.textContent = `${p.codigo} - ${p.nome}`;
+            div.style.padding = '6px 12px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                buscaInput.value = p.codigo;
+                buscaSugestoes.style.display = 'none';
+            });
+            buscaSugestoes.appendChild(div);
+        });
+    } else {
+        encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+        encontrados.forEach(p => {
+            const div = document.createElement('div');
+            div.textContent = `${p.nome} - ${p.codigo}`;
+            div.style.padding = '6px 12px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                buscaInput.value = p.nome;
+                buscaSugestoes.style.display = 'none';
+            });
+            buscaSugestoes.appendChild(div);
+        });
+    }
+    if (encontrados.length > 0) {
+        buscaSugestoes.style.display = 'block';
+    } else {
+        buscaSugestoes.style.display = 'none';
+    }
+});
+document.addEventListener('mousedown', function(e) {
+    if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+        buscaSugestoes.style.display = 'none';
+    }
+});
+
+// Botão "Filtrar Produtos" mostra filtros avançados
+btnFiltrarProdutos.addEventListener('click', function() {
+    filtrosAvancados.style.display = 'flex';
+});
+
+// Botão "Limpar Filtros" limpa só os filtros avançados e esconde a div
+btnLimparFiltros.addEventListener('click', function(e) {
+    e.preventDefault();
+    filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+        if (el.type === 'select-one') el.selectedIndex = 0;
+        else el.value = '';
+    });
+    filtrosAvancados.style.display = 'none';
+    filtrar(); // Atualiza lista
+});
+
+// Fecha filtro avançado ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    if (filtrosAvancados.style.display === 'flex' && !filtrosAvancados.contains(e.target) && e.target !== btnFiltrarProdutos) {
+        filtrosAvancados.style.display = 'none';
+    }
+});
+
+// Botão "Exibir Detalhes"
+btnExibirDetalhes.addEventListener('click', function() {
+    const termo = buscaInput.value.trim();
+    if (!termo) return;
+    let produto;
+    if (/^\d+$/.test(termo)) {
+        produto = produtos.find(p => p.codigo === termo);
+    } else {
+        produto = produtos.find(p => p.nome.toLowerCase() === termo.toLowerCase());
+    }
+    if (produto) {
+        visualizarImagem(produto.url_imagem || '', produto.nome, produto.descricao || '', produto.codigo);
+    } else {
+        Swal.fire('Produto não encontrado', '', 'warning');
     }
 });
 
