@@ -12,6 +12,20 @@ function formatarPrecoInput(input) {
     });
 }
 
+// Capitaliza primeira letra
+function capitalizar(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// Exibe tamanho corretamente
+function exibirTamanho(tamanho) {
+    if (!tamanho) return '';
+    if (tamanho === 'ÚNICO') return 'Único';
+    if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
+    return tamanho;
+}
+
 window.addEventListener('DOMContentLoaded', function() {
     const movimentacaoPlaceholder = document.getElementById('movimentacao-placeholder');
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
@@ -20,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // 1. Sempre mostra o tipo de movimentação
     movimentacaoPlaceholder.innerHTML = `
-        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:20px;align-items:center;margin-bottom:10px;">
+        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:5px;align-items:center;">
             <label style="font-weight:bold;">Tipo de Movimentação:</label>
             <label><input type="radio" name="tipo-movimentacao" value="ENTRADA"> Entrada</label>
             <label><input type="radio" name="tipo-movimentacao" value="SAIDA"> Saída</label>
@@ -97,39 +111,52 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 4. Função para criar o main-container dinâmico
+    // 4. Função para criar o main-container dinâmico (mantendo layout e imagem)
     function criarMainContainer(tipo, produto) {
         mainContainerPlaceholder.innerHTML = `
-            <div class="main-container">
-                <h2 style="text-align: left; margin: 0 0 10px 0;">
-                    ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
-                </h2>
-                <div class="form-column">
-                    <label for="codigo-compra">Código da compra*:</label>
-                    <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
-                    ${tipo === 'ENTRADA' ? `
-                        <label for="valor-compra">Valor da compra (R$)*:</label>
-                        <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
-                    ` : ''}
-                    <div style="display: flex; gap: 10px;">
-                        <div style="display: flex; flex-direction: column; flex: 3;">
-                            <label for="quantidade">Quantidade*:</label>
-                            <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="999">
-                        </div>
-                        <div style="display: flex; flex-direction: column; flex: 2;">
-                            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade final:</label>
-                            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
-                        </div>
-                    </div>
-                    ${tipo === 'ENTRADA' ? `
-                        <label for="fornecedor">Fornecedor*:</label>
-                        <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
-                    ` : ''}
-                    <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da compra*:' : 'Data da venda*:'}</label>
-                    <input type="date" id="data-compra" name="data-compra" required>
-                    <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Saída'}</button>
-                </div>
+            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
+            <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
+            ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
+            </h2>
             </div>
+            <form>
+            <div class="main-container">
+            <div class="form-column">
+            <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*:' : 'Código da Venda*:'}</label>
+            <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
+            ${tipo === 'ENTRADA' ? `
+            <label for="valor-compra">Valor da Compra (R$)*:</label>
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <label for="fornecedor">Fornecedor*:</label>
+            <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
+            ` : `
+            <label for="valor-compra">Valor da Venda (R$)*:</label>
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <label for="comprador">Comprador*:</label>
+            <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
+            `}
+            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; flex-direction: column; flex: 3;">
+                <label for="quantidade">Quantidade*:</label>
+                <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="999">
+            </div>
+            <div style="display: flex; flex-direction: column; flex: 2;">
+                <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
+                <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
+            </div>
+            </div>
+            <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*:' : 'Data da Venda*:'}</label>
+            <input type="date" id="data-compra" name="data-compra" required>
+            <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Saída'}</button>
+            </div>
+            <div class="right-column">
+            <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 30px"></i>`}
+            <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+            </div>
+            </div>
+            </div>
+            </form>
         `;
 
         // Lógica de quantidade e máscara de preço
@@ -154,12 +181,12 @@ window.addEventListener('DOMContentLoaded', function() {
     // 5. Função para preencher os campos do produto (chame ao selecionar produto)
     window.preencherCampos = function(produto) {
         produtoSelecionado = produto;
-        // Preencha os campos do filtro
+        // Preencha os campos do filtro com capitalização correta
         document.getElementById('filter-codigo').value = produto.codigo || '';
         document.getElementById('filter-nome').value = produto.nome || '';
-        document.getElementById('filter-categoria').value = produto.categoria || '';
-        document.getElementById('filter-tamanho').value = produto.tamanho || '';
-        document.getElementById('filter-genero').value = produto.genero || '';
+        document.getElementById('filter-categoria').value = capitalizar(produto.categoria);
+        document.getElementById('filter-tamanho').value = exibirTamanho(produto.tamanho);
+        document.getElementById('filter-genero').value = capitalizar(produto.genero);
         document.getElementById('filter-quantidade').value = produto.quantidade || '';
         document.getElementById('filter-limite').value = produto.limiteMinimo || '';
         document.getElementById('filter-preco').value = produto.preco || '';

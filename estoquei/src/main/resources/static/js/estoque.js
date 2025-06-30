@@ -260,8 +260,8 @@ function renderizarProdutos(produtos) {
                 <tr>
                     <td>
                         ${imageUrl 
-                            ? `<img src="${imageUrl}" alt="Foto do produto" onclick="visualizarImagem('${imageUrl}', 'Produto: ${p.codigo}', \`${p.descricao ? p.descricao.replace(/`/g, '\\`') : ''}\`)" class="produto-img" loading="lazy" />` 
-                            : `<span class="produto-img icon"><i class="fa-regular fa-image" style="padding-top:5px"></i></span>`
+                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" style="cursor:pointer;" onclick="visualizarImagem('${imageUrl}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')" />` 
+                            : `<span class="produto-img icon" style="cursor:pointer;" onclick="visualizarImagem('', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')"><i class="fa-regular fa-image"></i></span>`
                         }
                     </td>
                     <td>${p.codigo}</td>
@@ -644,3 +644,23 @@ document.addEventListener('mousedown', function(e) {
         sugestaoContainer.style.display = 'none';
     }
 });
+
+function visualizarImagem(url, nome, descricao, codigo) {
+    Swal.fire({
+        title: nome + (codigo ? `<br><small style='font-weight:normal;'>Código: ${codigo}</small>` : ''),
+        html: `
+            ${url ? `<img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>` : ''}
+            ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
+        `,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'swal-popup'
+        }
+    });
+
+    const closeBtn = document.querySelector('.swal2-close');
+    if (closeBtn) {
+        closeBtn.style.boxShadow = 'none';
+    }
+}
