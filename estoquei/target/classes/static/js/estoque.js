@@ -98,8 +98,6 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
-    let codigo = document.getElementById("filter-codigo").value.trim();
-    let nome = document.getElementById("filter-nome").value.trim();
     let categoria = document.getElementById("filter-categoria").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
@@ -122,8 +120,6 @@ function filtrar() {
 
     // Filtro em memória
     let filtrados = produtos.filter(p => {
-        if (codigo && !p.codigo.includes(codigo)) return false;
-        if (nome && !p.nome.toLowerCase().includes(nome.toLowerCase())) return false;
         if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
@@ -340,6 +336,45 @@ function carregarProdutos(top) {
         .then(data => {
             produtos = data;
             renderizarProdutos(produtos);
+
+            // Coloque o autocomplete AQUI dentro!
+            const buscaInput = document.getElementById('busca-produto');
+            const buscaSugestoes = document.getElementById('busca-sugestoes');
+            buscaInput.addEventListener('input', function() {
+                const termo = this.value.trim();
+                buscaSugestoes.innerHTML = '';
+                if (!termo) {
+                    buscaSugestoes.style.display = 'none';
+                    return;
+                }
+                let encontrados;
+                let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+                if (mostrarCodigoPrimeiro) {
+                    encontrados = produtos.filter(p => p.codigo.includes(termo));
+                } else {
+                    encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+                }
+                encontrados.forEach(p => {
+                    const div = document.createElement('div');
+                    div.textContent = mostrarCodigoPrimeiro
+                        ? `${p.codigo} - ${p.nome}`
+                        : `${p.nome} - ${p.codigo}`;
+                    div.style.padding = '6px 12px';
+                    div.style.cursor = 'pointer';
+                    div.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+                        buscaSugestoes.style.display = 'none';
+                    });
+                    buscaSugestoes.appendChild(div);
+                });
+                buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+            });
+            document.addEventListener('mousedown', function(e) {
+                if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+                    buscaSugestoes.style.display = 'none';
+                }
+            });
         })
         .catch(error => {
             console.error('Erro na API:', error);
@@ -681,13 +716,8 @@ document.addEventListener('mousedown', function(e) {
 });
 
 const buscaInput = document.getElementById('busca-produto');
-const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
-const btnFiltrarProdutos = document.getElementById('btn-filtrar-produtos');
-const filtrosAvancados = document.getElementById('filtros-avancados');
-const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
 const buscaSugestoes = document.getElementById('busca-sugestoes');
 
-// Sugestão dinâmica
 buscaInput.addEventListener('input', function() {
     const termo = this.value.trim();
     buscaSugestoes.innerHTML = '';
@@ -696,41 +726,29 @@ buscaInput.addEventListener('input', function() {
         return;
     }
     let encontrados;
-    if (/^\d+$/.test(termo)) {
+    let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+    if (mostrarCodigoPrimeiro) {
         encontrados = produtos.filter(p => p.codigo.includes(termo));
-        encontrados.forEach(p => {
-            const div = document.createElement('div');
-            div.textContent = `${p.codigo} - ${p.nome}`;
-            div.style.padding = '6px 12px';
-            div.style.cursor = 'pointer';
-            div.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                buscaInput.value = p.codigo;
-                buscaSugestoes.style.display = 'none';
-            });
-            buscaSugestoes.appendChild(div);
-        });
     } else {
         encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
-        encontrados.forEach(p => {
-            const div = document.createElement('div');
-            div.textContent = `${p.nome} - ${p.codigo}`;
-            div.style.padding = '6px 12px';
-            div.style.cursor = 'pointer';
-            div.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                buscaInput.value = p.nome;
-                buscaSugestoes.style.display = 'none';
-            });
-            buscaSugestoes.appendChild(div);
+    }
+    encontrados.forEach(p => {
+        const div = document.createElement('div');
+        div.textContent = mostrarCodigoPrimeiro
+            ? `${p.codigo} - ${p.nome}`
+            : `${p.nome} - ${p.codigo}`;
+        div.style.padding = '6px 12px';
+        div.style.cursor = 'pointer';
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+            buscaSugestoes.style.display = 'none';
         });
-    }
-    if (encontrados.length > 0) {
-        buscaSugestoes.style.display = 'block';
-    } else {
-        buscaSugestoes.style.display = 'none';
-    }
+        buscaSugestoes.appendChild(div);
+    });
+    buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
 });
+
 document.addEventListener('mousedown', function(e) {
     if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
         buscaSugestoes.style.display = 'none';
