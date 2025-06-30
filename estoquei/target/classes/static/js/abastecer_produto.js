@@ -12,342 +12,191 @@ function formatarPrecoInput(input) {
     });
 }
 
-formatarPrecoInput(document.getElementById('preco'));
-formatarPrecoInput(document.getElementById('valor-compra'));
-
-document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    document.querySelector('form').reset();
-    Swal.fire({
-        title: "Sucesso!",
-        text: "Abastecimento registrado!",
-        icon: "success",
-        showCloseButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Visualizar Estoque',
-        cancelButtonText: 'Voltar para Início',
-        allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-confirm-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "/baixo-estoque";
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            window.location.href = "/inicio";
-        }
-    });
-});
-
-window.addEventListener('DOMContentLoaded', function() {
-    // Pega o id da URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-
-    if (!id) {
-        // Se não tem id, mostra o select de produtos imediatamente
-        mostrarSelectProdutos();
-        // E oculta o input de código
-        document.getElementById('filter-codigo').style.display = 'none';
-        return; // Não tenta buscar produto
-    }
-
-    // Busca o produto
-    fetch(`/produtos/${id}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Produto não encontrado');
-            return response.json();
-        })
-        .then(produto => {
-            const precoFormatado = 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',');
-            const tamanhoExibido = exibirTamanho(produto.tamanho);
-            const generoFormatado = produto.genero.charAt(0).toUpperCase() + produto.genero.slice(1).toLowerCase();
-            const categoriaFormatada = produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1).toLowerCase();
-
-            document.getElementById('filter-codigo').value = produto.codigo || '';
-            document.getElementById('filter-nome').value = produto.nome || '';
-            document.getElementById('filter-categoria').value = categoriaFormatada;
-            document.getElementById('filter-tamanho').value = tamanhoExibido;
-            document.getElementById('filter-genero').value = generoFormatado;
-            document.getElementById('filter-quantidade').value = produto.quantidade || '';
-            document.getElementById('filter-limite').value = produto.limiteMinimo || '';
-            document.getElementById('filter-preco').value = precoFormatado;
-            document.getElementById('quantidade-final').value = produto.quantidade || '';
-
-            const preview = document.getElementById('image-preview');
-            if (preview) {
-                Array.from(preview.childNodes).forEach(node => {
-                    if (node.tagName !== 'INPUT' && node.nodeType === Node.ELEMENT_NODE) {
-                        preview.removeChild(node);
-                    }
-                });
-                if (produto.url_imagem) {
-                    const img = document.createElement('img');
-                    img.src = produto.url_imagem;
-                    img.alt = 'Imagem do produto';
-                    img.style.maxWidth = '100%';
-                    img.style.height = 'auto';
-                    preview.appendChild(img);
-                } else {
-                    const icon = document.createElement('i');
-                    icon.className = 'fa-regular fa-image';
-                    icon.style.fontSize = '30px';
-                    preview.appendChild(icon);
-                }
-            }
-        })
-        .catch(error => {
-            Swal.fire('Erro!', error.message, 'error');
-        });
-
-    const quantidadeInput = document.getElementById('quantidade');
-    const quantidadeFinalInput = document.getElementById('quantidade-final');
-    const quantidadeAtualInput = document.getElementById('filter-quantidade');
-
-    function limitarInput999(input) {
-        input.addEventListener('input', function() {
-            if (this.value.length > 3) this.value = this.value.slice(0, 3);
-            if (parseInt(this.value) > 999) this.value = 999;
-        });
-    }
-
-    if (quantidadeInput) limitarInput999(quantidadeInput);
-    if (quantidadeFinalInput) limitarInput999(quantidadeFinalInput);
-
-    function limitarSoma() {
-        let quantidade = parseInt(quantidadeInput.value) || 0;
-        let quantidadeFinal = parseInt(quantidadeFinalInput.value) || 0;
-        let soma = quantidade + quantidadeFinal;
-
-        if (soma > 999) {
-            if (document.activeElement === quantidadeInput) {
-                quantidade = 999 - quantidadeFinal;
-                quantidadeInput.value = quantidade > 0 ? quantidade : 0;
-            } else if (document.activeElement === quantidadeFinalInput) {
-                quantidadeFinal = 999 - quantidade;
-                quantidadeFinalInput.value = quantidadeFinal > 0 ? quantidadeFinal : 0;
-            }
-        }
-    }
-
-    if (quantidadeInput && quantidadeFinalInput) {
-        quantidadeInput.addEventListener('input', limitarSoma);
-        quantidadeFinalInput.addEventListener('input', limitarSoma);
-    }
-
-    // Guarde o input original
-    const codigoInput = document.getElementById('filter-codigo');
-    let selectProdutos = null;
-    let codigoInputParent = codigoInput.parentNode;
-    let codigoInputNext = codigoInput.nextSibling;
-
-    // Função para preencher os campos com um produto
-    function preencherCampos(produto) {
-        const precoFormatado = produto.preco !== undefined
-            ? 'R$' + Number(produto.preco).toFixed(2).replace('.', ',')
-            : '';
-        const tamanhoExibido = exibirTamanho(produto.tamanho);
-        const generoFormatado = produto.genero
-            ? produto.genero.charAt(0).toUpperCase() + produto.genero.slice(1).toLowerCase()
-            : '';
-        const categoriaFormatada = produto.categoria
-            ? produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1).toLowerCase()
-            : '';
-
-        document.getElementById('filter-codigo').value = produto.codigo || '';
-        document.getElementById('filter-nome').value = produto.nome || '';
-        document.getElementById('filter-categoria').value = categoriaFormatada;
-        document.getElementById('filter-tamanho').value = tamanhoExibido;
-        document.getElementById('filter-genero').value = generoFormatado;
-        document.getElementById('filter-quantidade').value = produto.quantidade || '';
-        document.getElementById('filter-limite').value = produto.limiteMinimo || '';
-        document.getElementById('filter-preco').value = precoFormatado;
-        document.getElementById('quantidade-final').value = produto.quantidade || '';
-
-        // Imagem
-        const preview = document.getElementById('image-preview');
-        if (preview) {
-            Array.from(preview.childNodes).forEach(node => {
-                if (node.tagName !== 'INPUT' && node.nodeType === Node.ELEMENT_NODE) {
-                    preview.removeChild(node);
-                }
-            });
-            if (produto.url_imagem) {
-                const img = document.createElement('img');
-                img.src = produto.url_imagem;
-                img.alt = 'Imagem do produto';
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-                preview.appendChild(img);
-            } else {
-                const icon = document.createElement('i');
-                icon.className = 'fa-regular fa-image';
-                icon.style.fontSize = '30px';
-                preview.appendChild(icon);
-            }
-        }
-        atualizarQuantidadeFinal();
-    }
-
-    // Busca produto pelo código
-    function buscarPorCodigo(codigo) {
-        fetch(`/produtos?codigo=${encodeURIComponent(codigo)}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Produto não encontrado');
-                return response.json();
-            })
-            .then(produtos => {
-                // Se a API retorna uma lista, pega o primeiro
-                const produto = Array.isArray(produtos) ? produtos[0] : produtos;
-                if (produto) {
-                    preencherCampos(produto);
-                } else {
-                    Swal.fire('Atenção!', 'Produto não encontrado.', 'warning');
-                }
-            })
-            .catch(() => {
-                Swal.fire('Atenção!', 'Produto não encontrado.', 'warning');
-            });
-    }
-
-    // Função para mostrar o select e ocultar o input
-    function mostrarSelectProdutos() {
-        fetch('/produtos')
-            .then(response => response.json())
-            .then(produtos => {
-                let selectProdutos = document.getElementById('select-produtos');
-                if (!selectProdutos) {
-                    selectProdutos = document.createElement('select');
-                    selectProdutos.id = 'select-produtos';
-                    selectProdutos.className = 'filter-select';
-                    selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
-                    produtos.forEach(prod => {
-                        selectProdutos.innerHTML += `<option value="${prod.id}">${prod.codigo} - ${prod.nome}</option>`;
-                    });
-
-                    // Insere o select logo após o input
-                    const codigoInput = document.getElementById('filter-codigo');
-                    codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-
-                    // Evento: ao selecionar, atualiza a URL
-                    selectProdutos.addEventListener('change', function() {
-                        const id = this.value;
-                        if (id) {
-                            window.location.search = '?id=' + id;
-                        }
-                    });
-
-                    // Evento: ao sair do select, volta o input de código
-                    selectProdutos.addEventListener('blur', function() {
-                        // Mostra o input novamente e oculta o select
-                        const codigoInput = document.getElementById('filter-codigo');
-                        codigoInput.style.display = '';
-                        selectProdutos.style.display = 'none';
-                        // Opcional: coloca o foco de volta no input
-                        codigoInput.focus();
-                        // Se não tem produto selecionado, mostra o select de novo
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (!urlParams.get('id')) {
-                            setTimeout(mostrarSelectProdutos, 100); // pequeno delay para evitar conflito de foco
-                        }
-                    });
-
-                    // Evento: ao sair do select com mouse, volta o input de código se já houver produto selecionado
-                    selectProdutos.addEventListener('mouseleave', function() {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('id')) {
-                            const codigoInput = document.getElementById('filter-codigo');
-                            codigoInput.style.display = '';
-                            selectProdutos.style.display = 'none';
-                            codigoInput.focus();
-                        }
-                    });
-                } else {
-                    selectProdutos.style.display = '';
-                }
-                // Oculta o input
-                document.getElementById('filter-codigo').style.display = 'none';
-            });
-    }
-
-    // Sempre mostra o select se não houver produto selecionado
-    function mostrarSelectProdutosSempre() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-        if (!id) {
-            mostrarSelectProdutos();
-            document.getElementById('filter-codigo').style.display = 'none';
-        }
-    }
-
-    // Mostra o select ao passar o mouse sobre o input de código
-    codigoInput.addEventListener('mouseover', function() {
-        mostrarSelectProdutos();
-    });
-
-    // Quando recarregar a página (após selecionar), mostre o input normalmente
-    window.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('filter-codigo').style.display = '';
-        const selectProdutos = document.getElementById('select-produtos');
-        if (selectProdutos) selectProdutos.style.display = 'none';
-    });
-});
-
-// Crie o aviso acima do campo quantidade-final
-let avisoLimite = document.createElement('div');
-avisoLimite.id = 'aviso-limite';
-avisoLimite.style.color = 'red';
-avisoLimite.style.fontWeight = 'bold';
-avisoLimite.style.fontSize = '13px';
-avisoLimite.style.marginBottom = '2px';
-avisoLimite.style.display = 'none';
-
-// Insere o aviso acima do campo quantidade-final
-const qtdFinalDiv = document.getElementById('quantidade-final')?.parentNode;
-if (qtdFinalDiv && !document.getElementById('aviso-limite')) {
-    qtdFinalDiv.insertBefore(avisoLimite, qtdFinalDiv.firstChild);
+// Capitaliza primeira letra
+function capitalizar(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+// Exibe tamanho corretamente
 function exibirTamanho(tamanho) {
+    if (!tamanho) return '';
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
     return tamanho;
 }
 
-const quantidadeInput = document.getElementById('quantidade');
-const quantidadeFinalInput = document.getElementById('quantidade-final');
-const quantidadeAtualInput = document.getElementById('filter-quantidade');
+window.addEventListener('DOMContentLoaded', function() {
+    const movimentacaoPlaceholder = document.getElementById('movimentacao-placeholder');
+    const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
+    const codigoInput = document.getElementById('filter-codigo');
+    let produtoSelecionado = null;
 
-function atualizarQuantidadeFinal() {
-    let atual = parseInt(quantidadeAtualInput.value) || 0;
-    let maxPermitido = 999 - atual;
-    if (maxPermitido < 0) maxPermitido = 0;
+    // 1. Sempre mostra o tipo de movimentação
+    movimentacaoPlaceholder.innerHTML = `
+        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:5px;align-items:center;">
+            <label style="font-weight:bold;">Tipo de Movimentação:</label>
+            <label><input type="radio" name="tipo-movimentacao" value="ENTRADA"> Entrada</label>
+            <label><input type="radio" name="tipo-movimentacao" value="SAIDA"> Saída</label>
+        </div>
+    `;
 
-    let entrada = quantidadeInput.value.replace(/\D/g, '');
-    if (entrada.length > 3) entrada = entrada.slice(0, 3);
-    let entradaNum = parseInt(entrada) || 0;
+    // 2. Select de código ao passar mouse (AJAX, sem sobrescrever array)
+    let selectProdutos = null;
+    codigoInput.addEventListener('mouseover', function() {
+        if (selectProdutos) {
+            selectProdutos.style.display = '';
+            codigoInput.style.display = 'none';
+            return;
+        }
+        fetch('/produtos')
+            .then(response => response.json())
+            .then(produtos => {
+                selectProdutos = document.createElement('select');
+                selectProdutos.id = 'select-produtos';
+                selectProdutos.className = 'filter-select';
+                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
+                produtos.forEach(prod => {
+                    selectProdutos.innerHTML += `<option value="${prod.id}" 
+                        data-codigo="${prod.codigo}" 
+                        data-nome="${prod.nome}" 
+                        data-categoria="${prod.categoria}" 
+                        data-tamanho="${prod.tamanho}" 
+                        data-genero="${prod.genero}" 
+                        data-quantidade="${prod.quantidade}" 
+                        data-limite="${prod.limiteMinimo}" 
+                        data-preco="${prod.preco}" 
+                        data-url_imagem="${prod.url_imagem || ''}"
+                    >${prod.codigo} - ${prod.nome}</option>`;
+                });
+                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
+                codigoInput.style.display = 'none';
 
-    if (entradaNum > maxPermitido) {
-        entradaNum = maxPermitido;
-        quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
-        quantidadeFinalInput.value = atual + entradaNum;
-        Swal.fire({
-            icon: 'warning',
-            title: 'Limite atingido!',
-            text: `Você só pode abastecer até ${maxPermitido} unidades.`,
-            timer: 2500,
-            showConfirmButton: false
+                selectProdutos.addEventListener('change', function() {
+                    const opt = this.selectedOptions[0];
+                    if (!opt.value) return;
+                    // Monta objeto produto a partir dos data-attributes
+                    const produto = {
+                        id: opt.value,
+                        codigo: opt.dataset.codigo,
+                        nome: opt.dataset.nome,
+                        categoria: opt.dataset.categoria,
+                        tamanho: opt.dataset.tamanho,
+                        genero: opt.dataset.genero,
+                        quantidade: opt.dataset.quantidade,
+                        limiteMinimo: opt.dataset.limite,
+                        preco: opt.dataset.preco,
+                        url_imagem: opt.dataset.url_imagem
+                    };
+                    window.preencherCampos(produto);
+                    selectProdutos.style.display = 'none';
+                    codigoInput.style.display = '';
+                });
+
+                selectProdutos.addEventListener('blur', function() {
+                    selectProdutos.style.display = 'none';
+                    codigoInput.style.display = '';
+                });
+            });
+    });
+
+    // 3. Ao selecionar tipo, cria o main-container dinâmico
+    document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (!produtoSelecionado) {
+                mainContainerPlaceholder.innerHTML = '';
+                return;
+            }
+            criarMainContainer(this.value, produtoSelecionado);
         });
-        return;
-    } else {
-        quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
+    });
+
+    // 4. Função para criar o main-container dinâmico (mantendo layout e imagem)
+    function criarMainContainer(tipo, produto) {
+        mainContainerPlaceholder.innerHTML = `
+            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
+            <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
+            ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
+            </h2>
+            </div>
+            <form>
+            <div class="main-container">
+            <div class="form-column">
+            <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*:' : 'Código da Venda*:'}</label>
+            <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
+            ${tipo === 'ENTRADA' ? `
+            <label for="valor-compra">Valor da Compra (R$)*:</label>
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <label for="fornecedor">Fornecedor*:</label>
+            <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
+            ` : `
+            <label for="valor-compra">Valor da Venda (R$)*:</label>
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <label for="comprador">Comprador*:</label>
+            <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
+            `}
+            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; flex-direction: column; flex: 3;">
+                <label for="quantidade">Quantidade*:</label>
+                <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="999">
+            </div>
+            <div style="display: flex; flex-direction: column; flex: 2;">
+                <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
+                <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
+            </div>
+            </div>
+            <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*:' : 'Data da Venda*:'}</label>
+            <input type="date" id="data-compra" name="data-compra" required>
+            <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Saída'}</button>
+            </div>
+            <div class="right-column">
+            <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 30px"></i>`}
+            <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+            </div>
+            </div>
+            </div>
+            </form>
+        `;
+
+        // Lógica de quantidade e máscara de preço
+        const quantidadeInput = document.getElementById('quantidade');
+        const quantidadeFinalInput = document.getElementById('quantidade-final');
+        const valorCompraInput = document.getElementById('valor-compra');
+        if (valorCompraInput) formatarPrecoInput(valorCompraInput);
+
+        quantidadeInput.addEventListener('input', function() {
+            let atual = parseInt(produto.quantidade) || 0;
+            let entradaNum = parseInt(quantidadeInput.value) || 0;
+            if (tipo === 'SAIDA' && entradaNum > atual) {
+                quantidadeInput.value = atual;
+                entradaNum = atual;
+            }
+            quantidadeFinalInput.value = tipo === 'SAIDA'
+                ? atual - entradaNum
+                : atual + entradaNum;
+        });
     }
 
-    quantidadeFinalInput.value = atual + entradaNum;
-}
+    // 5. Função para preencher os campos do produto (chame ao selecionar produto)
+    window.preencherCampos = function(produto) {
+        produtoSelecionado = produto;
+        // Preencha os campos do filtro com capitalização correta
+        document.getElementById('filter-codigo').value = produto.codigo || '';
+        document.getElementById('filter-nome').value = produto.nome || '';
+        document.getElementById('filter-categoria').value = capitalizar(produto.categoria);
+        document.getElementById('filter-tamanho').value = exibirTamanho(produto.tamanho);
+        document.getElementById('filter-genero').value = capitalizar(produto.genero);
+        document.getElementById('filter-quantidade').value = produto.quantidade || '';
+        document.getElementById('filter-limite').value = produto.limiteMinimo || '';
+        document.getElementById('filter-preco').value = produto.preco || '';
+        document.getElementById('quantidade-final').value = produto.quantidade || '';
 
-if (quantidadeInput && quantidadeFinalInput && quantidadeAtualInput) {
-    quantidadeInput.addEventListener('input', atualizarQuantidadeFinal);
-    quantidadeAtualInput.addEventListener('input', atualizarQuantidadeFinal);
-}
+        // Limpa main-container e tipo de movimentação
+        mainContainerPlaceholder.innerHTML = '';
+        document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(r => r.checked = false);
+    };
+
+    // Máscara de preço para filtros
+    formatarPrecoInput(document.getElementById('filter-preco'));
+});
