@@ -22,7 +22,7 @@ h2 {
 
 .filters-container {
     width: 1200px;
-    margin: 0 auto 24px auto;
+    margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
     border-radius: 10px;
@@ -277,7 +277,6 @@ img.produto-img:hover {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
-    max-width: 160px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
