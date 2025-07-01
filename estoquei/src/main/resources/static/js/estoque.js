@@ -85,10 +85,10 @@ window.addEventListener('DOMContentLoaded', function() {
     btnExibirDetalhes.addEventListener('click', function() {
         if (detalhesDiv.style.display === 'none') {
             detalhesDiv.style.display = 'flex';
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
         } else {
             detalhesDiv.style.display = 'none';
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
         }
     });
 });
@@ -460,8 +460,23 @@ window.onload = function() {
 
     // Botão "Filtrar Produtos"
     btnFiltrarProdutos.addEventListener('click', function() {
-        if (filtrosAvancados.style.display === 'none') {
+        if (filtrosAvancados.style.display === 'flex') {
+            // Oculta e limpa filtros
+            filtrosAvancados.style.display = 'none';
+            btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter"></i> Filtros';
+
+            // Limpa todos os campos de filtro dentro de filtrosAvancados
+            filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+                if (el.type === 'select-one') el.selectedIndex = 0;
+                else el.value = '';
+            });
+
+            // Atualiza a lista de produtos após limpar
+            filtrar();
+        } else {
+            // Mostra filtros avançados
             filtrosAvancados.style.display = 'flex';
+            btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
         }
     });
 
