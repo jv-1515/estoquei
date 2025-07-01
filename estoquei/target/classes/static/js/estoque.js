@@ -809,7 +809,10 @@ function visualizarImagem(url, nome, descricao, codigo) {
 }
 
 function atualizarDetalhesInfo(produtos) {
-    document.getElementById('detalhe-total-produtos').textContent = produtos.length;
-    document.getElementById('detalhe-baixo-estoque').textContent = produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
-    document.getElementById('detalhe-estoque-zerado').textContent = produtos.filter(p => p.quantidade === 0).length;
+    document.getElementById('detalhe-total-produtos').textContent =
+        produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+    document.getElementById('detalhe-baixo-estoque').textContent =
+        produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
+    document.getElementById('detalhe-estoque-zerado').textContent =
+        produtos.filter(p => p.quantidade === 0).length;
 }

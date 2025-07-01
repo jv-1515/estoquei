@@ -65,10 +65,9 @@ window.atualizarDetalhesEstoque = function(produtos) {
                 font-weight:bold;
                 color:#fff;
                 background:${cores[i]};
-                border-radius:6px;
-                padding:2px 10px 2px 10px;
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
                 margin-right:5px;
-                box-shadow:0 1px 2px rgba(0,0,0,0.07);
             ">${valor}</span>
             <span>${nome}</span>
         `;
