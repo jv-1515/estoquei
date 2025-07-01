@@ -295,14 +295,6 @@ button:hover,
     gap: 2px;
 }
 
-.input-group label {
-    font-size: 12px;
-    color: #333;
-    padding: 2px 0 0 2px;
-    font-weight: bold;
-    pointer-events: none;
-}
-
 .input-group input,
 .input-group select {
     width: 100%;
@@ -360,6 +352,11 @@ button:hover,
     top: 100%;
     min-width: 299px;
     max-height: 299px;
+}
+select#filter-categoria,
+select#filter-tamanho,
+select#filter-genero {
+    padding-left: 1px;
 }
 
 #busca-sugestoes .sugestao {
