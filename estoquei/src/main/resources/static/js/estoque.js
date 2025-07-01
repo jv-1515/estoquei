@@ -78,6 +78,19 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Mantém listeners das faixas como estão
     // ...restante do código...
+
+    const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+
+    btnExibirDetalhes.addEventListener('click', function() {
+        if (detalhesDiv.style.display === 'none') {
+            detalhesDiv.style.display = 'flex';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+        } else {
+            detalhesDiv.style.display = 'none';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+        }
+    });
 });
 
 //var global e controle de paginação
@@ -124,6 +137,7 @@ function filtrar() {
 
     paginaAtual = 1;
     renderizarProdutos(filtrados);
+    atualizarDetalhesInfo(filtrados);
 }    
 
 function limpar() {
@@ -326,6 +340,7 @@ function carregarProdutos(top) {
         .then(data => {
             produtos = data;
             renderizarProdutos(produtos);
+            atualizarDetalhesInfo(produtos);
 
             // Coloque o autocomplete AQUI dentro!
             const buscaInput = document.getElementById('busca-produto');
@@ -755,36 +770,21 @@ btnLimparFiltros.addEventListener('click', function(e) {
 });
 
 // Botão "Exibir Detalhes"
-let detalhesVisiveis = false;
-btnExibirDetalhes.addEventListener('click', function() {
-    const termo = buscaInput.value.trim();
-    if (!termo) return;
-    let produto;
-    if (/^\d+$/.test(termo)) {
-        produto = produtos.find(p => p.codigo === termo);
-    } else {
-        produto = produtos.find(p => p.nome.toLowerCase() === termo.toLowerCase());
-    }
-    if (produto) {
-        if (!detalhesVisiveis) {
-            visualizarImagem(produto.url_imagem || '', produto.nome, produto.descricao || '', produto.codigo);
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
-            detalhesVisiveis = true;
-        } else {
-            Swal.close();
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
-            detalhesVisiveis = false;
-        }
-    } else {
-        Swal.fire('Produto não encontrado', '', 'warning');
-    }
-});
+let detalhesVisiveis = true; // começa visível
 
-// Quando o modal for fechado manualmente, volta o texto do botão
-document.addEventListener('click', function(e) {
-    if (!document.querySelector('.swal2-container')) {
+btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+
+btnExibirDetalhes.addEventListener('click', function() {
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+    const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
+    if (estaVisivel) {
+        detalhesDiv.style.display = 'none';
         btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
-        detalhesVisiveis = false;
+    } else {
+        detalhesDiv.style.display = 'flex';
+        window.atualizarDetalhesEstoque(produtos);
+        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+        detalhesDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
 
@@ -806,4 +806,10 @@ function visualizarImagem(url, nome, descricao, codigo) {
     if (closeBtn) {
         closeBtn.style.boxShadow = 'none';
     }
+}
+
+function atualizarDetalhesInfo(produtos) {
+    document.getElementById('detalhe-total-produtos').textContent = produtos.length;
+    document.getElementById('detalhe-baixo-estoque').textContent = produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
+    document.getElementById('detalhe-estoque-zerado').textContent = produtos.filter(p => p.quantidade === 0).length;
 }
