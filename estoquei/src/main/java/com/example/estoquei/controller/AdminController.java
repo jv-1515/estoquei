@@ -56,11 +56,4 @@ public class AdminController {
         session.invalidate();
         return "redirect:/";
     }
-
-    @GetMapping("/gerenciar-funcionarios")
-    public String gerenciarFuncionarios(Model model, HttpSession session) {
-        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
-        model.addAttribute("usuarioLogado", usuarioLogado);
-        return "gerenciar_funcionarios";
-    }
 }
