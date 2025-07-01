@@ -375,7 +375,7 @@ select#filter-genero {
     top: 100%;
     width: auto;
     background: #fff;
-    border-radius: 4px;
+    border-radius: 4px 0 0 4px;
     width: 100%;
     z-index: 1000;
     border: 1px solid #aaa;
