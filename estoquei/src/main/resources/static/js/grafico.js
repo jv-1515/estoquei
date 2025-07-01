@@ -12,7 +12,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
     ];
     const dados = categorias.map(cat =>
-        produtos.filter(p => p.categoria === cat).length
+        produtos.filter(p => p.categoria && p.categoria.toUpperCase() === cat).length
     );
 
     // Gráfico Rosca
