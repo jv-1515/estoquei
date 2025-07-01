@@ -34,10 +34,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // 1. Sempre mostra o tipo de movimentação
     movimentacaoPlaceholder.innerHTML = `
-        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:5px;align-items:center;">
-            <label style="font-weight:bold;">Tipo de Movimentação:</label>
-            <label><input type="radio" name="tipo-movimentacao" value="ENTRADA"> Entrada</label>
-            <label><input type="radio" name="tipo-movimentacao" value="SAIDA"> Saída</label>
+        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:15px;align-items:center; border-radius: 0 0 10px 10px; padding-top: 0; box-shadow: none;">
+            <label style="font-weight:bold; padding:0;">Tipo de Movimentação:</label>
+            <label style="display:flex;align-items:center;gap:4px;">
+                <input type="radio" name="tipo-movimentacao" value="ENTRADA" style="vertical-align:middle;margin:0;"> Entrada
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;">
+                <input type="radio" name="tipo-movimentacao" value="SAIDA" style="vertical-align:middle;margin:0;"> Saída
+            </label>
         </div>
     `;
 

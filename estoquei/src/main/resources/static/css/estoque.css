@@ -22,7 +22,7 @@ h2 {
 
 .filters-container {
     width: 1200px;
-    margin: 0 auto 24px auto;
+    margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
     border-radius: 10px;
@@ -30,6 +30,18 @@ h2 {
     padding: 20px;
     display: flex;
     justify-content: center;
+}
+
+#busca-produto {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    height: 30px;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
 .filters {
@@ -52,7 +64,6 @@ h2 {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
-    max-width: 160px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
@@ -62,7 +73,7 @@ h2 {
 .input-group label {
     font-size: 12px;
     color: #333;
-    padding: 2px 0 0 2px;
+    padding: 2px 0 0 0;
     font-weight: bold;
     letter-spacing: 0.2px;
     pointer-events: none;
@@ -278,19 +289,10 @@ button:hover,
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
-    max-width: 160px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
     gap: 2px;
-}
-
-.input-group label {
-    font-size: 12px;
-    color: #333;
-    padding: 2px 0 0 2px;
-    font-weight: bold;
-    pointer-events: none;
 }
 
 .input-group input,
@@ -351,13 +353,35 @@ button:hover,
     min-width: 299px;
     max-height: 299px;
 }
+select#filter-categoria,
+select#filter-tamanho,
+select#filter-genero {
+    padding-left: 1px;
+}
 
-#codigo-sugestoes .sugestao {
+#busca-sugestoes .sugestao {
     padding: 8px 12px;
     cursor: pointer;
     color: #333;
 }
 
-#codigo-sugestoes div:hover {
+#busca-sugestoes div:hover {
     background-color: #e0e0e0;
+}
+
+#busca-sugestoes {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: auto;
+    background: #fff;
+    border-radius: 4px;
+    width: 100%;
+    z-index: 1000;
+    border: 1px solid #aaa;
+    display: none;
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }

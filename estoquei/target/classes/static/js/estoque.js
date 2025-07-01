@@ -70,24 +70,25 @@ window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
 
-    // Filtros automáticos: inputs normais (exceto popups) filtram ao blur, selects ao change
-    document.querySelectorAll('.filters input').forEach(el => {
-        if (!['filter-preco', 'preco-min', 'preco-max', 'filter-quantidade', 'qtd-min', 'qtd-max', 'filter-limite', 'limite-min', 'limite-max'].includes(el.id)) {
-            el.addEventListener('blur', filtrar);
-        }
-    });
-    document.querySelectorAll('.filters select').forEach(el => {
+    // Atualiza ao mudar qualquer select/input (exceto faixas)
+    document.querySelectorAll('#filtros-avancados input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), #filtros-avancados select').forEach(el => {
         el.addEventListener('change', filtrar);
+        el.addEventListener('input', filtrar);
     });
 
-    // Limita quantidade e limite mínimo a 999
-    ['filter-quantidade', 'filter-limite'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('input', function() {
-                if (this.value.length > 3) this.value = this.value.slice(0, 3);
-                if (this.value > 999) this.value = 999;
-            });
+    // Mantém listeners das faixas como estão
+    // ...restante do código...
+
+    const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+
+    btnExibirDetalhes.addEventListener('click', function() {
+        if (detalhesDiv.style.display === 'none') {
+            detalhesDiv.style.display = 'flex';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+        } else {
+            detalhesDiv.style.display = 'none';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
         }
     });
 });
@@ -98,15 +99,15 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
-    let codigo = document.getElementById("filter-codigo").value.trim();
-    let nome = document.getElementById("filter-nome").value.trim();
     let categoria = document.getElementById("filter-categoria").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
 
     // Faixas
-    let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
-    let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
+    let qtdMinVal = document.getElementById("quantidade-min").value;
+    let qtdMaxVal = document.getElementById("quantidade-max").value;
+    qtdMinVal = qtdMinVal === "" ? null : parseInt(qtdMinVal);
+    qtdMaxVal = qtdMaxVal === "" ? null : parseInt(qtdMaxVal);
     if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
 
     let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
@@ -122,8 +123,6 @@ function filtrar() {
 
     // Filtro em memória
     let filtrados = produtos.filter(p => {
-        if (codigo && !p.codigo.includes(codigo)) return false;
-        if (nome && !p.nome.toLowerCase().includes(nome.toLowerCase())) return false;
         if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
@@ -138,6 +137,8 @@ function filtrar() {
 
     paginaAtual = 1;
     renderizarProdutos(filtrados);
+    atualizarDetalhesInfo(filtrados);
+    window.atualizarDetalhesEstoque(filtrados);
 }    
 
 function limpar() {
@@ -340,6 +341,45 @@ function carregarProdutos(top) {
         .then(data => {
             produtos = data;
             renderizarProdutos(produtos);
+            atualizarDetalhesInfo(produtos);
+            window.atualizarDetalhesEstoque(produtos);
+            const buscaInput = document.getElementById('busca-produto');
+            const buscaSugestoes = document.getElementById('busca-sugestoes');
+            buscaInput.addEventListener('input', function() {
+                const termo = this.value.trim();
+                buscaSugestoes.innerHTML = '';
+                if (!termo) {
+                    buscaSugestoes.style.display = 'none';
+                    return;
+                }
+                let encontrados;
+                let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+                if (mostrarCodigoPrimeiro) {
+                    encontrados = produtos.filter(p => p.codigo.includes(termo));
+                } else {
+                    encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+                }
+                encontrados.forEach(p => {
+                    const div = document.createElement('div');
+                    div.textContent = mostrarCodigoPrimeiro
+                        ? `${p.codigo} - ${p.nome}`
+                        : `${p.nome} - ${p.codigo}`;
+                    div.style.padding = '6px 12px';
+                    div.style.cursor = 'pointer';
+                    div.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+                        buscaSugestoes.style.display = 'none';
+                    });
+                    buscaSugestoes.appendChild(div);
+                });
+                buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+            });
+            document.addEventListener('mousedown', function(e) {
+                if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+                    buscaSugestoes.style.display = 'none';
+                }
+            });
         })
         .catch(error => {
             console.error('Erro na API:', error);
@@ -410,6 +450,33 @@ window.onload = function() {
             icon.style.display = 'inline-block';
         });
     });
+
+    const btnFiltrarProdutos = document.getElementById('btn-filtrar-produtos');
+    const filtrosAvancados = document.getElementById('filtros-avancados');
+    const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+
+    // Sempre começa oculto
+    filtrosAvancados.style.display = 'none';
+
+    // Botão "Filtrar Produtos"
+    btnFiltrarProdutos.addEventListener('click', function() {
+        if (filtrosAvancados.style.display === 'none') {
+            filtrosAvancados.style.display = 'flex';
+        }
+    });
+
+    // Botão "Limpar Filtros"
+    btnLimparFiltros.addEventListener('click', function(e) {
+        e.preventDefault();
+        filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+            if (el.type === 'select-one') el.selectedIndex = 0;
+            else el.value = '';
+        });
+        filtrosAvancados.style.display = 'none';
+        filtrar();
+    });
+
+    // Clicou fora, esconde
 
 }
 
@@ -525,15 +592,16 @@ function aplicarFiltroQtdFaixa() {
     let max = qtdMax.value;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
-    if (!min && !max) {
+    if (min === "" && max === "") {
         qtdInput.value = '';
         qtdPopup.style.display = 'none';
         filtrar();
         return;
     }
 
-    min = parseInt(min) || 0;
-    max = parseInt(max) || 999;
+    min = min === "" ? 0 : parseInt(min);
+    max = max === "" ? 999 : parseInt(max);
+
     if (min > max) [min, max] = [max, min];
     qtdMin.value = min;
     qtdMax.value = max;
@@ -645,6 +713,81 @@ document.addEventListener('mousedown', function(e) {
     }
 });
 
+const buscaInput = document.getElementById('busca-produto');
+const buscaSugestoes = document.getElementById('busca-sugestoes');
+
+buscaInput.addEventListener('input', function() {
+    const termo = this.value.trim();
+    buscaSugestoes.innerHTML = '';
+    if (!termo) {
+        buscaSugestoes.style.display = 'none';
+        return;
+    }
+    let encontrados;
+    let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+    if (mostrarCodigoPrimeiro) {
+        encontrados = produtos.filter(p => p.codigo.includes(termo));
+    } else {
+        encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+    }
+    encontrados.forEach(p => {
+        const div = document.createElement('div');
+        div.textContent = mostrarCodigoPrimeiro
+            ? `${p.codigo} - ${p.nome}`
+            : `${p.nome} - ${p.codigo}`;
+        div.style.padding = '6px 12px';
+        div.style.cursor = 'pointer';
+        div.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+            buscaSugestoes.style.display = 'none';
+        });
+        buscaSugestoes.appendChild(div);
+    });
+    buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+});
+
+document.addEventListener('mousedown', function(e) {
+    if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+        buscaSugestoes.style.display = 'none';
+    }
+});
+
+// Botão "Filtrar Produtos" mostra filtros avançados
+btnFiltrarProdutos.addEventListener('click', function() {
+    filtrosAvancados.style.display = 'flex';
+});
+
+// Botão "Limpar Filtros" limpa só os filtros avançados e esconde a div
+btnLimparFiltros.addEventListener('click', function(e) {
+    e.preventDefault();
+    filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+        if (el.type === 'select-one') el.selectedIndex = 0;
+        else el.value = '';
+    });
+    filtrosAvancados.style.display = 'none';
+    filtrar(); // Atualiza lista
+});
+
+// Botão "Exibir Detalhes"
+let detalhesVisiveis = true; // começa visível
+
+btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+
+btnExibirDetalhes.addEventListener('click', function() {
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+    const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
+    if (estaVisivel) {
+        detalhesDiv.style.display = 'none';
+        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+    } else {
+        detalhesDiv.style.display = 'flex';
+        window.atualizarDetalhesEstoque(produtos);
+        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+        detalhesDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
 function visualizarImagem(url, nome, descricao, codigo) {
     Swal.fire({
         title: nome + (codigo ? `<br><small style='font-weight:normal;'>Código: ${codigo}</small>` : ''),
@@ -663,4 +806,14 @@ function visualizarImagem(url, nome, descricao, codigo) {
     if (closeBtn) {
         closeBtn.style.boxShadow = 'none';
     }
+}
+
+function atualizarDetalhesInfo(produtos) {
+    const totalQuantidade = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+    document.getElementById('detalhe-total-produtos').textContent = totalQuantidade;
+
+    document.getElementById('detalhe-baixo-estoque').textContent =
+        produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
+    document.getElementById('detalhe-estoque-zerado').textContent =
+        produtos.filter(p => p.quantidade === 0).length;
 }
