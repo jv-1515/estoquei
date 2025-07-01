@@ -30,7 +30,10 @@
         <h2>Buscar Produtos</h2>
         <div style="display: flex; align-items: center; gap: 8px; position: relative;">
             <div style="flex:1; position:relative; display:flex;">
-                <input type="text" id="busca-produto" placeholder="Digite nome ou código do produto" style="flex:1; font-size:12px; padding:8px 12px;"/>
+                <input type="text" id="busca-produto" placeholder="Digite nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 12px;"/>
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
                 <div id="busca-sugestoes"></div>
             </div>
             <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
@@ -126,37 +129,36 @@
         </div>
     </div>
         <div id="detalhes-estoque"
-     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; width: 1200px; max-width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
+     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
     <!-- Esquerda: Título + Cards -->
     <div style="display: flex; flex-direction: column; min-width: 215px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
             <h2 style="margin: 0; font-size: 20px;">Detalhes do Estoque</h2>
         </div>
         <div style="display: flex; flex-direction: row; gap: 10px; height: 120px; align-items: stretch; margin-top: 8px;">
-            <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-                <div style="color: #277580; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                    Total de<br>Produtos:
-                </div>
-                <div id="detalhe-total-produtos" style="font-size: 28px; font-weight: bold; color: #222; margin-top: 6px;">0</div>
+            <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #18404a; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Total de<br>Produtos:
             </div>
-            <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-                <div style="color: #bfa100; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                    Baixo<br>Estoque:
-                </div>
-                <div id="detalhe-baixo-estoque" style="font-size: 28px; font-weight: bold; color: #bfa100; margin-top: 6px;">0</div>
+            <div id="detalhe-total-produtos" style="font-size: 28px; font-weight: bold; color: #18404a; margin-top: 6px;">0</div>
             </div>
-            <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-                <div style="color: #c0392b; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                    Estoque<br>Zerado:
-                </div>
+            <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #bfa100; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Baixo<br>Estoque:
+            </div>
+            <div id="detalhe-baixo-estoque" style="font-size: 28px; font-weight: bold; color: #bfa100; margin-top: 6px;">0</div>
+            </div>
+            <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #c0392b; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Estoque<br>Zerado:
+            </div>
                 <div id="detalhe-estoque-zerado" style="font-size: 28px; font-weight: bold; color: #c0392b; margin-top: 6px;">0</div>
             </div>
         </div>
     </div>
-    <!-- Direita: Label + Gráfico -->
     <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: column;">
         <div style="display: flex; align-items: center; height: 28px; margin-top: 8px;">
-            <span style="font-size:14px; font-weight:bold; color:#277580;">Categoria</span>
+            <span style="font-size:12px; font-weight:bold; color:#333;">Categoria</span>
         </div>
         <div style="display: flex; flex-direction: row; align-items: stretch; gap: 10px; height:120px;">
             <canvas id="grafico-categoria" width="120" height="120"></canvas>
