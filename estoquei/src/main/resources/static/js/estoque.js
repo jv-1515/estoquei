@@ -138,6 +138,7 @@ function filtrar() {
     paginaAtual = 1;
     renderizarProdutos(filtrados);
     atualizarDetalhesInfo(filtrados);
+    window.atualizarDetalhesEstoque(filtrados);
 }    
 
 function limpar() {
@@ -341,8 +342,7 @@ function carregarProdutos(top) {
             produtos = data;
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
-
-            // Coloque o autocomplete AQUI dentro!
+            window.atualizarDetalhesEstoque(produtos);
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
