@@ -9,6 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/estoque.css" />
     <script src="/js/estoque.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js" defer></script>
 </head>
 <body>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -32,7 +34,7 @@
                 <div id="busca-sugestoes"></div>
             </div>
             <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
-                <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes
+                <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes
             </button>
             <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
                 <i class="fa-solid fa-filter" style="margin-right:4px;"></i>Filtrar
@@ -121,6 +123,37 @@
             <button id="btn-limpar-filtros" class="btn limpar" style="font-size:12px;">
                 <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
             </button>
+        </div>
+    </div>
+    <div id="detalhes-estoque" style="display:flex; margin: 0 auto 20px auto; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 24px 32px; gap: 32px; align-items: flex-start;">
+        <!-- Infos -->
+        <div class="detalhes-infos" style="display: flex; flex-direction: row; gap: 18px; min-width: 220px;">
+            <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 120px;">
+                <div style="color: #277580; font-size: 13px; font-weight: bold; line-height: 1.2;">
+                    Total de<br>Produtos:
+                </div>
+                <div id="detalhe-total-produtos" style="font-size: 28px; font-weight: bold; color: #222; margin-top: 6px;">0</div>
+            </div>
+            <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 120px;">
+                <div style="color: #bfa100; font-size: 13px; font-weight: bold; line-height: 1.2;">
+                    Baixo<br>Estoque
+                </div>
+                <div id="detalhe-baixo-estoque" style="font-size: 28px; font-weight: bold; color: #bfa100; margin-top: 6px;">0</div>
+            </div>
+            <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 18px 20px; text-align: center; min-width: 120px;">
+                <div style="color: #c0392b; font-size: 13px; font-weight: bold; line-height: 1.2;">
+                    Estoque<br>Zerado
+                </div>
+                <div id="detalhe-estoque-zerado" style="font-size: 28px; font-weight: bold; color: #c0392b; margin-top: 6px;">0</div>
+            </div>
+        </div>
+        <!-- Gráficos -->
+        <div class="detalhes-graficos" style="flex:1; display: flex; gap: 32px;">
+            <div style="display: flex; align-items: flex-start; gap: 24px;">
+                <canvas id="grafico-categoria" width="220" height="220"></canvas>
+                <ul id="lista-categorias" style="list-style: none; padding: 0; margin: 0; font-size: 13px; display: flex; flex-direction: column; gap: 8px; justify-content: center;"></ul>
+            </div>
+            <!-- Outros gráficos aqui futuramente -->
         </div>
     </div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
