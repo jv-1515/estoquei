@@ -75,6 +75,8 @@ nav a {
 }
 
 .card {
+    position: relative;
+    overflow: hidden;
     background-color: white;
     width: 100%;
     max-width: 286px;
@@ -86,9 +88,29 @@ nav a {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.2s ease;
     text-align: center;
     font-weight: bold;
+    transition:
+        background 1.5s cubic-bezier(0.4,0,0.2,1),
+        transform 1.2s cubic-bezier(0.4,0,0.2,1),
+        box-shadow 1.2s cubic-bezier(0.4,0,0.2,1),
+        color 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(135deg, #1E94A3 40%, #277580 100%);
+    z-index: 1;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+.card:hover::before {
+    width: 100%;
+    height: 100%;
 }
 
 .card a {
@@ -117,13 +139,10 @@ nav a {
     font-weight: bold;
 }
 
-.card:hover {
-    background: linear-gradient(135deg, #1E94A3 0%, #277580 100%) !important;
-    box-shadow: 0 8px 24px rgba(39,117,128,0.25);
-    transition: 
-        background 4s cubic-bezier(0.4,0,0.2,1), 
-        transform 2s cubic-bezier(0.4,0,0.2,1), 
-        box-shadow 2s cubic-bezier(0.4,0,0.2,1);
+.card * {
+    position: relative;
+    z-index: 2;
+    transition: color 1.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 .card:hover i,
