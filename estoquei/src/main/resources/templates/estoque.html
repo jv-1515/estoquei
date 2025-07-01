@@ -9,6 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/estoque.css" />
     <script src="/js/estoque.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js" defer></script>
 </head>
 <body>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -24,98 +26,150 @@
     <div>
         <h1>Gerenciar Estoque</h1>
     </div>
-    <div class="filters-container">
-        <div class="filters" style="flex-direction: column; align-items: stretch;">
-            <h2>Filtrar produtos</h2>
-            <div class="filters-row">
-                <div class="input-group">
-                    <label for="filter-codigo">Código</label>
-                    <input type="text" id="filter-codigo" placeholder="Todos" maxlength="9" minlength="9" pattern="\d{9}" />
-                </div>
-                <div class="input-group">
-                    <label for="filter-nome">Nome</label>
-                    <input type="text" id="filter-nome" placeholder="Todos" />
-                </div>
-                <div class="input-group">
-                    <label for="filter-categoria">Categoria</label>
-                    <select id="filter-categoria" onchange="updateOptions()">
-                        <option value="" selected>Todas</option>
-                        <option value="CAMISA">Camisa</option>
-                        <option value="CAMISETA">Camiseta</option>
-                        <option value="BERMUDA">Bermuda</option>
-                        <option value="CALCA">Calça</option>
-                        <option value="SHORTS">Shorts</option>
-                        <option value="SAPATO">Sapato</option>
-                        <option value="MEIA">Meia</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="filter-tamanho">Tamanho</label>
-                    <select id="filter-tamanho">
-                        <option value="" selected>Todos</option>
-                        <!-- opções dinâmicas -->
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="filter-genero">Gênero</label>
-                    <select id="filter-genero">
-                        <option value="" selected>Todos</option>
-                        <option value="MASCULINO">Masculino</option>
-                        <option value="FEMININO">Feminino</option>
-                        <option value="UNISSEX">Unissex</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="filter-quantidade">Quantidade</label>
-                    <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
-                    <div id="quantidade-faixa-popup" class="faixa-popup">
-                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;margin-bottom: 2px;">
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="filter-limite">Limite Mínimo</label>
-                    <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
-                    <div id="limite-faixa-popup" class="faixa-popup">
-                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="limite-min" maxlength="3" placeholder="1" style="text-align:right;margin-bottom: 2px;">
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="limite-max" maxlength="3" placeholder="999" style="text-align:right;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="filter-preco">Preço</label>
-                    <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
-                    <div id="preco-faixa-popup" class="faixa-popup">
-                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">de:</span>
-                                <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:90px;margin-bottom: 2px;">
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span style="min-width: 28px;">até:</span>
-                                <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:90px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <button class="btn limpar" onclick="limpar()">Limpar Filtros</button>            </div>
+    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1200px;">
+        <h2>Buscar Produtos</h2>
+        <div style="display: flex; align-items: center; gap: 8px; position: relative;">
+            <div style="flex:1; position:relative; display:flex;">
+                <input type="text" id="busca-produto" placeholder="Digite nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 12px;"/>
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div id="busca-sugestoes"></div>
+            </div>
+            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
+                <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes
+            </button>
+            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
+                <i class="fa-solid fa-filter" style="margin-right:4px;"></i>Filtrar
+            </button>
         </div>
     </div>
+    <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; gap:8px; width:1200px;">
+        <h2>Filtrar Produtos</h2>
+        <div class="filters-row" style="display:flex; gap:8px;">
+            <div class="input-group">
+                <label for="filter-categoria">Categoria</label>
+                <select id="filter-categoria">
+                    <option value="" selected>Todas</option>
+                    <option value="CAMISA">Camisa</option>
+                    <option value="CAMISETA">Camiseta</option>
+                    <option value="BERMUDA">Bermuda</option>
+                    <option value="CALCA">Calça</option>
+                    <option value="SHORTS">Shorts</option>
+                    <option value="SAPATO">Sapato</option>
+                    <option value="MEIA">Meia</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="filter-tamanho">Tamanho</label>
+                <select id="filter-tamanho">
+                    <option value="" selected>Todos</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="filter-genero">Gênero</label>
+                <select id="filter-genero">
+                    <option value="" selected>Todos</option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="UNISSEX">Unissex</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="filter-quantidade">Quantidade</label>
+                <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
+                <div id="quantidade-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;margin-bottom: 2px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="filter-limite">Limite Mínimo</label>
+                <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
+                <div id="limite-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="limite-min" maxlength="3" placeholder="1" style="text-align:right;margin-bottom: 2px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="limite-max" maxlength="3" placeholder="999" style="text-align:right;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="filter-preco">Preço</label>
+                <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+                <div id="preco-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="preco-min" placeholder="R$ 000,00" style="width:90px;margin-bottom: 2px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:90px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-limpar-filtros" class="btn limpar" style="font-size:12px;">
+                <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
+            </button>
+        </div>
+    </div>
+        <div id="detalhes-estoque"
+     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
+    <!-- Esquerda: Título + Cards -->
+    <div style="display: flex; flex-direction: column; min-width: 215px; flex-shrink: 0;">
+        <div style="display: flex; align-items: flex-end; height: 28px;">
+            <h2 style="margin: 0; font-size: 20px;">Detalhes do Estoque</h2>
+        </div>
+        <div style="display: flex; flex-direction: row; gap: 10px; height: 120px; align-items: stretch; margin-top: 8px;">
+            <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #18404a; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Total de<br>Produtos:
+            </div>
+            <div id="detalhe-total-produtos" style="font-size: 28px; font-weight: bold; color: #18404a; margin-top: 6px;">0</div>
+            </div>
+            <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #bfa100; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Baixo<br>Estoque:
+            </div>
+            <div id="detalhe-baixo-estoque" style="font-size: 28px; font-weight: bold; color: #bfa100; margin-top: 6px;">0</div>
+            </div>
+            <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="color: #c0392b; font-size: 12px; font-weight: bold; line-height: 1.2;">
+                Estoque<br>Zerado:
+            </div>
+                <div id="detalhe-estoque-zerado" style="font-size: 28px; font-weight: bold; color: #c0392b; margin-top: 6px;">0</div>
+            </div>
+        </div>
+    </div>
+    <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; height: 28px; margin-top: 8px;">
+            <span style="font-size:12px; font-weight:bold; color:#333;">Categoria</span>
+        </div>
+        <div style="display: flex; flex-direction: row; align-items: stretch; gap: 10px; height:120px;">
+            <canvas id="grafico-categoria" width="120" height="120"></canvas>
+            <ul id="lista-categorias"
+                style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                    display: flex; flex-direction: column;
+                    justify-content: space-between; height:120px;">
+            </ul>
+        </div>
+    </div>
+</div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
@@ -131,6 +185,7 @@
             <i class="fa-solid fa-box" style="margin-right: 4px;"></i> Cadastrar
         </button>
     </div>
+    <!-- 3. Tabela de estoque -->
     <div class="main-container">
         <div class="table-space"></div>
         <table id="product-list">
