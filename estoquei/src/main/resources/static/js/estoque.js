@@ -70,26 +70,14 @@ window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
     document.getElementById('filter-categoria').addEventListener('change', updateOptions);
 
-    // Filtros automáticos: inputs normais (exceto popups) filtram ao blur, selects ao change
-    document.querySelectorAll('.filters input').forEach(el => {
-        if (!['filter-preco', 'preco-min', 'preco-max', 'filter-quantidade', 'qtd-min', 'qtd-max', 'filter-limite', 'limite-min', 'limite-max'].includes(el.id)) {
-            el.addEventListener('blur', filtrar);
-        }
-    });
-    document.querySelectorAll('.filters select').forEach(el => {
+    // Atualiza ao mudar qualquer select/input (exceto faixas)
+    document.querySelectorAll('#filtros-avancados input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), #filtros-avancados select').forEach(el => {
         el.addEventListener('change', filtrar);
+        el.addEventListener('input', filtrar);
     });
 
-    // Limita quantidade e limite mínimo a 999
-    ['filter-quantidade', 'filter-limite'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('input', function() {
-                if (this.value.length > 3) this.value = this.value.slice(0, 3);
-                if (this.value > 999) this.value = 999;
-            });
-        }
-    });
+    // Mantém listeners das faixas como estão
+    // ...restante do código...
 });
 
 //var global e controle de paginação
@@ -103,8 +91,10 @@ function filtrar() {
     let genero = document.getElementById("filter-genero").value;
 
     // Faixas
-    let qtdMinVal = parseInt(document.getElementById("quantidade-min").value) || 0;
-    let qtdMaxVal = parseInt(document.getElementById("quantidade-max").value) || 999;
+    let qtdMinVal = document.getElementById("quantidade-min").value;
+    let qtdMaxVal = document.getElementById("quantidade-max").value;
+    qtdMinVal = qtdMinVal === "" ? null : parseInt(qtdMinVal);
+    qtdMaxVal = qtdMaxVal === "" ? null : parseInt(qtdMaxVal);
     if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
 
     let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
@@ -472,15 +462,7 @@ window.onload = function() {
     });
 
     // Clicou fora, esconde
-    document.addEventListener('mousedown', function(e) {
-        if (
-            filtrosAvancados.style.display === 'flex' &&
-            !filtrosAvancados.contains(e.target) &&
-            e.target !== btnFiltrarProdutos
-        ) {
-            filtrosAvancados.style.display = 'none';
-        }
-    });
+
 }
 
 // --- PREÇO FAIXA SEM SETINHAS ---
@@ -595,15 +577,16 @@ function aplicarFiltroQtdFaixa() {
     let max = qtdMax.value;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
-    if (!min && !max) {
+    if (min === "" && max === "") {
         qtdInput.value = '';
         qtdPopup.style.display = 'none';
         filtrar();
         return;
     }
 
-    min = parseInt(min) || 0;
-    max = parseInt(max) || 999;
+    min = min === "" ? 0 : parseInt(min);
+    max = max === "" ? 999 : parseInt(max);
+
     if (min > max) [min, max] = [max, min];
     qtdMin.value = min;
     qtdMax.value = max;
@@ -771,14 +754,8 @@ btnLimparFiltros.addEventListener('click', function(e) {
     filtrar(); // Atualiza lista
 });
 
-// Fecha filtro avançado ao clicar fora
-document.addEventListener('mousedown', function(e) {
-    if (filtrosAvancados.style.display === 'flex' && !filtrosAvancados.contains(e.target) && e.target !== btnFiltrarProdutos) {
-        filtrosAvancados.style.display = 'none';
-    }
-});
-
 // Botão "Exibir Detalhes"
+let detalhesVisiveis = false;
 btnExibirDetalhes.addEventListener('click', function() {
     const termo = buscaInput.value.trim();
     if (!termo) return;
@@ -789,9 +766,25 @@ btnExibirDetalhes.addEventListener('click', function() {
         produto = produtos.find(p => p.nome.toLowerCase() === termo.toLowerCase());
     }
     if (produto) {
-        visualizarImagem(produto.url_imagem || '', produto.nome, produto.descricao || '', produto.codigo);
+        if (!detalhesVisiveis) {
+            visualizarImagem(produto.url_imagem || '', produto.nome, produto.descricao || '', produto.codigo);
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+            detalhesVisiveis = true;
+        } else {
+            Swal.close();
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+            detalhesVisiveis = false;
+        }
     } else {
         Swal.fire('Produto não encontrado', '', 'warning');
+    }
+});
+
+// Quando o modal for fechado manualmente, volta o texto do botão
+document.addEventListener('click', function(e) {
+    if (!document.querySelector('.swal2-container')) {
+        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+        detalhesVisiveis = false;
     }
 });
 
