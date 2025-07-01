@@ -8,6 +8,12 @@ window.atualizarDetalhesEstoque = function(produtos) {
     const categorias = [
         "CAMISA", "CAMISETA", "BERMUDA", "CALCA", "SHORTS", "SAPATO", "MEIA"
     ];
+    const categoriasTipo = [
+        "Camisa", "Camiseta", "Bermuda", "Calça", "Shorts", "Sapato", "Meia"
+    ];
+    const categoriasPlural = [
+        "Camisas", "Camisetas", "Bermudas", "Calças", "Shorts", "Sapatos", "Meias"
+    ];
     const cores = [
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
     ];
@@ -21,7 +27,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     window.graficoCategoria = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: categorias,
+            labels: categoriasPlural,
             datasets: [{
                 data: dados,
                 backgroundColor: cores,
@@ -40,9 +46,32 @@ window.atualizarDetalhesEstoque = function(produtos) {
     // Lista de categorias ao lado
     const lista = document.getElementById('lista-categorias');
     lista.innerHTML = '';
+    // Descobre o maior número para alinhar todos
+    const maxValor = Math.max(...dados);
+    const maxDigitos = String(maxValor).length < 2 ? 2 : String(maxValor).length;
+
     categorias.forEach((cat, i) => {
+        const valor = dados[i];
+        const nome = valor === 1 ? categoriasTipo[i] : categoriasPlural[i];
         const li = document.createElement('li');
-        li.innerHTML = `<span style="display:inline-block;width:14px;height:14px;background:${cores[i]};border-radius:3px;margin-right:8px;vertical-align:middle;"></span>${cat} <b style="color:#222;">${dados[i]}</b>`;
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.style.marginBottom = '2px';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:3ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${cores[i]};
+                border-radius:6px;
+                padding:2px 10px 2px 10px;
+                margin-right:5px;
+                box-shadow:0 1px 2px rgba(0,0,0,0.07);
+            ">${valor}</span>
+            <span>${nome}</span>
+        `;
         lista.appendChild(li);
     });
 };
