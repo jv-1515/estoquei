@@ -14,14 +14,14 @@ nav {
 
 
 h1, h2 {
-    font-size: 50px;
+    font-size: 40px;
     color: #277580;
     text-align: center;
     margin: 10px 0 0 0;
 }
 
 h2 {
-    font-size: 24px;
+    font-size: 20px;
     margin: 0 0 15px 0;
 }
 
@@ -67,18 +67,19 @@ nav a {
 .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 21px;
     justify-items: center;
     padding: 0;
-    max-width: 940px;
+    max-width: 900px;
     align-items: center;
 }
 
 .card {
     background-color: white;
-    width: 250px;
-    height: 200px;
-    border-radius: 15px;
+    width: 100%;
+    max-width: 286px;
+    height: 180px;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -90,28 +91,46 @@ nav a {
     font-weight: bold;
 }
 
-.card p {
-    font-size: 20px;
-    padding: 0 50px 0 50px;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-.card i {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
 .card a {
     color: #333;
     text-decoration: none;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 0 24px;
 }
+
+.card i {
+    font-size: 50px;
+    margin-bottom: 0;  
+    padding: 20px; 
+    min-width: 48px;          
+}
+
+.card p {
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-weight: bold;
+}
+
+.card:hover {
+    background: linear-gradient(135deg, #1E94A3 0%, #277580 100%) !important;
+    box-shadow: 0 8px 24px rgba(39,117,128,0.25);
+    transition: 
+        background 4s cubic-bezier(0.4,0,0.2,1), 
+        transform 2s cubic-bezier(0.4,0,0.2,1), 
+        box-shadow 2s cubic-bezier(0.4,0,0.2,1);
+}
+
+.card:hover i,
+.card:hover p {
+    color: #fff !important;
+}
+
 button {
     background-color: #1E94A3;
     color: white;

@@ -35,40 +35,40 @@
         <!-- Acesso limitado ao Gerente -->
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/andamento}">
-                <p>Gerenciar Fornecedores</p>
                 <i class="fa-regular fa-handshake"></i>
+                <p>Gerenciar Fornecedores<br><span class="card-value" id="valor-fornecedores" style="display:none"></span></p>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/admin/gerenciar-funcionarios}">
-                <p>Gerenciar Funcionários</p>
+            <a th:href="@{/gerenciar-funcionarios}">
                 <i class="fa-solid fa-users"></i>
+                <p>Gerenciar Funcionários<br><span class="card-value" id="valor-funcionarios" style="display:none"></span></p>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/admin/gerenciar-relatorios}">
-                <p>Relatório de Desempenho</p>
+            <a th:href="@{/gerenciar-relatorios}">
                 <i class="fa-solid fa-chart-line"></i>
+                <p>Relatório de Desempenho<br><span class="card-value" id="valor-relatorios" style="display:none"></span></p>
             </a>
         </div>
         <!-- Acesso limitado ao Gerente -->
 
         <div class="card">
             <a th:href="@{/cadastrar-produto}">
-                <p>Cadastrar Produto</p>
                 <i class="fa-solid fa-shirt"></i>
+                <p>Cadastrar Produto<br><span class="card-value" id="valor-produtos-cadastrados" style="display:none"></span></p>
             </a>
         </div>
         <div class="card">
             <a th:href="@{/estoque}">
-                <p>Acessar Estoque</p>
                 <i class="fa-solid fa-chart-bar"></i>
+                <p>Acessar Estoque<br><span class="card-value" id="valor-total-produtos" style="display:none"></span></p>
             </a>
         </div>
         <div class="card">
             <a th:href="@{/abastecer-produto}">
-                <p>Registrar Movimentação</p>
                 <i class="fa-solid fa-truck"></i>
+                <p>Registrar Movimentação<br><span class="card-value" id="valor-movimentacoes" style="display:none"></span></p>
             </a>
         </div>
     </div>
