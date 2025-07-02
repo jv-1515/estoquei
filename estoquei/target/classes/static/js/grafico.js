@@ -74,24 +74,30 @@ window.atualizarDetalhesEstoque = function(produtos) {
         lista.appendChild(li);
     });
 
-    // 3. Gráfico de tamanhos numéricos
+    // 3. Gráfico de tamanhos (numéricos + letras juntos)
     const tamanhosNumericos = Array.from({length: 21}, (_, i) => (36 + i).toString());
-    const dadosTamanhos = tamanhosNumericos.map(tam =>
-        produtos.filter(p => p.tamanho && (p.tamanho.toString() === tam || p.tamanho.toString() === `_${tam}`)).length
-    );
+    const tamanhosLetras = ["PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "ÚNICO"];
+    const todosTamanhos = [...tamanhosNumericos, ...tamanhosLetras];
     const coresTamanhos = [
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
-        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085", "#bfa100", "#c0392b"
     ];
+    const dadosTamanhos = todosTamanhos.map(tam =>
+        produtos.filter(p => {
+            const t = (p.tamanho || '').toString().toUpperCase();
+            return t === tam || t === `_${tam}`;
+        }).length
+    );
 
     // Destroi gráfico anterior se existir
-    if (window.graficoTamanhosNumericos) window.graficoTamanhosNumericos.destroy();
-    const ctxTam = document.getElementById('grafico-tamanhos-numericos').getContext('2d');
-    window.graficoTamanhosNumericos = new Chart(ctxTam, {
+    if (window.graficoTamanhos) window.graficoTamanhos.destroy();
+    const ctxTamanhos = document.getElementById('grafico-tamanhos').getContext('2d');
+    window.graficoTamanhos = new Chart(ctxTamanhos, {
         type: 'doughnut',
         data: {
-            labels: tamanhosNumericos,
+            labels: todosTamanhos,
             datasets: [{
                 data: dadosTamanhos,
                 backgroundColor: coresTamanhos,
@@ -107,16 +113,15 @@ window.atualizarDetalhesEstoque = function(produtos) {
         }
     });
 
-    // Lista de tamanhos ao lado, em 3 colunas
-    const listaTamanhos = document.getElementById('lista-tamanhos-numericos');
+    const listaTamanhos = document.getElementById('lista-tamanhos');
     listaTamanhos.innerHTML = '';
-    // Adicione este estilo para grid 3 colunas:
     listaTamanhos.style.display = 'grid';
-    listaTamanhos.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    listaTamanhos.style.gridTemplateRows = 'repeat(7, 1fr)';
+    listaTamanhos.style.gridAutoFlow = 'column';
     listaTamanhos.style.gap = '2px 10px';
     listaTamanhos.style.height = '120px';
 
-    tamanhosNumericos.forEach((tam, i) => {
+    todosTamanhos.forEach((tam, i) => {
         const valor = dadosTamanhos[i];
         const li = document.createElement('li');
         li.style.display = 'flex';
@@ -138,25 +143,24 @@ window.atualizarDetalhesEstoque = function(produtos) {
         listaTamanhos.appendChild(li);
     });
 
-    // 4. Gráfico de tamanhos letras
-    const tamanhosLetras = ["PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "ÚNICO"];
-    const coresLetras = [
-        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085", "#bfa100", "#c0392b"
-    ];
-    const dadosLetras = tamanhosLetras.map(tam =>
-        produtos.filter(p => p.tamanho && p.tamanho.toString().toUpperCase() === tam).length
+    // 5. Gráfico de Gênero
+    const generos = ["MASCULINO", "FEMININO", "UNISSEX"];
+    const nomesGeneros = ["Masculino", "Feminino", "Unissex"];
+    const coresGenero = ["#1e94a3", "#c0392b", "#bfa100"];
+    const dadosGenero = generos.map(g =>
+        produtos.filter(p => (p.genero || "").toUpperCase() === g).length
     );
 
     // Destroi gráfico anterior se existir
-    if (window.graficoTamanhosLetras) window.graficoTamanhosLetras.destroy();
-    const ctxLetra = document.getElementById('grafico-tamanhos-letras').getContext('2d');
-    window.graficoTamanhosLetras = new Chart(ctxLetra, {
+    if (window.graficoGenero) window.graficoGenero.destroy();
+    const ctxGenero = document.getElementById('grafico-genero').getContext('2d');
+    window.graficoGenero = new Chart(ctxGenero, {
         type: 'doughnut',
         data: {
-            labels: tamanhosLetras,
+            labels: nomesGeneros,
             datasets: [{
-                data: dadosLetras,
-                backgroundColor: coresLetras,
+                data: dadosGenero,
+                backgroundColor: coresGenero,
                 borderWidth: 1
             }]
         },
@@ -169,16 +173,17 @@ window.atualizarDetalhesEstoque = function(produtos) {
         }
     });
 
-    // Lista de tamanhos letras ao lado, em 2 colunas
-    const listaLetras = document.getElementById('lista-tamanhos-letras');
-    listaLetras.innerHTML = '';
-    listaLetras.style.display = 'grid';
-    listaLetras.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    listaLetras.style.gap = '2px 10px';
-    listaLetras.style.height = '120px';
+    // Lista de gêneros ao lado, em coluna de 3 itens
+    const listaGenero = document.getElementById('lista-genero');
+    listaGenero.innerHTML = '';
+    listaGenero.style.display = 'grid';
+    listaGenero.style.gridTemplateRows = 'repeat(3, 1fr)';
+    listaGenero.style.gridAutoFlow = 'column';
+    listaGenero.style.gap = '2px 10px';
+    listaGenero.style.height = '120px';
 
-    tamanhosLetras.forEach((tam, i) => {
-        const valor = dadosLetras[i];
+    nomesGeneros.forEach((nome, i) => {
+        const valor = dadosGenero[i];
         const li = document.createElement('li');
         li.style.display = 'flex';
         li.style.alignItems = 'center';
@@ -189,13 +194,13 @@ window.atualizarDetalhesEstoque = function(produtos) {
                 text-align:right;
                 font-weight:bold;
                 color:#fff;
-                background:${coresLetras[i]};
+                background:${coresGenero[i]};
                 border-radius:4px;
                 padding:2px 5px 2px 10px;
                 margin-right:5px;
             ">${valor}</span>
-            <span>${tam}</span>
+            <span>${nome}</span>
         `;
-        listaLetras.appendChild(li);
+        listaGenero.appendChild(li);
     });
 };
