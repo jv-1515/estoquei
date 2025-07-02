@@ -487,8 +487,7 @@ window.onload = function() {
             if (el.type === 'select-one') el.selectedIndex = 0;
             else el.value = '';
         });
-        filtrosAvancados.style.display = 'none';
-        filtrar();
+        filtrar(); // Atualiza lista
     });
 
     // Clicou fora, esconde

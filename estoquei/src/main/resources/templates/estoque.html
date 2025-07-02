@@ -129,7 +129,7 @@
         </div>
     </div>
         <div id="detalhes-estoque"
-     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
+     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
     <!-- Esquerda: Título + Cards -->
     <div style="display: flex; flex-direction: column; min-width: 215px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
@@ -156,17 +156,29 @@
             </div>
         </div>
     </div>
-    <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: column;">
-        <div style="display: flex; align-items: center; height: 28px; margin-top: 8px;">
-            <span style="font-size:12px; font-weight:bold; color:#333;">Categoria</span>
+    <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: row; gap: 10px;">
+        <!-- Gráfico Categoria -->
+        <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Categoria</span>
+            <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:120px;">
+                <canvas id="grafico-categoria" width="120" height="120"></canvas>
+                <ul id="lista-categorias"
+                    style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                        display: flex; flex-direction: column;
+                        justify-content: space-between; height:120px;">
+                </ul>
+            </div>
         </div>
-        <div style="display: flex; flex-direction: row; align-items: stretch; gap: 10px; height:120px;">
-            <canvas id="grafico-categoria" width="120" height="120"></canvas>
-            <ul id="lista-categorias"
-                style="list-style: none; padding: 0; margin: 0; font-size: 10px;
-                    display: flex; flex-direction: column;
-                    justify-content: space-between; height:120px;">
-            </ul>
+        <!-- Gráfico Tamanhos Numéricos -->
+        <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Tamanhos Numéricos</span>
+            <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:120px;">
+                <canvas id="grafico-tamanhos-numericos" width="120" height="120"></canvas>
+                <ul id="lista-tamanhos-numericos"
+                    style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                        display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 10px; height:120px;">
+                </ul>
+            </div>
         </div>
     </div>
 </div>

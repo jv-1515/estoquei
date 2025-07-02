@@ -73,4 +73,68 @@ window.atualizarDetalhesEstoque = function(produtos) {
         `;
         lista.appendChild(li);
     });
+
+    // 3. Gráfico de tamanhos numéricos
+    const tamanhosNumericos = Array.from({length: 21}, (_, i) => (36 + i).toString());
+    const dadosTamanhos = tamanhosNumericos.map(tam =>
+        produtos.filter(p => p.tamanho && (p.tamanho.toString() === tam || p.tamanho.toString() === `_${tam}`)).length
+    );
+    const coresTamanhos = [
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
+    ];
+
+    // Destroi gráfico anterior se existir
+    if (window.graficoTamanhosNumericos) window.graficoTamanhosNumericos.destroy();
+    const ctxTam = document.getElementById('grafico-tamanhos-numericos').getContext('2d');
+    window.graficoTamanhosNumericos = new Chart(ctxTam, {
+        type: 'doughnut',
+        data: {
+            labels: tamanhosNumericos,
+            datasets: [{
+                data: dadosTamanhos,
+                backgroundColor: coresTamanhos,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '65%',
+            responsive: false
+        }
+    });
+
+    // Lista de tamanhos ao lado, em 3 colunas
+    const listaTamanhos = document.getElementById('lista-tamanhos-numericos');
+    listaTamanhos.innerHTML = '';
+    // Adicione este estilo para grid 3 colunas:
+    listaTamanhos.style.display = 'grid';
+    listaTamanhos.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    listaTamanhos.style.gap = '2px 10px';
+    listaTamanhos.style.height = '120px';
+
+    tamanhosNumericos.forEach((tam, i) => {
+        const valor = dadosTamanhos[i];
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:2ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${coresTamanhos[i]};
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
+                margin-right:5px;
+            ">${valor}</span>
+            <span>${tam}</span>
+        `;
+        listaTamanhos.appendChild(li);
+    });
 };
