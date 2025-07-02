@@ -124,7 +124,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
         li.innerHTML = `
             <span style="
                 display:inline-block;
-                min-width:2ch;
+                min-width:3ch;
                 text-align:right;
                 font-weight:bold;
                 color:#fff;
@@ -136,5 +136,66 @@ window.atualizarDetalhesEstoque = function(produtos) {
             <span>${tam}</span>
         `;
         listaTamanhos.appendChild(li);
+    });
+
+    // 4. Gráfico de tamanhos letras
+    const tamanhosLetras = ["PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "ÚNICO"];
+    const coresLetras = [
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085", "#bfa100", "#c0392b"
+    ];
+    const dadosLetras = tamanhosLetras.map(tam =>
+        produtos.filter(p => p.tamanho && p.tamanho.toString().toUpperCase() === tam).length
+    );
+
+    // Destroi gráfico anterior se existir
+    if (window.graficoTamanhosLetras) window.graficoTamanhosLetras.destroy();
+    const ctxLetra = document.getElementById('grafico-tamanhos-letras').getContext('2d');
+    window.graficoTamanhosLetras = new Chart(ctxLetra, {
+        type: 'doughnut',
+        data: {
+            labels: tamanhosLetras,
+            datasets: [{
+                data: dadosLetras,
+                backgroundColor: coresLetras,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '65%',
+            responsive: false
+        }
+    });
+
+    // Lista de tamanhos letras ao lado, em 2 colunas
+    const listaLetras = document.getElementById('lista-tamanhos-letras');
+    listaLetras.innerHTML = '';
+    listaLetras.style.display = 'grid';
+    listaLetras.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    listaLetras.style.gap = '2px 10px';
+    listaLetras.style.height = '120px';
+
+    tamanhosLetras.forEach((tam, i) => {
+        const valor = dadosLetras[i];
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:3ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${coresLetras[i]};
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
+                margin-right:5px;
+            ">${valor}</span>
+            <span>${tam}</span>
+        `;
+        listaLetras.appendChild(li);
     });
 };
