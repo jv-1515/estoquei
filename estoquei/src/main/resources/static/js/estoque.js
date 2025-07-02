@@ -122,7 +122,7 @@ function filtrar() {
     if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
 
     // Filtro em memória
-    let filtrados = produtos.filter(p => {
+    let produtosFiltrados = produtos.filter(p => {
         if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
@@ -136,9 +136,9 @@ function filtrar() {
     });
 
     paginaAtual = 1;
-    renderizarProdutos(filtrados);
-    atualizarDetalhesInfo(filtrados);
-    window.atualizarDetalhesEstoque(filtrados);
+    renderizarProdutos(produtosFiltrados);
+    atualizarDetalhesInfo(produtosFiltrados);
+    window.atualizarDetalhesEstoque(produtosFiltrados);
 }    
 
 function limpar() {
@@ -307,6 +307,7 @@ function renderizarProdutos(produtos) {
         });
 
         renderizarPaginacao(totalPaginas);
+        atualizarTotalEstoqueNaTela();
     });
 }
 
@@ -823,21 +824,15 @@ function visualizarImagem(url, nome, descricao, codigo) {
 }
 
 function atualizarDetalhesInfo(produtos) {
-    fetch('/produtos')
-        .then(res => res.json())
-        .then(todosProdutos => {
-            const total = Array.isArray(todosProdutos)
-                ? todosProdutos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0)
-                : 0;
-            document.getElementById('detalhe-total-produtos').textContent = total;
-        })
-        .catch(() => {
-            document.getElementById('detalhe-total-produtos').textContent = 0;
-        });
+    // Soma a coluna quantidade dos produtos recebidos (filtrados)
+    const total = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+    document.getElementById('detalhe-total-produtos').textContent = total;
 
-    // Os demais detalhes continuam filtrados:
-    document.getElementById('detalhe-baixo-estoque').textContent =
-        produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
-    document.getElementById('detalhe-estoque-zerado').textContent =
-        produtos.filter(p => p.quantidade === 0).length;
+    // Baixo estoque: quantidade > 0 e <= limiteMinimo
+    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= Number(p.limiteMinimo))).length;
+    document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
+
+    // Estoque zerado: quantidade == 0
+    const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
+    document.getElementById('detalhe-estoque-zerado').textContent = zerados;
 }
