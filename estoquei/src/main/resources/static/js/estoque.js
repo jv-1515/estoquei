@@ -307,7 +307,6 @@ function renderizarProdutos(produtos) {
         });
 
         renderizarPaginacao(totalPaginas);
-        atualizarTotalEstoqueNaTela();
     });
 }
 
@@ -836,3 +835,66 @@ function atualizarDetalhesInfo(produtos) {
     const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
     document.getElementById('detalhe-estoque-zerado').textContent = zerados;
 }
+
+window.expandedCategoriaMulti = false;
+
+function showCheckboxesCategoriaMulti() {
+  var checkboxes = document.getElementById("checkboxes-categoria-multi");
+  if (!window.expandedCategoriaMulti) {
+    checkboxes.style.display = "block";
+    window.expandedCategoriaMulti = true;
+  } else {
+    checkboxes.style.display = "none";
+    window.expandedCategoriaMulti = false;
+  }
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('mousedown', function(e) {
+  var checkboxes = document.getElementById("checkboxes-categoria-multi");
+  var selectBox = document.querySelector('.multiselect .selectBox');
+  if (
+    window.expandedCategoriaMulti &&
+    checkboxes &&
+    !checkboxes.contains(e.target) &&
+    !selectBox.contains(e.target)
+  ) {
+    checkboxes.style.display = "none";
+    window.expandedCategoriaMulti = false;
+  }
+});
+
+// Lógica de seleção "Todas" e integração com filtro
+window.addEventListener('DOMContentLoaded', function() {
+  const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+  const todas = checks[0]; // O primeiro é "Todas"
+  const placeholder = document.getElementById('categoria-multi-placeholder');
+
+  // "Todas" marca/desmarca todos
+  todas.addEventListener('change', function() {
+    checks.forEach(cb => cb.checked = todas.checked);
+    atualizarPlaceholderCategoriaMulti();
+    filtrar();
+  });
+
+  // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
+  checks.slice(1).forEach(cb => {
+    cb.addEventListener('change', function() {
+      todas.checked = checks.slice(1).every(c => c.checked);
+      atualizarPlaceholderCategoriaMulti();
+      filtrar();
+    });
+  });
+
+  function atualizarPlaceholderCategoriaMulti() {
+    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    placeholder.textContent = todas.checked || selecionados.length === 0 ? 'Todas' : selecionados.join(', ');
+  }
+
+  // Função global para pegar categorias selecionadas do multiselect
+  window.getCategoriasMultiSelecionadas = function() {
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+  };
+});
+

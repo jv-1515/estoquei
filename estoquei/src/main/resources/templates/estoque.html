@@ -60,6 +60,42 @@
                     <option value="MEIA">Meia</option>
                 </select>
             </div>
+            <!-- NOVO MULTISELECT DEPOIS DO SELECT DE CATEGORIA -->
+            <div class="multiselect" style="width:200px; margin-top:8px;">
+              <label for="filter-categoria-multi">Categoria (multi)</label>
+              <div class="selectBox">
+                <select>
+                  <option id="categoria-multi-placeholder">Todas</option>
+                </select>
+                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
+              </div>
+              <div id="checkboxes-categoria-multi">
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="" checked /> Todas
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="CAMISA" /> Camisa
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="CAMISETA" /> Camiseta
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="BERMUDA" /> Bermuda
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="CALCA" /> Calça
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="SHORTS" /> Shorts
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="SAPATO" /> Sapato
+                </label>
+                <label>
+                  <input type="checkbox" class="categoria-multi-check" value="MEIA" /> Meia
+                </label>
+              </div>
+            </div>
             <div class="input-group">
                 <label for="filter-tamanho">Tamanho</label>
                 <select id="filter-tamanho">
