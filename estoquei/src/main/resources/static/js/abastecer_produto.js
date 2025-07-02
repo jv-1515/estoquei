@@ -27,26 +27,19 @@ function exibirTamanho(tamanho) {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-    const movimentacaoPlaceholder = document.getElementById('movimentacao-placeholder');
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
     const codigoInput = document.getElementById('filter-codigo');
-    let produtoSelecionado = null;
-
-    // 1. Sempre mostra o tipo de movimentação
-    movimentacaoPlaceholder.innerHTML = `
-        <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:15px;align-items:center; border-radius: 0 0 10px 10px; padding-top: 0; box-shadow: none;">
-            <label style="font-weight:bold; padding:0;">Tipo de Movimentação:</label>
-            <label style="display:flex;align-items:center;gap:4px;">
-                <input type="radio" name="tipo-movimentacao" value="ENTRADA" style="vertical-align:middle;margin:0;"> Entrada
-            </label>
-            <label style="display:flex;align-items:center;gap:4px;">
-                <input type="radio" name="tipo-movimentacao" value="SAIDA" style="vertical-align:middle;margin:0;"> Saída
-            </label>
-        </div>
-    `;
-
-    // 2. Select de código ao passar mouse (AJAX, sem sobrescrever array)
     let selectProdutos = null;
+    let ultimoProdutoId = null;
+    let ultimoTipo = "ENTRADA";
+    let produtoSelecionado = {};
+
+    // Já mostra o container de detalhes da compra ao abrir
+    criarMainContainer("ENTRADA", {});
+
+    // NÃO sobrescreva o HTML do tipo de movimentação aqui!
+
+    // Select de código ao passar mouse
     codigoInput.addEventListener('mouseover', function() {
         if (selectProdutos) {
             selectProdutos.style.display = '';
@@ -79,7 +72,6 @@ window.addEventListener('DOMContentLoaded', function() {
                 selectProdutos.addEventListener('change', function() {
                     const opt = this.selectedOptions[0];
                     if (!opt.value) return;
-                    // Monta objeto produto a partir dos data-attributes
                     const produto = {
                         id: opt.value,
                         codigo: opt.dataset.codigo,
@@ -93,6 +85,16 @@ window.addEventListener('DOMContentLoaded', function() {
                         url_imagem: opt.dataset.url_imagem
                     };
                     window.preencherCampos(produto);
+
+                    // Atualiza main-container só se mudou o produto ou o tipo for SAIDA
+                    const tipoSelecionado = document.querySelector('input[name="tipo-movimentacao"]:checked').value;
+                    if (produto.id !== ultimoProdutoId || tipoSelecionado !== ultimoTipo) {
+                        criarMainContainer(tipoSelecionado, produto);
+                        ultimoProdutoId = produto.id;
+                        ultimoTipo = tipoSelecionado;
+                    }
+                    produtoSelecionado = produto;
+
                     selectProdutos.style.display = 'none';
                     codigoInput.style.display = '';
                 });
@@ -104,18 +106,16 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // 3. Ao selecionar tipo, cria o main-container dinâmico
+    // Troca tipo de movimentação
     document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            if (!produtoSelecionado) {
-                mainContainerPlaceholder.innerHTML = '';
-                return;
-            }
+            if (!produtoSelecionado) produtoSelecionado = {};
             criarMainContainer(this.value, produtoSelecionado);
+            ultimoTipo = this.value;
         });
     });
 
-    // 4. Função para criar o main-container dinâmico (mantendo layout e imagem)
+    // Função para criar o main-container dinâmico (mantendo layout e imagem)
     function criarMainContainer(tipo, produto) {
         mainContainerPlaceholder.innerHTML = `
             <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
@@ -151,7 +151,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*:' : 'Data da Venda*:'}</label>
             <input type="date" id="data-compra" name="data-compra" required>
-            <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Saída'}</button>
+            <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
             </div>
             <div class="right-column">
             <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
@@ -182,10 +182,9 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 5. Função para preencher os campos do produto (chame ao selecionar produto)
+    // Função para preencher os campos do produto (chame ao selecionar produto)
     window.preencherCampos = function(produto) {
         produtoSelecionado = produto;
-        // Preencha os campos do filtro com capitalização correta
         document.getElementById('filter-codigo').value = produto.codigo || '';
         document.getElementById('filter-nome').value = produto.nome || '';
         document.getElementById('filter-categoria').value = capitalizar(produto.categoria);
@@ -195,10 +194,6 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('filter-limite').value = produto.limiteMinimo || '';
         document.getElementById('filter-preco').value = produto.preco || '';
         document.getElementById('quantidade-final').value = produto.quantidade || '';
-
-        // Limpa main-container e tipo de movimentação
-        mainContainerPlaceholder.innerHTML = '';
-        document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(r => r.checked = false);
     };
 
     // Máscara de preço para filtros

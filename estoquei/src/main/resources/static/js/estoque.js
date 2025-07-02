@@ -823,9 +823,19 @@ function visualizarImagem(url, nome, descricao, codigo) {
 }
 
 function atualizarDetalhesInfo(produtos) {
-    const totalQuantidade = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
-    document.getElementById('detalhe-total-produtos').textContent = totalQuantidade;
+    fetch('/produtos')
+        .then(res => res.json())
+        .then(todosProdutos => {
+            const total = Array.isArray(todosProdutos)
+                ? todosProdutos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0)
+                : 0;
+            document.getElementById('detalhe-total-produtos').textContent = total;
+        })
+        .catch(() => {
+            document.getElementById('detalhe-total-produtos').textContent = 0;
+        });
 
+    // Os demais detalhes continuam filtrados:
     document.getElementById('detalhe-baixo-estoque').textContent =
         produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
     document.getElementById('detalhe-estoque-zerado').textContent =

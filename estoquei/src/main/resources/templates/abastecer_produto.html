@@ -26,7 +26,7 @@
     <div>
         <h1>Registrar Movimentação</h1>
     </div>
-    <div class="filters-container" style="margin-bottom: 0; box-shadow: none; border-radius: 10px 10px 0 0;">
+    <div class="filters-container" style="margin-bottom: 0; box-shadow: none; border-radius: 10px 10px 0 0; padding-bottom:10px">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Detalhes do Produto</h2>
             <div class="filters-group">
@@ -45,7 +45,15 @@
             </div>
         </div>
     </div>
-    <div id="movimentacao-placeholder"></div>
+    <div id="movimentacao-tipo-container" class="filters-container" style="display:flex;gap:5px;align-items:center; border-radius: 0 0 10px 10px; padding-top: 0; box-shadow: none;">
+        <label style="font-weight:bold; padding:0;">Tipo de Movimentação:</label>
+        <label style="display:flex;align-items:center;gap:4px;">
+            <input type="radio" name="tipo-movimentacao" value="ENTRADA" checked style="accent-color: #1e94a3;"> Entrada
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;">
+            <input type="radio" name="tipo-movimentacao" value="SAIDA" style="accent-color: #1e94a3;"> Saída
+        </label>
+    </div>
     <div id="main-container-placeholder"></div>
 </body>
 </html>
