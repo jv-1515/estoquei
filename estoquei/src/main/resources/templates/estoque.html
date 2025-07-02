@@ -131,28 +131,30 @@
         <div id="detalhes-estoque"
      style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
     <!-- Esquerda: Título + Cards -->
-    <div style="display: flex; flex-direction: column; min-width: 215px; flex-shrink: 0;">
+    <div style="display: flex; flex-direction: column; max-width: 200px; min-width: 200px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
             <h2 style="margin: 0; font-size: 20px;">Detalhes do Estoque</h2>
         </div>
-        <div style="display: flex; flex-direction: row; gap: 10px; height: 120px; align-items: stretch; margin-top: 8px;">
-            <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-            <div style="color: #18404a; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                Total de<br>Produtos:
+        <div style="height: 8px;"></div>
+        <!-- Cards: Total em cima, Baixo Estoque e Zerados embaixo -->
+        <div style="display: flex; flex-direction: column; gap: 10px; height: 120px;">
+            <!-- Linha 1: Total (sozinho) -->
+            <div style="display: flex; flex-direction: row; height: 55px;">
+                <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 10px 10px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #18404a; font-size: 12px; font-weight: bold;">Total:</div>
+                    <div id="detalhe-total-produtos" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
+                </div>
             </div>
-            <div id="detalhe-total-produtos" style="font-size: 28px; font-weight: bold; color: #18404a; margin-top: 6px;">0</div>
-            </div>
-            <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-            <div style="color: #bfa100; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                Baixo<br>Estoque:
-            </div>
-            <div id="detalhe-baixo-estoque" style="font-size: 28px; font-weight: bold; color: #bfa100; margin-top: 6px;">0</div>
-            </div>
-            <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 18px 20px; text-align: left; min-width: 65px; display: flex; flex-direction: column; justify-content: center;">
-            <div style="color: #c0392b; font-size: 12px; font-weight: bold; line-height: 1.2;">
-                Estoque<br>Zerado:
-            </div>
-                <div id="detalhe-estoque-zerado" style="font-size: 28px; font-weight: bold; color: #c0392b; margin-top: 6px;">0</div>
+            <!-- Linha 2: Baixo Estoque e Produtos Zerados -->
+            <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
+                <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; flex:1; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Baixo<br>Estoque:</div>
+                    <div id="detalhe-baixo-estoque" style="font-size: 22px; font-weight: bold; color: #bfa100;">0</div>
+                </div>
+                <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; flex:1; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos<br>Zerados:</div>
+                    <div id="detalhe-estoque-zerado" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
+                </div>
             </div>
         </div>
     </div>
@@ -169,24 +171,24 @@
                 </ul>
             </div>
         </div>
-        <!-- Gráfico Tamanhos Numéricos -->
+        <!-- Gráfico Tamanhos (Numéricos + Letras juntos) -->
         <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
-            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Tamanhos Numéricos</span>
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Tamanhos</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:120px;">
-                <canvas id="grafico-tamanhos-numericos" width="120" height="120"></canvas>
-                <ul id="lista-tamanhos-numericos"
+                <canvas id="grafico-tamanhos" width="120" height="120"></canvas>
+                <ul id="lista-tamanhos"
                     style="list-style: none; padding: 0; margin: 0; font-size: 10px;
-                        display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px 10px; height:120px;">
+                        display: grid; gap: 2px 5px; height:120px;">
                 </ul>
             </div>
         </div>
-        <!-- Gráfico Tamanhos Letras -->
+        <!-- Gráfico Gênero -->
         <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 140px;">
-            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Tamanhos Letras</span>
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Gênero</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:120px;">
-                <canvas id="grafico-tamanhos-letras" width="120" height="120"></canvas>
-                <ul id="lista-tamanhos-letras"
-                    style="list-style: none; padding: 0; margin: 0; font-size: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 10px; height:120px;">
+                <canvas id="grafico-genero" width="120" height="120"></canvas>
+                <ul id="lista-genero"
+                    style="list-style: none; padding: 0; margin: 0; font-size: 10px; display: grid; gap: 2px 10px; height:120px;">
                 </ul>
             </div>
         </div>
