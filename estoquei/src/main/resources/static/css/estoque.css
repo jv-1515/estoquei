@@ -385,3 +385,40 @@ select#filter-genero {
     font-size: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
+/* Multi-select categoria novo */
+.multiselect {
+  width: 200px;
+  position: relative;
+}
+.selectBox {
+  position: relative;
+}
+.selectBox select {
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+}
+.overSelect {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  cursor: pointer;
+}
+#checkboxes-categoria-multi {
+  display: none;
+  border: 1px #dadada solid;
+  background: #fff;
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+#checkboxes-categoria-multi label {
+  display: block;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+#checkboxes-categoria-multi label:hover {
+  background-color: #1e90ff;
+  color: #fff;
+}
