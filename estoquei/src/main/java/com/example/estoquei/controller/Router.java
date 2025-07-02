@@ -101,15 +101,15 @@ public class Router {
     }
 
     @GetMapping("/gerenciar-funcionarios")
-    public String gerenciarFuncionario(HttpSession session) {
-                Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-            
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+    public String gerenciarFuncionarios(Model model, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        if (usuarioLogado == null) return "redirect:/";
+
+        System.out.println("Usuário na sessão: " + usuarioLogado.getNome() + " | Tipo: " + usuarioLogado.getTipo());
+        if (usuarioLogado.getTipo() == TipoUsuario.ADMIN || usuarioLogado.getTipo() == TipoUsuario.GERENTE) {
+            model.addAttribute("usuarioLogado", usuarioLogado);
             return "gerenciar_funcionarios";
         }
-
         return "redirect:/inicio";
     }
 
@@ -148,20 +148,6 @@ public class Router {
         System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
         if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
             return "gerenciar_fornecedores";
-        }
-
-        return "redirect:/inicio";
-    }
-
-    //relatorio
-    @GetMapping("/gerar-relatorio")
-    public String relatorio(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
-            return "relatorio";
         }
 
         return "redirect:/inicio";

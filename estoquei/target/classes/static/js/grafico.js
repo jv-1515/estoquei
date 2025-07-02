@@ -73,4 +73,205 @@ window.atualizarDetalhesEstoque = function(produtos) {
         `;
         lista.appendChild(li);
     });
+
+    // 3. Gráfico de tamanhos (numéricos + letras juntos)
+    const tamanhosNumericos = Array.from({length: 21}, (_, i) => (36 + i).toString());
+    const tamanhosLetras = ["PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "ÚNICO"];
+    const todosTamanhos = [...tamanhosNumericos, ...tamanhosLetras];
+    const coresTamanhos = [
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#1e94a3", "#277580", "#bfa100", "#c0392b"
+    ];
+    const dadosTamanhos = todosTamanhos.map(tam =>
+        produtos.filter(p => {
+            const t = (p.tamanho || '').toString().toUpperCase();
+            return t === tam || t === `_${tam}`;
+        }).length
+    );
+
+    // Destroi gráfico anterior se existir
+    if (window.graficoTamanhos) window.graficoTamanhos.destroy();
+    const ctxTamanhos = document.getElementById('grafico-tamanhos').getContext('2d');
+    window.graficoTamanhos = new Chart(ctxTamanhos, {
+        type: 'doughnut',
+        data: {
+            labels: todosTamanhos,
+            datasets: [{
+                data: dadosTamanhos,
+                backgroundColor: coresTamanhos,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '65%',
+            responsive: false
+        }
+    });
+
+    const listaTamanhos = document.getElementById('lista-tamanhos');
+    listaTamanhos.innerHTML = '';
+    listaTamanhos.style.display = 'flex';
+    listaTamanhos.style.flexDirection = 'row';
+    listaTamanhos.style.height = '120px';
+
+    // 1. Grid dos tamanhos numéricos (7 linhas por coluna)
+    const gridNumeros = document.createElement('div');
+    gridNumeros.style.display = 'grid';
+    gridNumeros.style.gridTemplateRows = 'repeat(7, 1fr)';
+    gridNumeros.style.gridAutoFlow = 'column';
+    gridNumeros.style.gap = '2px 10px';
+
+    tamanhosNumericos.forEach((tam, i) => {
+        const valor = dadosTamanhos[i];
+        const li = document.createElement('div');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:3ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${coresTamanhos[i]};
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
+                margin-right:5px;
+            ">${valor}</span>
+            <span>${tam}</span>
+        `;
+        gridNumeros.appendChild(li);
+    });
+    listaTamanhos.appendChild(gridNumeros);
+
+    // 2. Grid das letras ao lado (5 linhas x 2 colunas)
+    const letrasCol1 = ["PP", "P", "M", "G", "GG"];
+    const letrasCol2 = ["XG", "XGG", "XXG", "ÚNICO"];
+    const gridLetras = document.createElement('div');
+    gridLetras.style.display = 'grid';
+    gridLetras.style.gridTemplateRows = 'repeat(5, 1fr)';
+    gridLetras.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    gridLetras.style.gap = '0px';
+    gridLetras.style.marginLeft = '5px';
+    gridLetras.style.alignItems = 'self-start';
+    gridLetras.style.maxHeight = '85px';
+    gridLetras.style.maxWidth = '130px';
+
+
+
+    for (let i = 0; i < 5; i++) {
+        // Coluna 1
+        if (letrasCol1[i]) {
+            const idx = tamanhosNumericos.length + i;
+            const valor = dadosTamanhos[tamanhosNumericos.length + i];
+            const li = document.createElement('div');
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+            li.innerHTML = `
+                <span style="
+                    display:inline-block;
+                    min-width:3ch;
+                    text-align:right;
+                    font-weight:bold;
+                    color:#fff;
+                    background:${coresTamanhos[idx]};
+                    border-radius:4px;
+                    padding:2px 5px 2px 10px;
+                    margin-right:5px;
+                ">${valor}</span>
+                <span>${letrasCol1[i]}</span>
+            `;
+            gridLetras.appendChild(li);
+        }
+        // Coluna 2
+        if (letrasCol2[i]) {
+            const idx = tamanhosNumericos.length + letrasCol1.length + i;
+            const valor = dadosTamanhos[tamanhosNumericos.length + letrasCol1.length + i];
+            const li = document.createElement('div');
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+            li.innerHTML = `
+                <span style="
+                    display:inline-block;
+                    min-width:3ch;
+                    text-align:right;
+                    font-weight:bold;
+                    color:#fff;
+                    background:${coresTamanhos[idx]};
+                    border-radius:4px;
+                    padding:2px 5px 2px 10px;
+                    margin-right:5px;
+                ">${valor}</span>
+                <span>${letrasCol2[i]}</span>
+            `;
+            gridLetras.appendChild(li);
+        }
+    }
+    listaTamanhos.appendChild(gridLetras);
+
+    // 5. Gráfico de Gênero
+    const generos = ["MASCULINO", "FEMININO", "UNISSEX"];
+    const nomesGeneros = ["Masculino", "Feminino", "Unissex"];
+    const coresGenero = ["#1e94a3", "#c0392b", "#bfa100"];
+    const dadosGenero = generos.map(g =>
+        produtos.filter(p => (p.genero || "").toUpperCase() === g).length
+    );
+
+    // Destroi gráfico anterior se existir
+    if (window.graficoGenero) window.graficoGenero.destroy();
+    const ctxGenero = document.getElementById('grafico-genero').getContext('2d');
+    window.graficoGenero = new Chart(ctxGenero, {
+        type: 'doughnut',
+        data: {
+            labels: nomesGeneros,
+            datasets: [{
+                data: dadosGenero,
+                backgroundColor: coresGenero,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '65%',
+            responsive: false
+        }
+    });
+
+    // Lista de gêneros ao lado, em coluna de 3 itens
+    const listaGenero = document.getElementById('lista-genero');
+    listaGenero.innerHTML = '';
+    listaGenero.style.display = 'grid';
+    listaGenero.style.gridTemplateRows = 'repeat(3, 0fr)';
+    listaGenero.style.gridAutoFlow = 'column';
+    listaGenero.style.gap = '2px 10px';
+    listaGenero.style.height = '120px';
+
+    nomesGeneros.forEach((nome, i) => {
+        const valor = dadosGenero[i];
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:3ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${coresGenero[i]};
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
+                margin-right:5px;
+            ">${valor}</span>
+            <span>${nome}</span>
+        `;
+        listaGenero.appendChild(li);
+    });
 };
