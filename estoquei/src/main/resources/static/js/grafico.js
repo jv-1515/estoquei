@@ -1,8 +1,4 @@
 window.atualizarDetalhesEstoque = function(produtos) {
-    // 1. Cards
-    document.getElementById('detalhe-total-produtos').textContent = produtos.length;
-    document.getElementById('detalhe-baixo-estoque').textContent = produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
-    document.getElementById('detalhe-estoque-zerado').textContent = produtos.filter(p => p.quantidade === 0).length;
 
     // 2. Gráfico de categoria
     const categorias = [
@@ -117,7 +113,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     listaTamanhos.innerHTML = '';
     listaTamanhos.style.display = 'flex';
     listaTamanhos.style.flexDirection = 'row';
-    listaTamanhos.style.height = '120px';
+    listaTamanhos.style.height = '130px';
 
     // 1. Grid dos tamanhos numéricos (7 linhas por coluna)
     const gridNumeros = document.createElement('div');
@@ -251,7 +247,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     listaGenero.style.gridTemplateRows = 'repeat(3, 0fr)';
     listaGenero.style.gridAutoFlow = 'column';
     listaGenero.style.gap = '2px 10px';
-    listaGenero.style.height = '120px';
+    listaGenero.style.height = '130px';
 
     nomesGeneros.forEach((nome, i) => {
         const valor = dadosGenero[i];
