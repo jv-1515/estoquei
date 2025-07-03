@@ -152,8 +152,7 @@ function filtrar() {
             .map(cb => cb.value);
     }
 
-    // REMOVIDO: let categoria = document.getElementById("filter-categoria-multi").value;
-    let tamanho = document.getElementById("filter-tamanho").value;
+    let tamanhosSelecionados = getTamanhosSelecionados();
     let genero = document.getElementById("filter-genero").value;
 
     // Faixas
@@ -180,7 +179,7 @@ function filtrar() {
         if (categoriasSelecionadas.length) {
             if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
         }
-        if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
+        if (tamanhosSelecionados.length > 0 && !tamanhosSelecionados.includes(p.tamanho.toString().toUpperCase())) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
         if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
@@ -1001,4 +1000,93 @@ function atualizarPlaceholderCategoriaMulti() {
     } else {
         placeholder.textContent = selecionados.join(', ');
     }
+}
+
+function showCheckboxesTamanhoMulti() {
+    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+    if (checkboxes.style.display === "block") {
+        checkboxes.style.display = "none";
+    } else {
+        checkboxes.style.display = "block";
+    }
+}
+
+function marcarOuDesmarcarTodosTamanhos() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        cb.checked = todas.checked;
+    });
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function atualizarPlaceholderTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todas = checks[0];
+    const placeholder = document.getElementById('tamanho-multi-placeholder');
+    const selecionados = checks.slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    if (todas.checked || selecionados.length === 0) {
+        placeholder.textContent = 'Todos';
+    } else {
+        placeholder.textContent = selecionados.join(', ');
+    }
+}
+
+// Lógica para "Todos Letras" e "Todos Numéricos"
+document.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const checksLetra = checks.filter(cb => ["PP","P","M","G","GG","XG","XGG","XXG","ÚNICO"].includes(cb.value));
+    const checksNum = checks.filter(cb => /^_\d+$/.test(cb.value));
+
+    todasLetra.addEventListener('change', function() {
+        checksLetra.forEach(cb => cb.checked = todasLetra.checked);
+        atualizarPlaceholderTamanhoMulti();
+        filtrar();
+    });
+
+    todasNum.addEventListener('change', function() {
+        checksNum.forEach(cb => cb.checked = todasNum.checked);
+        atualizarPlaceholderTamanhoMulti();
+        filtrar();
+    });
+
+    checks.slice(3).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todasLetra.checked = checksLetra.every(c => c.checked);
+            todasNum.checked = checksNum.every(c => c.checked);
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarPlaceholderTamanhoMulti();
+            filtrar();
+        });
+    });
+
+    // Fecha dropdown ao clicar fora
+    document.addEventListener('mousedown', function(e) {
+        const checkboxes = document.getElementById("checkboxes-tamanho-multi");
+        const overSelect = document.querySelector('.multiselect .overSelect');
+        if (
+            checkboxes.style.display === "block" &&
+            !checkboxes.contains(e.target) &&
+            !overSelect.contains(e.target)
+        ) {
+            checkboxes.style.display = "none";
+        }
+    });
+
+    atualizarPlaceholderTamanhoMulti();
+});
+
+// Função para pegar tamanhos selecionados
+function getTamanhosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
