@@ -99,6 +99,16 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
+    // Pega todos os checkboxes marcados do multiselect
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    // Se "Todas" está marcada, ignora filtro de categoria
+    let categoriasSelecionadas = [];
+    if (!checks[0].checked) {
+        categoriasSelecionadas = checks.slice(1)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+    }
+
     let categoria = document.getElementById("filter-categoria").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
@@ -123,7 +133,13 @@ function filtrar() {
 
     // Filtro em memória
     let produtosFiltrados = produtos.filter(p => {
-        if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
+        // Se há categorias selecionadas no multiselect, filtra por elas
+        if (categoriasSelecionadas.length) {
+            if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
+        } else if (categoria) {
+            // Se não, filtra pelo select convencional
+            if ((p.categoria || '').toString().trim().toUpperCase() !== categoria.toUpperCase()) return false;
+        }
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
