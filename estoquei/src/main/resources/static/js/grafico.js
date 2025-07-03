@@ -20,13 +20,17 @@ window.atualizarDetalhesEstoque = function(produtos) {
     // Gráfico Rosca
     if (window.graficoCategoria) window.graficoCategoria.destroy();
     const ctx = document.getElementById('grafico-categoria').getContext('2d');
+
+    // Exemplo para gráfico de categorias:
+    const todosZero = dados.every(v => v === 0);
+
     window.graficoCategoria = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: categoriasPlural,
+            labels: todosZero ? ['Sem dados'] : categoriasPlural,
             datasets: [{
-                data: dados,
-                backgroundColor: cores,
+                data: todosZero ? [1] : dados,
+                backgroundColor: todosZero ? ['#cccccc'] : cores,
                 borderWidth: 1
             }]
         },
@@ -90,13 +94,15 @@ window.atualizarDetalhesEstoque = function(produtos) {
     // Destroi gráfico anterior se existir
     if (window.graficoTamanhos) window.graficoTamanhos.destroy();
     const ctxTamanhos = document.getElementById('grafico-tamanhos').getContext('2d');
+    // Para tamanhos:
+    const todosZeroTamanhos = dadosTamanhos.every(v => v === 0);
     window.graficoTamanhos = new Chart(ctxTamanhos, {
         type: 'doughnut',
         data: {
-            labels: todosTamanhos,
+            labels: todosZeroTamanhos ? ['Sem dados'] : todosTamanhos,
             datasets: [{
-                data: dadosTamanhos,
-                backgroundColor: coresTamanhos,
+                data: todosZeroTamanhos ? [1] : dadosTamanhos,
+                backgroundColor: todosZeroTamanhos ? ['#cccccc'] : coresTamanhos,
                 borderWidth: 1
             }]
         },
@@ -155,7 +161,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     gridLetras.style.gap = '0px';
     gridLetras.style.marginLeft = '5px';
     gridLetras.style.alignItems = 'self-start';
-    gridLetras.style.maxHeight = '85px';
+    gridLetras.style.maxHeight = '95px';
     gridLetras.style.maxWidth = '130px';
 
 
@@ -203,7 +209,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
                     padding:2px 5px 2px 10px;
                     margin-right:5px;
                 ">${valor}</span>
-                <span>${letrasCol2[i]}</span>
+                <span>${letrasCol2[i] === "ÚNICO" ? "Único" : letrasCol2[i]}</span>
             `;
             gridLetras.appendChild(li);
         }
@@ -221,13 +227,15 @@ window.atualizarDetalhesEstoque = function(produtos) {
     // Destroi gráfico anterior se existir
     if (window.graficoGenero) window.graficoGenero.destroy();
     const ctxGenero = document.getElementById('grafico-genero').getContext('2d');
+    // Para gênero:
+    const todosZeroGenero = dadosGenero.every(v => v === 0);
     window.graficoGenero = new Chart(ctxGenero, {
         type: 'doughnut',
         data: {
-            labels: nomesGeneros,
+            labels: todosZeroGenero ? ['Sem dados'] : nomesGeneros,
             datasets: [{
-                data: dadosGenero,
-                backgroundColor: coresGenero,
+                data: todosZeroGenero ? [1] : dadosGenero,
+                backgroundColor: todosZeroGenero ? ['#cccccc'] : coresGenero,
                 borderWidth: 1
             }]
         },
@@ -246,7 +254,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     listaGenero.style.display = 'grid';
     listaGenero.style.gridTemplateRows = 'repeat(3, 0fr)';
     listaGenero.style.gridAutoFlow = 'column';
-    listaGenero.style.gap = '2px 10px';
+    listaGenero.style.gap = '4px 10px';
     listaGenero.style.height = '130px';
 
     nomesGeneros.forEach((nome, i) => {
