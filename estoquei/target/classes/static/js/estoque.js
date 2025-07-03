@@ -1046,19 +1046,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function marcarOuDesmarcarLetras() {
     const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todas = document.getElementById('tamanho-multi-todas');
     const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
     const checks = document.querySelectorAll('.tamanho-multi-check');
+
     checks.forEach(cb => {
         if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
     });
     const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
     todasLetras.checked = checksLetra.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
     atualizarPlaceholderTamanhoMulti();
     filtrar();
 }
 
 function marcarOuDesmarcarNumericos() {
     const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todas = document.getElementById('tamanho-multi-todas');
     const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
     const checks = document.querySelectorAll('.tamanho-multi-check');
     checks.forEach(cb => {
@@ -1066,6 +1075,10 @@ function marcarOuDesmarcarNumericos() {
     });
     const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
     todasNum.checked = checksNum.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
     atualizarPlaceholderTamanhoMulti();
     filtrar();
 }
@@ -1121,6 +1134,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkboxes = document.getElementById("checkboxes-tamanho-multi");
         const overSelect = document.querySelector('.multiselect .overSelect');
         if (
+            checkboxes &&
+            overSelect &&
             checkboxes.style.display === "block" &&
             !checkboxes.contains(e.target) &&
             !overSelect.contains(e.target)
