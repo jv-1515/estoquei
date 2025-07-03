@@ -302,5 +302,34 @@
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const valoresNum = [
+        "_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46",
+        "_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"
+    ];
+
+    // Seleciona só os individuais (não os 3 grupos)
+    document.querySelectorAll('.tamanho-multi-check').forEach(cb => {
+        if (
+            cb.id !== 'tamanho-multi-todas' &&
+            cb.id !== 'tamanho-multi-todas-letra' &&
+            cb.id !== 'tamanho-multi-todas-num'
+        ) {
+            cb.addEventListener('change', function() {
+                if (!cb.checked) {
+                    todas.checked = false;
+                    if (valoresLetra.includes(cb.value)) todasLetra.checked = false;
+                    if (valoresNum.includes(cb.value)) todasNum.checked = false;
+                }
+            });
+        }
+    });
+});
+    </script>
 </body>
 </html>
