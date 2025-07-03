@@ -91,10 +91,18 @@ window.addEventListener('DOMContentLoaded', function() {
         if (estaVisivel) {
             detalhesDiv.style.display = 'none';
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
+            // Ajuste visual quando desativado
+            btnExibirDetalhes.style.border = '1px solid #1e94a3';
+            btnExibirDetalhes.style.background = '#fff';
+            btnExibirDetalhes.style.color = '#1e94a3';
         } else {
             detalhesDiv.style.display = 'flex';
-            window.atualizarDetalhesInfo(produtos);
+            window.atualizarDetalhesEstoque(produtos);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+            // Volta ao visual padrão (ajuste conforme seu tema)
+            btnExibirDetalhes.style.border = '';
+            btnExibirDetalhes.style.background = '';
+            btnExibirDetalhes.style.color = '';
         }
     });
 });
@@ -507,24 +515,25 @@ window.onload = function() {
     filtrosAvancados.style.display = 'none';
 
     // Botão "Filtrar Produtos"
+    // Botão "Filtrar Produtos" inicia com fundo branco, borda e cor #1e94a3, ícone -circle-xmark
+    btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
+    btnFiltrarProdutos.style.border = '1px solid #1e94a3';
+    btnFiltrarProdutos.style.background = '#fff';
+    btnFiltrarProdutos.style.color = '#1e94a3';
+
     btnFiltrarProdutos.addEventListener('click', function() {
         if (filtrosAvancados.style.display === 'flex') {
-            // Oculta e limpa filtros
             filtrosAvancados.style.display = 'none';
-            btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter"></i> Filtros';
-
-            // Limpa todos os campos de filtro dentro de filtrosAvancados
-            filtrosAvancados.querySelectorAll('input, select').forEach(el => {
-                if (el.type === 'select-one') el.selectedIndex = 0;
-                else el.value = '';
-            });
-
-            // Atualiza a lista de produtos após limpar
-            filtrar();
-        } else {
-            // Mostra filtros avançados
-            filtrosAvancados.style.display = 'flex';
             btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
+            btnFiltrarProdutos.style.border = '1px solid #1e94a3';
+            btnFiltrarProdutos.style.background = '#fff';
+            btnFiltrarProdutos.style.color = '#1e94a3';
+        } else {
+            filtrosAvancados.style.display = 'flex';
+            btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter"></i> Filtros';
+            btnFiltrarProdutos.style.border = '';
+            btnFiltrarProdutos.style.background = '#1e94a3';
+            btnFiltrarProdutos.style.color = '#fff';
         }
     });
 
