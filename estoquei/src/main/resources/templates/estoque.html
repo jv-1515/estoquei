@@ -81,11 +81,41 @@
                 </label>
               </div>
             </div>
-            <div class="input-group">
-                <label for="filter-tamanho">Tamanhos</label>
-                <select id="filter-tamanho">
-                    <option value="" selected>Todos</option>
+            <div class="multiselect input-group">
+              <label for="filter-tamanho-multi">Tamanhos</label>
+              <div>
+                <select style="padding-left: 1px;">
+                  <option id="tamanho-multi-placeholder">Todos</option>
                 </select>
+                <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
+              </div>
+              <div id="checkboxes-tamanho-multi" style="display:none;">
+                <label><input type="checkbox" id="tamanho-multi-todas" class="tamanho-multi-check" value="" checked onclick="marcarOuDesmarcarTodosTamanhos()" /> Todos</label>
+                <label><input type="checkbox" id="tamanho-multi-todas-letra" class="tamanho-multi-check" value="LETRAS" /> Todos Letras</label>
+                <label><input type="checkbox" id="tamanho-multi-todas-num" class="tamanho-multi-check" value="NUMERICOS" /> Todos Numéricos</label>
+                <!-- Tamanhos letras -->
+                <label><input type="checkbox" class="tamanho-multi-check" value="ÚNICO" /> Único</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="PP" /> PP</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="P" /> P</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="M" /> M</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="G" /> G</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="GG" /> GG</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="XG" /> XG</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="XGG" /> XGG</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="XXG" /> XXG</label>
+                <!-- Tamanhos numéricos -->
+                <label><input type="checkbox" class="tamanho-multi-check" value="_36" /> 36</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_38" /> 38</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_40" /> 40</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_42" /> 42</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_44" /> 44</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_46" /> 46</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_48" /> 48</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_50" /> 50</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_52" /> 52</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_54" /> 54</label>
+                <label><input type="checkbox" class="tamanho-multi-check" value="_56" /> 56</label>
+              </div>
             </div>
             <div class="input-group">
                 <label for="filter-genero">Gêneros</label>
