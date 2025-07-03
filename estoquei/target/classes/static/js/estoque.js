@@ -11,7 +11,12 @@ function mascaraPreco(input) {
 }
 
 function updateOptions() {
-    const categoria = document.getElementById('filter-categoria').value;
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    // Pega todas as categorias marcadas (exceto "Todas")
+    let categorias = [];
+    if (!checks[0].checked) {
+        categorias = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+    }
     const tamanho = document.getElementById('filter-tamanho');
     const valorSelecionado = tamanho.value;
     const tamLetra = [
@@ -30,37 +35,43 @@ function updateOptions() {
         tamNumero.push(i);
     }
 
-    let options = '<option value="" selected>Todos</option>';
+    let tamanhos = new Set();
 
-    if (!categoria) {
-        tamLetra.forEach(t => {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        });
-        tamNumero.forEach(n => {
-            options += `<option value="_${n}">${n}</option>`;
-        });
+    if (categorias.length === 0) {
+        // Nenhuma categoria marcada ou "Todas" marcada: mostra todos os tamanhos
+        tamLetra.forEach(t => tamanhos.add(t.value));
+        tamNumero.forEach(n => tamanhos.add('_' + n));
     } else {
-        if (categoria === 'SAPATO' || categoria === 'MEIA') {
+        // Adiciona tamanhos de todas as categorias marcadas
+        if (categorias.some(cat => cat === 'SAPATO' || cat === 'MEIA')) {
             for (let i = 36; i <= 44; i++) {
-                options += `<option value="_${i}">${i}</option>`;
+                tamanhos.add('_' + i);
             }
-        } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
-            for (let i = 36; i <= 56; i += 2) {
-                options += `<option value="_${i}">${i}</option>`;
-            }
-        } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
-            tamLetra.forEach(t => {
-                options += `<option value="${t.value}">${t.label}</option>`;
-            });
-        } else {
-            tamLetra.forEach(t => {
-                options += `<option value="${t.value}">${t.label}</option>`;
-            });
-            tamNumero.forEach(n => {
-                options += `<option value="_${n}">${n}</option>`;
-            });
         }
+        if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'SHORTS')) {
+            for (let i = 36; i <= 56; i += 2) {
+                tamanhos.add('_' + i);
+            }
+        }
+        if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {
+            tamLetra.forEach(t => tamanhos.add(t.value));
+        }
+        // Se quiser adicionar outros casos, coloque aqui
     }
+
+    let options = '<option value="" selected>Todos</option>';
+    // Letras primeiro
+    tamLetra.forEach(t => {
+        if (tamanhos.has(t.value)) {
+            options += `<option value="${t.value}">${t.label}</option>`;
+        }
+    });
+    // Números depois
+    tamNumero.forEach(n => {
+        if (tamanhos.has('_' + n)) {
+            options += `<option value="_${n}">${n}</option>`;
+        }
+    });
 
     tamanho.innerHTML = options;
     tamanho.value = valorSelecionado;
@@ -68,7 +79,11 @@ function updateOptions() {
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
-    document.getElementById('filter-categoria').addEventListener('change', updateOptions);
+
+    // Atualiza tamanhos ao mudar qualquer checkbox de categoria
+    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+        cb.addEventListener('change', updateOptions);
+    });
 
     // Atualiza ao mudar qualquer select/input (exceto faixas)
     document.querySelectorAll('#filtros-avancados input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), #filtros-avancados select').forEach(el => {
@@ -107,7 +122,7 @@ function filtrar() {
             .map(cb => cb.value);
     }
 
-    let categoria = document.getElementById("filter-categoria").value;
+    // REMOVIDO: let categoria = document.getElementById("filter-categoria-multi").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
 
@@ -131,12 +146,9 @@ function filtrar() {
 
     // Filtro em memória
     let produtosFiltrados = produtos.filter(p => {
-        // Se há categorias selecionadas no multiselect, filtra por elas
+        // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
             if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
-        } else if (categoria) {
-            // Se não, filtra pelo select convencional
-            if ((p.categoria || '').toString().trim().toUpperCase() !== categoria.toUpperCase()) return false;
         }
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
@@ -941,4 +953,11 @@ function marcarOuDesmarcarTodasCategorias() {
         });
     }
     filtrar();
+}
+
+function getCategoriasSelecionadas() {
+    // Pega todos os checkboxes de categoria, exceto o "Todas"
+    return Array.from(document.querySelectorAll('.categoria-multi-check'))
+        .filter(cb => cb.id !== 'categoria-multi-todas' && cb.checked)
+        .map(cb => cb.value);
 }

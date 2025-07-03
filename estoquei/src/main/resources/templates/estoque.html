@@ -47,21 +47,8 @@
     <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; gap:8px; width:1200px;">
         <h2>Filtros Avançados</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
-            <div class="input-group">
-                <label for="filter-categoria">Categoria</label>
-                <select id="filter-categoria">
-                    <option value="" selected>Todas</option>
-                    <option value="CAMISA">Camisa</option>
-                    <option value="CAMISETA">Camiseta</option>
-                    <option value="BERMUDA">Bermuda</option>
-                    <option value="CALCA">Calça</option>
-                    <option value="SHORTS">Shorts</option>
-                    <option value="SAPATO">Sapato</option>
-                    <option value="MEIA">Meia</option>
-                </select>
-            </div>
             <div class="multiselect input-group">
-              <label for="filter-categoria-multi">Categoria</label>
+              <label for="filter-categoria-multi">Categorias</label>
               <div>
                 <select>
                   <option id="categoria-multi-placeholder">Todas</option>
@@ -95,13 +82,13 @@
               </div>
             </div>
             <div class="input-group">
-                <label for="filter-tamanho">Tamanho</label>
+                <label for="filter-tamanho">Tamanhos</label>
                 <select id="filter-tamanho">
                     <option value="" selected>Todos</option>
                 </select>
             </div>
             <div class="input-group">
-                <label for="filter-genero">Gênero</label>
+                <label for="filter-genero">Gêneros</label>
                 <select id="filter-genero">
                     <option value="" selected>Todos</option>
                     <option value="MASCULINO">Masculino</option>
@@ -110,7 +97,7 @@
                 </select>
             </div>
             <div class="input-group">
-                <label for="filter-quantidade">Quantidade</label>
+                <label for="filter-quantidade">Quantidades</label>
                 <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -126,7 +113,7 @@
                 </div>
             </div>
             <div class="input-group">
-                <label for="filter-limite">Limite Mínimo</label>
+                <label for="filter-limite">Limites Mínimo</label>
                 <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
                 <div id="limite-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -142,7 +129,7 @@
                 </div>
             </div>
             <div class="input-group">
-                <label for="filter-preco">Preço</label>
+                <label for="filter-preco">Preços</label>
                 <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
                 <div id="preco-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
