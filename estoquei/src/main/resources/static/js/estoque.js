@@ -1013,10 +1013,59 @@ function showCheckboxesTamanhoMulti() {
 
 function marcarOuDesmarcarTodosTamanhos() {
     const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
     const checks = document.querySelectorAll('.tamanho-multi-check');
     checks.forEach(cb => {
         cb.checked = todas.checked;
     });
+    // Atualiza "Todos Letras" e "Todos Numéricos" conforme o estado de "Todos"
+    todasLetra.checked = todas.checked;
+    todasNum.checked = todas.checked;
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+// Atualiza "Todos" se ambos "Todos Letras" e "Todos Numéricos" estiverem marcados
+function atualizarTodosTamanhosCheck() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    todas.checked = todasLetra.checked && todasNum.checked;
+}
+
+// Adiciona listeners para manter sincronização
+document.addEventListener('DOMContentLoaded', function() {
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    if (todasLetra && todasNum) {
+        todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
+        todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
+    }
+});
+
+function marcarOuDesmarcarLetras() {
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
+    });
+    const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
+    todasLetras.checked = checksLetra.every(cb => cb.checked);
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function marcarOuDesmarcarNumericos() {
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+    });
+    const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
+    todasNum.checked = checksNum.every(cb => cb.checked);
     atualizarPlaceholderTamanhoMulti();
     filtrar();
 }
