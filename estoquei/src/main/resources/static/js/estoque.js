@@ -44,7 +44,7 @@ function updateOptions() {
             for (let i = 36; i <= 44; i++) {
                 options += `<option value="_${i}">${i}</option>`;
             }
-        } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
+        } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
             for (let i = 36; i <= 56; i += 2) {
                 options += `<option value="_${i}">${i}</option>`;
             }
@@ -99,9 +99,7 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
-    // Pega todos os checkboxes marcados do multiselect
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    // Se "Todas" está marcada, ignora filtro de categoria
     let categoriasSelecionadas = [];
     if (!checks[0].checked) {
         categoriasSelecionadas = checks.slice(1)
