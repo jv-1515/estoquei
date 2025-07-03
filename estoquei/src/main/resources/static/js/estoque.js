@@ -866,16 +866,16 @@ function showCheckboxesCategoriaMulti() {
 // Fecha dropdown ao clicar fora
 document.addEventListener('mousedown', function(e) {
   var checkboxes = document.getElementById("checkboxes-categoria-multi");
-  var selectBox = document.querySelector('.multiselect .selectBox');
-  if (
-    window.expandedCategoriaMulti &&
-    checkboxes &&
-    !checkboxes.contains(e.target) &&
-    !selectBox.contains(e.target)
-  ) {
-    checkboxes.style.display = "none";
-    window.expandedCategoriaMulti = false;
-  }
+  var overSelect = document.querySelector('.multiselect .overSelect');  
+if (
+  window.expandedCategoriaMulti &&
+  checkboxes &&
+  !checkboxes.contains(e.target) &&
+  !overSelect.contains(e.target)
+) {
+  checkboxes.style.display = "none";
+  window.expandedCategoriaMulti = false;
+}
 });
 
 // Lógica de seleção "Todas" e integração com filtro
@@ -912,3 +912,19 @@ window.addEventListener('DOMContentLoaded', function() {
   };
 });
 
+function marcarOuDesmarcarTodasCategorias() {
+    const todas = document.getElementById('categoria-multi-todas');
+    const checks = document.querySelectorAll('.categoria-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
+        });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    filtrar();
+}
