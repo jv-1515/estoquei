@@ -79,10 +79,14 @@ function updateOptions() {
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
+});
+
 
     // Atualiza tamanhos ao mudar qualquer checkbox de categoria
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
         cb.addEventListener('change', updateOptions);
+    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
     });
 
     // Atualiza ao mudar qualquer select/input (exceto faixas)
@@ -926,11 +930,6 @@ window.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  function atualizarPlaceholderCategoriaMulti() {
-    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
-    placeholder.textContent = todas.checked || selecionados.length === 0 ? 'Todas' : selecionados.join(', ');
-  }
-
   // Função global para pegar categorias selecionadas do multiselect
   window.getCategoriasMultiSelecionadas = function() {
     if (todas.checked) return [];
@@ -960,4 +959,19 @@ function getCategoriasSelecionadas() {
     return Array.from(document.querySelectorAll('.categoria-multi-check'))
         .filter(cb => cb.id !== 'categoria-multi-todas' && cb.checked)
         .map(cb => cb.value);
+}
+
+function atualizarPlaceholderCategoriaMulti() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    const placeholder = document.getElementById('categoria-multi-placeholder');
+    const selecionados = checks.slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    if (todas.checked || selecionados.length === 0) {
+        placeholder.textContent = 'Todas';
+    } else {
+        placeholder.textContent = selecionados.join(', ');
+    }
 }
