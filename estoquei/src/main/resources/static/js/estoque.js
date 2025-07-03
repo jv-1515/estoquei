@@ -44,7 +44,7 @@ function updateOptions() {
             for (let i = 36; i <= 44; i++) {
                 options += `<option value="_${i}">${i}</option>`;
             }
-        } else if (categoria === 'BERMUDA' || categoria === 'CALCA' || categoria === 'SHORTS') {
+        } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
             for (let i = 36; i <= 56; i += 2) {
                 options += `<option value="_${i}">${i}</option>`;
             }
@@ -99,6 +99,14 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    let categoriasSelecionadas = [];
+    if (!checks[0].checked) {
+        categoriasSelecionadas = checks.slice(1)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+    }
+
     let categoria = document.getElementById("filter-categoria").value;
     let tamanho = document.getElementById("filter-tamanho").value;
     let genero = document.getElementById("filter-genero").value;
@@ -122,8 +130,14 @@ function filtrar() {
     if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
 
     // Filtro em memória
-    let filtrados = produtos.filter(p => {
-        if (categoria && p.categoria.toUpperCase() !== categoria.toUpperCase()) return false;
+    let produtosFiltrados = produtos.filter(p => {
+        // Se há categorias selecionadas no multiselect, filtra por elas
+        if (categoriasSelecionadas.length) {
+            if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
+        } else if (categoria) {
+            // Se não, filtra pelo select convencional
+            if ((p.categoria || '').toString().trim().toUpperCase() !== categoria.toUpperCase()) return false;
+        }
         if (tamanho && p.tamanho.toString().toUpperCase() !== tamanho.toUpperCase()) return false;
         if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
@@ -136,9 +150,9 @@ function filtrar() {
     });
 
     paginaAtual = 1;
-    renderizarProdutos(filtrados);
-    atualizarDetalhesInfo(filtrados);
-    window.atualizarDetalhesEstoque(filtrados);
+    renderizarProdutos(produtosFiltrados);
+    atualizarDetalhesInfo(produtosFiltrados);
+    window.atualizarDetalhesEstoque(produtosFiltrados);
 }    
 
 function limpar() {
@@ -823,21 +837,108 @@ function visualizarImagem(url, nome, descricao, codigo) {
 }
 
 function atualizarDetalhesInfo(produtos) {
-    fetch('/produtos')
-        .then(res => res.json())
-        .then(todosProdutos => {
-            const total = Array.isArray(todosProdutos)
-                ? todosProdutos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0)
-                : 0;
-            document.getElementById('detalhe-total-produtos').textContent = total;
-        })
-        .catch(() => {
-            document.getElementById('detalhe-total-produtos').textContent = 0;
-        });
+    // Soma a coluna quantidade dos produtos recebidos (filtrados)
+    const total = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+    document.getElementById('detalhe-total-produtos').textContent = total;
 
-    // Os demais detalhes continuam filtrados:
-    document.getElementById('detalhe-baixo-estoque').textContent =
-        produtos.filter(p => p.quantidade > 0 && p.quantidade <= p.limiteMinimo).length;
-    document.getElementById('detalhe-estoque-zerado').textContent =
-        produtos.filter(p => p.quantidade === 0).length;
+    // Baixo estoque: quantidade > 0 e <= limiteMinimo
+    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= Number(p.limiteMinimo))).length;
+    document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
+
+    // Estoque zerado: quantidade == 0
+    const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
+    document.getElementById('detalhe-estoque-zerado').textContent = zerados;
+}
+
+window.expandedCategoriaMulti = false;
+
+function showCheckboxesCategoriaMulti() {
+    var checkboxes = document.getElementById("checkboxes-categoria-multi");
+    if (!window.expandedCategoriaMulti) {
+        checkboxes.style.display = "block";
+        window.expandedCategoriaMulti = true;
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedCategoriaMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedCategoriaMulti = false;
+    }
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('mousedown', function(e) {
+  var checkboxes = document.getElementById("checkboxes-categoria-multi");
+  var overSelect = document.querySelector('.multiselect .overSelect');  
+if (
+  window.expandedCategoriaMulti &&
+  checkboxes &&
+  !checkboxes.contains(e.target) &&
+  !overSelect.contains(e.target)
+) {
+  checkboxes.style.display = "none";
+  window.expandedCategoriaMulti = false;
+}
+});
+
+// Lógica de seleção "Todas" e integração com filtro
+window.addEventListener('DOMContentLoaded', function() {
+  const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+  const todas = checks[0]; // O primeiro é "Todas"
+  const placeholder = document.getElementById('categoria-multi-placeholder');
+
+  // "Todas" marca/desmarca todos
+  todas.addEventListener('change', function() {
+    checks.forEach(cb => cb.checked = todas.checked);
+    atualizarPlaceholderCategoriaMulti();
+    filtrar();
+  });
+
+  // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
+  checks.slice(1).forEach(cb => {
+    cb.addEventListener('change', function() {
+      todas.checked = checks.slice(1).every(c => c.checked);
+      atualizarPlaceholderCategoriaMulti();
+      filtrar();
+    });
+  });
+
+  function atualizarPlaceholderCategoriaMulti() {
+    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    placeholder.textContent = todas.checked || selecionados.length === 0 ? 'Todas' : selecionados.join(', ');
+  }
+
+  // Função global para pegar categorias selecionadas do multiselect
+  window.getCategoriasMultiSelecionadas = function() {
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+  };
+});
+
+function marcarOuDesmarcarTodasCategorias() {
+    const todas = document.getElementById('categoria-multi-todas');
+    const checks = document.querySelectorAll('.categoria-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
+        });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    filtrar();
 }
