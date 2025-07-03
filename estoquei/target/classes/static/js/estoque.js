@@ -853,14 +853,28 @@ function atualizarDetalhesInfo(produtos) {
 window.expandedCategoriaMulti = false;
 
 function showCheckboxesCategoriaMulti() {
-  var checkboxes = document.getElementById("checkboxes-categoria-multi");
-  if (!window.expandedCategoriaMulti) {
-    checkboxes.style.display = "block";
-    window.expandedCategoriaMulti = true;
-  } else {
-    checkboxes.style.display = "none";
-    window.expandedCategoriaMulti = false;
-  }
+    var checkboxes = document.getElementById("checkboxes-categoria-multi");
+    if (!window.expandedCategoriaMulti) {
+        checkboxes.style.display = "block";
+        window.expandedCategoriaMulti = true;
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedCategoriaMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedCategoriaMulti = false;
+    }
 }
 
 // Fecha dropdown ao clicar fora
