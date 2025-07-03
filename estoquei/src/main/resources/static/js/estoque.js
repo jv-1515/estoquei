@@ -1154,3 +1154,31 @@ function getTamanhosSelecionados() {
     if (todas.checked) return [];
     return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
+
+// Controle de expansão do multiselect de tamanhos
+window.expandedTamanhoMulti = false;
+
+function showCheckboxesTamanhoMulti() {
+    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+    if (!window.expandedTamanhoMulti) {
+        checkboxes.style.display = "block";
+        window.expandedTamanhoMulti = true;
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedTamanhoMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedTamanhoMulti = false;
+    }
+}
