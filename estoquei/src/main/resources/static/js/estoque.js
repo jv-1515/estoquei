@@ -79,6 +79,24 @@ function updateOptions() {
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
+    
+    const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+
+    // Começa visível ou oculta conforme seu HTML
+    btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+
+    btnExibirDetalhes.addEventListener('click', function() {
+        const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
+        if (estaVisivel) {
+            detalhesDiv.style.display = 'none';
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
+        } else {
+            detalhesDiv.style.display = 'flex';
+            window.atualizarDetalhesInfo(produtos);
+            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+        }
+    });
 });
 
 
