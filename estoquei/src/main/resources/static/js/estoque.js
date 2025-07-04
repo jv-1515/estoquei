@@ -73,12 +73,13 @@ function updateOptions() {
     });
 
     tamanho.innerHTML = options;
-    // Mantém o valor selecionado se ainda existir, senão volta para "Todos"
     if ([...tamanhos].includes(valorSelecionado)) {
         tamanho.value = valorSelecionado;
     } else {
         tamanho.value = "";
     }
+    // Atualiza cor do select
+    tamanho.style.color = tamanho.value ? 'black' : '#757575';
 
     // Atualiza a DIV de tamanhos (checkboxes) conforme as categorias selecionadas
     const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
@@ -106,16 +107,29 @@ function updateOptions() {
 
         // Atualiza cada checkbox de tamanho
         checkboxesDiv.querySelectorAll('.tamanho-multi-check').forEach(cb => {
-            // Não mexe nos 3 grupos
-            if (
-                cb.id === 'tamanho-multi-todas' ||
-                cb.id === 'tamanho-multi-todas-letra' ||
-                cb.id === 'tamanho-multi-todas-num'
-            ) {
+            // Não mexe no "Todos"
+            if (cb.id === 'tamanho-multi-todas') {
                 cb.parentNode.style.display = '';
                 cb.disabled = false;
                 return;
             }
+            // "Todos Letras"
+            if (cb.id === 'tamanho-multi-todas-letra') {
+                const temLetra = [...tamanhosValidos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
+                cb.parentNode.style.display = temLetra ? '' : 'none';
+                cb.disabled = !temLetra;
+                if (!temLetra) cb.checked = false;
+                return;
+            }
+            // "Todos Numéricos"
+            if (cb.id === 'tamanho-multi-todas-num') {
+                const temNum = [...tamanhosValidos].some(v => /^_\d+$/.test(v));
+                cb.parentNode.style.display = temNum ? '' : 'none';
+                cb.disabled = !temNum;
+                if (!temNum) cb.checked = false;
+                return;
+            }
+            // Os demais
             if (tamanhosValidos.has(cb.value)) {
                 cb.parentNode.style.display = '';
                 cb.disabled = false;
