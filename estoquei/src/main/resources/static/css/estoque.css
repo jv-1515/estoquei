@@ -403,7 +403,8 @@ select#filter-genero {
   cursor: pointer;
 }
 #checkboxes-categoria-multi,
-#checkboxes-tamanho-multi {
+#checkboxes-tamanho-multi,
+#checkboxes-genero-multi {
     display: none;
     border: 1px #dadada solid;
     border-radius: 4px 0 0 4px;
@@ -415,9 +416,13 @@ select#filter-genero {
     max-height: 90px;
     overflow-y: auto;
 }
+#checkboxes-genero-multi {
+    border-radius: 4px;;
+}
 
 #checkboxes-categoria-multi label,
-#checkboxes-tamanho-multi label {
+#checkboxes-tamanho-multi label,
+#checkboxes-genero-multi label {
     display: flex;
     flex-direction: row-reverse; /* Inverte a ordem: checkbox à direita */
     align-items: center;
@@ -432,13 +437,15 @@ select#filter-genero {
 }
 
 #checkboxes-categoria-multi label:hover,
-#checkboxes-tamanho-multi label:hover {
+#checkboxes-tamanho-multi label:hover,
+#checkboxes-genero-multi label:hover {
     background-color: #f3f3f3;
     color: #fff;
 }
 
 #checkboxes-categoria-multi input[type="checkbox"],
-#checkboxes-tamanho-multi input[type="checkbox"] {
+#checkboxes-tamanho-multi input[type="checkbox"],
+#checkboxes-genero-multi input[type="checkbox"] {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
