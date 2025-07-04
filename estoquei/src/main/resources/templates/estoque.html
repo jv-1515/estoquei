@@ -91,14 +91,28 @@
               </div>
               <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
-            <div class="input-group">
-                <label for="filter-genero">Gêneros</label>
-                <select id="filter-genero">
-                    <option value="" selected>Todos</option>
-                    <option value="MASCULINO">Masculino</option>
-                    <option value="FEMININO">Feminino</option>
-                    <option value="UNISSEX">Unissex</option>
-                </select>
+            <div class="multiselect input-group">
+                <label for="filter-genero-multi">Gêneros</label>
+                <div>
+                    <select style="padding-left: 1px;">
+                        <option id="genero-multi-placeholder">Todos</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
+                </div>
+                <div id="checkboxes-genero-multi" style="display:none;">
+                    <label>
+                        <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
+                    </label>
+                </div>
             </div>
             <div class="input-group">
                 <label for="filter-quantidade">Quantidades</label>

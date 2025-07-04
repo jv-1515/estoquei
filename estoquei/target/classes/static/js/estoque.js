@@ -318,7 +318,7 @@ function filtrar() {
     }
 
     let tamanhosSelecionados = getTamanhosSelecionados();
-    let genero = document.getElementById("filter-genero").value;
+    let generosSelecionados = getGenerosSelecionados();
 
     // Faixas
     let qtdMinVal = document.getElementById("quantidade-min").value;
@@ -345,7 +345,7 @@ function filtrar() {
             if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
         }
         if (tamanhosSelecionados.length > 0 && !tamanhosSelecionados.includes(p.tamanho.toString().toUpperCase())) return false;
-        if (genero && p.genero.toString().toUpperCase() !== genero.toUpperCase()) return false;
+        if (generosSelecionados.length > 0 && !generosSelecionados.includes(p.genero.toString().toUpperCase())) return false;
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
         if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
         if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
@@ -1347,4 +1347,83 @@ function showCheckboxesTamanhoMulti() {
         checkboxes.style.display = "none";
         window.expandedTamanhoMulti = false;
     }
+}
+
+// Placeholder dinâmico do gênero
+function atualizarPlaceholderGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    const placeholder = document.getElementById('genero-multi-placeholder');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+
+    if (todas.checked || selecionados.length === individuais.length) {
+        placeholder.textContent = 'Todos';
+    } else if (selecionados.length === 0) {
+        placeholder.textContent = 'Nenhum';
+    } else {
+        placeholder.textContent = selecionados.join(', ');
+    }
+}
+
+// Lógica de seleção "Todos"
+function marcarOuDesmarcarTodosGeneros() {
+    const todas = document.getElementById('genero-multi-todos');
+    const checks = document.querySelectorAll('.genero-multi-check');
+    checks.forEach(cb => cb.checked = todas.checked);
+    atualizarPlaceholderGeneroMulti();
+    filtrar();
+}
+
+// Sincroniza "Todos" com os individuais
+document.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            // Se algum for desmarcado, desmarca "Todos"
+            if (!cb.checked) {
+                todas.checked = false;
+            } else {
+                // Se todos individuais estiverem marcados, marca "Todos"
+                todas.checked = checks.slice(1).every(c => c.checked);
+            }
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    });
+    // Também chama ao carregar
+    atualizarPlaceholderGeneroMulti();
+});
+
+// Mostra/esconde o multiselect
+function showCheckboxesGeneroMulti() {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    if (!window.expandedGeneroMulti) {
+        checkboxes.style.display = "block";
+        window.expandedGeneroMulti = true;
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedGeneroMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedGeneroMulti = false;
+    }
+}
+
+// Função para pegar gêneros selecionados
+function getGenerosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
