@@ -10,12 +10,45 @@ function mascaraPreco(input) {
     }
 }
 
+function gerarCheckboxesTamanhoMulti(tamanhosValidos, categoriasSelecionadas) {
+    const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
+    checkboxesDiv.innerHTML = '';
+
+    // Só mostra "Todos" se NENHUMA categoria estiver selecionada
+    if (categoriasSelecionadas.length === 0) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas" class="tamanho-multi-check" value="" checked> Todos</label>`;
+    }
+
+    // "Todos em Letras"
+    if ([...tamanhosValidos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v))) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas-letra" class="tamanho-multi-check" value="LETRAS" checked> Todos em Letras</label>`;
+    }
+    // "Todos Numéricos"
+    if ([...tamanhosValidos].some(v => /^_\d+$/.test(v))) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas-num" class="tamanho-multi-check" value="NUMERICOS" checked> Todos Numéricos</label>`;
+    }
+
+    // Letras
+    const letras = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    letras.forEach(val => {
+        if (tamanhosValidos.has(val)) {
+            checkboxesDiv.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${val}" checked> ${val === 'ÚNICO' ? 'Único' : val}</label>`;
+        }
+    });
+    // Números
+    for (let i = 36; i <= 56; i++) {
+        const val = '_' + i;
+        if (tamanhosValidos.has(val)) {
+            checkboxesDiv.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${val}" checked> ${i}</label>`;
+        }
+    }
+}
+
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    // Pega todas as categorias marcadas (exceto "Todas")
     let categorias = [];
     if (!checks[0].checked) {
-        categorias = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+        categorias = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toUpperCase());
     }
     const tamanho = document.getElementById('filter-tamanho');
     const valorSelecionado = tamanho.value;
@@ -31,116 +64,166 @@ function updateOptions() {
         { value: 'XXG', label: 'XXG' }
     ];
     const tamNumero = [];
-    for (let i = 36; i <= 56; i++) {
-        tamNumero.push(i);
-    }
+    for (let i = 36; i <= 56; i++) tamNumero.push(i);
 
     let tamanhos = new Set();
-
     if (categorias.length === 0) {
-        // Nenhuma categoria marcada ou "Todas" marcada: mostra todos os tamanhos
         tamLetra.forEach(t => tamanhos.add(t.value));
         tamNumero.forEach(n => tamanhos.add('_' + n));
     } else {
-        // Adiciona tamanhos de todas as categorias marcadas
         if (categorias.some(cat => cat === 'SAPATO' || cat === 'MEIA')) {
-            for (let i = 36; i <= 44; i++) {
-                tamanhos.add('_' + i);
-            }
+            for (let i = 36; i <= 44; i++) tamanhos.add('_' + i);
         }
         if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'SHORTS')) {
-            for (let i = 36; i <= 56; i += 2) {
-                tamanhos.add('_' + i);
-            }
+            for (let i = 36; i <= 56; i += 2) tamanhos.add('_' + i);
         }
         if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {
             tamLetra.forEach(t => tamanhos.add(t.value));
         }
     }
 
-    let options = '<option value="" selected>Todos</option>';
-    // Letras primeiro
+    // Atualiza o select de tamanho
+    let options = '';
+    // Só adiciona a option "Todos" se NENHUMA categoria estiver selecionada
+    if (categorias.length === 0) {
+        options += `<option id="tamanho-multi-placeholder" value="">Todos</option>`;
+    } else {
+        options += `<option id="tamanho-multi-placeholder" value="" style="display:none"></option>`;
+    }
     tamLetra.forEach(t => {
-        if (tamanhos.has(t.value)) {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        }
+        if (tamanhos.has(t.value)) options += `<option value="${t.value}">${t.label}</option>`;
     });
-    // Números depois
     tamNumero.forEach(n => {
-        if (tamanhos.has('_' + n)) {
-            options += `<option value="_${n}">${n}</option>`;
-        }
+        if (tamanhos.has('_' + n)) options += `<option value="_${n}">${n}</option>`;
     });
-
     tamanho.innerHTML = options;
     if ([...tamanhos].includes(valorSelecionado)) {
         tamanho.value = valorSelecionado;
     } else {
-        tamanho.value = "";
+        tamanho.selectedIndex = 0;
     }
-    // Atualiza cor do select
     tamanho.style.color = tamanho.value ? 'black' : '#757575';
 
-    // Atualiza a DIV de tamanhos (checkboxes) conforme as categorias selecionadas
-    const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
-    if (checkboxesDiv) {
-        // Lista de valores válidos para tamanhos conforme as categorias selecionadas
-        let tamanhosValidos = new Set();
-        if (categorias.length === 0) {
-            tamLetra.forEach(t => tamanhosValidos.add(t.value));
-            tamNumero.forEach(n => tamanhosValidos.add('_' + n));
-        } else {
-            if (categorias.some(cat => cat.toUpperCase() === 'SAPATO' || cat.toUpperCase() === 'MEIA')) {
-                for (let i = 36; i <= 44; i++) {
-                    tamanhosValidos.add('_' + i);
-                }
-            }
-            if (categorias.some(cat => cat.toUpperCase() === 'BERMUDA' || cat.toUpperCase() === 'CALÇA' || cat.toUpperCase() === 'SHORTS')) {
-                for (let i = 36; i <= 56; i += 2) {
-                    tamanhosValidos.add('_' + i);
-                }
-            }
-            if (categorias.some(cat => cat.toUpperCase() === 'CAMISA' || cat.toUpperCase() === 'CAMISETA')) {
-                tamLetra.forEach(t => tamanhosValidos.add(t.value));
-            }
-        }
+    // Atualiza a DIV de tamanhos dinamicamente
+    gerarCheckboxesTamanhoMulti(tamanhos, categorias);
 
-        // Atualiza cada checkbox de tamanho
-        checkboxesDiv.querySelectorAll('.tamanho-multi-check').forEach(cb => {
-            // Não mexe no "Todos"
-            if (cb.id === 'tamanho-multi-todas') {
-                cb.parentNode.style.display = '';
-                cb.disabled = false;
-                return;
-            }
-            // "Todos Letras"
-            if (cb.id === 'tamanho-multi-todas-letra') {
-                const temLetra = [...tamanhosValidos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
-                cb.parentNode.style.display = temLetra ? '' : 'none';
-                cb.disabled = !temLetra;
-                if (!temLetra) cb.checked = false;
-                return;
-            }
-            // "Todos Numéricos"
-            if (cb.id === 'tamanho-multi-todas-num') {
-                const temNum = [...tamanhosValidos].some(v => /^_\d+$/.test(v));
-                cb.parentNode.style.display = temNum ? '' : 'none';
-                cb.disabled = !temNum;
-                if (!temNum) cb.checked = false;
-                return;
-            }
-            // Os demais
-            if (tamanhosValidos.has(cb.value)) {
-                cb.parentNode.style.display = '';
-                cb.disabled = false;
-            } else {
-                cb.checked = false;
-                cb.parentNode.style.display = 'none';
-                cb.disabled = true;
-            }
+    // Adiciona listeners e lógica dos checkboxes de tamanho
+    aplicarListenersTamanhoMulti();
+
+    // Atualiza placeholder visual e do select
+    atualizarPlaceholderTamanhoMulti();
+}
+
+function aplicarListenersTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const valoresNum = [];
+    for (let i = 36; i <= 56; i++) valoresNum.push('_' + i);
+
+    // "Todos"
+    if (todas) {
+        todas.addEventListener('change', function() {
+            checks.forEach(cb => cb.checked = todas.checked);
+            if (todasLetra) todasLetra.checked = todas.checked;
+            if (todasNum) todasNum.checked = todas.checked;
+            atualizarPlaceholderTamanhoMulti();
+            filtrar();
         });
-        atualizarPlaceholderTamanhoMulti();
     }
+    // "Todos Letras"
+    if (todasLetra) {
+        todasLetra.addEventListener('change', function() {
+            checks.forEach(cb => {
+                if (valoresLetra.includes(cb.value)) cb.checked = todasLetra.checked;
+            });
+            todasLetra.checked = checks.filter(cb => valoresLetra.includes(cb.value)).every(cb => cb.checked);
+            if (todasNum) todas.checked = todasLetra.checked && todasNum.checked;
+            atualizarPlaceholderTamanhoMulti();
+            filtrar();
+        });
+    }
+    // "Todos Numéricos"
+    if (todasNum) {
+        todasNum.addEventListener('change', function() {
+            checks.forEach(cb => {
+                if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+            });
+            todasNum.checked = checks.filter(cb => valoresNum.includes(cb.value)).every(cb => cb.checked);
+            if (todasLetra) todas.checked = todasLetra.checked && todasNum.checked;
+            atualizarPlaceholderTamanhoMulti();
+            filtrar();
+        });
+    }
+    // Individuais
+    checks.forEach(cb => {
+        if (
+            cb.id !== 'tamanho-multi-todas' &&
+            cb.id !== 'tamanho-multi-todas-letra' &&
+            cb.id !== 'tamanho-multi-todas-num'
+        ) {
+            cb.addEventListener('change', function() {
+                if (!cb.checked) {
+                    if (todas) todas.checked = false;
+                    if (valoresLetra.includes(cb.value) && todasLetra) todasLetra.checked = false;
+                    if (valoresNum.includes(cb.value) && todasNum) todasNum.checked = false;
+                } else {
+                    if (valoresLetra.includes(cb.value) && todasLetra)
+                        todasLetra.checked = checks.filter(c => valoresLetra.includes(c.value)).every(c => c.checked);
+                    if (valoresNum.includes(cb.value) && todasNum)
+                        todasNum.checked = checks.filter(c => valoresNum.includes(c.value)).every(c => c.checked);
+                    if (todas)
+                        todas.checked = checks.filter(c =>
+                            c.id !== 'tamanho-multi-todas' &&
+                            c.id !== 'tamanho-multi-todas-letra' &&
+                            c.id !== 'tamanho-multi-todas-num'
+                        ).every(c => c.checked);
+                }
+                atualizarPlaceholderTamanhoMulti();
+                filtrar();
+            });
+        }
+    });
+}
+
+function atualizarPlaceholderTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const select = document.getElementById('filter-tamanho');
+    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+
+    // Só conta os tamanhos individuais visíveis (não os grupos)
+    const individuaisVisiveis = checks.filter(cb =>
+        cb.offsetParent !== null &&
+        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+    );
+    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    let texto = 'Todos';
+    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+        // Se só tem letras visíveis, mostra "Todos em Letras"
+        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+            texto = 'Todos em Letras';
+        }
+        // Se só tem números visíveis, mostra "Todos Numéricos"
+        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+            texto = 'Todos Numéricos';
+        }
+        // Se tem ambos, mostra "Todos"
+        else {
+            texto = 'Todos';
+        }
+    } else {
+        texto = selecionados.join(', ');
+    }
+    // Atualiza o texto da option placeholder
+    if (placeholderOption) placeholderOption.textContent = texto;
+    // Garante que a option placeholder está selecionada visualmente
+    select.selectedIndex = 0;
+    // Atualiza cor do select
+    select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Atualiza tamanhos ao mudar qualquer checkbox de categoria
@@ -1161,67 +1244,41 @@ function marcarOuDesmarcarNumericos() {
 
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const todas = checks[0];
-    const placeholder = document.getElementById('tamanho-multi-placeholder');
-    const selecionados = checks.slice(1)
-        .filter(cb => cb.checked)
+    const select = document.getElementById('filter-tamanho');
+    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+
+    // Só conta os tamanhos individuais visíveis (não os grupos)
+    const individuaisVisiveis = checks.filter(cb =>
+        cb.offsetParent !== null &&
+        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+    );
+    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
 
-    if (todas.checked || selecionados.length === 0) {
-        placeholder.textContent = 'Todos';
-    } else {
-        placeholder.textContent = selecionados.join(', ');
-    }
-}
-
-// Lógica para "Todos Letras" e "Todos Numéricos"
-document.addEventListener('DOMContentLoaded', function() {
-    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const todas = document.getElementById('tamanho-multi-todas');
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const checksLetra = checks.filter(cb => ["PP","P","M","G","GG","XG","XGG","XXG","ÚNICO"].includes(cb.value));
-    const checksNum = checks.filter(cb => /^_\d+$/.test(cb.value));
-
-    todasLetra.addEventListener('change', function() {
-        checksLetra.forEach(cb => cb.checked = todasLetra.checked);
-        atualizarPlaceholderTamanhoMulti();
-        filtrar();
-    });
-
-    todasNum.addEventListener('change', function() {
-        checksNum.forEach(cb => cb.checked = todasNum.checked);
-        atualizarPlaceholderTamanhoMulti();
-        filtrar();
-    });
-
-    checks.slice(3).forEach(cb => {
-        cb.addEventListener('change', function() {
-            todasLetra.checked = checksLetra.every(c => c.checked);
-            todasNum.checked = checksNum.every(c => c.checked);
-            todas.checked = checks.slice(1).every(c => c.checked);
-            atualizarPlaceholderTamanhoMulti();
-            filtrar();
-        });
-    });
-
-    // Fecha dropdown ao clicar fora
-    document.addEventListener('mousedown', function(e) {
-        const checkboxes = document.getElementById("checkboxes-tamanho-multi");
-        const overSelect = document.querySelector('.multiselect .overSelect');
-        if (
-            checkboxes &&
-            overSelect &&
-            checkboxes.style.display === "block" &&
-            !checkboxes.contains(e.target) &&
-            !overSelect.contains(e.target)
-        ) {
-            checkboxes.style.display = "none";
+    let texto = 'Todos';
+    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+        // Se só tem letras visíveis, mostra "Todos em Letras"
+        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+            texto = 'Todos em Letras';
         }
-    });
-
-    atualizarPlaceholderTamanhoMulti();
-});
+        // Se só tem números visíveis, mostra "Todos Numéricos"
+        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+            texto = 'Todos Numéricos';
+        }
+        // Se tem ambos, mostra "Todos"
+        else {
+            texto = 'Todos';
+        }
+    } else {
+        texto = selecionados.join(', ');
+    }
+    // Atualiza o texto da option placeholder
+    if (placeholderOption) placeholderOption.textContent = texto;
+    // Garante que a option placeholder está selecionada visualmente
+    select.selectedIndex = 0;
+    // Atualiza cor do select
+    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+}
 
 // Função para pegar tamanhos selecionados
 function getTamanhosSelecionados() {
