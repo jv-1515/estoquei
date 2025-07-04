@@ -36,34 +36,21 @@
                 </span>
                 <div id="busca-sugestoes"></div>
             </div>
+            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
+                <i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Filtros
+            </button>
             <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
                 <i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes
-            </button>
-            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
-                <i class="fa-solid fa-filter" style="margin-right:4px;"></i>Filtros
             </button>
         </div>
     </div>
     <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; gap:8px; width:1200px;">
         <h2>Filtros Avançados</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
-            <div class="input-group">
-                <label for="filter-categoria">Categoria</label>
-                <select id="filter-categoria">
-                    <option value="" selected>Todas</option>
-                    <option value="CAMISA">Camisa</option>
-                    <option value="CAMISETA">Camiseta</option>
-                    <option value="BERMUDA">Bermuda</option>
-                    <option value="CALCA">Calça</option>
-                    <option value="SHORTS">Shorts</option>
-                    <option value="SAPATO">Sapato</option>
-                    <option value="MEIA">Meia</option>
-                </select>
-            </div>
             <div class="multiselect input-group">
-              <label for="filter-categoria-multi">Categoria</label>
+              <label for="filter-categoria-multi">Categorias</label>
               <div>
-                <select>
+                <select style="padding-left: 1px;">
                   <option id="categoria-multi-placeholder">Todas</option>
                 </select>
                 <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
@@ -94,23 +81,41 @@
                 </label>
               </div>
             </div>
-            <div class="input-group">
-                <label for="filter-tamanho">Tamanho</label>
-                <select id="filter-tamanho">
-                    <option value="" selected>Todos</option>
+            <div class="multiselect input-group">
+              <label for="filter-tamanho-multi">Tamanhos</label>
+              <div>
+                <select id="filter-tamanho" style="padding-left: 1px;">
+                  <option id="tamanho-multi-placeholder">Todos</option>
                 </select>
+                <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
+              </div>
+              <div id="checkboxes-tamanho-multi" style="display:none;"></div>
+            </div>
+            <div class="multiselect input-group">
+                <label for="filter-genero-multi">Gêneros</label>
+                <div>
+                    <select style="padding-left: 1px;">
+                        <option id="genero-multi-placeholder">Todos</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
+                </div>
+                <div id="checkboxes-genero-multi" style="display:none;">
+                    <label>
+                        <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
+                    </label>
+                </div>
             </div>
             <div class="input-group">
-                <label for="filter-genero">Gênero</label>
-                <select id="filter-genero">
-                    <option value="" selected>Todos</option>
-                    <option value="MASCULINO">Masculino</option>
-                    <option value="FEMININO">Feminino</option>
-                    <option value="UNISSEX">Unissex</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="filter-quantidade">Quantidade</label>
+                <label for="filter-quantidade">Quantidades</label>
                 <input type="text" id="filter-quantidade" placeholder="0 - 999" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -126,7 +131,7 @@
                 </div>
             </div>
             <div class="input-group">
-                <label for="filter-limite">Limite Mínimo</label>
+                <label for="filter-limite">Limites Mínimo</label>
                 <input type="text" id="filter-limite" placeholder="1 - 999" readonly style="cursor:pointer;" />
                 <div id="limite-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -142,7 +147,7 @@
                 </div>
             </div>
             <div class="input-group">
-                <label for="filter-preco">Preço</label>
+                <label for="filter-preco">Preços</label>
                 <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
                 <div id="preco-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
@@ -191,7 +196,7 @@
     <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: row; gap: 10px;">
         <!-- Gráfico Categoria -->
         <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
-            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Categorias</span>
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
                 <canvas id="grafico-categoria" width="130" height="130"></canvas>
                 <ul id="lista-categorias"
@@ -203,7 +208,7 @@
         </div>
         <!-- Gráfico Tamanhos (Numéricos + Letras juntos) -->
         <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
-            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Tamanhos</span>
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Tamanhos</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
                 <canvas id="grafico-tamanhos" width="130" height="130"></canvas>
                 <ul id="lista-tamanhos"
@@ -214,7 +219,7 @@
         </div>
         <!-- Gráfico Gênero -->
         <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 140px;">
-            <span style="font-size:12px; font-weight:bold; color:#333; text-align:left; margin-bottom:4px;">Gênero</span>
+            <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Gênero</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
                 <canvas id="grafico-genero" width="130" height="130"></canvas>
                 <ul id="lista-genero"
@@ -275,5 +280,35 @@
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
+    <!-- <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const valoresNum = [
+        "_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46",
+        "_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"
+    ];
+
+    // Seleciona só os individuais (não os 3 grupos)
+    document.querySelectorAll('.tamanho-multi-check').forEach(cb => {
+        if (
+            cb.id !== 'tamanho-multi-todas' &&
+            cb.id !== 'tamanho-multi-todas-letra' &&
+            cb.id !== 'tamanho-multi-todas-num'
+        ) {
+            cb.addEventListener('change', function() {
+                if (!cb.checked) {
+                    todas.checked = false;
+                    if (valoresLetra.includes(cb.value)) todasLetra.checked = false;
+                    if (valoresNum.includes(cb.value)) todasNum.checked = false;
+                }
+                atualizarPlaceholderTamanhoMulti();
+            });
+        }
+    });
+});
+    </script> -->
 </body>
 </html>
