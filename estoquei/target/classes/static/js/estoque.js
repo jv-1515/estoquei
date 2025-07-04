@@ -10,21 +10,23 @@ function mascaraPreco(input) {
     }
 }
 
-function gerarCheckboxesTamanhoMulti(tamanhosValidos, categoriasSelecionadas) {
+function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
     const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
     checkboxesDiv.innerHTML = '';
 
-    // Só mostra "Todos" se NENHUMA categoria estiver selecionada
-    if (categoriasSelecionadas.length === 0) {
+    const temLetra = [...tamanhosValidos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
+    const temNum = [...tamanhosValidos].some(v => /^_\d+$/.test(v));
+
+    // "Todos" só aparece se tem letras E números
+    if (temLetra && temNum) {
         checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas" class="tamanho-multi-check" value="" checked> Todos</label>`;
     }
-
     // "Todos em Letras"
-    if ([...tamanhosValidos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v))) {
+    if (temLetra) {
         checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas-letra" class="tamanho-multi-check" value="LETRAS" checked> Todos em Letras</label>`;
     }
     // "Todos Numéricos"
-    if ([...tamanhosValidos].some(v => /^_\d+$/.test(v))) {
+    if (temNum) {
         checkboxesDiv.innerHTML += `<label><input type="checkbox" id="tamanho-multi-todas-num" class="tamanho-multi-check" value="NUMERICOS" checked> Todos Numéricos</label>`;
     }
 
@@ -84,11 +86,16 @@ function updateOptions() {
 
     // Atualiza o select de tamanho
     let options = '';
-    // Só adiciona a option "Todos" se NENHUMA categoria estiver selecionada
-    if (categorias.length === 0) {
+    const temLetra = [...tamanhos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
+    const temNum = [...tamanhos].some(v => /^_\d+$/.test(v));
+
+    // "Todos" só aparece se tem letras E números
+    if (temLetra && temNum) {
         options += `<option id="tamanho-multi-placeholder" value="">Todos</option>`;
-    } else {
-        options += `<option id="tamanho-multi-placeholder" value="" style="display:none"></option>`;
+    } else if (temLetra) {
+        options += `<option id="tamanho-multi-placeholder" value="">Todos em Letras</option>`;
+    } else if (temNum) {
+        options += `<option id="tamanho-multi-placeholder" value="">Todos Numéricos</option>`;
     }
     tamLetra.forEach(t => {
         if (tamanhos.has(t.value)) options += `<option value="${t.value}">${t.label}</option>`;
@@ -195,7 +202,6 @@ function atualizarPlaceholderTamanhoMulti() {
 
     // Só conta os tamanhos individuais visíveis (não os grupos)
     const individuaisVisiveis = checks.filter(cb =>
-        cb.offsetParent !== null &&
         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
     );
     const selecionados = individuaisVisiveis.filter(cb => cb.checked)
@@ -1069,12 +1075,18 @@ function showCheckboxesCategoriaMulti() {
                 checkboxes.style.display = "none";
                 window.expandedCategoriaMulti = false;
                 document.removeEventListener('mousedown', handleClickOutside);
+
+                // ATUALIZA O PLACEHOLDER DOS TAMANHOS AO FECHAR O SELECT DE CATEGORIAS
+                atualizarPlaceholderTamanhoMulti();
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
     } else {
         checkboxes.style.display = "none";
         window.expandedCategoriaMulti = false;
+
+        // ATUALIZA O PLACEHOLDER DOS TAMANHOS AO FECHAR O SELECT DE CATEGORIAS
+        atualizarPlaceholderTamanhoMulti();
     }
 }
 
@@ -1163,10 +1175,29 @@ function atualizarPlaceholderCategoriaMulti() {
 
 function showCheckboxesTamanhoMulti() {
     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-    if (checkboxes.style.display === "block") {
-        checkboxes.style.display = "none";
-    } else {
+    if (!window.expandedTamanhoMulti) {
         checkboxes.style.display = "block";
+        window.expandedTamanhoMulti = true;
+
+        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
+        atualizarPlaceholderTamanhoMulti();
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedTamanhoMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedTamanhoMulti = false;
     }
 }
 
@@ -1249,7 +1280,6 @@ function atualizarPlaceholderTamanhoMulti() {
 
     // Só conta os tamanhos individuais visíveis (não os grupos)
     const individuaisVisiveis = checks.filter(cb =>
-        cb.offsetParent !== null &&
         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
     );
     const selecionados = individuaisVisiveis.filter(cb => cb.checked)
@@ -1296,6 +1326,9 @@ function showCheckboxesTamanhoMulti() {
     if (!window.expandedTamanhoMulti) {
         checkboxes.style.display = "block";
         window.expandedTamanhoMulti = true;
+
+        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
+        atualizarPlaceholderTamanhoMulti();
 
         // Fecha ao clicar fora
         function handleClickOutside(e) {
