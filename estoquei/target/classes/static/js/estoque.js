@@ -56,7 +56,6 @@ function updateOptions() {
         if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {
             tamLetra.forEach(t => tamanhos.add(t.value));
         }
-        // Se quiser adicionar outros casos, coloque aqui
     }
 
     let options = '<option value="" selected>Todos</option>';
@@ -74,8 +73,71 @@ function updateOptions() {
     });
 
     tamanho.innerHTML = options;
-    tamanho.value = valorSelecionado;
+    // Mantém o valor selecionado se ainda existir, senão volta para "Todos"
+    if ([...tamanhos].includes(valorSelecionado)) {
+        tamanho.value = valorSelecionado;
+    } else {
+        tamanho.value = "";
+    }
+
+    // Atualiza a DIV de tamanhos (checkboxes) conforme as categorias selecionadas
+    const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
+    if (checkboxesDiv) {
+        // Lista de valores válidos para tamanhos conforme as categorias selecionadas
+        let tamanhosValidos = new Set();
+        if (categorias.length === 0) {
+            tamLetra.forEach(t => tamanhosValidos.add(t.value));
+            tamNumero.forEach(n => tamanhosValidos.add('_' + n));
+        } else {
+            if (categorias.some(cat => cat.toUpperCase() === 'SAPATO' || cat.toUpperCase() === 'MEIA')) {
+                for (let i = 36; i <= 44; i++) {
+                    tamanhosValidos.add('_' + i);
+                }
+            }
+            if (categorias.some(cat => cat.toUpperCase() === 'BERMUDA' || cat.toUpperCase() === 'CALÇA' || cat.toUpperCase() === 'SHORTS')) {
+                for (let i = 36; i <= 56; i += 2) {
+                    tamanhosValidos.add('_' + i);
+                }
+            }
+            if (categorias.some(cat => cat.toUpperCase() === 'CAMISA' || cat.toUpperCase() === 'CAMISETA')) {
+                tamLetra.forEach(t => tamanhosValidos.add(t.value));
+            }
+        }
+
+        // Atualiza cada checkbox de tamanho
+        checkboxesDiv.querySelectorAll('.tamanho-multi-check').forEach(cb => {
+            // Não mexe nos 3 grupos
+            if (
+                cb.id === 'tamanho-multi-todas' ||
+                cb.id === 'tamanho-multi-todas-letra' ||
+                cb.id === 'tamanho-multi-todas-num'
+            ) {
+                cb.parentNode.style.display = '';
+                cb.disabled = false;
+                return;
+            }
+            if (tamanhosValidos.has(cb.value)) {
+                cb.parentNode.style.display = '';
+                cb.disabled = false;
+            } else {
+                cb.checked = false;
+                cb.parentNode.style.display = 'none';
+                cb.disabled = true;
+            }
+        });
+        atualizarPlaceholderTamanhoMulti();
+    }
 }
+
+// Atualiza tamanhos ao mudar qualquer checkbox de categoria
+document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+    cb.addEventListener('change', updateOptions);
+});
+
+// Atualiza ao carregar a página
+window.addEventListener('DOMContentLoaded', function() {
+    updateOptions();
+});
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
