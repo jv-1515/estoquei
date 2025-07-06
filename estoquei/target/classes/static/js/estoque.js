@@ -1172,8 +1172,6 @@ function atualizarPlaceholderCategoriaMulti() {
     } else {
         placeholder.textContent = selecionados.join(', ');
     }
-
-    
 }
 
 function showCheckboxesTamanhoMulti() {
@@ -1378,26 +1376,28 @@ function marcarOuDesmarcarTodosGeneros() {
 }
 
 // Sincroniza "Todos" com os individuais
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
+
+    // "Todos" marca/desmarca todos
+    todas.addEventListener('change', function() {
+        checks.forEach(cb => cb.checked = todas.checked);
+        atualizarPlaceholderGeneroMulti();
+        filtrar();
+    });
+
+    // Se todos individuais marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
     checks.slice(1).forEach(cb => {
         cb.addEventListener('change', function() {
-            // Se algum for desmarcado, desmarca "Todos"
-            if (!cb.checked) {
-                todas.checked = false;
-            } else {
-                // Se todos individuais estiverem marcados, marca "Todos"
-                todas.checked = checks.slice(1).every(c => c.checked);
-            }
+            todas.checked = checks.slice(1).every(c => c.checked);
             atualizarPlaceholderGeneroMulti();
             filtrar();
         });
     });
-    // Também chama ao carregar
+
     atualizarPlaceholderGeneroMulti();
 });
-
 // Mostra/esconde o multiselect
 function showCheckboxesGeneroMulti() {
     var checkboxes = document.getElementById("checkboxes-genero-multi");
@@ -1424,8 +1424,7 @@ function showCheckboxesGeneroMulti() {
 
 // Função para pegar gêneros selecionados
 function getGenerosSelecionados() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    if (todas.checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+    return Array.from(document.querySelectorAll('.genero-multi-check'))
+        .filter(cb => cb.id !== 'genero-multi-todos' && cb.checked)
+        .map(cb => cb.value);
 }
