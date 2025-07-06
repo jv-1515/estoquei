@@ -780,7 +780,7 @@ window.onload = function() {
 
 }
 
-// --- PREÇO FAIXA SEM SETINHAS ---
+// --- PREÇO FAIXA ---
 const precoInput = document.getElementById('filter-preco');
 const precoPopup = document.getElementById('preco-faixa-popup');
 const precoMin = document.getElementById('preco-min');
@@ -803,6 +803,7 @@ precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
 
 precoInput.addEventListener('click', function(e) {
     precoPopup.style.display = 'block';
+    precoInput.style.border = '';
     precoMin.focus();
     e.stopPropagation();
 });
@@ -811,11 +812,13 @@ precoInput.addEventListener('click', function(e) {
 function aplicarFiltroPrecoFaixa() {
     let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
     let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (!min && !max) {
         precoInput.value = '';
         precoPopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -828,7 +831,7 @@ function aplicarFiltroPrecoFaixa() {
     // Converte para número para comparar
     let minNum = parseFloat(min) || 0;
     let maxNum = parseFloat(max) || 999.99;
-
+    
     // Inverte se min > max
     if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
 
@@ -838,6 +841,15 @@ function aplicarFiltroPrecoFaixa() {
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
     precoPopup.style.display = 'none';
+
+    if (ativo) {
+        precoInput.style.border = '2px solid #1e94a3';
+        precoInput.style.color = '#1e94a3';
+    } else {
+        precoInput.style.border = '';
+        precoInput.style.color = '';
+    }
+
     filtrar();
 }
 
@@ -855,21 +867,6 @@ function limparFaixaPreco() {
     precoInput.value = '';
 }
 
-// Cor dos selects
-// function aplicarCorSelectFiltro(ids) {
-//     ids.forEach(id => {
-//         const el = document.getElementById(id);
-//         if (!el) return;
-//         // Atualiza cor ao carregar
-//         el.style.color = el.value ? 'black' : '#757575';
-//         // Atualiza cor ao mudar
-//         el.addEventListener('change', function() {
-//             this.style.color = this.value ? 'black' : '#757575';
-//         });
-//     });
-// }
-// aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
-
 // --- QUANTIDADE FAIXA ---
 const qtdInput = document.getElementById('filter-quantidade');
 const qtdPopup = document.getElementById('quantidade-faixa-popup');
@@ -878,6 +875,7 @@ const qtdMax = document.getElementById('quantidade-max');
 
 qtdInput.addEventListener('click', function(e) {
     qtdPopup.style.display = 'block';
+    qtdInput.style.border = '';
     qtdMin.focus();
     e.stopPropagation();
 });
@@ -890,11 +888,13 @@ qtdMax.addEventListener('input', function() {
 function aplicarFiltroQtdFaixa() {
     let min = qtdMin.value;
     let max = qtdMax.value;
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (min === "" && max === "") {
         qtdInput.value = '';
         qtdPopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -907,6 +907,14 @@ function aplicarFiltroQtdFaixa() {
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
     qtdPopup.style.display = 'none';
+
+    if (ativo) {
+        qtdInput.style.border = '2px solid #1e94a3';
+        qtdInput.style.color = '#1e94a3';
+    } else {
+        qtdInput.style.border = '';
+        qtdInput.style.color = '';
+    }
     filtrar();
 }
 document.addEventListener('mousedown', function(e) {
@@ -923,6 +931,7 @@ const limiteMax = document.getElementById('limite-max');
 
 limiteInput.addEventListener('click', function(e) {
     limitePopup.style.display = 'block';
+    limiteInput.style.border = '';
     limiteMin.focus();
     e.stopPropagation();
 });
@@ -935,11 +944,13 @@ limiteMax.addEventListener('input', function() {
 function aplicarFiltroLimiteFaixa() {
     let min = limiteMin.value;
     let max = limiteMax.value;
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (!min && !max) {
         limiteInput.value = '';
         limitePopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -951,6 +962,14 @@ function aplicarFiltroLimiteFaixa() {
     limiteMax.value = max;
     limiteInput.value = `${min} - ${max}`;
     limitePopup.style.display = 'none';
+
+    if (ativo) {
+        limiteInput.style.border = '2px solid #1e94a3';
+        limiteInput.style.color = '#1e94a3';
+    } else {
+        limiteInput.style.border = '';
+        limiteInput.style.color = '';
+    }
     filtrar();
 }
 document.addEventListener('mousedown', function(e) {
@@ -1499,7 +1518,7 @@ function atualizarPlaceholderGeneroMulti() {
         placeholder.textContent = selecionados.join(', ');
     }
 
-    if (ativo) {
+        if (ativo) {
         select.style.border = '2px solid #1e94a3';
         select.style.color = '#1e94a3';
     } else {
