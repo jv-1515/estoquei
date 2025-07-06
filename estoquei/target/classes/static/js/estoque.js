@@ -1,3 +1,57 @@
+// Fecha dropdown de gêneros ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    var overSelect = document.querySelector('.multiselect .overSelect, .multiselect-genero .overSelect');
+    if (
+        window.expandedGeneroMulti &&
+        checkboxes &&
+        !checkboxes.contains(e.target) &&
+        (!overSelect || !overSelect.contains(e.target))
+    ) {
+        checkboxes.style.display = "none";
+        window.expandedGeneroMulti = false;
+        atualizarPlaceholderGeneroMulti();
+    }
+});
+// Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
+document.querySelectorAll('.genero-multi-check').forEach(cb => {
+    if (cb.id !== 'genero-multi-todos') {
+        cb.addEventListener('change', function() {
+            const todas = document.getElementById('genero-multi-todos');
+            if (!cb.checked) {
+                todas.checked = false;
+                todas.removeAttribute('checked');
+            } else {
+                // Se todos individuais marcados, marca o "Todos"
+                const checks = Array.from(document.querySelectorAll('.genero-multi-check')).slice(1);
+                if (checks.every(c => c.checked)) {
+                    todas.checked = true;
+                    todas.setAttribute('checked', 'checked');
+                }
+            }
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    }
+});
+// Função para marcar/desmarcar todos os gêneros
+function marcarOuDesmarcarTodosGeneros() {
+    const todas = document.getElementById('genero-multi-todos');
+    const checks = document.querySelectorAll('.genero-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
+        });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    atualizarPlaceholderGeneroMulti();
+    filtrar();
+}
 // Função para aplicar máscara de preço (R$xx,xx)
 function mascaraPreco(input) {
     let value = input.value.replace(/\D/g, '');
@@ -1165,6 +1219,7 @@ function atualizarPlaceholderCategoriaMulti() {
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
 
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todas';
@@ -1349,81 +1404,80 @@ function showCheckboxesTamanhoMulti() {
     }
 }
 
-// Placeholder dinâmico do gênero
-function atualizarPlaceholderGeneroMulti() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
-    const individuais = checks.slice(1);
-    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+// ------------------- GENEROS MULTISELECT -------------------
+window.expandedGeneroMulti = false;
 
-    if (todas.checked || selecionados.length === individuais.length) {
-        placeholder.textContent = 'Todos';
-    } else if (selecionados.length === 0) {
-        placeholder.textContent = 'Nenhum';
-    } else {
-        placeholder.textContent = selecionados.join(', ');
-    }
-}
-
-// Lógica de seleção "Todos"
-function marcarOuDesmarcarTodosGeneros() {
-    const todas = document.getElementById('genero-multi-todos');
-    const checks = document.querySelectorAll('.genero-multi-check');
-    checks.forEach(cb => cb.checked = todas.checked);
-    atualizarPlaceholderGeneroMulti();
-    filtrar();
-}
-
-// Sincroniza "Todos" com os individuais
-document.addEventListener('DOMContentLoaded', function() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    checks.slice(1).forEach(cb => {
-        cb.addEventListener('change', function() {
-            // Se algum for desmarcado, desmarca "Todos"
-            if (!cb.checked) {
-                todas.checked = false;
-            } else {
-                // Se todos individuais estiverem marcados, marca "Todos"
-                todas.checked = checks.slice(1).every(c => c.checked);
-            }
-            atualizarPlaceholderGeneroMulti();
-            filtrar();
-        });
-    });
-    // Também chama ao carregar
-    atualizarPlaceholderGeneroMulti();
-});
-
-// Mostra/esconde o multiselect
 function showCheckboxesGeneroMulti() {
     var checkboxes = document.getElementById("checkboxes-genero-multi");
     if (!window.expandedGeneroMulti) {
         checkboxes.style.display = "block";
         window.expandedGeneroMulti = true;
+
+        // Fecha ao clicar fora
         function handleClickOutside(e) {
             if (
                 checkboxes &&
                 !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect .overSelect').contains(e.target)
+                !document.querySelector('.multiselect-genero .overSelect').contains(e.target)
             ) {
                 checkboxes.style.display = "none";
                 window.expandedGeneroMulti = false;
                 document.removeEventListener('mousedown', handleClickOutside);
+                atualizarPlaceholderGeneroMulti();
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
     } else {
         checkboxes.style.display = "none";
         window.expandedGeneroMulti = false;
+        atualizarPlaceholderGeneroMulti();
     }
 }
 
-// Função para pegar gêneros selecionados
+function atualizarPlaceholderGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    const placeholder = document.getElementById('genero-multi-placeholder');
+    const selecionados = checks.slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
+
+    if (todas.checked || selecionados.length === 0) {
+        placeholder.textContent = 'Todos';
+    } else {
+        placeholder.textContent = selecionados.join(', ');
+    }
+}
+
 function getGenerosSelecionados() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
     if (todas.checked) return [];
     return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
+
+// Listeners de seleção para generos
+window.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    const placeholder = document.getElementById('genero-multi-placeholder');
+
+    // "Todos" marca/desmarca todos
+    todas.addEventListener('change', function() {
+        checks.forEach(cb => cb.checked = todas.checked);
+        atualizarPlaceholderGeneroMulti();
+        filtrar();
+    });
+
+    // Se todos individuais marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    });
+
+    atualizarPlaceholderGeneroMulti();
+});
