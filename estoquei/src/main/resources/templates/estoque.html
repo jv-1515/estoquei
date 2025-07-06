@@ -57,7 +57,8 @@
               </div>
               <div id="checkboxes-categoria-multi">
                 <label>
-                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                </label>
+                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                </label>
                 <label>
                   <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
                 </label>
@@ -94,10 +95,10 @@
             <div class="multiselect input-group">
                 <label for="filter-genero-multi">Gêneros</label>
                 <div>
-                <select id="filter-genero" style="padding-left: 1px;">
+                <select style="padding-left: 1px;">
                     <option id="genero-multi-placeholder">Todos</option>
                 </select>
-                    <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
+                <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
                 </div>
                 <div id="checkboxes-genero-multi" style="display:none;">
                     <label>
@@ -112,6 +113,38 @@
                     <label>
                         <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
                     </label>
+                </div>
+                <script>
+                document.querySelectorAll('.genero-multi-check:not(#genero-multi-todos)').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const todos = document.getElementById('genero-multi-todos');
+                        const checked = Array.from(document.querySelectorAll('.genero-multi-check:not(#genero-multi-todos):checked'));
+                        // Se algum for desmarcado, desmarca "Todos"
+                        if (checked.length < 3) {
+                            todos.checked = false;
+                        } else if (checked.length === 3) {
+                            todos.checked = true;
+                        }
+                        atualizarPlaceholderGeneroMulti();
+                    });
+                });
+                document.getElementById('genero-multi-todos').addEventListener('change', function() {
+                    const all = document.querySelectorAll('.genero-multi-check:not(#genero-multi-todos)');
+                    all.forEach(cb => cb.checked = this.checked);
+                    atualizarPlaceholderGeneroMulti();
+                });
+                function atualizarPlaceholderGeneroMulti() {
+                    const checked = Array.from(document.querySelectorAll('.genero-multi-check:not(#genero-multi-todos):checked'))
+                        .map(cb => cb.parentElement.textContent.trim());
+                    const placeholder = document.getElementById('genero-multi-placeholder');
+                    if (checked.length === 0 || checked.length === 3) {
+                        placeholder.textContent = 'Todos';
+                    } else {
+                        placeholder.textContent = checked.join(', ');
+                    }
+                }
+                atualizarPlaceholderGeneroMulti();
+                </script>
                 </div>
             </div>
             <div class="input-group">
