@@ -1,3 +1,57 @@
+// Fecha dropdown de gêneros ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    var overSelect = document.querySelector('.multiselect .overSelect, .multiselect-genero .overSelect');
+    if (
+        window.expandedGeneroMulti &&
+        checkboxes &&
+        !checkboxes.contains(e.target) &&
+        (!overSelect || !overSelect.contains(e.target))
+    ) {
+        checkboxes.style.display = "none";
+        window.expandedGeneroMulti = false;
+        atualizarPlaceholderGeneroMulti();
+    }
+});
+// Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
+document.querySelectorAll('.genero-multi-check').forEach(cb => {
+    if (cb.id !== 'genero-multi-todos') {
+        cb.addEventListener('change', function() {
+            const todas = document.getElementById('genero-multi-todos');
+            if (!cb.checked) {
+                todas.checked = false;
+                todas.removeAttribute('checked');
+            } else {
+                // Se todos individuais marcados, marca o "Todos"
+                const checks = Array.from(document.querySelectorAll('.genero-multi-check')).slice(1);
+                if (checks.every(c => c.checked)) {
+                    todas.checked = true;
+                    todas.setAttribute('checked', 'checked');
+                }
+            }
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    }
+});
+// Função para marcar/desmarcar todos os gêneros
+function marcarOuDesmarcarTodosGeneros() {
+    const todas = document.getElementById('genero-multi-todos');
+    const checks = document.querySelectorAll('.genero-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
+        });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    atualizarPlaceholderGeneroMulti();
+    filtrar();
+}
 // Função para aplicar máscara de preço (R$xx,xx)
 function mascaraPreco(input) {
     let value = input.value.replace(/\D/g, '');
@@ -1350,14 +1404,44 @@ function showCheckboxesTamanhoMulti() {
     }
 }
 
-// Placeholder dinâmico do gênero
+// ------------------- GENEROS MULTISELECT -------------------
+window.expandedGeneroMulti = false;
+
+function showCheckboxesGeneroMulti() {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    if (!window.expandedGeneroMulti) {
+        checkboxes.style.display = "block";
+        window.expandedGeneroMulti = true;
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect-genero .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedGeneroMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+                atualizarPlaceholderGeneroMulti();
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedGeneroMulti = false;
+        atualizarPlaceholderGeneroMulti();
+    }
+}
+
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
     const placeholder = document.getElementById('genero-multi-placeholder');
-    const individuais = checks.slice(1);
-    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
-
+    const selecionados = checks.slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
 
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todos';
@@ -1366,19 +1450,18 @@ function atualizarPlaceholderGeneroMulti() {
     }
 }
 
-// Lógica de seleção "Todos"
-function marcarOuDesmarcarTodosGeneros() {
-    const todas = document.getElementById('genero-multi-todos');
-    const checks = document.querySelectorAll('.genero-multi-check');
-    checks.forEach(cb => cb.checked = todas.checked);
-    atualizarPlaceholderGeneroMulti();
-    filtrar();
+function getGenerosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
 
-// Sincroniza "Todos" com os individuais
+// Listeners de seleção para generos
 window.addEventListener('DOMContentLoaded', function() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
+    const placeholder = document.getElementById('genero-multi-placeholder');
 
     // "Todos" marca/desmarca todos
     todas.addEventListener('change', function() {
@@ -1398,33 +1481,3 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
-// Mostra/esconde o multiselect
-function showCheckboxesGeneroMulti() {
-    var checkboxes = document.getElementById("checkboxes-genero-multi");
-    if (!window.expandedGeneroMulti) {
-        checkboxes.style.display = "block";
-        window.expandedGeneroMulti = true;
-        function handleClickOutside(e) {
-            if (
-                checkboxes &&
-                !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect .overSelect').contains(e.target)
-            ) {
-                checkboxes.style.display = "none";
-                window.expandedGeneroMulti = false;
-                document.removeEventListener('mousedown', handleClickOutside);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-    } else {
-        checkboxes.style.display = "none";
-        window.expandedGeneroMulti = false;
-    }
-}
-
-// Função para pegar gêneros selecionados
-function getGenerosSelecionados() {
-    return Array.from(document.querySelectorAll('.genero-multi-check'))
-        .filter(cb => cb.id !== 'genero-multi-todos' && cb.checked)
-        .map(cb => cb.value);
-}
