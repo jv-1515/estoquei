@@ -440,6 +440,33 @@ function limpar() {
     precoInput.value = "";
     qtdInput.value = "";
     limiteInput.value = "";
+
+    // Limpa categorias: marca "Todas"
+    // const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
+    // if (categoriaChecks.length > 0) {
+    //     categoriaChecks.forEach(cb => cb.checked = false);
+    //     categoriaChecks[0].checked = true; // "Todas"
+    //     atualizarPlaceholderCategoriaMulti();
+    // }
+
+    // // Limpa tamanhos: marca "Todos" se existir
+    // const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
+    // if (tamanhoChecks.length > 0) {
+    //     tamanhoChecks.forEach(cb => cb.checked = false);
+    //     if (document.getElementById('tamanho-multi-todas')) {
+    //         document.getElementById('tamanho-multi-todas').checked = true;
+    //     }
+    //     atualizarPlaceholderTamanhoMulti();
+    // }
+
+    // // Limpa gêneros: marca "Todos"
+    // const generoChecks = document.querySelectorAll('.genero-multi-check');
+    // if (generoChecks.length > 0) {
+    //     generoChecks.forEach(cb => cb.checked = false);
+    //     generoChecks[0].checked = true; // "Todos"
+    //     atualizarPlaceholderGeneroMulti();
+    // }
+
     carregarProdutos(document.getElementById('registros-select').value);
     setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
 }
@@ -769,11 +796,58 @@ window.onload = function() {
     // Botão "Limpar Filtros"
     btnLimparFiltros.addEventListener('click', function(e) {
         e.preventDefault();
-        filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+        // Limpa todos os campos dos filtros avançados
+        filtrosAvancados.querySelectorAll('input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), select').forEach(el => {
             if (el.type === 'select-one') el.selectedIndex = 0;
             else el.value = '';
         });
-        filtrar(); // Atualiza lista
+
+        // Limpa faixas (preço, quantidade, limite)
+        precoMin.value = "";
+        precoMax.value = "";
+        precoInput.value = "";
+        qtdMin.value = "";
+        qtdMax.value = "";
+        qtdInput.value = "";
+        limiteMin.value = "";
+        limiteMax.value = "";
+        limiteInput.value = "";
+
+        //remover a border dos inputs de faixa
+        precoInput.style.border = '';
+        precoInput.style.color = '';
+        qtdInput.style.border = '';
+
+
+        // Limpa categorias: marca "Todas"
+        const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
+        if (categoriaChecks) {
+            categoriaChecks.forEach(cb => cb.checked = true);
+            categoriaChecks[0].checked = true; // "Todas"
+            atualizarPlaceholderCategoriaMulti();
+            updateOptions(); // Garante que a opção "Todos" em tamanhos reapareça
+            atualizarPlaceholderTamanhoMulti();
+        }
+
+        // Limpa tamanhos: marca "Todos" se existir
+        const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
+        if (tamanhoChecks.length > 0) {
+            tamanhoChecks.forEach(cb => cb.checked = true);
+            if (document.getElementById('tamanho-multi-todas')) {
+                document.getElementById('tamanho-multi-todas').checked = true;
+            }
+            atualizarPlaceholderTamanhoMulti();
+            updateOptions();
+        }
+
+        // Limpa gêneros: marca "Todos"
+        const generoChecks = document.querySelectorAll('.genero-multi-check');
+        if (generoChecks.length > 0) {
+            generoChecks.forEach(cb => cb.checked = true);
+            generoChecks[0].checked = true; // "Todos"
+            atualizarPlaceholderGeneroMulti();
+        }
+        filtrar();
     });
 
     // Clicou fora, esconde
@@ -849,7 +923,6 @@ function aplicarFiltroPrecoFaixa() {
         precoInput.style.border = '';
         precoInput.style.color = '';
     }
-
     filtrar();
 }
 
@@ -1193,7 +1266,6 @@ if (
 window.addEventListener('DOMContentLoaded', function() {
   const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
   const todas = checks[0]; // O primeiro é "Todas"
-  const placeholder = document.getElementById('categoria-multi-placeholder');
 
   // "Todas" marca/desmarca todos
   todas.addEventListener('change', function() {
