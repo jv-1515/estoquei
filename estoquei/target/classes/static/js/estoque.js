@@ -1165,12 +1165,15 @@ function atualizarPlaceholderCategoriaMulti() {
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
 
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todas';
     } else {
         placeholder.textContent = selecionados.join(', ');
     }
+
+    
 }
 
 function showCheckboxesTamanhoMulti() {
@@ -1357,10 +1360,9 @@ function atualizarPlaceholderGeneroMulti() {
     const individuais = checks.slice(1);
     const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
 
-    if (todas.checked || selecionados.length === individuais.length) {
+
+    if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todos';
-    } else if (selecionados.length === 0) {
-        placeholder.textContent = 'Nenhum';
     } else {
         placeholder.textContent = selecionados.join(', ');
     }
