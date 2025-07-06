@@ -262,6 +262,7 @@ function atualizarPlaceholderTamanhoMulti() {
         .map(cb => cb.parentNode.textContent.trim());
 
     let texto = 'Todos';
+    let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
         // Se só tem letras visíveis, mostra "Todos em Letras"
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
@@ -274,10 +275,20 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
+            ativo = false;
         }
     } else {
         texto = selecionados.join(', ');
     }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
+    }
+
     // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
     // Garante que a option placeholder está selecionada visualmente
@@ -845,19 +856,19 @@ function limparFaixaPreco() {
 }
 
 // Cor dos selects
-function aplicarCorSelectFiltro(ids) {
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        // Atualiza cor ao carregar
-        el.style.color = el.value ? 'black' : '#757575';
-        // Atualiza cor ao mudar
-        el.addEventListener('change', function() {
-            this.style.color = this.value ? 'black' : '#757575';
-        });
-    });
-}
-aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
+// function aplicarCorSelectFiltro(ids) {
+//     ids.forEach(id => {
+//         const el = document.getElementById(id);
+//         if (!el) return;
+//         // Atualiza cor ao carregar
+//         el.style.color = el.value ? 'black' : '#757575';
+//         // Atualiza cor ao mudar
+//         el.addEventListener('change', function() {
+//             this.style.color = this.value ? 'black' : '#757575';
+//         });
+//     });
+// }
+// aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
 
 // --- QUANTIDADE FAIXA ---
 const qtdInput = document.getElementById('filter-quantidade');
@@ -1216,15 +1227,26 @@ function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
     const placeholder = document.getElementById('categoria-multi-placeholder');
+    const input = document.getElementById('filter-categoria');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
     todas.checked = checks.slice(1).every(cb => cb.checked);
 
+    let ativo = true;
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todas';
+        ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
+    }
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
     }
 }
 
@@ -1341,6 +1363,7 @@ function atualizarPlaceholderTamanhoMulti() {
         .map(cb => cb.parentNode.textContent.trim());
 
     let texto = 'Todos';
+    let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
         // Se só tem letras visíveis, mostra "Todos em Letras"
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
@@ -1353,16 +1376,41 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
+            ativo = false; // Não está ativo se todos estão selecionados
         }
     } else {
-        texto = selecionados.join(', ');
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras';
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos';
+        } else {
+            texto = selecionados.join(', ');
+        }
     }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
+    }
+
     // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1404,7 +1452,6 @@ function showCheckboxesTamanhoMulti() {
     }
 }
 
-// ------------------- GENEROS MULTISELECT -------------------
 window.expandedGeneroMulti = false;
 
 function showCheckboxesGeneroMulti() {
@@ -1438,15 +1485,26 @@ function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
     const placeholder = document.getElementById('genero-multi-placeholder');
+    const select = document.getElementById('filter-genero');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
     todas.checked = checks.slice(1).every(cb => cb.checked);
 
+    let ativo = true;
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todos';
+        ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
+    }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
     }
 }
 
