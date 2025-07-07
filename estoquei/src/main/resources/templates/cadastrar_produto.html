@@ -22,13 +22,13 @@
         <h1>Cadastrar Produto</h1>
         <form class="form-container" action="/produtos" method="POST" enctype="multipart/form-data">
             <div class="form-column">
-                <label for="codigo">Código*:</label>
+                <label for="codigo">Código*</label>
                 <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" maxlength="9" minlength="9" pattern="\d{9}">
 
-                <label for="nome">Nome*:</label>
+                <label for="nome">Nome*</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2">
 
-                <label for="categoria">Categoria*:</label>
+                <label for="categoria">Categoria*</label>
                 <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3">
                     <option value="" disabled selected hidden>Categoria</option>
                     <option value="CAMISA">Camisa</option>
@@ -40,7 +40,7 @@
                     <option value="MEIA">Meia</option>
                 </select>
 
-                <label for="tamanho">Tamanho*:</label>
+                <label for="tamanho">Tamanho*</label>
                 <select id="tamanho" name="tamanho" required tabindex="4">
                     <option value="" disabled selected hidden>Tamanho</option>
                 </select>
@@ -52,23 +52,24 @@
                     <option value="UNISSEX">Unissex</option>
                 </select>
 
-                <label for="limiteMinimo">Limite Mínimo*:</label>
+                <label for="limiteMinimo">Limite Mínimo*</label>
                 <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">
                 
-                <label for="preco">Preço (R$)*:</label>
+                <label for="preco">Preço (R$)*</label>
                 <input type="text" id="preco" name="preco" required placeholder="R$10,00" tabindex="8" min="1" max="999">
 
                 <button type="submit" id="save" tabindex="11">Cadastrar produto</button>
             </div>
             <div class="right-column">
-                <div style="display: flex; justify-content: flex-end;">
+                <div style="display: flex; justify-content: space-between;">
+                    <label for="foto" style="display: block; color: #757575;">Foto (Opcional)</label>
                     <i class="fa-solid fa-pen-to-square edit-icon" style="cursor: pointer; display: block; margin-bottom: 6px; color:white;"></i>
                 </div>
                 <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
                     <i class="fa-regular fa-image" style="font-size: 30px"></i>
                     <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
                 </div>
-                <label for="descricao" style="padding-top: 9px;">Descrição:</label>
+                <label for="descricao" style="color: #757575; margin-top: 2px;">Descrição (Opcional)</label>
                 <div style="position: relative; display: inline-block;">
                     <textarea id="descricao" name="descricao" maxlength="200"></textarea>
                     <span id="contador-descricao">0/200</span>
