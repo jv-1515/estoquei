@@ -1,3 +1,23 @@
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
+
 // Fecha dropdown de gêneros ao clicar fora
 document.addEventListener('mousedown', function(e) {
     var checkboxes = document.getElementById("checkboxes-genero-multi");
@@ -584,7 +604,7 @@ function renderizarProdutos(produtos) {
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
-                        <a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
+                        <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                             style="
                                 position: absolute;
                                 top: 50%;
@@ -1200,6 +1220,7 @@ function visualizarImagem(url, nome, descricao, codigo) {
     }
 }
 
+
 function atualizarDetalhesInfo(produtos) {
     // Soma a coluna quantidade dos produtos recebidos (filtrados)
     const total = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
@@ -1630,3 +1651,4 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
+

@@ -126,22 +126,22 @@ window.addEventListener('DOMContentLoaded', function() {
             <form>
             <div class="main-container">
             <div class="form-column">
-            <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*:' : 'Código da Venda*:'}</label>
+            <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
             <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra">Valor da Compra (R$)*:</label>
+            <label for="valor-compra">Valor da Compra (R$)*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
-            <label for="fornecedor">Fornecedor*:</label>
+            <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
-            <label for="valor-compra">Valor da Venda (R$)*:</label>
+            <label for="valor-compra">Valor da Venda (R$)*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
-            <label for="comprador">Comprador*:</label>
+            <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
             `}
             <div style="display: flex; gap: 10px;">
             <div style="display: flex; flex-direction: column; flex: 3;">
-                <label for="quantidade">Quantidade*:</label>
+                <label for="quantidade">Quantidade*</label>
                 <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="999">
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
             </div>
             </div>
-            <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*:' : 'Data da Venda*:'}</label>
+            <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
             <input type="date" id="data-compra" name="data-compra" required>
             <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
             </div>
