@@ -251,10 +251,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('mouseleave', () => {
+    let animTimeout = null;
+    card.addEventListener('mouseenter', () => {
+        if (animTimeout) {
+            clearTimeout(animTimeout);
+            animTimeout = null;
+        }
         card.classList.add('card-animating');
-        setTimeout(() => {
+    });
+    card.addEventListener('mouseleave', () => {
+        animTimeout = setTimeout(() => {
             card.classList.remove('card-animating');
-        }, 400);
+            animTimeout = null;
+        }, 1200);
     });
 });
