@@ -31,11 +31,13 @@ function atualizarBadgeBaixoEstoque() {
         .then(res => res.json())
         .then(produtos => {
             const qtd = produtos.length;
-            if (qtd <= 0) {
+            if (qtd < 0) {
                 const bellIcon = document.querySelector('.fa-regular.fa-bell');
-                const nots = document.querySelector('.notification');
-                if (bellIcon && nots) {
+                const notification = document.querySelector('.notification');
+                const nots = document.getElementById('nots');
+                if (bellIcon && notification && nots) {
                     bellIcon.style.display = 'none';
+                    notification.style.display = 'none';
                     nots.style.display = 'none';
                 }
                 return;
@@ -47,15 +49,12 @@ function atualizarBadgeBaixoEstoque() {
 
             if (qtd < 10) {
                 badge.style.padding = '5px 8px';
-                badge.style.fontSize = '10px';
 
             } else if (qtd < 98) {
                 badge.style.padding = '5px';
-                badge.style.fontSize = '10px';
 
             } else if (qtd > 98) {
                 badge.style.padding = '7px 8px 5px 5px';
-                badge.style.fontSize = '10px';
                 badge.style.height = '11px';
                 badge.style.width = '10px';
             }

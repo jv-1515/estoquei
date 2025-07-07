@@ -44,13 +44,13 @@ nav a {
 .notification {
     position: relative;
     font-size: 24px;
-    padding-right: 20px;
 }
 
 .notification .badge {
     position: absolute;
-    top: -2px;
-    right: 8px;
+    top: 2px;
+    left: 13px;
+    font-size: 10px;
     background-color: red;
     color: white;
     border-radius: 100%;
