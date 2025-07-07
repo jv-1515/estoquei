@@ -1,3 +1,31 @@
+// Aplica a mesma lógica de cor pastel do avatar da home para o avatar do infos_usuario
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarCircle = document.getElementById('avatar-user-info');
+    const nomeSpan = document.getElementById('avatar-nome');
+    if (!avatarCircle || !nomeSpan) return;
+
+    let nome = nomeSpan.textContent.trim();
+    if (!nome) return;
+
+    // Gera iniciais (primeira e última letra)
+    const partes = nome.split(/\s+/);
+    let iniciais = '';
+    if (partes.length === 1) {
+        iniciais = partes[0][0].toUpperCase();
+    } else if (partes.length > 1) {
+        iniciais = (partes[0][0] + partes[partes.length-1][0]).toUpperCase();
+    }
+    // Atualiza iniciais
+    const span = avatarCircle.querySelector('span');
+    if (span) span.textContent = iniciais;
+    else avatarCircle.textContent = iniciais;
+
+    // Cor pastel baseada no nome (igual home)
+    let hash = 0;
+    for (let i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    avatarCircle.style.background = `hsl(${h}, 60%, 80%)`;
+});
 // Lógica para redefinir senha na tela de informações do usuário
 
 document.addEventListener('DOMContentLoaded', function() {
