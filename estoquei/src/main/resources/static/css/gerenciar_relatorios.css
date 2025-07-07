@@ -250,3 +250,9 @@ img.produto-img:focus {
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
+
+.fa-arrow-left:hover,
+.fa-arrow-up:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}

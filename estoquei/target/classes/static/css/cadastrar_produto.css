@@ -180,3 +180,7 @@ select#genero {
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
+.fa-arrow-left:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}

@@ -451,12 +451,9 @@ select#filter-genero {
     height: 12px !important;
 }
 
-/* Inputs válidos destacados */
-/* .filters-row .input-group input:valid,
-.filters-row .input-group select:valid,
-.filters-row #filter-quantidade,
-.filters-row #filter-limite,
-.filters-row #filter-preco {
-    border: 2px solid #1e94a3;
-    color: #1e94a3;
-} */
+.fa-arrow-left:hover,
+.fa-house:hover,
+.fa-arrow-up:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}
