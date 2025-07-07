@@ -256,7 +256,7 @@ function renderizarProdutos(produtos) {
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
-                        <a href="/abastecer-produto?id=${p.id}" title="Abastecer produto" 
+                        <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                             style="
                                 position: absolute;
                                 top: 50%;
@@ -429,7 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 
 
 window.addEventListener('DOMContentLoaded', function() {
