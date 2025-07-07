@@ -127,8 +127,9 @@
                 <div style="flex:1;">
                     <label for="edit-codigo" style="color: #757575;">Código*:</label>
                     <input type="text" id="edit-codigo" name="codigo" maxlength="9" required
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
-    style="color: #757575; width:100%; margin-top:5px" />                </div>
+                    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
+                    style="color: #757575; width:100%; margin-top:5px" />                
+            </div>
                 <div style="display:flex; flex-direction:column; align-items:flex-start; margin-top:18px;">
                     <!-- Label fixo -->
                     <span id="label-ativo" style="font-weight:bold;color:#43b04a;">Ativo</span>

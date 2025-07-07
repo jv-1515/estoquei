@@ -158,3 +158,18 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const h1 = document.querySelector('h1');
+    if (h1) {
+        let nome = h1.textContent.trim();
+        nome.substring(4).trim();
+
+        const nomes = nome.split(/\s+/);
+        let nomeFormatado = nomes[0];
+        if (nomes.length > 1) {
+            nomeFormatado += ' ' + nomes[nomes.length - 1];
+        }
+        h1.textContent = 'Olá, ' + nomeFormatado;
+    }
+});
