@@ -262,6 +262,7 @@ function atualizarPlaceholderTamanhoMulti() {
         .map(cb => cb.parentNode.textContent.trim());
 
     let texto = 'Todos';
+    let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
         // Se só tem letras visíveis, mostra "Todos em Letras"
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
@@ -274,10 +275,20 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
+            ativo = false;
         }
     } else {
         texto = selecionados.join(', ');
     }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
+    }
+
     // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
     // Garante que a option placeholder está selecionada visualmente
@@ -429,6 +440,33 @@ function limpar() {
     precoInput.value = "";
     qtdInput.value = "";
     limiteInput.value = "";
+
+    // Limpa categorias: marca "Todas"
+    // const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
+    // if (categoriaChecks.length > 0) {
+    //     categoriaChecks.forEach(cb => cb.checked = false);
+    //     categoriaChecks[0].checked = true; // "Todas"
+    //     atualizarPlaceholderCategoriaMulti();
+    // }
+
+    // // Limpa tamanhos: marca "Todos" se existir
+    // const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
+    // if (tamanhoChecks.length > 0) {
+    //     tamanhoChecks.forEach(cb => cb.checked = false);
+    //     if (document.getElementById('tamanho-multi-todas')) {
+    //         document.getElementById('tamanho-multi-todas').checked = true;
+    //     }
+    //     atualizarPlaceholderTamanhoMulti();
+    // }
+
+    // // Limpa gêneros: marca "Todos"
+    // const generoChecks = document.querySelectorAll('.genero-multi-check');
+    // if (generoChecks.length > 0) {
+    //     generoChecks.forEach(cb => cb.checked = false);
+    //     generoChecks[0].checked = true; // "Todos"
+    //     atualizarPlaceholderGeneroMulti();
+    // }
+
     carregarProdutos(document.getElementById('registros-select').value);
     setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
 }
@@ -758,18 +796,65 @@ window.onload = function() {
     // Botão "Limpar Filtros"
     btnLimparFiltros.addEventListener('click', function(e) {
         e.preventDefault();
-        filtrosAvancados.querySelectorAll('input, select').forEach(el => {
+        // Limpa todos os campos dos filtros avançados
+        filtrosAvancados.querySelectorAll('input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), select').forEach(el => {
             if (el.type === 'select-one') el.selectedIndex = 0;
             else el.value = '';
         });
-        filtrar(); // Atualiza lista
+
+        // Limpa faixas (preço, quantidade, limite)
+        precoMin.value = "";
+        precoMax.value = "";
+        precoInput.value = "";
+        qtdMin.value = "";
+        qtdMax.value = "";
+        qtdInput.value = "";
+        limiteMin.value = "";
+        limiteMax.value = "";
+        limiteInput.value = "";
+
+        //remover a border dos inputs de faixa
+        precoInput.style.border = '';
+        precoInput.style.color = '';
+        qtdInput.style.border = '';
+
+
+        // Limpa categorias: marca "Todas"
+        const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
+        if (categoriaChecks) {
+            categoriaChecks.forEach(cb => cb.checked = true);
+            categoriaChecks[0].checked = true; // "Todas"
+            atualizarPlaceholderCategoriaMulti();
+            updateOptions(); // Garante que a opção "Todos" em tamanhos reapareça
+            atualizarPlaceholderTamanhoMulti();
+        }
+
+        // Limpa tamanhos: marca "Todos" se existir
+        const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
+        if (tamanhoChecks.length > 0) {
+            tamanhoChecks.forEach(cb => cb.checked = true);
+            if (document.getElementById('tamanho-multi-todas')) {
+                document.getElementById('tamanho-multi-todas').checked = true;
+            }
+            atualizarPlaceholderTamanhoMulti();
+            updateOptions();
+        }
+
+        // Limpa gêneros: marca "Todos"
+        const generoChecks = document.querySelectorAll('.genero-multi-check');
+        if (generoChecks.length > 0) {
+            generoChecks.forEach(cb => cb.checked = true);
+            generoChecks[0].checked = true; // "Todos"
+            atualizarPlaceholderGeneroMulti();
+        }
+        filtrar();
     });
 
     // Clicou fora, esconde
 
 }
 
-// --- PREÇO FAIXA SEM SETINHAS ---
+// --- PREÇO FAIXA ---
 const precoInput = document.getElementById('filter-preco');
 const precoPopup = document.getElementById('preco-faixa-popup');
 const precoMin = document.getElementById('preco-min');
@@ -792,6 +877,7 @@ precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
 
 precoInput.addEventListener('click', function(e) {
     precoPopup.style.display = 'block';
+    precoInput.style.border = '';
     precoMin.focus();
     e.stopPropagation();
 });
@@ -800,11 +886,13 @@ precoInput.addEventListener('click', function(e) {
 function aplicarFiltroPrecoFaixa() {
     let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
     let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (!min && !max) {
         precoInput.value = '';
         precoPopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -817,7 +905,7 @@ function aplicarFiltroPrecoFaixa() {
     // Converte para número para comparar
     let minNum = parseFloat(min) || 0;
     let maxNum = parseFloat(max) || 999.99;
-
+    
     // Inverte se min > max
     if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
 
@@ -827,6 +915,14 @@ function aplicarFiltroPrecoFaixa() {
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
     precoPopup.style.display = 'none';
+
+    if (ativo) {
+        precoInput.style.border = '2px solid #1e94a3';
+        precoInput.style.color = '#1e94a3';
+    } else {
+        precoInput.style.border = '';
+        precoInput.style.color = '';
+    }
     filtrar();
 }
 
@@ -844,21 +940,6 @@ function limparFaixaPreco() {
     precoInput.value = '';
 }
 
-// Cor dos selects
-function aplicarCorSelectFiltro(ids) {
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        // Atualiza cor ao carregar
-        el.style.color = el.value ? 'black' : '#757575';
-        // Atualiza cor ao mudar
-        el.addEventListener('change', function() {
-            this.style.color = this.value ? 'black' : '#757575';
-        });
-    });
-}
-aplicarCorSelectFiltro(['filter-codigo', 'filter-categoria', 'filter-genero', 'filter-tamanho']);
-
 // --- QUANTIDADE FAIXA ---
 const qtdInput = document.getElementById('filter-quantidade');
 const qtdPopup = document.getElementById('quantidade-faixa-popup');
@@ -867,6 +948,7 @@ const qtdMax = document.getElementById('quantidade-max');
 
 qtdInput.addEventListener('click', function(e) {
     qtdPopup.style.display = 'block';
+    qtdInput.style.border = '';
     qtdMin.focus();
     e.stopPropagation();
 });
@@ -879,11 +961,13 @@ qtdMax.addEventListener('input', function() {
 function aplicarFiltroQtdFaixa() {
     let min = qtdMin.value;
     let max = qtdMax.value;
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (min === "" && max === "") {
         qtdInput.value = '';
         qtdPopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -896,6 +980,14 @@ function aplicarFiltroQtdFaixa() {
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
     qtdPopup.style.display = 'none';
+
+    if (ativo) {
+        qtdInput.style.border = '2px solid #1e94a3';
+        qtdInput.style.color = '#1e94a3';
+    } else {
+        qtdInput.style.border = '';
+        qtdInput.style.color = '';
+    }
     filtrar();
 }
 document.addEventListener('mousedown', function(e) {
@@ -912,6 +1004,7 @@ const limiteMax = document.getElementById('limite-max');
 
 limiteInput.addEventListener('click', function(e) {
     limitePopup.style.display = 'block';
+    limiteInput.style.border = '';
     limiteMin.focus();
     e.stopPropagation();
 });
@@ -924,11 +1017,13 @@ limiteMax.addEventListener('input', function() {
 function aplicarFiltroLimiteFaixa() {
     let min = limiteMin.value;
     let max = limiteMax.value;
+    let ativo = true;
 
     // Se ambos vazios, limpa o input para mostrar o placeholder
     if (!min && !max) {
         limiteInput.value = '';
         limitePopup.style.display = 'none';
+        ativo = false;
         filtrar();
         return;
     }
@@ -940,6 +1035,14 @@ function aplicarFiltroLimiteFaixa() {
     limiteMax.value = max;
     limiteInput.value = `${min} - ${max}`;
     limitePopup.style.display = 'none';
+
+    if (ativo) {
+        limiteInput.style.border = '2px solid #1e94a3';
+        limiteInput.style.color = '#1e94a3';
+    } else {
+        limiteInput.style.border = '';
+        limiteInput.style.color = '';
+    }
     filtrar();
 }
 document.addEventListener('mousedown', function(e) {
@@ -1163,7 +1266,6 @@ if (
 window.addEventListener('DOMContentLoaded', function() {
   const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
   const todas = checks[0]; // O primeiro é "Todas"
-  const placeholder = document.getElementById('categoria-multi-placeholder');
 
   // "Todas" marca/desmarca todos
   todas.addEventListener('change', function() {
@@ -1216,15 +1318,26 @@ function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
     const placeholder = document.getElementById('categoria-multi-placeholder');
+    const input = document.getElementById('filter-categoria');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
     todas.checked = checks.slice(1).every(cb => cb.checked);
 
+    let ativo = true;
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todas';
+        ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
+    }
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
     }
 }
 
@@ -1341,6 +1454,7 @@ function atualizarPlaceholderTamanhoMulti() {
         .map(cb => cb.parentNode.textContent.trim());
 
     let texto = 'Todos';
+    let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
         // Se só tem letras visíveis, mostra "Todos em Letras"
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
@@ -1353,16 +1467,41 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
+            ativo = false; // Não está ativo se todos estão selecionados
         }
     } else {
-        texto = selecionados.join(', ');
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+        } else {
+            texto = selecionados.join(', ');
+        }
     }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
+    }
+
     // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1404,7 +1543,6 @@ function showCheckboxesTamanhoMulti() {
     }
 }
 
-// ------------------- GENEROS MULTISELECT -------------------
 window.expandedGeneroMulti = false;
 
 function showCheckboxesGeneroMulti() {
@@ -1438,15 +1576,26 @@ function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
     const placeholder = document.getElementById('genero-multi-placeholder');
+    const select = document.getElementById('filter-genero');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
     todas.checked = checks.slice(1).every(cb => cb.checked);
 
+    let ativo = true;
     if (todas.checked || selecionados.length === 0) {
         placeholder.textContent = 'Todos';
+        ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
+    }
+
+        if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
     }
 }
 
