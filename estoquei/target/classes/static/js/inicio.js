@@ -9,13 +9,20 @@ function confirmarSaida(event) {
         cancelButtonColor: '#1E94A3',
         confirmButtonText: 'Sair',
         cancelButtonText: 'Voltar',
-        position: 'top-end',
-        customClass: {
-            popup: 'swal2-popup-right'
-        }
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/admin/logout';
+            Swal.fire({
+                title: 'Desconectando sua conta...',
+                text: 'Aguarde',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            setTimeout(() => {
+                window.location.href = '/admin/logout';
+            }, 1500);
         }
     });
 }
@@ -241,4 +248,13 @@ document.addEventListener('DOMContentLoaded', function() {
         let tipo = avatarTipo.textContent;
         avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
+});
+
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mouseleave', () => {
+        card.classList.add('card-animating');
+        setTimeout(() => {
+            card.classList.remove('card-animating');
+        }, 400);
+    });
 });
