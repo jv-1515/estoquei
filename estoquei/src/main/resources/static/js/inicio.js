@@ -31,18 +31,33 @@ function atualizarBadgeBaixoEstoque() {
         .then(res => res.json())
         .then(produtos => {
             const qtd = produtos.length;
-            if (qtd <= 0) return;
+            if (qtd <= 0) {
+                const bellIcon = document.querySelector('.fa-regular.fa-bell');
+                const nots = document.querySelector('.notification');
+                if (bellIcon && nots) {
+                    bellIcon.style.display = 'none';
+                    nots.style.display = 'none';
+                }
+                return;
+            }
 
             badge.textContent = qtd > 98 ? '99+' : qtd;
             badge.removeAttribute('style');
             badge.style.display = 'inline-block';
 
-            if (qtd > 98) {
-                badge.style.padding = '6px 4px';
-                badge.style.fontSize = '8px';
-            } else if (qtd > 9) {
-                badge.style.padding = '6px 6px';
+            if (qtd < 10) {
+                badge.style.padding = '5px 8px';
                 badge.style.fontSize = '10px';
+
+            } else if (qtd < 98) {
+                badge.style.padding = '5px';
+                badge.style.fontSize = '10px';
+
+            } else if (qtd > 98) {
+                badge.style.padding = '7px 8px 5px 5px';
+                badge.style.fontSize = '10px';
+                badge.style.height = '11px';
+                badge.style.width = '10px';
             }
         });
 }
@@ -177,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nomes.length > 1) {
             nomeFormatado += ' ' + nomes[nomes.length - 1];
         }
-        h1.textContent = 'Olá, ' + nomeFormatado;
+        h1.textContent = 'Olá, ' + nomeFormatado + '!';
     }
 
     // Avatar: iniciais
