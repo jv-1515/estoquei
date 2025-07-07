@@ -160,16 +160,72 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Avatar flutuante
     const h1 = document.querySelector('h1');
-    if (h1) {
-        let nome = h1.textContent.trim();
-        nome.substring(4).trim();
+    const avatarCircle = document.getElementById('avatar-circle');
+    const avatarNome = document.getElementById('avatar-nome');
+    const avatarTipo = document.getElementById('avatar-tipo');
 
+    let nome = '';
+    if (h1) {
+        nome = h1.textContent.trim();
+        nome = nome.substring(4).trim();
+        // Atualiza h1 para primeiro e último nome
         const nomes = nome.split(/\s+/);
         let nomeFormatado = nomes[0];
         if (nomes.length > 1) {
             nomeFormatado += ' ' + nomes[nomes.length - 1];
         }
         h1.textContent = 'Olá, ' + nomeFormatado;
+    }
+
+    // Avatar: iniciais
+    if (avatarCircle && nome) {
+        const partes = nome.trim().split(/\s+/);
+        let iniciais = '';
+        if (partes.length === 1) {
+            iniciais = partes[0][0].toUpperCase();
+        } else if (partes.length > 1) {
+            iniciais = (partes[0][0] + partes[partes.length-1][0]).toUpperCase();
+        }
+        avatarCircle.textContent = iniciais;
+        // Cor pastel baseada no nome
+        let hash = 0;
+        for (let i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+        const h = Math.abs(hash) % 360;
+        avatarCircle.style.background = `hsl(${h}, 60%, 80%)`;
+
+        // Hover: troca iniciais por engrenagem girando
+        let gearIcon = document.createElement('i');
+        gearIcon.className = 'fa-solid fa-gear';
+        gearIcon.style.transition = 'transform 0.4s';
+        gearIcon.style.display = 'none';
+
+        avatarCircle.appendChild(gearIcon);
+
+        avatarCircle.addEventListener('mouseenter', () => {
+            avatarCircle.textContent = '';
+            avatarCircle.appendChild(gearIcon);
+            gearIcon.style.display = 'inline-block';
+            setTimeout(() => {
+                gearIcon.style.transform = 'rotate(30deg)';
+            }, 10);
+        });
+
+        avatarCircle.addEventListener('mouseleave', () => {
+            gearIcon.style.transform = 'rotate(0deg)';
+            gearIcon.style.display = 'none';
+            avatarCircle.textContent = iniciais;
+            avatarCircle.appendChild(gearIcon);
+        });
+    }
+    // Nome e tipo
+    if (avatarNome && nome) {
+        avatarNome.textContent = nome;
+    }
+    if (avatarTipo) {
+        // Tenta pegar o tipo do backend (se disponível via Thymeleaf)
+        let tipo = avatarTipo.textContent;
+        avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
 });
