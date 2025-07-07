@@ -1481,9 +1481,9 @@ function atualizarPlaceholderTamanhoMulti() {
             .every(cb => cb.checked) &&
             individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
         if (todosLetrasMarcados && !todosNumericosMarcados) {
-            texto = 'Todos em Letras';
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
         } else if (todosNumericosMarcados && !todosLetrasMarcados) {
-            texto = 'Todos Numéricos';
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
         } else {
             texto = selecionados.join(', ');
         }
