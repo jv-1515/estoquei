@@ -29,6 +29,7 @@ public class Router {
     public String inicio(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
+        model.addAttribute("nome", usuario.getNome());
         model.addAttribute("tipo", usuario.getTipo().name());
         return "inicio";
     }
