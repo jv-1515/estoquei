@@ -43,20 +43,18 @@ function atualizarBadgeBaixoEstoque() {
                 return;
             }
 
-            badge.textContent = qtd > 98 ? '99+' : qtd;
+            badge.textContent = qtd > 99 ? '99+' : qtd;
             badge.removeAttribute('style');
             badge.style.display = 'inline-block';
 
             if (qtd < 10) {
-                badge.style.padding = '5px 8px';
+                badge.style.padding = '3px 6px';
 
-            } else if (qtd < 98) {
-                badge.style.padding = '5px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
 
-            } else if (qtd > 98) {
-                badge.style.padding = '7px 8px 5px 5px';
-                badge.style.height = '11px';
-                badge.style.width = '10px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
             }
         });
 }
