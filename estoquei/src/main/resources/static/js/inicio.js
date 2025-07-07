@@ -162,6 +162,7 @@ window.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function() {
     // Avatar flutuante
     const h1 = document.querySelector('h1');
+    const avatarDiv = document.getElementById('user-avatar-float');
     const avatarCircle = document.getElementById('avatar-circle');
     const avatarNome = document.getElementById('avatar-nome');
     const avatarTipo = document.getElementById('avatar-tipo');
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         avatarCircle.appendChild(gearIcon);
 
-        avatarCircle.addEventListener('mouseenter', () => {
+        avatarDiv.addEventListener('mouseenter', () => {
             avatarCircle.textContent = '';
             avatarCircle.appendChild(gearIcon);
             gearIcon.style.display = 'inline-block';
@@ -212,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 10);
         });
 
-        avatarCircle.addEventListener('mouseleave', () => {
+        avatarDiv.addEventListener('mouseleave', () => {
             gearIcon.style.transform = 'rotate(0deg)';
             gearIcon.style.display = 'none';
             avatarCircle.textContent = iniciais;

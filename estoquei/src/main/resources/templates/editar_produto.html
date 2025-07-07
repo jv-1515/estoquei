@@ -21,13 +21,13 @@
         <h1>Detalhes do Produto</h1>
         <form class="form-container" action="/produtos/" method="POST" enctype="multipart/form-data">
             <div class="form-column">
-            <label for="codigo" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Código*:</label>
+            <label for="codigo" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Código*</label>
             <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" th:readonly="${tipo == 'FUNCIONARIO'}" maxlength="9" minlength="9" pattern="\d{9}">
 
-            <label for="nome" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Nome*:</label>
+            <label for="nome" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Nome*</label>
             <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
 
-            <label for="categoria" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Categoria*:</label>
+            <label for="categoria" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Categoria*</label>
             <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3" th:disabled="${tipo == 'FUNCIONARIO'}">
                 <option value="" disabled selected hidden>Categoria</option>
                 <option value="CAMISA">Camisa</option>
@@ -39,7 +39,7 @@
                 <option value="MEIA">Meia</option>
             </select>
 
-            <label for="tamanho" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Tamanho*:</label>
+            <label for="tamanho" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Tamanho*</label>
             <select id="tamanho" name="tamanho" required tabindex="4" th:disabled="${tipo == 'FUNCIONARIO'}">
                 <option value="" disabled selected hidden>Tamanho</option>
             </select>
@@ -52,26 +52,29 @@
                 <option value="UNISSEX">Unissex</option>
             </select>
             
-            <label for="quantidade" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Quantidade*:</label>
+            <label for="quantidade" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Quantidade*</label>
             <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" th:readonly="${tipo == 'FUNCIONARIO'}" min="1" max="999">
             
-            <label for="limiteMinimo">Limite Mínimo*:</label>
+            <label for="limiteMinimo">Limite Mínimo*</label>
             <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">
             
-            <label for="preco">Preço (R$)*:</label>
+            <label for="preco">Preço (R$)*</label>
             <input type="text" id="preco" name="preco" required placeholder="R$10,00" tabindex="8" min="1" max="999">
             <button type="submit" id="save" tabindex="11">Salvar alterações</button>
             </div>
             <div class="right-column">
-                <div style="display: flex; justify-content: flex-end;">
-                    <i class="fa-solid fa-pen-to-square edit-icon" style="cursor: pointer; display: block; margin-bottom: 6px;padding: 0 5px 0;"></i>
-                    <i class="fa-solid fa-trash trash-icon" onclick="removerProduto()"></i>
+                <div style="display: flex; justify-content: space-between;">
+                    <label for="foto" style="display: block; color: #757575;">Foto (Opcional)</label>
+                    <div style="display: flex; justify-content: flex-end; align-items: center;">
+                        <i class="fa-solid fa-pen-to-square edit-icon" style="cursor: pointer; display: block; padding: 0 5px 0;"></i>
+                        <i class="fa-solid fa-trash trash-icon" onclick="removerProduto()"></i>
+                    </div>
                 </div>
                 <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center; position: relative;">
                     <i class="fa-regular fa-image" style="font-size: 30px"></i>
                     <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
                 </div>
-                <label for="descricao">Descrição:</label>
+                <label for="descricao" style="color: #757575;">Descrição (Opcional)</label>
                 <div style="position: relative; display: inline-block;">
                     <textarea id="descricao" name="descricao" maxlength="200"></textarea>
                     <span id="contador-descricao">0/200</span>

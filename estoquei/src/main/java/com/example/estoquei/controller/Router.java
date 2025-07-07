@@ -114,6 +114,18 @@ public class Router {
         return "redirect:/inicio";
     }
 
+        //infos do usuario
+    @GetMapping("/infos-usuario")
+    public String infosUsuario(HttpSession session, Model model) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario==null) return "redirect:/";
+
+        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
+        model.addAttribute("usuarioLogado", usuario);
+        model.addAttribute("tipo", usuario.getTipo().name());
+        return "infos_usuario";
+    }
+
     //fornecedor
     @GetMapping("/cadastrar-fornecedor")
     public String cadastrarFornecedor(HttpSession session) {
