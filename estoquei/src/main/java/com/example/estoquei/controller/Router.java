@@ -114,7 +114,7 @@ public class Router {
         return "redirect:/inicio";
     }
 
-        //infos do usuario
+    //infos do usuario
     @GetMapping("/infos-usuario")
     public String infosUsuario(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);

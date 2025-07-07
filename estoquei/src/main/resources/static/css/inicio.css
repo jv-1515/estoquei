@@ -2,22 +2,22 @@ body {
     background-color: #ccc;
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
-nav {
+/* nav {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding: 20px 15px 0px 0px;
-}
+} */
 
 
 h1, h2 {
     font-size: 40px;
     color: #277580;
     text-align: center;
-    margin: 10px 0 0 0;
+    margin: 40px 0 0 0;
 }
 
 h2 {
@@ -43,13 +43,12 @@ nav a {
 
 .notification {
     position: relative;
-    margin-right: 20px;
     font-size: 24px;
 }
 
 .notification .badge {
     position: absolute;
-    top: -5px;
+    top: -4px;
     right: -9px;
     background-color: red;
     color: white;
@@ -151,19 +150,25 @@ nav a {
 }
 
 button {
-    background-color: #1E94A3;
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 button:hover {
     background-color: #277580;
     transition: background 0.2s, color 0.2s;
 }
+
+button i:hover,
+div i:hover {
+    color: #1E94A3;
+}
+
+
 
 .swal2-container {
     backdrop-filter: blur(2px) !important;
