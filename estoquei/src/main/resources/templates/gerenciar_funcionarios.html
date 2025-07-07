@@ -79,13 +79,13 @@
         <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
             <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
-            <label for="cad-codigo">Código*:</label>
+            <label for="cad-codigo">Código*</label>
             <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
 
-            <label for="nome">Nome*:</label>
+            <label for="nome">Nome*</label>
             <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="2" />
 
-            <label for="cad-cargo">Cargo*:</label>
+            <label for="cad-cargo">Cargo*</label>
             <select id="cad-cargo" name="cargo" required tabindex="3">
                 <option value="" selected disabled hidden>Cargo</option>                
                 <option value="GERENTE">Gerente</option>
@@ -94,22 +94,22 @@
                 <option value="ESTOQUISTA">Estoquista</option>
             </select>
 
-            <label for="cad-email">Email*:</label>
+            <label for="cad-email">Email*</label>
             <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" />
 
-            <label for="cad-senha">Senha Provisória*:</label>
+            <label for="cad-senha">Senha Provisória*</label>
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="cad-senha" name="senha" readonly style="width:60%" tabindex="5" />
                 <button class="btn" style="font-size:10px; width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
             </div>
 
-            <label for="cad-cpf">CPF*:</label>
+            <label for="cad-cpf">CPF*</label>
             <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" tabindex="7" />
 
-            <label for="cad-nascimento">Data de Nascimento*:</label>
+            <label for="cad-nascimento">Data de Nascimento*</label>
             <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
 
-            <label for="cad-contato">Número de Contato*:</label>
+            <label for="cad-contato">Número de Contato*</label>
             <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00)00000-0000" tabindex="9" />
             <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
         </form>
@@ -125,7 +125,7 @@
             <!-- LINHA: Código + Switch Ativo -->
             <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">
                 <div style="flex:1;">
-                    <label for="edit-codigo" style="color: #757575;">Código*:</label>
+                    <label for="edit-codigo" style="color: #757575;">Código*</label>
                     <input type="text" id="edit-codigo" name="codigo" maxlength="9" required
                     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
                     style="color: #757575; width:100%; margin-top:5px" />                
@@ -143,11 +143,11 @@
                 </div>
             </div>
 
-            <label for="edit-nome">Nome*:</label>
+            <label for="edit-nome">Nome*</label>
             <input type="text" id="edit-nome" name="nome" required
     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
-            <label for="edit-cargo">Cargo*:</label>
+            <label for="edit-cargo">Cargo*</label>
             <select id="edit-cargo" name="cargo" required
     th:disabled="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}">
     <option value="" selected disabled hidden>Cargo</option>
@@ -157,23 +157,23 @@
     <option value="ESTOQUISTA">Estoquista</option>
 </select>
 
-            <label for="edit-email">Email*:</label>
+            <label for="edit-email">Email*</label>
             <input type="email" id="edit-email" name="email" required
     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
-            <label for="edit-senha" style="color: #757575;">Senha*:</label>
+            <label for="edit-senha" style="color: #757575;">Senha*</label>
             <input type="password" id="edit-senha" name="senha"
     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
-            <label for="edit-cpf" style="color: #757575;">CPF*:</label>
+            <label for="edit-cpf" style="color: #757575;">CPF*</label>
             <input type="text" id="edit-cpf" name="cpf" maxlength="14" required
     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
-            <label for="edit-nascimento" style="color: #757575;">Data de Nascimento*:</label>
+            <label for="edit-nascimento" style="color: #757575;">Data de Nascimento*</label>
             <input type="date" id="edit-nascimento" name="nascimento" required
     th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
-            <label for="edit-contato">Número de Contato*:</label>
+            <label for="edit-contato">Número de Contato*</label>
             <input type="text" id="edit-contato" name="contato" maxlength="15" required />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
