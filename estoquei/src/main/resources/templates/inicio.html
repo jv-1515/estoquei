@@ -24,9 +24,7 @@
         <button onclick="confirmarSaida(event)">Sair</button>
     </nav>
 
-        <h1 th:if="${tipo == 'FUNCIONARIO'}">Olá, Funcionário!</h1>
-        <h1 th:if="${tipo == 'GERENTE'}">Olá, Gerente!</h1>
-        <h1 th:if="${tipo == 'ADMIN'}">Olá, Administrador!</h1>
+        <h1 th:text="'Olá, ' + ${nome}">Olá, Usuário!</h1>
         <h2>O que deseja acessar hoje?</h2>
     
 
