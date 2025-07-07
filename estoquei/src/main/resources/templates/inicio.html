@@ -14,6 +14,7 @@
 
 <body>
     <div id="user-avatar-float" style="position:fixed;top:18px;left:18px;z-index:1000;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;border-radius:24px;padding:6px 16px 6px 6px;min-width:0;">
+        
         <a th:href="@{/infos-usuario}" href="/infos-usuario" style="display:flex;align-items:center;text-decoration:none;gap:10px;">
             <div id="avatar-circle" style="width:38px;height:38px;border-radius:50%;background:#e0e7ef;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;color:rgb(68, 68, 68, 0.65);user-select:none;">
             </div>
@@ -23,16 +24,20 @@
             </div>
         </a>
     </div>
-    <nav>
+
+    <div style="position:fixed;top:18px;right:18px;z-index:1000;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;border-radius:24px;padding:6px 16px;">
         <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
             <span style="display: inline-block; position: relative;">
-            <i class="fa-solid fa-bell" style="color: white; font-size: 24px; left: 0; top: 0; padding-top: 3px"></i>
-            <i class="fa-regular fa-bell" style="color: #555; font-size: 25px; position: absolute; left:0; top: 0; padding-top:3px"></i>
+                <i class="fa-solid fa-bell" style="color: white; font-size: 24px; left: 0; top: 0; padding-top: 3px"></i>
+                <i class="fa-regular fa-bell" style="color: #555; font-size: 25px; position: absolute; left:0; top: 0; padding-top:3px"></i>
             </span>
             <span class="badge">2</span>
         </div>
-        <button onclick="confirmarSaida(event)">Sair</button>
-    </nav>
+        <button onclick="confirmarSaida(event)" style="background:none;border:none;cursor:pointer;padding:0; color: #333;">
+            <i class="fa-solid fa-right-from-bracket" style="color: #333; font: 25px;"></i>
+        </button>
+    </div>
+
 
         <h1 th:text="'Olá, ' + ${nome}">Olá, Usuário!</h1>
         <h2>O que deseja acessar hoje?</h2>
