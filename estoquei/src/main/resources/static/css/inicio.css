@@ -44,24 +44,22 @@ nav a {
 .notification {
     position: relative;
     font-size: 24px;
+    padding-right: 20px;
 }
 
 .notification .badge {
     position: absolute;
-    top: -4px;
-    right: -9px;
+    top: -2px;
+    right: 8px;
     background-color: red;
     color: white;
     border-radius: 100%;
-    padding: 4px 7px;
-    font-size: 12px;
 }
 
-.badge:hover {
-    background-color: rgb(187, 8, 8);
+.notification .badge:hover {
+    background-color: rgb(204, 9, 9);
+    transition: background 0.2s, color 0.2s;
 }
-
-
 
 .container {
     display: grid;
@@ -164,7 +162,7 @@ button:hover {
 }
 
 button i:hover,
-div i:hover {
+div i:hover:not(.fa-gear) {
     color: #1E94A3;
 }
 
