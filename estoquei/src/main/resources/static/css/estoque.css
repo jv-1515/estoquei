@@ -358,6 +358,17 @@ select#filter-genero {
     padding-left: 1px;
 }
 
+
+select#registros-select {
+    border-color: #1e94a3;
+    color: #1e94a3;
+}
+
+select#registros-select option {
+    color: #000;
+}
+
+
 #busca-sugestoes .sugestao {
     padding: 8px 12px;
     cursor: pointer;
