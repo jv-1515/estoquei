@@ -243,3 +243,10 @@ input:focus[readonly] {
 #movimentacao-tipo-container label {
     font-weight: normal;
 }
+
+.fa-arrow-left:hover,
+.fa-house:hover,
+.fa-arrow-up:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}

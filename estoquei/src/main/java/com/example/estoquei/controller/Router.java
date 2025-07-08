@@ -67,11 +67,11 @@ public class Router {
         return "editar_produto";
     }
 
-    @GetMapping("/abastecer-produto")
-    public String abastecerProduto(HttpSession session) {
+    @GetMapping("/movimentar-produto")
+    public String movimentarProduto(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
-        return "abastecer_produto";
+        return "movimentar_produto";
     }
 
     //funcionario
