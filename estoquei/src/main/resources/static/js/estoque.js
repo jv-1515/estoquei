@@ -1652,3 +1652,8 @@ window.addEventListener('DOMContentLoaded', function() {
     atualizarPlaceholderGeneroMulti();
 });
 
+
+document.getElementById('registros-select').addEventListener('change', function() {
+    this.style.color = this.value !== "" ? '#1e94a3' : '#757575';
+    this.style.border = this.value !== "" ? '1px solid #1e94a3' : '';
+});

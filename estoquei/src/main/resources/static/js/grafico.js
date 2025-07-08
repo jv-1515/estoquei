@@ -75,9 +75,11 @@ window.atualizarDetalhesEstoque = function(produtos) {
     });
 
     // 3. Gráfico de tamanhos (numéricos + letras juntos)
+
     const tamanhosNumericos = Array.from({length: 21}, (_, i) => (36 + i).toString());
     const tamanhosLetras = ["PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "ÚNICO"];
     const todosTamanhos = [...tamanhosNumericos, ...tamanhosLetras];
+    const todosTamanhosLabels = [...tamanhosNumericos, "PP", "P", "M", "G", "GG", "XG", "XGG", "XXG", "Único"];
     const coresTamanhos = [
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
@@ -99,7 +101,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     window.graficoTamanhos = new Chart(ctxTamanhos, {
         type: 'doughnut',
         data: {
-            labels: todosZeroTamanhos ? ['Sem dados'] : todosTamanhos,
+            labels: todosZeroTamanhos ? ['Sem dados'] : todosTamanhosLabels,
             datasets: [{
                 data: todosZeroTamanhos ? [1] : dadosTamanhos,
                 backgroundColor: todosZeroTamanhos ? ['#cccccc'] : coresTamanhos,
