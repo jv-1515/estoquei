@@ -9,13 +9,20 @@ function confirmarSaida(event) {
         cancelButtonColor: '#1E94A3',
         confirmButtonText: 'Sair',
         cancelButtonText: 'Voltar',
-        position: 'top-end',
-        customClass: {
-            popup: 'swal2-popup-right'
-        }
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/admin/logout';
+            Swal.fire({
+                title: 'Desconectando sua conta...',
+                text: 'Aguarde',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            setTimeout(() => {
+                window.location.href = '/admin/logout';
+            }, 1500);
         }
     });
 }
@@ -31,33 +38,30 @@ function atualizarBadgeBaixoEstoque() {
         .then(res => res.json())
         .then(produtos => {
             const qtd = produtos.length;
-            if (qtd <= 0) {
+            if (qtd < 0) {
                 const bellIcon = document.querySelector('.fa-regular.fa-bell');
-                const nots = document.querySelector('.notification');
-                if (bellIcon && nots) {
+                const notification = document.querySelector('.notification');
+                const nots = document.getElementById('nots');
+                if (bellIcon && notification && nots) {
                     bellIcon.style.display = 'none';
+                    notification.style.display = 'none';
                     nots.style.display = 'none';
                 }
                 return;
             }
 
-            badge.textContent = qtd > 98 ? '99+' : qtd;
+            badge.textContent = qtd > 99 ? '99+' : qtd;
             badge.removeAttribute('style');
             badge.style.display = 'inline-block';
 
             if (qtd < 10) {
-                badge.style.padding = '5px 8px';
-                badge.style.fontSize = '10px';
+                badge.style.padding = '3px 6px';
 
-            } else if (qtd < 98) {
-                badge.style.padding = '5px';
-                badge.style.fontSize = '10px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
 
-            } else if (qtd > 98) {
-                badge.style.padding = '7px 8px 5px 5px';
-                badge.style.fontSize = '10px';
-                badge.style.height = '11px';
-                badge.style.width = '10px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
             }
         });
 }
@@ -244,4 +248,21 @@ document.addEventListener('DOMContentLoaded', function() {
         let tipo = avatarTipo.textContent;
         avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
+});
+
+document.querySelectorAll('.card').forEach(card => {
+    let animTimeout = null;
+    card.addEventListener('mouseenter', () => {
+        if (animTimeout) {
+            clearTimeout(animTimeout);
+            animTimeout = null;
+        }
+        card.classList.add('card-animating');
+    });
+    card.addEventListener('mouseleave', () => {
+        animTimeout = setTimeout(() => {
+            card.classList.remove('card-animating');
+            animTimeout = null;
+        }, 1200);
+    });
 });

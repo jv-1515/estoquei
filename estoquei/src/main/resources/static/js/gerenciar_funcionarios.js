@@ -23,7 +23,7 @@ function renderizarFuncionarios(lista) {
         <th>Código</th>
         <th>Nome</th>
         <th>Cargo</th>
-        <th>E-mail</th>
+        <th>Email</th>
         <th>Status</th>
         <th>Ações</th>
     </tr>
@@ -48,7 +48,9 @@ function renderizarFuncionarios(lista) {
             </td>
             <td>${f.codigo}</td>
             <td>${f.nome}</td>
-            <td>${f.cargo}</td>
+            <td>${f.cargo
+                .toLowerCase()
+                .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
             <td>${f.email}</td>
             <td>
                 <span style="

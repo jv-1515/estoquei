@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div id="user-avatar-float" style="position:fixed;top:18px;left:18px;z-index:1000;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;border-radius:24px;padding:5px 16px 5px 6px;min-width:0;">
+    <div id="user-avatar-float" style="position:fixed;top:20px;left:20px;z-index:1000;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;border-radius:24px;padding:5px 16px 5px 6px;min-width:0;">
         
         <a th:href="@{/infos-usuario}" href="/infos-usuario" style="display:flex;align-items:center;text-decoration:none;gap:8px;">
             <div id="avatar-circle" style="width:30px;height:30px;border-radius:50%;background:#e0e7ef;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:rgb(68, 68, 68, 0.65);user-select:none;">
@@ -25,16 +25,19 @@
         </a>
     </div>
 
-    <div style="font-size:20px; position:fixed;top:18px;right:18px;z-index:1000;display:flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;border-radius:24px;padding:0 10px; height: 40px; max-height: 40px;">
-        <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
-            <span style="display: inline-block; position: relative;">
-                <i class="fa-regular fa-bell" style="font-size: 23px;padding-top: 4px"></i>
-            </span>
-            <span class="badge">2</span>
+    <div style="display: flex; gap: 12px; position:fixed; top:20px; right:20px; z-index:1000; align-items:center;">
+        <div id="nots" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+            <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
+                <span style="display: inline-block; position: relative;">
+                    <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
+                </span>
+                <span class="badge">2</span>
+            </div>
         </div>
-            <i onclick="confirmarSaida(event)" class="fa-solid fa-right-from-bracket"></i>
+        <div style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
+            <i onclick="confirmarSaida(event)" class="fa-solid fa-arrow-right-from-bracket" style="cursor:pointer;font-size:18px;"></i>
+        </div>
     </div>
-
 
         <h1 th:text="'Olá, ' + ${nome}">Olá, Usuário!</h1>
         <h2>O que deseja acessar hoje?</h2>
@@ -71,12 +74,12 @@
         </div>
         <div class="card">
             <a th:href="@{/estoque}">
-                <i class="fa-solid fa-chart-bar"></i>
+                <i class="fa-solid fa-boxes-stacked" title="fa-boxes-stacked"></i>
                 <p>Acessar Estoque<br><span class="card-value" id="valor-total-produtos" style="display:none"></span></p>
             </a>
         </div>
         <div class="card">
-            <a th:href="@{/abastecer-produto}">
+            <a th:href="@{/movimentar-produto}">
                 <i class="fa-solid fa-money-bill-transfer"></i>
                 <p>Registrar Movimentação<br><span class="card-value" id="valor-movimentacoes" style="display:none"></span></p>
             </a>
