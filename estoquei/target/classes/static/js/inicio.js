@@ -273,23 +273,33 @@ document.querySelectorAll('.card').forEach(card => {
         const p = card.querySelector('p');
         const i = card.querySelector('i');
         const span = card.querySelector('span.card-value');
+        [p, i, span].forEach(el => {
+            if (el) el.style.transition = 'color 1s';
+        });
         if (p) p.style.color = '';
         if (i) i.style.color = '';
         if (span) span.style.color = '';
     }
-
+    
     function setTextWhite(card) {
         const p = card.querySelector('p');
         const i = card.querySelector('i');
         const span = card.querySelector('span.card-value');
+        [p, i, span].forEach(el => {
+            if (el) el.style.transition = 'color 1s';
+        });
         if (p) p.style.color = '#fff';
         if (i) i.style.color = '#fff';
         if (span) span.style.color = '#fff';
     }
+
     function setTextDefault(card) {
         const p = card.querySelector('p');
         const i = card.querySelector('i');
         const span = card.querySelector('span.card-value');
+        [p, i, span].forEach(el => {
+            if (el) el.style.transition = 'color 1s';
+        });
         if (p) p.style.color = '';
         if (i) i.style.color = '';
         if (span) span.style.color = '';
