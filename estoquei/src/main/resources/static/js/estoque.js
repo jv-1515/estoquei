@@ -446,50 +446,24 @@ function filtrar() {
     window.atualizarDetalhesEstoque(produtosFiltrados);
 }    
 
-function limpar() {
-    document.querySelectorAll(".filters input, .filters select").forEach(el => {
-        el.value = "";
-        if (el.dataset) el.dataset.valor = "";
-    });
-    precoMin.value = "";
-    precoMax.value = "";
-    qtdMin.value = "";
-    qtdMax.value = "";
-    limiteMin.value = "";
-    limiteMax.value = "";
-    precoInput.value = "";
-    qtdInput.value = "";
-    limiteInput.value = "";
+// function limpar() {
+//     document.querySelectorAll(".filters input, .filters select").forEach(el => {
+//         el.value = "";
+//         if (el.dataset) el.dataset.valor = "";
+//     });
+//     precoMin.value = "";
+//     precoMax.value = "";
+//     qtdMin.value = "";
+//     qtdMax.value = "";
+//     limiteMin.value = "";
+//     limiteMax.value = "";
+//     precoInput.value = "";
+//     qtdInput.value = "";
+//     limiteInput.value = "";
 
-    // Limpa categorias: marca "Todas"
-    // const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
-    // if (categoriaChecks.length > 0) {
-    //     categoriaChecks.forEach(cb => cb.checked = false);
-    //     categoriaChecks[0].checked = true; // "Todas"
-    //     atualizarPlaceholderCategoriaMulti();
-    // }
-
-    // // Limpa tamanhos: marca "Todos" se existir
-    // const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
-    // if (tamanhoChecks.length > 0) {
-    //     tamanhoChecks.forEach(cb => cb.checked = false);
-    //     if (document.getElementById('tamanho-multi-todas')) {
-    //         document.getElementById('tamanho-multi-todas').checked = true;
-    //     }
-    //     atualizarPlaceholderTamanhoMulti();
-    // }
-
-    // // Limpa gêneros: marca "Todos"
-    // const generoChecks = document.querySelectorAll('.genero-multi-check');
-    // if (generoChecks.length > 0) {
-    //     generoChecks.forEach(cb => cb.checked = false);
-    //     generoChecks[0].checked = true; // "Todos"
-    //     atualizarPlaceholderGeneroMulti();
-    // }
-
-    carregarProdutos(document.getElementById('registros-select').value);
-    setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
-}
+//     carregarProdutos(document.getElementById('registros-select').value);
+//     setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
+// }
 
 function removerProduto(id) {
     Swal.fire({
@@ -790,7 +764,6 @@ window.onload = function() {
     // Sempre começa oculto
     filtrosAvancados.style.display = 'none';
 
-    // Botão "Filtrar Produtos"
     // Botão "Filtrar Produtos" inicia com fundo branco, borda e cor #1e94a3, ícone -circle-xmark
     btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
     btnFiltrarProdutos.style.border = '1px solid #1e94a3';
@@ -816,9 +789,11 @@ window.onload = function() {
     // Botão "Limpar Filtros"
     btnLimparFiltros.addEventListener('click', function(e) {
         e.preventDefault();
-        // Limpa todos os campos dos filtros avançados
-        filtrosAvancados.querySelectorAll('input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), select').forEach(el => {
+
+        // Limpa todos os inputs e selects dos filtros avançados
+        filtrosAvancados.querySelectorAll('input, select').forEach(el => {
             if (el.type === 'select-one') el.selectedIndex = 0;
+            else if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
             else el.value = '';
         });
 
@@ -835,39 +810,39 @@ window.onload = function() {
 
         //remover a border dos inputs de faixa
         precoInput.style.border = '';
-        precoInput.style.color = '';
+        limiteInput.style.border = '';
         qtdInput.style.border = '';
 
 
         // Limpa categorias: marca "Todas"
+        // Marca "Todas" nas categorias
         const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
         if (categoriaChecks) {
             categoriaChecks.forEach(cb => cb.checked = true);
             categoriaChecks[0].checked = true; // "Todas"
             atualizarPlaceholderCategoriaMulti();
-            updateOptions(); // Garante que a opção "Todos" em tamanhos reapareça
-            atualizarPlaceholderTamanhoMulti();
-        }
-
-        // Limpa tamanhos: marca "Todos" se existir
-        const tamanhoChecks = document.querySelectorAll('.tamanho-multi-check');
-        if (tamanhoChecks.length > 0) {
-            tamanhoChecks.forEach(cb => cb.checked = true);
-            if (document.getElementById('tamanho-multi-todas')) {
-                document.getElementById('tamanho-multi-todas').checked = true;
-            }
-            atualizarPlaceholderTamanhoMulti();
             updateOptions();
+            atualizarPlaceholderTamanhoMulti();
         }
 
-        // Limpa gêneros: marca "Todos"
+        // Marca "Todos" nos gêneros
         const generoChecks = document.querySelectorAll('.genero-multi-check');
-        if (generoChecks.length > 0) {
+        if (generoChecks) {
             generoChecks.forEach(cb => cb.checked = true);
             generoChecks[0].checked = true; // "Todos"
             atualizarPlaceholderGeneroMulti();
         }
-        filtrar();
+
+        // Limpa faixas de preço, quantidade e limite
+        limparFaixaPreco();
+        qtdMin.value = '';
+        qtdMax.value = '';
+        qtdInput.value = '';
+        limiteMin.value = '';
+        limiteMax.value = '';
+        limiteInput.value = '';
+
+        filtrar(); // Atualiza lista
     });
 
     // Clicou fora, esconde
@@ -880,7 +855,7 @@ const precoPopup = document.getElementById('preco-faixa-popup');
 const precoMin = document.getElementById('preco-min');
 const precoMax = document.getElementById('preco-max');
 
-// Máscara para 000,00 até 999,99
+// Máscara para 0,00 até 999,99
 function mascaraPrecoFaixa(input) {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 5) value = value.slice(0, 5);
@@ -919,7 +894,7 @@ function aplicarFiltroPrecoFaixa() {
 
     // Se só "de" preenchido, assume até 999,99
     if (min && !max) max = '999.99';
-    // Se só "até" preenchido, assume de 000,00
+    // Se só "até" preenchido, assume de 0,00
     if (!min && max) min = '0.00';
 
     // Converte para número para comparar
@@ -934,6 +909,10 @@ function aplicarFiltroPrecoFaixa() {
     max = maxNum.toFixed(2).replace('.', ',');
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
+    if (precoInput.value === "R$ 0,00 - R$ 999,99") {
+        ativo = false;
+    }
+
     precoPopup.style.display = 'none';
 
     if (ativo) {
@@ -999,6 +978,9 @@ function aplicarFiltroQtdFaixa() {
     qtdMin.value = min;
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
+    if (qtdInput.value === "0 - 999") {
+        ativo = false;
+    }
     qtdPopup.style.display = 'none';
 
     if (ativo) {
@@ -1054,6 +1036,9 @@ function aplicarFiltroLimiteFaixa() {
     limiteMin.value = min;
     limiteMax.value = max;
     limiteInput.value = `${min} - ${max}`;
+    if (limiteInput.value === "1 - 999") {
+        ativo = false;
+    }
     limitePopup.style.display = 'none';
 
     if (ativo) {
