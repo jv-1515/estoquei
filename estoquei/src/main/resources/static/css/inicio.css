@@ -88,28 +88,57 @@ nav a {
         color 1.2s cubic-bezier(0.4,0,0.2,1);
 }
 
-.card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; bottom: 0;
-    width: 0;
-    height: 100%;
-    background: linear-gradient(135deg, #1E94A3 40%, #277580 100%);
-    z-index: 1;
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1) 0s;
+
+/* Cenas de ENTRADA: azul avança sobre branco */
+.card.card-reveal-gradient.cena2 {
+    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%);
+}
+.card.card-reveal-gradient.cena3 {
+    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%);
+}
+.card.card-reveal-gradient.cena4 {
+    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%);
+}
+.card.card-reveal-gradient.cena5 {
+    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%);
+}
+.card.card-reveal-gradient.cena6 {
+    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #277580 90%);
+}
+.card.card-reveal-gradient.cena7 {
+    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%);
+}
+.card.card-reveal-gradient.cena8 {
+    background: linear-gradient(135deg, #1E94A3 0% 30%, #1E94A3 50%, #277580 95%);
+}
+.card.card-reveal-gradient.filled {
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%);
 }
 
-.card:hover::before,
-.card.card-animating::before {
-    width: 100%;
-    height: 100%;
+/* Cenas de SAÍDA: branco avança sobre azul (inverso das cenas de entrada) */
+.card.card-reveal-gradient.saida8 {
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%);
 }
-
-.card.card-animating::before {
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1) 0s;
+.card.card-reveal-gradient.saida7 {
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 75%, #277580 95%);
 }
-.card:not(:hover):not(.card-animating)::before {
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1) 0.5s;
+.card.card-reveal-gradient.saida6 {
+    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%);
+}
+.card.card-reveal-gradient.saida5 {
+    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #1E94A3 90%);
+}
+.card.card-reveal-gradient.saida4 {
+    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%);
+}
+.card.card-reveal-gradient.saida3 {
+    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%);
+}
+.card.card-reveal-gradient.saida2 {
+    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%);
+}
+.card.card-reveal-gradient.saida1 {
+    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%);
 }
 
 .card a {
@@ -147,10 +176,10 @@ nav a {
     transition: color 1.2s cubic-bezier(0.4,0,0.2,1) 0.5s;
 }
 
-.card:hover i,
-.card:hover p,
-.card.card-animating i,
-.card.card-animating p {
+
+/* Texto só fica branco quando .texto-branco está presente */
+.card.texto-branco i,
+.card.texto-branco p {
     color: #fff !important;
 }
 
