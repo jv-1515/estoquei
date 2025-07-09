@@ -87,55 +87,55 @@ nav a {
 /* Cenas de ENTRADA */
 
 .card.card-reveal-gradient.cena2 {
-    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 75%, #1E94A3 90%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena3 {
-    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 55%, #1E94A3 80%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena4 {
-    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 35%, #1E94A3 70%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena5 {
-    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%) !important;
+    background: linear-gradient(135deg, #fff 0% 15%, #1E94A3 60%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena6 {
-    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #277580 90%) !important;
+    background: linear-gradient(135deg, #fff 0% 5%, #1E94A3 50%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena7 {
-    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%) !important;
+    background: linear-gradient(135deg, #fff 0% 2%, #1E94A3 40%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.cena8 {
-    background: linear-gradient(135deg, #1E94A3 0% 30%, #1E94A3 50%, #277580 95%) !important;
+    background: linear-gradient(135deg, #fff 0% 0%, #1E94A3 30%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.filled {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%) !important;
+    background: linear-gradient(135deg, #1E94A3 0% 40%, #277580 100%) !important;
 }
 
 /* Cenas de SAÍDA */
 
 .card.card-reveal-gradient.saida8 {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%) !important;
+    background: linear-gradient(135deg, #1E94A3 0% 40%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida7 {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 75%, #277580 95%) !important;
+    background: linear-gradient(135deg, #fff 0% 2%, #1E94A3 40%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida6 {
-    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%) !important;
+    background: linear-gradient(135deg, #fff 0% 5%, #1E94A3 50%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida5 {
-    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #1E94A3 90%) !important;
+    background: linear-gradient(135deg, #fff 0% 15%, #1E94A3 60%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida4 {
-    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%) !important;
+    background: linear-gradient(135deg, #fff 0% 35%, #1E94A3 70%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida3 {
-    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 55%, #1E94A3 80%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida2 {
-    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 75%, #1E94A3 90%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida1 {
-    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%) !important;
+    background: linear-gradient(135deg, #fff 0% 100%) !important;
 }
 
 .card a {
