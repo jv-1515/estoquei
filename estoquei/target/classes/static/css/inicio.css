@@ -81,64 +81,61 @@ nav a {
     cursor: pointer;
     text-align: center;
     font-weight: bold;
-    transition:
-        background 1.5s cubic-bezier(0.4,0,0.2,1),
-        transform 1.2s cubic-bezier(0.4,0,0.2,1),
-        box-shadow 1.2s cubic-bezier(0.4,0,0.2,1),
-        color 1.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 
-/* Cenas de ENTRADA: azul avança sobre branco */
+/* Cenas de ENTRADA */
+
 .card.card-reveal-gradient.cena2 {
-    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%);
+    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%) !important;
 }
 .card.card-reveal-gradient.cena3 {
-    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%);
+    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%) !important;
 }
 .card.card-reveal-gradient.cena4 {
-    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%);
+    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%) !important;
 }
 .card.card-reveal-gradient.cena5 {
-    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%);
+    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%) !important;
 }
 .card.card-reveal-gradient.cena6 {
-    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #277580 90%);
+    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #277580 90%) !important;
 }
 .card.card-reveal-gradient.cena7 {
-    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%);
+    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%) !important;
 }
 .card.card-reveal-gradient.cena8 {
-    background: linear-gradient(135deg, #1E94A3 0% 30%, #1E94A3 50%, #277580 95%);
+    background: linear-gradient(135deg, #1E94A3 0% 30%, #1E94A3 50%, #277580 95%) !important;
 }
 .card.card-reveal-gradient.filled {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%);
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%) !important;
 }
 
-/* Cenas de SAÍDA: branco avança sobre azul (inverso das cenas de entrada) */
+/* Cenas de SAÍDA */
+
 .card.card-reveal-gradient.saida8 {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%);
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 100%) !important;
 }
 .card.card-reveal-gradient.saida7 {
-    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 75%, #277580 95%);
+    background: linear-gradient(135deg, #1E94A3 0% 60%, #277580 75%, #277580 95%) !important;
 }
 .card.card-reveal-gradient.saida6 {
-    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%);
+    background: linear-gradient(135deg, #1E94A3 0% 5%, #1E94A3 0% 40%, #277580 85%) !important;
 }
 .card.card-reveal-gradient.saida5 {
-    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #1E94A3 90%);
+    background: linear-gradient(135deg, #dcdcdc 0% 10%, #1E94A3 60%, #1E94A3 90%) !important;
 }
 .card.card-reveal-gradient.saida4 {
-    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%);
+    background: linear-gradient(135deg, #e1e1e1 0% 20%, #1E94A3 50%, #1E94A3 80%) !important;
 }
 .card.card-reveal-gradient.saida3 {
-    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%);
+    background: linear-gradient(135deg, #ededed 0% 50%, #b2dfe5 70%, #1E94A3 100%) !important;
 }
 .card.card-reveal-gradient.saida2 {
-    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%);
+    background: linear-gradient(135deg, #fff 0% 70%, #e0f3f5 80%, #bfe3e7 100%) !important;
 }
 .card.card-reveal-gradient.saida1 {
-    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%);
+    background: linear-gradient(135deg, #fff 0% 85%, #e6f7f8 92%, #d0ecee 100%) !important;
 }
 
 .card a {
@@ -170,17 +167,12 @@ nav a {
 .card * {
     position: relative;
     z-index: 2;
+        color: #222;
+
     transition: color 1.2s cubic-bezier(0.4,0,0.2,1) 0s;
 }
 .card:not(:hover):not(.card-animating) * {
     transition: color 1.2s cubic-bezier(0.4,0,0.2,1) 0.5s;
-}
-
-
-/* Texto só fica branco quando .texto-branco está presente */
-.card.texto-branco i,
-.card.texto-branco p {
-    color: #fff !important;
 }
 
 button {

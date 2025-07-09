@@ -169,7 +169,6 @@ window.addEventListener('DOMContentLoaded', function () {
             span.style.display = "none";
             p.appendChild(span);
 
-            // Volta o ícone só no card de fornecedores
             if (idx === 0 && icon) {
                 icon.classList.remove('fa-solid');
                 icon.classList.add('fa-regular');
@@ -179,7 +178,6 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Avatar flutuante
     const h1 = document.querySelector('h1');
     const avatarDiv = document.getElementById('user-avatar-float');
     const avatarCircle = document.getElementById('avatar-circle');
@@ -190,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (h1) {
         nome = h1.textContent.trim();
         nome = nome.substring(4).trim();
-        // Atualiza h1 para primeiro e último nome
+
         const nomes = nome.split(/\s+/);
         let nomeFormatado = nomes[0];
         if (nomes.length > 1) {
@@ -199,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
         h1.textContent = 'Olá, ' + nomeFormatado + '!';
     }
 
-    // Avatar: iniciais
     if (avatarCircle && nome) {
         const partes = nome.trim().split(/\s+/);
         let iniciais = '';
@@ -239,67 +236,133 @@ document.addEventListener('DOMContentLoaded', function() {
             avatarCircle.appendChild(gearIcon);
         });
     }
-    // Nome e tipo
     if (avatarNome && nome) {
         avatarNome.textContent = nome;
     }
     if (avatarTipo) {
-        // Tenta pegar o tipo do backend (se disponível via Thymeleaf)
         let tipo = avatarTipo.textContent;
         avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
 });
 
+
+
 document.querySelectorAll('.card').forEach(card => {
-    let timeouts = [];
-    let animating = false;
-    card.addEventListener('mouseenter', function () {
-        // Limpa timeouts antigos
-        timeouts.forEach(t => clearTimeout(t));
-        timeouts = [];
-        card.classList.add('card-reveal-gradient');
-        card.classList.remove('filled','cena2','cena3','cena4','cena5','cena6','cena7','cena8','saida1','saida2','saida3','saida4','saida5','saida6','saida7','saida8','texto-branco');
-        animating = true;
-        // Sequência de "cenas" sincronizada
-        timeouts.push(setTimeout(() => card.classList.add('cena2'), 60));
-        timeouts.push(setTimeout(() => card.classList.add('cena3'), 120));
-        timeouts.push(setTimeout(() => card.classList.add('cena4'), 200));
-        timeouts.push(setTimeout(() => card.classList.add('cena5'), 300));
-        timeouts.push(setTimeout(() => card.classList.add('cena6'), 400));
-        // Só aqui o texto fica branco
-        timeouts.push(setTimeout(() => card.classList.add('texto-branco'), 420));
-        timeouts.push(setTimeout(() => card.classList.add('cena7'), 500));
-        timeouts.push(setTimeout(() => card.classList.add('cena8'), 650));
-        timeouts.push(setTimeout(() => card.classList.add('filled'), 800));
-        timeouts.push(setTimeout(() => {
-            card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8');
-            animating = false;
-        }, 1200));
-    });
-    card.addEventListener('mouseleave', function () {
-        // Não interrompe a animação de entrada: só remove as classes depois que ela terminar
-        if (animating) {
-            // Sequência de saída: degrade branco "voltando"
-            card.classList.remove('filled');
-            let saidaTimeouts = [];
-            saidaTimeouts.push(setTimeout(() => card.classList.add('saida8'), 60));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida8'); card.classList.add('saida7'); }, 120));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida7'); card.classList.add('saida6'); }, 200));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida6'); card.classList.add('saida5'); }, 300));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida5'); card.classList.add('saida4'); card.classList.remove('texto-branco'); }, 400));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida4'); card.classList.add('saida3'); }, 500));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida3'); card.classList.add('saida2'); }, 650));
-            saidaTimeouts.push(setTimeout(() => { card.classList.remove('saida2'); card.classList.add('saida1'); }, 800));
-            saidaTimeouts.push(setTimeout(() => {
-                card.classList.remove('saida1', 'card-reveal-gradient');
-                card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8','texto-branco');
-                // Garante fundo branco puro ao final
-                card.style.background = '';
-            }, 1200));
-            timeouts = timeouts.concat(saidaTimeouts);
-        } else {
-            card.classList.remove('card-reveal-gradient','filled','cena2','cena3','cena4','cena5','cena6','cena7','cena8','saida1','saida2','saida3','saida4','saida5','saida6','saida7','saida8','texto-branco');
-            card.style.background = '';
+    card._timeouts = [];
+    card._animating = false;
+    card._mouseOver = false;
+    card._saidaTimeout = null;
+
+    function clearAllTimeouts(card) {
+        if (card._timeouts && card._timeouts.length) {
+            card._timeouts.forEach(t => clearTimeout(t));
+            card._timeouts = [];
         }
+        if (card._saidaTimeout) {
+            clearTimeout(card._saidaTimeout);
+            card._saidaTimeout = null;
+        }
+    }
+
+    function resetCardState(card) {
+        card.classList.remove(
+            'cena2','cena3','cena4','cena5','cena6','cena7','cena8',
+            'saida1','saida2','saida3','saida4','saida5','saida6','saida7','saida8'
+        );
+
+        const p = card.querySelector('p');
+        const i = card.querySelector('i');
+        const span = card.querySelector('span.card-value');
+        if (p) p.style.color = '';
+        if (i) i.style.color = '';
+        if (span) span.style.color = '';
+    }
+
+    function setTextWhite(card) {
+        const p = card.querySelector('p');
+        const i = card.querySelector('i');
+        const span = card.querySelector('span.card-value');
+        if (p) p.style.color = '#fff';
+        if (i) i.style.color = '#fff';
+        if (span) span.style.color = '#fff';
+    }
+    function setTextDefault(card) {
+        const p = card.querySelector('p');
+        const i = card.querySelector('i');
+        const span = card.querySelector('span.card-value');
+        if (p) p.style.color = '';
+        if (i) i.style.color = '';
+        if (span) span.style.color = '';
+    }
+
+    card.addEventListener('mouseenter', function () {
+        card._mouseOver = true;
+
+        if (card._saidaTimeout) {
+            clearTimeout(card._saidaTimeout);
+            card._saidaTimeout = null;
+        }
+        if (card._animating) return; 
+        clearAllTimeouts(card);
+        resetCardState(card);
+        card.classList.add('card-reveal-gradient');
+        card._animating = true;
+        setTextWhite(card);
+        card._timeouts.push(setTimeout(() => card.classList.add('cena2'), 60));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena3'), 120));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena4'), 200));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena5'), 300));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena6'), 400));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena7'), 500));
+        card._timeouts.push(setTimeout(() => card.classList.add('cena8'), 650));
+        card._timeouts.push(setTimeout(() => card.classList.add('filled'), 800));
+        card._timeouts.push(setTimeout(() => {
+            card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8');
+            card._animating = false;
+
+            if (!card._mouseOver) {
+                card.dispatchEvent(new Event('mouseleave'));
+            }
+        }, 1500));
+    });
+
+    card.addEventListener('mouseleave', function () {
+        card._mouseOver = false;
+        if (card._animating) return; // nao interrompe animação em andamento
+
+        card._saidaTimeout = setTimeout(() => {
+            card._saidaTimeout = null;
+            clearAllTimeouts(card);
+            resetCardState(card);
+            card.classList.add('card-reveal-gradient');
+            card.classList.add('filled');
+            setTextWhite(card);
+            card._animating = true;
+            card._timeouts.push(setTimeout(() => {
+                card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8');
+                setTextDefault(card);
+                //reversa
+                card._timeouts.push(setTimeout(() => card.classList.add('saida8'), 60));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida8'); card.classList.add('saida7'); card.classList.add('cena8'); }, 120));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida7'); card.classList.add('saida6'); card.classList.add('cena7'); }, 200));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida6'); card.classList.add('saida5'); card.classList.add('cena6'); }, 300));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida5'); card.classList.add('saida4'); }, 400));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida4'); card.classList.add('saida3'); }, 500));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida3'); card.classList.add('saida2'); }, 650));
+                card._timeouts.push(setTimeout(() => { card.classList.remove('saida2'); card.classList.add('saida1'); }, 800));
+                card._timeouts.push(setTimeout(() => {
+                card.classList.remove('saida1','card-reveal-gradient','filled');
+                card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8',
+                    'saida2','saida3','saida4','saida5','saida6','saida7','saida8');
+                setTextDefault(card);
+                card._animating = false;
+
+                if (card._mouseOver) {
+                    card.classList.add('card-reveal-gradient','filled');
+                    setTextWhite(card);
+                }
+            }, 900));
+            }, 1500));
+        }, 1500);
     });
 });
