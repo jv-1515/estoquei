@@ -37,28 +37,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Carrega informações do usuário logado e preenche os campos
+let usuarioLogado = null;
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('/usuarios')
+    // Tenta obter o id do usuário logado a partir do campo hidden ou do DOM
+    let usuarioId = null;
+    const inputId = document.getElementById('usuario-id');
+    if (inputId && inputId.value) {
+        usuarioId = inputId.value;
+    } else {
+        // Alternativa: buscar pelo atributo data-usuario-id
+        const dataDiv = document.querySelector('[data-usuario-id]');
+        if (dataDiv && dataDiv.getAttribute('data-usuario-id')) {
+            usuarioId = dataDiv.getAttribute('data-usuario-id');
+        }
+    }
+    if (!usuarioId) {
+        console.error('[DEBUG] Não foi possível obter o id do usuário logado do DOM.');
+        return;
+    }
+    fetch(`/usuarios/${usuarioId}`)
         .then(res => res.json())
         .then(usuario => {
             if (!usuario) return;
-            document.getElementById('info-nome').value = usuario.nome || '';
-            document.getElementById('info-email').value = usuario.email || '';
-            document.getElementById('info-cargo').value = usuario.cargo || usuario.tipo || '';
-            document.getElementById('info-status').value = usuario.ativo ? 'Ativo' : 'Inativo';
+            usuarioLogado = usuario;
+        })
+        .catch(err => {
+            console.error('[DEBUG] Erro ao buscar usuarioLogado:', err);
         });
-
-    // Redefinir senha (apenas exemplo de alerta)
-    document.getElementById('redefinir-senha').addEventListener('click', function(e) {
-        e.preventDefault();
-        Swal.fire({
-            title: 'Redefinir senha',
-            text: 'Um link de redefinição será enviado para seu e-mail.',
-            icon: 'info',
-            confirmButtonText: 'OK',
-            customClass: { confirmButton: 'swal2-confirm-custom' }
-        });
-    });
 });
 
 
@@ -75,3 +80,198 @@ function togglePassword(inputId) {
         icon.classList.add('fa-eye-slash');
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnRedefinir = document.getElementById('btn-redefinir-senha');
+    const senhaFields = document.getElementById('senha-fields');
+    const form = document.querySelector('.form-container');
+
+    if (btnRedefinir && senhaFields) {
+        btnRedefinir.addEventListener('click', function() {
+            senhaFields.style.display = senhaFields.style.display === 'none' ? 'flex' : 'none';
+            if (senhaFields.style.display === 'flex') {
+                btnRedefinir.textContent = 'Cancelar';
+                btnRedefinir.style.backgroundColor = '#fff';
+                btnRedefinir.style.color = '#1e94a3';
+                btnRedefinir.style.border = '1px solid #1e94a3';
+            } else {
+                btnRedefinir.textContent = 'Redefinir senha';
+                btnRedefinir.style.backgroundColor = '';
+                btnRedefinir.style.color = '';
+                btnRedefinir.style.border = '';
+                senhaFields.querySelectorAll('input').forEach(i => i.value = '');
+            }
+        });
+    }
+
+    const senhaAtualInput = document.getElementById('senha-atual');
+    if (senhaAtualInput) {
+        senhaAtualInput.addEventListener('blur', function() {
+            const senhaAtual = senhaAtualInput.value || '';
+            if (!senhaAtual) return;
+            if (!usuarioLogado || !usuarioLogado.id) {
+                console.error('[DEBUG] usuarioLogado ou usuarioLogado.id indefinido ao tentar validar senha:', usuarioLogado);
+                senhaAtualInput.dataset.valida = 'false';
+                senhaAtualInput.style.borderColor = '#f27474';
+                Swal.fire('Erro', 'Usuário não carregado. Tente novamente em instantes.', 'error');
+                return;
+            }
+            const usuarioId = usuarioLogado.id;
+
+            fetch(`/usuarios/${usuarioId}/validar-senha`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha: senhaAtual })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.valida) {
+                    senhaAtualInput.dataset.valida = 'true';
+                    senhaAtualInput.style.border = '2px solid #43b04a';
+                } else {
+                    senhaAtualInput.dataset.valida = 'false';
+                    senhaAtualInput.style.border = '2px solid #f27474';
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'Senha atual incorreta.',
+                        icon: 'error',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error('[DEBUG] Erro ao validar senha:', err);
+                senhaAtualInput.dataset.valida = 'false';
+                senhaAtualInput.style.border = '2px solid #f27474';
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Erro ao validar senha no servidor.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 1000,
+                    timerProgressBar: true
+                });
+            });
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (senhaFields.style.display === 'flex') {
+                const atual = document.getElementById('senha-atual').value;
+                const nova = document.getElementById('nova-senha').value;
+                const confirmar = document.getElementById('confirmar-nova-senha').value;
+
+                if (!atual || !nova || !confirmar) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Atenção',
+                        text: 'Preencha todos os campos obrigatórios.',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
+                if (nova === atual) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Atenção',
+                        text: 'A nova senha deve ser diferente da atual.',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
+                if (nova !== confirmar) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Atenção',
+                        text: 'As senhas não coincidem. Ambas devem ser iguais.',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1200,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
+                if (document.getElementById('senha-atual').dataset.valida !== 'true') {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Atenção',
+                        text: 'Confirme a senha atual correta.',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
+                e.preventDefault();
+                const usuarioId = usuarioLogado?.id;
+                if (!usuarioId) {
+                    Swal.fire('Erro', 'ID do usuário não encontrado.', 'error');
+                    return;
+                }
+                fetch(`/usuarios/${usuarioId}/senha`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ senha: nova })
+                })
+                .then(res => {
+                    if (res.ok) {
+                        Swal.fire({
+                            title: 'Sucesso',
+                            text: 'Senha atualizada com sucesso!',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true
+                        });
+                        fetch(`/usuarios/${usuarioId}`)
+                            .then(res => res.json())
+                            .then(usuarioAtualizado => {
+                                usuarioLogado = usuarioAtualizado;
+                                const campoSenha = document.getElementById('senha');
+                                if (campoSenha && usuarioAtualizado && usuarioAtualizado.senha) {
+                                    campoSenha.value = usuarioAtualizado.senha;
+                                }
+                            });
+                        const btnRedefinir = document.getElementById('btn-redefinir-senha');
+                        if (btnRedefinir) {
+                            btnRedefinir.textContent = 'Redefinir senha';
+                            btnRedefinir.style.backgroundColor = '';
+                            btnRedefinir.style.color = '';
+                            btnRedefinir.style.border = '';
+                        }
+                        ['senha-atual', 'nova-senha', 'confirmar-nova-senha'].forEach(id => {
+                            const input = document.getElementById(id);
+                            if (input) {
+                                input.style.border = '';
+                                input.type = 'password';
+                                const icon = document.getElementById('icon-' + id);
+                                if (icon) {
+                                    icon.classList.remove('fa-eye');
+                                    icon.classList.add('fa-eye-slash');
+                                }
+                            }
+                        });
+                        senhaFields.style.display = 'none';
+                        form.reset();
+                    } else {
+                        Swal.fire('Erro', 'Não foi possível atualizar a senha.', 'error');
+                    }
+                })
+                .catch((err) => {
+                    console.error('[DEBUG] Erro no fetch PUT /usuarios/{id}/senha:', err);
+                    Swal.fire('Erro', 'Erro de conexão ao atualizar senha.', 'error');
+                });
+            }
+        });
+    }
+});
