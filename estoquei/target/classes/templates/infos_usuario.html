@@ -18,7 +18,7 @@
         </button>
     </a>
 
-    <h1 style="font-size: 28px; margin-bottom: 18px; color: #277580; text-align:center;">Informações de Cadastro</h1>
+    <h1 style="font-size: 28px; margin-bottom: 10px; color: #277580; text-align:center;">Informações de Cadastro</h1>
     <form class="form-container" action="/usuarios" method="POST" enctype="multipart/form-data">
         <div class="form-column">
             <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
@@ -35,18 +35,36 @@
             <input type="email" id="email" name="email" required readonly placeholder="seu@email.com" tabindex="1" th:value="${usuarioLogado.email}">
 
             <label for="Senha">Senha</label>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; height: 30px;">
                 <input type="password" id="senha" name="senha" readonly placeholder="Digite sua senha" minlength="8" autocomplete="current-password" tabindex="2" th:value="${usuarioLogado.senha}" style="flex: 2;">
                 <button type="button" id="btn-redefinir-senha" style="flex: 1; margin-top: 0; padding: 0;">Redefinir senha</button>
             </div>
 
             <div id="senha-fields" style="display:none;flex-direction:column;">
+                <h2>Redefinir Senha</h2>           
                 <label for="senha-atual">Senha atual*</label>
-                <input type="password" id="senha-atual" name="senha-atual" placeholder="Digite sua senha atual" minlength="8" autocomplete="current-password">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="senha-atual" name="senha-atual" placeholder="Digite sua senha atual" minlength="8" autocomplete="current-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('senha-atual')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-senha-atual"></i>
+                    </span>
+                </div>
+
                 <label for="nova-senha">Nova senha*</label>
-                <input type="password" id="nova-senha" name="nova-senha" placeholder="Digite a nova senha" minlength="8" autocomplete="new-password">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="nova-senha" name="nova-senha" placeholder="Digite a nova senha" minlength="8" autocomplete="new-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-nova-senha"></i>
+                    </span>
+                </div>
+
                 <label for="confirmar-nova-senha">Confirmar nova senha*</label>
-                <input type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" autocomplete="new-password">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" autocomplete="new-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('confirmar-nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
+                    </span>
+                </div>
                 <a href="" class="register-link">Esqueceu sua senha? Clique aqui</a>
                 <button type="submit" id="save" tabindex="8">Confirmar Alterações</button>
             </div>
