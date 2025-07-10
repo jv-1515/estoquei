@@ -76,31 +76,44 @@
         </div>
         <!--Cadastro de Funcionário -->
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
-        <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
+        <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
             <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
             <h2 style="margin-bottom:10px;padding-top:10px">Cadastrar Funcionário</h2>
-            <label for="cad-codigo">Código*</label>
-            <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
+            <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+                <!-- Esquerda: Inputs Código e Cargo -->
+                <div style="display: flex; flex-direction: column; flex: 1;">
+                    <label for="cad-codigo">Código*</label>
+                    <input type="text" id="cad-codigo" name="codigo" maxlength="9" required placeholder="Código" tabindex="1" />
+
+                    <label for="cad-cargo">Cargo*</label>
+                    <select id="cad-cargo" name="cargo" required tabindex="3">
+                        <option value="" selected disabled hidden>Cargo</option>
+                        <option value="GERENTE">Gerente</option>
+                        <option value="VENDEDOR">Vendedor</option>
+                        <option value="CAIXA">Caixa</option>
+                        <option value="ESTOQUISTA">Estoquista</option>
+                    </select>
+                </div>
+                <!-- Direita: Avatar com iniciais -->
+                <div style="display: flex; align-items: flex-end; height: 100%;"></div>
+                    <div id="cad-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #555; position: relative;">
+                        <i class="fa-solid fa-user" style="font-size: 44px; color: #bdbdbd; z-index: 0;"></i>
+                        <span id="cad-avatar-iniciais" style="z-index: 1; position: relative;"></span>
+                    </div>
+                </div>
+            </div>
 
             <label for="nome">Nome*</label>
             <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="2" />
 
-            <label for="cad-cargo">Cargo*</label>
-            <select id="cad-cargo" name="cargo" required tabindex="3">
-                <option value="" selected disabled hidden>Cargo</option>                
-                <option value="GERENTE">Gerente</option>
-                <option value="VENDEDOR">Vendedor</option>
-                <option value="CAIXA">Caixa</option>
-                <option value="ESTOQUISTA">Estoquista</option>
-            </select>
 
             <label for="cad-email">Email*</label>
             <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" />
 
             <label for="cad-senha">Senha Provisória*</label>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; height: 30px;">
                 <input type="text" id="cad-senha" name="senha" readonly style="width:60%" tabindex="5" />
-                <button class="btn" style="font-size:10px; width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
+                <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
             </div>
 
             <label for="cad-cpf">CPF*</label>
@@ -118,60 +131,66 @@
         <!-- editar de Funcionário -->
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             
-            <form class="form-container" style="background:white; border-radius:10px; width:250px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
+            <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
             <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar">&times;</button>
-            <h2 style="margin-bottom:10px;padding-top:10px">Editar Funcionário</h2>
-            
-            <!-- LINHA: Código + Switch Ativo -->
-            <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">
-                <div style="flex:1;">
-                    <label for="edit-codigo" style="color: #757575;">Código*</label>
-                    <input type="text" id="edit-codigo" name="codigo" maxlength="9" required
-                    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
-                    style="color: #757575; width:100%; margin-top:5px" />                
-            </div>
-                <div style="display:flex; flex-direction:column; align-items:flex-start; margin-top:18px;">
-                    <!-- Label fixo -->
-                    <span id="label-ativo" style="font-weight:bold;color:#43b04a;">Ativo</span>
-                    <div class="switch-container">
-                        <label class="switch">
-                            <input type="checkbox" id="edit-ativo" name="ativo">
-                            <span class="slider"></span>
-                        </label>
-                        <!-- Texto dinâmico ao lado do switch -->
+            <h2 style="margin-bottom:20px;padding-top:10px">Editar Funcionário</h2>
+            <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+                <div style="display: flex; flex-direction: column; flex: 1;">
+                <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">
+                    <div style="flex:1;">
+                        <label for="edit-codigo" style="color: #757575;">Código*</label>
+                        <input type="text" id="edit-codigo" name="codigo" maxlength="9" required
+                        th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
+                        style="color: #757575; width:100%; margin-top:5px" />                
+                </div>
+                    <div style="display:flex; flex-direction:column; align-items:flex-start; margin-top:18px;">
+                        <span id="label-ativo" style="font-weight:bold;color:#43b04a;">Ativo</span>
+                        <div class="switch-container">
+                            <label class="switch">
+                                <input type="checkbox" id="edit-ativo" name="ativo">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                    <label for="edit-cargo">Cargo*</label>
+                    <select id="edit-cargo" name="cargo" required th:disabled="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}">
+                        <option value="" selected disabled hidden>Cargo</option>
+                        <option value="GERENTE">Gerente</option>
+                        <option value="VENDEDOR">Vendedor</option>
+                        <option value="CAIXA">Caixa</option>
+                        <option value="ESTOQUISTA">Estoquista</option>
+                    </select>
+                </div>
+                <!-- Direita: Avatar com iniciais -->
+                <div style="display: flex; align-items: flex-end; height: 100%;">
+                    <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #555; position: relative;">
+                        <i class="fa-solid fa-user" style="font-size: 44px; color: #bdbdbd; z-index: 0;"></i>
+                        <span id="edit-avatar-iniciais" style="z-index: 1; position: relative;"></span>
                     </div>
                 </div>
             </div>
 
             <label for="edit-nome">Nome*</label>
-            <input type="text" id="edit-nome" name="nome" required
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
-
-            <label for="edit-cargo">Cargo*</label>
-            <select id="edit-cargo" name="cargo" required
-    th:disabled="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}">
-    <option value="" selected disabled hidden>Cargo</option>
-    <option value="GERENTE">Gerente</option>
-    <option value="VENDEDOR">Vendedor</option>
-    <option value="CAIXA">Caixa</option>
-    <option value="ESTOQUISTA">Estoquista</option>
-</select>
+            <input type="text" id="edit-nome" name="nome" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
             <label for="edit-email">Email*</label>
-            <input type="email" id="edit-email" name="email" required
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <input type="email" id="edit-email" name="email" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
             <label for="edit-senha" style="color: #757575;">Senha*</label>
-            <input type="password" id="edit-senha" name="senha"
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <div style="position: relative; display: flex; align-items: center;">
+                <input type="password" id="edit-senha" name="senha" th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" style="padding-right: 36px; flex: 1;" autocomplete="current-password" minlength="8" placeholder="Digite sua senha atual" />
+                <span class="lock-open" onclick="togglePassword('edit-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                    <i class="fa-solid fa-eye-slash" id="icon-edit-senha"></i>
+                </span>
+            </div>
 
             <label for="edit-cpf" style="color: #757575;">CPF*</label>
-            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
             <label for="edit-nascimento" style="color: #757575;">Data de Nascimento*</label>
-            <input type="date" id="edit-nascimento" name="nascimento" required
-    th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <input type="date" id="edit-nascimento" name="nascimento" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
 
             <label for="edit-contato">Número de Contato*</label>
             <input type="text" id="edit-contato" name="contato" maxlength="15" required />
@@ -180,13 +199,13 @@
             </form>
             </span>
 
-    <div class="main-container">
-        <div class="table-space"></div>
-        <table id="product-list">
-        </table>
-    </div>
-    <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
-        <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+        <div class="main-container">
+            <div class="table-space"></div>
+            <table id="product-list">
+            </table>
+        </div>
+        <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+            <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
