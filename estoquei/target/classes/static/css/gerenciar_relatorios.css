@@ -64,15 +64,18 @@ h2 {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: flex-end; 
 }
 
 #filter-data-inicio,
-#filter-data-fim {
+#filter-data-fim,
+#filter-data-criacao-busca,
+#filter-data-inicio-busca,
+#filter-data-fim-busca {
     font-family: Arial, sans-serif;
     color: #757575;
     height: 30px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 0 7px;
 }
 
 .input-group {
@@ -102,7 +105,7 @@ h2 {
     border: 1px solid #aaa;
     border-radius: 4px;
     font-size: 12px;
-    padding: 7px;
+    padding: 7px 7px 7px 5px;
     color: #757575;
     background: #fff;
     transition: border-color 0.2s;
@@ -116,6 +119,7 @@ h2 {
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
+    height: 30px;
 }
 
 .btn:hover{
@@ -123,12 +127,19 @@ h2 {
 }
 
 .limpar {
-    background-color: #094a55;
+    background-color: white;
+    color: #1e94a3;
+    border: 1px solid #1e94a3;
+    width: 120px;
 }
 
 .limpar:hover {
     background-color: #1e94a3;
+    color: white;
+    border: none;
+    max-width: 120px;
 }
+
 .main-container {
     background: white;
     border-radius: 10px;
