@@ -576,3 +576,21 @@ function atualizarSetasOrdenacao() {
         }
     });
 }
+
+
+window.addEventListener('DOMContentLoaded', function() {
+    fetch('/produtos')
+        .then(res => res.json())
+        .then(produtos => {
+            window.atualizarDetalhesEstoque(produtos);
+            const total = produtos.reduce((soma, p) => soma + (parseInt(p.quantidade) || 0), 0);
+            const baixoEstoque = produtos.filter(p => p.quantidade <= (2 * p.limiteMinimo)).length;
+            const zerados = produtos.filter(p => p.quantidade === 0).length;
+            const elTotal = document.getElementById('detalhe-total-produtos');
+            const elBaixo = document.getElementById('detalhe-baixo-estoque');
+            const elZerados = document.getElementById('detalhe-estoque-zerado');
+            if (elTotal) elTotal.textContent = total;
+            if (elBaixo) elBaixo.textContent = baixoEstoque;
+            if (elZerados) elZerados.textContent = zerados;
+        });
+});
