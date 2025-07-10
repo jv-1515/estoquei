@@ -96,8 +96,22 @@ h2 {
     font-size: 12px;
     cursor: pointer;
 }
+
 .btn:hover {
     background-color: #277580;
+    transition: background-color 0.2s;
+}
+
+.senha-provisoria {
+    background: white; 
+    border: solid 2px #1E94A3; 
+    color: #1E94A3;
+}
+.senha-provisoria:hover {
+    background-color: #1e94a3;
+    color: white;
+    border: none;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .btn.limpar {
@@ -165,6 +179,11 @@ tbody tr:nth-child(odd) {
 .fa-trash:hover {
     color: red;
 }
+
+.fa-eye,
+.fa-eye-slash {
+    color: #757575;
+}
 .form-container {
     background-color: white;
     border-radius: 10px;
@@ -175,15 +194,15 @@ tbody tr:nth-child(odd) {
 }
 
 .form-container input,
-.form-container select,
-.form-container textarea {
+.form-container select{
     padding: 7px;
-    font-size: 10px;
+    font-size: 12px;
     border: 1px solid #aaa;
     border-radius: 4px;
     box-sizing: border-box;
     width: 100%;
     font-family: Arial, sans-serif;
+    height: 30px;
 }
 
 .input-group:has(#filter-nome) {
@@ -243,7 +262,7 @@ input:focus[readonly] {
     right: 15px;
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 25px;
     cursor: pointer;
     transition: color 0.2s;
     color: #333;
