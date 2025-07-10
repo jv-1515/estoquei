@@ -360,12 +360,12 @@ select#filter-genero {
 
 
 select#registros-select {
-    border-color: #1e94a3;
-    color: #1e94a3;
+    color: #1E94A3;
+    border: #1e94a3 2px solid;
 }
 
 select#registros-select option {
-    color: #000;
+    color: #757575;
 }
 
 
