@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/css/gerenciar_relatorios.css" />
     <script src="/js/gerenciar_relatorios.js"></script>
     <script src="/js/gerar_relatorio.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -30,10 +32,10 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
-            <div style="display: flex; gap: 10px; flex-wrap: nowrap; align-items: flex-end;">
-                <div style="display: flex; flex-direction: column;">
-                    <label for="filter-categoria">Categoria</label>
-                    <select id="filter-categoria" style="width: 140px" onchange="updateOptions()">
+            <div class="filters-row">
+                <div class="input-group">
+                    <label for="filter-categoria">Categorias</label>
+                    <select id="filter-categoria" onchange="updateOptions()">
                         <option value="" selected>Todas</option>
                         <option value="CAMISA">Camisa</option>
                         <option value="CAMISETA">Camiseta</option>
@@ -44,41 +46,103 @@
                         <option value="MEIA">Meia</option>
                     </select>
                 </div>
-
-                <div style="display: flex; flex-direction: column;">
-                    <label for="filter-tamanho">Tamanho</label>
-                    <select id="filter-tamanho" style="width: 107px">
+                <div class="input-group">
+                    <label for="filter-tamanho">Tamanhos</label>
+                    <select id="filter-tamanho"> 
                         <option value="" selected>Todos</option>
                     </select>
                 </div>
-
-                <div style="display: flex; flex-direction: column;">
-                    <label for="filter-genero">Gênero</label>
-                    <select id="filter-genero" style="width: 105px">
+                <div class="input-group">
+                    <label for="filter-genero">Gêneros</label>
+                    <select id="filter-genero"> 
                         <option value="" selected>Todos</option>
                         <option value="MASCULINO">Masculino</option>
                         <option value="FEMININO">Feminino</option>
                         <option value="UNISSEX">Unissex</option>
                     </select>
                 </div>
-
-                <div style="display: flex; flex-direction: column;">
+                <div class="input-group">
                     <label for="filter-data-inicio">Data Início</label>
-                    <input type="date" id="filter-data-inicio" style="width: 160px" />
+                    <input type="date" id="filter-data-inicio" />
                 </div>
-
-                <div style="display: flex; flex-direction: column;">
+                <div class="input-group">
                     <label for="filter-data-fim">Data Fim</label>
-                    <input type="date" id="filter-data-fim" style="width: 160px" />
+                    <input type="date" id="filter-data-fim" />
                 </div>
-
                 <button class="btn" style="height: 32px; align-self: flex-end; margin-bottom: 0;" onclick="gerar()">
-                    <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i> Gerar Relatório
+                    <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i> Gerar
                 </button>
             </div>
             </div>
         </div>
     </div>
+    <div id="detalhes-estoque"
+        style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
+        <div style="display: flex; flex-direction: column; width: 240x; min-width: 240px; flex-shrink: 0;">
+            <div style="display: flex; align-items: flex-end; height: 28px;">
+                <h2 style="margin: 0; font-size: 20px;">Detalhes do Estoque</h2>
+            </div>
+            <div style="height: 8px;"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px; height: 130px;">
+                <div style="display: flex; flex-direction: row; height: 55px;">
+                    <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 10px 10px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #18404a; font-size: 12px; font-weight: bold;">Estoque Total</div>
+                        <div id="detalhe-total-produtos" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                    <a href="/baixo-estoque" style="flex:1; text-decoration: none;">
+                        <button id="baixo-estoque" class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                            <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Baixo<br>Estoque</div>
+                            <div id="detalhe-baixo-estoque" style="font-size: 22px; font-weight: bold; color: #bfa100;">0</div>
+                        </button>
+                    </a>
+                    <a href="/movimentar-produto" style="flex:1; text-decoration: none;">
+                        <button id="movimentar-produto" class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                            <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos<br>Zerados</div>
+                            <div id="detalhe-estoque-zerado" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: row; gap: 10px;">
+            <!-- Gráfico Categoria -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
+                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                    <canvas id="grafico-categoria" width="130" height="130"></canvas>
+                    <ul id="lista-categorias"
+                        style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                            display: flex; flex-direction: column;
+                            justify-content: space-between; height:130px;">
+                    </ul>
+                </div>
+            </div>
+            <!-- Gráfico Tamanhos (Numéricos + Letras juntos) -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Tamanhos</span>
+                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                    <canvas id="grafico-tamanhos" width="130" height="130"></canvas>
+                    <ul id="lista-tamanhos"
+                        style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                            display: grid; gap: 2px 5px; height:130px;">
+                    </ul>
+                </div>
+            </div>
+            <!-- Gráfico Gênero -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 140px;">
+                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Gêneros</span>
+                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                    <canvas id="grafico-genero" width="130" height="130"></canvas>
+                    <ul id="lista-genero"
+                        style="list-style: none; padding: 0; margin: 0; font-size: 10px; display: grid; gap: 2px 10px; height:130px;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>

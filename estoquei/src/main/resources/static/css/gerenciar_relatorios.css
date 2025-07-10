@@ -21,7 +21,8 @@ h2 {
 }
 
 .filters-container {
-    width: 900px;
+    width: 1200px;
+    min-width: 1200px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -32,36 +33,37 @@ h2 {
     justify-content: center;
 }
 
-div.filters label {
+/* div.filters label {
     color: #757575;
     font-weight: bold;
     margin-bottom: 2px;
+} */
+#busca-produto {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    height: 30px;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
 .filters {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
     width: 100%;
     background: none;
     padding: 0;
     margin: 0;
 }
 
-.filters input,
-.filters select {
-    padding: 7px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-.filters input,
-.filters select,
-.filters button,
-.filters .btn {
-    height: 32px !important;
+.filters-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 #filter-data-inicio,
@@ -71,6 +73,39 @@ div.filters label {
     height: 30px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+}
+
+.input-group {
+    position: relative;
+    flex: 1 1 90px;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    gap: 2px;
+}
+
+.input-group label {
+    font-size: 12px;
+    color: #333;
+    padding: 2px 0 0 0;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    margin-top: 0;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 7px;
+    color: #757575;
+    background: #fff;
+    transition: border-color 0.2s;
 }
 
 .btn {
@@ -97,7 +132,8 @@ div.filters label {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 900px;
+    width: 1200px;
+    min-width: 1200px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -115,7 +151,6 @@ table {
 th,
 td {
     padding: 5px;
-    border-bottom: 1px solid #ddd;
     text-align: center;
     vertical-align: middle;
 }
@@ -125,7 +160,12 @@ th {
     font-weight: bold;
 }
 
-tbody tr:hover {
+tbody tr:hover,
+tbody tr:nth-child(odd):hover {
+    background-color: #e0e0e0;
+}
+
+tbody tr:nth-child(odd) {
     background-color: #f1f1f1;
 }
 
@@ -152,25 +192,6 @@ tbody tr:hover {
     transition: background 0.2s, color 0.2s;
 }
 
-.produto-img {
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
-    background: #f3f3f3;
-    display: inline-block;
-    vertical-align: middle;
-}
-.produto-img.icon {
-    align-items: center;
-    justify-content: center;
-    color: #bbb;
-    font-size: 20px;
-    width: 30px;
-    height: 30px;
-    background: #f3f3f3;
-    border-radius: 6px;
-    vertical-align: middle;
-}
 .fa-trash:hover {
     color: red;
 }
@@ -185,7 +206,6 @@ tbody tr:hover {
 #filter-categoria,
 #filter-tamanho {
     color: #757575;
-    padding-left: 1px;
 }
 
 th.ordenar {
@@ -239,14 +259,6 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-img.produto-img:hover,
-img.produto-img:focus {
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-    outline: 2px solid #1E94A3;
-    outline-offset: 2px;
-}
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
