@@ -248,131 +248,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 document.querySelectorAll('.card').forEach(card => {
-    card._timeouts = [];
-    card._animating = false;
-    card._mouseOver = false;
-    card._saidaTimeout = null;
-
-    function clearAllTimeouts(card) {
-        if (card._timeouts && card._timeouts.length) {
-            card._timeouts.forEach(t => clearTimeout(t));
-            card._timeouts = [];
+    let animTimeout = null;
+    card.addEventListener('mouseenter', () => {
+        if (animTimeout) {
+            clearTimeout(animTimeout);
+            animTimeout = null;
         }
-        if (card._saidaTimeout) {
-            clearTimeout(card._saidaTimeout);
-            card._saidaTimeout = null;
-        }
-    }
-
-    function resetCardState(card) {
-        card.classList.remove(
-            'cena2','cena3','cena4','cena5','cena6','cena7','cena8',
-            'saida1','saida2','saida3','saida4','saida5','saida6','saida7','saida8'
-        );
-
-        const p = card.querySelector('p');
-        const i = card.querySelector('i');
-        const span = card.querySelector('span.card-value');
-        [p, i, span].forEach(el => {
-            if (el) el.style.transition = 'color 1s';
-        });
-        if (p) p.style.color = '';
-        if (i) i.style.color = '';
-        if (span) span.style.color = '';
-    }
-    
-    function setTextWhite(card) {
-        const p = card.querySelector('p');
-        const i = card.querySelector('i');
-        const span = card.querySelector('span.card-value');
-        [p, i, span].forEach(el => {
-            if (el) el.style.transition = 'color 1s';
-        });
-        if (p) p.style.color = '#fff';
-        if (i) i.style.color = '#fff';
-        if (span) span.style.color = '#fff';
-    }
-
-    function setTextDefault(card) {
-        const p = card.querySelector('p');
-        const i = card.querySelector('i');
-        const span = card.querySelector('span.card-value');
-        [p, i, span].forEach(el => {
-            if (el) el.style.transition = 'color 1s';
-        });
-        if (p) p.style.color = '';
-        if (i) i.style.color = '';
-        if (span) span.style.color = '';
-    }
-
-    card.addEventListener('mouseenter', function () {
-        card._mouseOver = true;
-
-        if (card._saidaTimeout) {
-            clearTimeout(card._saidaTimeout);
-            card._saidaTimeout = null;
-        }
-        if (card._animating) return; 
-        clearAllTimeouts(card);
-        resetCardState(card);
-        card.classList.add('card-reveal-gradient');
-        card._animating = true;
-        setTextWhite(card);
-        card._timeouts.push(setTimeout(() => card.classList.add('cena2'), 60));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena3'), 120));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena4'), 200));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena5'), 300));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena6'), 400));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena7'), 500));
-        card._timeouts.push(setTimeout(() => card.classList.add('cena8'), 650));
-        card._timeouts.push(setTimeout(() => card.classList.add('filled'), 800));
-        card._timeouts.push(setTimeout(() => {
-            card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8');
-            card._animating = false;
-
-            if (!card._mouseOver) {
-                card.dispatchEvent(new Event('mouseleave'));
-            }
-        }, 1500));
+        card.classList.add('card-animating');
     });
-
-    card.addEventListener('mouseleave', function () {
-        card._mouseOver = false;
-        if (card._animating) return; // nao interrompe animação em andamento
-
-        card._saidaTimeout = setTimeout(() => {
-            card._saidaTimeout = null;
-            clearAllTimeouts(card);
-            resetCardState(card);
-            card.classList.add('card-reveal-gradient');
-            card.classList.add('filled');
-            setTextWhite(card);
-            card._animating = true;
-            card._timeouts.push(setTimeout(() => {
-                card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8');
-                setTextDefault(card);
-                //reversa
-                card._timeouts.push(setTimeout(() => card.classList.add('saida8'), 60));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida8'); card.classList.add('saida7'); card.classList.add('cena8'); }, 120));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida7'); card.classList.add('saida6'); card.classList.add('cena7'); }, 200));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida6'); card.classList.add('saida5'); card.classList.add('cena6'); }, 300));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida5'); card.classList.add('saida4'); }, 400));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida4'); card.classList.add('saida3'); }, 500));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida3'); card.classList.add('saida2'); }, 650));
-                card._timeouts.push(setTimeout(() => { card.classList.remove('saida2'); card.classList.add('saida1'); }, 800));
-                card._timeouts.push(setTimeout(() => {
-                card.classList.remove('saida1','card-reveal-gradient','filled');
-                card.classList.remove('cena2','cena3','cena4','cena5','cena6','cena7','cena8',
-                    'saida2','saida3','saida4','saida5','saida6','saida7','saida8');
-                setTextDefault(card);
-                card._animating = false;
-
-                if (card._mouseOver) {
-                    card.classList.add('card-reveal-gradient','filled');
-                    setTextWhite(card);
-                }
-            }, 900));
-            }, 1500));
-        }, 1500);
+    card.addEventListener('mouseleave', () => {
+        animTimeout = setTimeout(() => {
+            card.classList.remove('card-animating');
+            animTimeout = null;
+        }, 1200);
     });
 });
