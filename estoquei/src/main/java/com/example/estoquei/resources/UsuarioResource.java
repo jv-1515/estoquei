@@ -55,4 +55,27 @@ public class UsuarioResource {
         if (usuarioService.deletar(id)) return ResponseEntity.noContent().build();
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/{id}/validar-senha")
+    public ResponseEntity<?> validarSenha(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String senha = body.get("senha");
+        Usuario usuario = usuarioService.buscarPorId(id);
+        boolean valida = usuario != null && usuario.getSenha() != null && usuario.getSenha().equals(senha);
+        return ResponseEntity.ok(java.util.Collections.singletonMap("valida", valida));
+    }
+
+    @PutMapping("/{id}/senha")
+    public ResponseEntity<?> atualizarSenha(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String novaSenha = body.get("senha");
+        if (novaSenha == null || novaSenha.length() < 8) {
+            return ResponseEntity.badRequest().body("Senha inválida");
+        }
+        Usuario usuario = usuarioService.buscarPorId(id);
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+        usuario.setSenha(novaSenha);
+        usuarioService.salvar(usuario);
+        return ResponseEntity.ok().build();
+    }
 }

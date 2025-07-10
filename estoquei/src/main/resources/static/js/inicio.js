@@ -169,7 +169,6 @@ window.addEventListener('DOMContentLoaded', function () {
             span.style.display = "none";
             p.appendChild(span);
 
-            // Volta o ícone só no card de fornecedores
             if (idx === 0 && icon) {
                 icon.classList.remove('fa-solid');
                 icon.classList.add('fa-regular');
@@ -179,7 +178,6 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Avatar flutuante
     const h1 = document.querySelector('h1');
     const avatarDiv = document.getElementById('user-avatar-float');
     const avatarCircle = document.getElementById('avatar-circle');
@@ -190,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (h1) {
         nome = h1.textContent.trim();
         nome = nome.substring(4).trim();
-        // Atualiza h1 para primeiro e último nome
+
         const nomes = nome.split(/\s+/);
         let nomeFormatado = nomes[0];
         if (nomes.length > 1) {
@@ -199,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
         h1.textContent = 'Olá, ' + nomeFormatado + '!';
     }
 
-    // Avatar: iniciais
     if (avatarCircle && nome) {
         const partes = nome.trim().split(/\s+/);
         let iniciais = '';
@@ -239,16 +236,16 @@ document.addEventListener('DOMContentLoaded', function() {
             avatarCircle.appendChild(gearIcon);
         });
     }
-    // Nome e tipo
     if (avatarNome && nome) {
         avatarNome.textContent = nome;
     }
     if (avatarTipo) {
-        // Tenta pegar o tipo do backend (se disponível via Thymeleaf)
         let tipo = avatarTipo.textContent;
         avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
 });
+
+
 
 document.querySelectorAll('.card').forEach(card => {
     let animTimeout = null;
