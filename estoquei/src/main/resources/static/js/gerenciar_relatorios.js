@@ -594,3 +594,76 @@ window.addEventListener('DOMContentLoaded', function() {
             if (elZerados) elZerados.textContent = zerados;
         });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Controle de exibição dos detalhes
+    const btnDetalhes = document.getElementById('btn-exibir-detalhes-busca');
+    const detalhesEstoque = document.getElementById('detalhes-estoque');
+    let detalhesVisiveis = false;
+    if (btnDetalhes && detalhesEstoque) {
+        detalhesEstoque.style.display = 'none';
+        btnDetalhes.addEventListener('click', function() {
+            detalhesVisiveis = !detalhesVisiveis;
+            if (detalhesVisiveis) {
+                detalhesEstoque.style.display = 'flex';
+                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+                btnDetalhes.style.background = '#1e94a3';
+                btnDetalhes.style.color = '#fff';
+                btnDetalhes.style.border = 'none';
+            } else {
+                detalhesEstoque.style.display = 'none';
+                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
+                btnDetalhes.style.background = '#fff';
+                btnDetalhes.style.color = '#1e94a3';
+                btnDetalhes.style.border = '1px solid #1e94a3';
+            }
+        });
+    }
+
+    // Controle de exibição da área de gerar relatório
+    const btnGerar = document.getElementById('btn-gerar-busca');
+    const areaGerar = document.querySelector('.filters-container + .filters-container');
+    let gerarVisivel = true;
+    if (btnGerar && areaGerar) {
+        areaGerar.style.display = 'flex';
+        btnGerar.addEventListener('click', function() {
+            gerarVisivel = !gerarVisivel;
+            if (gerarVisivel) {
+                areaGerar.style.display = 'flex';
+                btnGerar.innerHTML = '<i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Relatórios';
+                btnGerar.style.background = '#1e94a3';
+                btnGerar.style.color = '#fff';
+                btnGerar.style.border = 'none';
+            } else {
+                areaGerar.style.display = 'none';
+                btnGerar.innerHTML = '<i class="fa-solid fa-file-excel" style="margin-right: 6px;"></i>Relatórios';
+                btnGerar.style.background = '#fff';
+                btnGerar.style.color = '#1e94a3';
+                btnGerar.style.border = '1px solid #1e94a3';
+            }
+        });
+    }
+
+    // Limpar filtros da barra de busca
+    const btnLimpar = document.getElementById('btn-limpar-filtros-busca');
+    const btnCancelar = document.getElementById('btn-cancelar-gerar');
+    if (btnLimpar) {
+        btnLimpar.addEventListener('click', function() {
+            document.getElementById('busca-relatorio').value = '';
+            document.getElementById('filter-data-criacao-busca').value = '';
+            document.getElementById('filter-data-inicio-busca').value = '';
+            document.getElementById('filter-data-fim-busca').value = '';
+        });
+    }
+
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function() {
+            document.getElementById('filter-categoria').value = '';
+            document.getElementById('filter-tamanho').value = '';
+            document.getElementById('filter-genero').value = '';
+            document.getElementById('filter-data-criacao').value = '';
+            document.getElementById('filter-data-inicio').value = '';
+            document.getElementById('filter-data-fim').value = '';
+        });
+    }
+});

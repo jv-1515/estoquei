@@ -30,6 +30,45 @@
         <h1>Gerenciar Relatórios de Desempenho</h1>
     </div>
     <div class="filters-container">
+        <div class="filters">
+            <h2>Buscar Relatórios</h2>
+            <div class="filters-row">
+                <div class="input-group" style="flex:1; min-width:180px; max-width:400px;">
+                    <label for="busca-relatorio">Título</label>
+                    <div style="position:relative; display:flex;align-items: flex-end;">
+                        <input type="text" id="busca-relatorio" placeholder="Digite o título do relatório" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
+                        <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-search"></i>
+                        </span>
+                        <div id="busca-sugestoes-relatorio"></div>
+                    </div>
+                </div>
+                <div class="input-group" style="min-width:140px; max-width:180px;">
+                    <label for="filter-data-criacao-busca">Data Criação</label>
+                    <input type="date" id="filter-data-criacao-busca" />
+                </div>
+                <div class="input-group" style="min-width:140px; max-width:180px;">
+                    <label for="filter-data-inicio-busca">Data Início</label>
+                    <input type="date" id="filter-data-inicio-busca" />
+                </div>
+                <div class="input-group" style="min-width:140px; max-width:180px;">
+                    <label for="filter-data-fim-busca">Data Fim</label>
+                    <input type="date" id="filter-data-fim-busca" />
+                </div>
+                <button id="btn-limpar-filtros-busca" class="btn limpar">
+                    <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
+                </button>
+                <button id="btn-exibir-detalhes-busca" class="btn" style="background:#fff; border:1px solid #1e94a3; color:#1e94a3;">
+                    <i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes
+                </button>
+                <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0; background:#1e94a3; color:#fff;">
+                    <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Relatórios
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Área de gerar relatório (mantida abaixo) -->
+    <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
             <div class="filters-row">
@@ -69,10 +108,12 @@
                     <label for="filter-data-fim">Data Fim</label>
                     <input type="date" id="filter-data-fim" />
                 </div>
-                <button class="btn" style="height: 32px; align-self: flex-end; margin-bottom: 0;" onclick="gerar()">
-                    <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i> Gerar
+                <button id="btn-cancelar-gerar" class="btn limpar" style="max-width: 90px;">
+                    <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
                 </button>
-            </div>
+                <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
+                    <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
+                </button>
             </div>
         </div>
     </div>
