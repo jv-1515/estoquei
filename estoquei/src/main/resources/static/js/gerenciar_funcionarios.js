@@ -14,6 +14,62 @@ function corAvatar(str) {
     return `hsl(${h}, 60%, 80%)`;
 }
 
+
+
+// Atualiza avatar ao digitar o nome no cadastro e na edição
+document.addEventListener('DOMContentLoaded', function() {
+    // Cadastro
+    const nomeInput = document.getElementById('cad-nome');
+    const avatarDiv = document.getElementById('cad-avatar');
+    const iniciaisSpan = document.getElementById('cad-avatar-iniciais');
+    const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+
+    function atualizarAvatarCadastro() {
+        const nome = nomeInput ? nomeInput.value.trim() : '';
+        if (nome.length > 0) {
+            if (iniciaisSpan) iniciaisSpan.textContent = getIniciais(nome);
+            if (avatarDiv) avatarDiv.style.background = corAvatar(nome);
+            if (icon) icon.style.display = 'none';
+        } else {
+            if (iniciaisSpan) iniciaisSpan.textContent = '';
+            if (avatarDiv) avatarDiv.style.background = '#e0e0e0';
+            if (icon) icon.style.display = '';
+        }
+    }
+
+    if (nomeInput && avatarDiv && iniciaisSpan) {
+        nomeInput.addEventListener('input', atualizarAvatarCadastro);
+        atualizarAvatarCadastro();
+    }
+
+    // Edição
+    const editNomeInput = document.getElementById('edit-nome');
+    const editAvatarDiv = document.getElementById('edit-avatar');
+    const editIniciaisSpan = document.getElementById('edit-avatar-iniciais');
+    const editIcon = editAvatarDiv ? editAvatarDiv.querySelector('i.fa-user') : null;
+
+    function atualizarAvatarEdicao() {
+        const nome = editNomeInput ? editNomeInput.value.trim() : '';
+        if (nome.length > 0) {
+            if (editIniciaisSpan) editIniciaisSpan.textContent = getIniciais(nome);
+            if (editAvatarDiv) editAvatarDiv.style.background = corAvatar(nome);
+            if (editIcon) editIcon.style.display = 'none';
+        } else {
+            if (editIniciaisSpan) editIniciaisSpan.textContent = '';
+            if (editAvatarDiv) editAvatarDiv.style.background = '#e0e0e0';
+            if (editIcon) editIcon.style.display = '';
+        }
+    }
+
+    if (editNomeInput && editAvatarDiv && editIniciaisSpan) {
+        editNomeInput.addEventListener('input', atualizarAvatarEdicao);
+        atualizarAvatarEdicao();
+    }
+
+    // Atualiza avatar ao abrir modal de edição
+    window.atualizarAvatarEdicao = atualizarAvatarEdicao;
+});
+
 function renderizarFuncionarios(lista) {
     const container = document.getElementById("product-list");
     container.innerHTML = `
@@ -252,6 +308,10 @@ function abrirEdicaoFuncionario(codigo) {
         document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
         document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
+        // Atualiza o avatar de edição imediatamente com o nome já preenchido
+        if (window.atualizarAvatarEdicao) {
+            window.atualizarAvatarEdicao();
+        }
 
         // Mostra o modal de edição
         document.getElementById('editar-funcionario').style.display = 'flex';
@@ -409,3 +469,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+function togglePassword(inputId) {
+    const senhaInput = document.getElementById(inputId);
+    const eyeIcon = document.getElementById('icon-' + inputId);
+    if (senhaInput.type === "password") {
+        senhaInput.type = "text";
+        eyeIcon.classList.remove("fa-eye-slash");
+        eyeIcon.classList.add("fa-eye");
+    } else {
+        senhaInput.type = "password";
+        eyeIcon.classList.remove("fa-eye");
+        eyeIcon.classList.add("fa-eye-slash");
+    }
+}
