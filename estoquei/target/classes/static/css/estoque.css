@@ -324,10 +324,11 @@ button:hover,
     border: 1px solid #aaa;
     border-top: none;
     border-radius: 0 0 4px 4px;
-    padding: 8px;
+    padding: 10px;
     z-index: 10;
     min-width: 100%;
     box-sizing: border-box;
+    color: #757575;
 }
 
 .input-group:has(#filter-preco) {
@@ -469,4 +470,22 @@ select#registros-select option {
 .fa-arrow-up:hover {
     color: #1E94A3;
     transition: color 0.2s;
+}
+
+/* Checkboxes de quantidade faixa-popup */
+.quantidade-check-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 12px !important;
+    color: #757575 !important;
+    font-weight: normal !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    padding: 2px 10px;
+    gap: 8px;
+}
+.quantidade-check-label input[type="checkbox"] {
+    width: 12px !important;
+    height: 12px !important;
 }
