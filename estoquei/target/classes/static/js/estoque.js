@@ -298,7 +298,23 @@ function atualizarPlaceholderTamanhoMulti() {
             ativo = false;
         }
     } else {
-        texto = selecionados.join(', ');
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+        } else {
+            texto = selecionados.join(', ');
+        }
     }
 
     if (ativo) {
@@ -316,6 +332,51 @@ function atualizarPlaceholderTamanhoMulti() {
     // Atualiza cor do select
     select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
+
+// Atualiza placeholder da quantidade conforme seleção dos checkboxes
+function atualizarPlaceholderQuantidade() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const input = document.getElementById('filter-quantidade');
+    let texto = 'Todas';
+    let ativo = true;
+    
+    // Todas as combinações possíveis
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+        texto = 'Todas';
+        ativo = false;
+    } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+        texto = 'Todas exceto zerados';
+    } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        texto = 'Todas exceto baixo estoque';
+    } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+        texto = 'Baixo estoque e zerados';
+    } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+        texto = 'Baixo estoque';
+    } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        texto = 'Zerados';
+    } else {
+        texto = 'Todas';
+    }
+    if (input) input.placeholder = texto;
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+}
+
+// Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
+
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 
 // Atualiza tamanhos ao mudar qualquer checkbox de categoria
 document.querySelectorAll('.categoria-multi-check').forEach(cb => {
@@ -394,16 +455,14 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
+    // Filtros de categoria, tamanho, gênero, etc
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
     if (!checks[0].checked) {
-        categoriasSelecionadas = checks.slice(1)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
+        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
     }
-
-    let tamanhosSelecionados = getTamanhosSelecionados();
-    let generosSelecionados = getGenerosSelecionados();
+    let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados() : [];
+    let generosSelecionados = getGenerosSelecionados ? getGenerosSelecionados() : [];
 
     // Faixas
     let qtdMinVal = document.getElementById("quantidade-min").value;
@@ -423,7 +482,10 @@ function filtrar() {
     precoMax = precoMax ? parseInt(precoMax) / 100 : null;
     if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
 
-    // Filtro em memória
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+
     let produtosFiltrados = produtos.filter(p => {
         // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
@@ -437,7 +499,31 @@ function filtrar() {
         if (limiteMaxVal !== null && p.limiteMinimo > limiteMaxVal) return false;
         if (precoMin !== null && p.preco < precoMin) return false;
         if (precoMax !== null && p.preco > precoMax) return false;
-        return true;
+
+        // Lógica de filtragem de quantidade
+        // Todas as combinações possíveis
+        if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+            // Todas
+            return true;
+        } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+            // Todas exceto zerados
+            return Number(p.quantidade) > 0;
+        } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+            // Todas exceto baixo estoque: zerados OU acima do baixo estoque
+            return Number(p.quantidade) === 0 || Number(p.quantidade) > 2 * Number(p.limiteMinimo);
+        } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+            // Baixo estoque e zerados
+            return Number(p.quantidade) === 0 || (Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo));
+        } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+            // Só baixo estoque
+            return Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo);
+        } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+            // Só zerados
+            return Number(p.quantidade) === 0;
+        } else {
+            // Personalizado ou nenhum marcado
+            return true;
+        }
     });
 
     paginaAtual = 1;
@@ -445,25 +531,6 @@ function filtrar() {
     atualizarDetalhesInfo(produtosFiltrados);
     window.atualizarDetalhesEstoque(produtosFiltrados);
 }    
-
-// function limpar() {
-//     document.querySelectorAll(".filters input, .filters select").forEach(el => {
-//         el.value = "";
-//         if (el.dataset) el.dataset.valor = "";
-//     });
-//     precoMin.value = "";
-//     precoMax.value = "";
-//     qtdMin.value = "";
-//     qtdMax.value = "";
-//     limiteMin.value = "";
-//     limiteMax.value = "";
-//     precoInput.value = "";
-//     qtdInput.value = "";
-//     limiteInput.value = "";
-
-//     carregarProdutos(document.getElementById('registros-select').value);
-//     setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
-// }
 
 function removerProduto(id) {
     Swal.fire({
@@ -563,6 +630,31 @@ function renderizarProdutos(produtos) {
             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
 
             const quantidadeVermelha = p.quantidade <= p.limiteMinimo;
+            let iconeAbastecer = '';
+            if (precisaAbastecer) {
+                const corIcone = quantidadeVermelha ? 'red' : '#fbc02d';
+                const corFundo = quantidadeVermelha ? '#fff' : '#000';
+                iconeAbastecer = `
+                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
+                        style="
+                            position: absolute;
+                            top: 50%;
+                            right: 0;
+                            transform: translateY(-50%);
+                            width: 20px;
+                            height: 20px;
+                            text-decoration: none;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            pointer-events: auto;
+                            padding-right: 23px;
+                        ">
+                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                        <i class="fa-solid fa-triangle-exclamation" style="color:${corIcone};position:relative;z-index:1;"></i>
+                    </a>
+                `;
+            }
             const rowHtml = `
                 <tr>
                     <td>
@@ -578,24 +670,7 @@ function renderizarProdutos(produtos) {
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
-                        <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
-                            style="
-                                position: absolute;
-                                top: 50%;
-                                right: 0;
-                                transform: translateY(-50%);
-                                width: 20px;
-                                height: 20px;
-                                text-decoration: none;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                pointer-events: auto;
-                                padding-right: 23px;
-                            ">
-                            <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                            <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
-                        </a>
+                        ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
@@ -816,6 +891,14 @@ window.onload = function() {
 
         // Limpa categorias: marca "Todas"
         // Marca "Todas" nas categorias
+
+        // Marca todos os checkboxes de quantidade como true
+        const quantidadeChecks = document.querySelectorAll('#quantidade-faixa-popup input[type="checkbox"]');
+        if (quantidadeChecks) {
+            quantidadeChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderQuantidade();
+        }
+
         const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
         if (categoriaChecks) {
             categoriaChecks.forEach(cb => cb.checked = true);
@@ -1212,7 +1295,7 @@ function atualizarDetalhesInfo(produtos) {
     document.getElementById('detalhe-total-produtos').textContent = total;
 
     // Baixo estoque: quantidade > 0 e <= limiteMinimo
-    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= Number(p.limiteMinimo))).length;
+    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
     document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
 
     // Estoque zerado: quantidade == 0
@@ -1473,7 +1556,7 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
-            ativo = false; // Não está ativo se todos estão selecionados
+            ativo = false;
         }
     } else {
         // Verifica se todos em letras estão marcados
@@ -1508,6 +1591,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
+    select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1635,4 +1719,35 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 
     atualizarPlaceholderGeneroMulti();
+});
+
+// --- QUANTIDADE FAIXA CHECKBOXES ---
+const chkTodos = document.getElementById('quantidade-todas-popup');
+const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+const chkZerados = document.getElementById('quantidade-zerados-popup');
+
+function marcarApenas(qual) {
+    chkTodos.checked = qual === 'todos';
+    chkBaixo.checked = qual === 'baixo';
+    chkZerados.checked = qual === 'zerados';
+}
+
+chkTodos.addEventListener('change', function() {
+    if (chkTodos.checked) {
+        marcarApenas('todos');
+        filtrar();
+    }
+
+});
+chkBaixo.addEventListener('change', function() {
+    if (chkBaixo.checked) {
+        marcarApenas('baixo');
+        filtrar();
+    }
+});
+chkZerados.addEventListener('change', function() {
+    if (chkZerados.checked) {
+        marcarApenas('zerados');
+        filtrar();
+    }
 });
