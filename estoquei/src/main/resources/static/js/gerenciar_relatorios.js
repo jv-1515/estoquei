@@ -649,10 +649,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelar = document.getElementById('btn-cancelar-gerar');
     if (btnLimpar) {
         btnLimpar.addEventListener('click', function() {
-            document.getElementById('busca-relatorio').value = '';
-            document.getElementById('filter-data-criacao-busca').value = '';
-            document.getElementById('filter-data-inicio-busca').value = '';
-            document.getElementById('filter-data-fim-busca').value = '';
+            // Limpa todos os campos da barra de busca de relatórios
+            const camposBusca = [
+                'busca-relatorio',
+                'filter-data-criacao-busca',
+                'filter-data-inicio-busca',
+                'filter-data-fim-busca'
+            ];
+            camposBusca.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            filtrarRelatorios();
         });
     }
 
@@ -667,3 +675,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('filter-data-inicio-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('filter-data-fim-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('filter-data-criacao-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('busca-relatorio').addEventListener('input', filtrarRelatorios);
+});
+
+function filtrarRelatorios() {
+    const dataCriacao = document.getElementById('filter-data-criacao-busca').value;
+    const dataInicio = document.getElementById('filter-data-inicio-busca').value;
+    const dataFim = document.getElementById('filter-data-fim-busca').value;
+    const titulo = document.getElementById('busca-relatorio').value.toLowerCase();
+
+    let filtrados = window.relatoriosGerados.filter(r => {
+        let ok = true;
+        // Filtro por título
+        if (titulo && !r.nome.toLowerCase().includes(titulo)) ok = false;
+
+        // Filtro por data de criação (exata)
+        if (dataCriacao) {
+            // r.dataCriacao pode ser string ou Date
+            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
+            let dataFiltro = new Date(dataCriacao);
+            if (!dataRel || dataRel.toISOString().slice(0,10) !== dataCriacao) ok = false;
+        }
+
+        // Filtro por período (data início/fim)
+        if (dataInicio) {
+            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
+            let dataFiltro = new Date(dataInicio);
+            if (!dataRel || dataRel < dataFiltro) ok = false;
+        }
+        if (dataFim) {
+            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
+            let dataFiltro = new Date(dataFim);
+            if (!dataRel || dataRel > dataFiltro) ok = false;
+        }
+        return ok;
+    });
+
+    renderizarRelatorios(filtrados);
+}
