@@ -208,6 +208,15 @@ tbody tr:nth-child(odd) {
     color: #757575;
 }
 
+#filter-quantidade.quantidade-ativa {
+    color: #1e94a3 !important;
+    transition: color 0.2s;
+}
+#filter-quantidade.quantidade-ativa::placeholder {
+    color: #1e94a3 !important;
+    transition: color 0.2s;
+}
+
 th.ordenar {
     position: relative;
     cursor: pointer;
@@ -318,7 +327,7 @@ button:hover,
 .faixa-popup {
     display: none;
     position: absolute;
-    top: 37px;
+    top: 40px;
     left: 0;
     background: #fff;
     border: 1px solid #aaa;
