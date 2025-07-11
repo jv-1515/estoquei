@@ -77,6 +77,8 @@ h2 {
     padding: 2px 0 0 0;
     font-weight: bold;
     pointer-events: none;
+    flex-direction: row-reverse;
+    justify-content: space-between;
 }
 
 .input-group input,
@@ -327,17 +329,22 @@ button:hover,
 .faixa-popup {
     display: none;
     position: absolute;
-    top: 40px;
+    top: 100%;
     left: 0;
     background: #fff;
     border: 1px solid #aaa;
     border-top: none;
-    border-radius: 0 0 4px 4px;
+    border-radius:4px;
+    gap: 2px;
     padding: 10px;
     z-index: 10;
     min-width: 100%;
     box-sizing: border-box;
     color: #757575;
+}
+
+.faixa-popup input {
+    height: 25px;
 }
 
 .input-group:has(#filter-preco) {
@@ -494,7 +501,13 @@ select#registros-select option {
     padding: 2px 10px;
     gap: 8px;
 }
+
+.quantidade-check-label:hover {
+    background-color: #f3f3f3;
+}
+
 .quantidade-check-label input[type="checkbox"] {
     width: 12px !important;
     height: 12px !important;
 }
+
