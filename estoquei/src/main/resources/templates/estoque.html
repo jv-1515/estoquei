@@ -28,18 +28,18 @@
     </div>
     <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1200px;">
         <h2>Buscar Produtos</h2>
-        <div style="display: flex; align-items: center; gap: 8px; position: relative;">
+        <div style="display: flex; align-items: center; gap: 8px; position: relative; height: 30px; max-height: 30px;">
             <div style="flex:1; position:relative; display:flex;">
-                <input type="text" id="busca-produto" placeholder="Digite nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
+                <input type="text" id="busca-produto" placeholder="Digite o nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
                 <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                     <i class="fa fa-search"></i>
                 </span>
                 <div id="busca-sugestoes"></div>
             </div>
-            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
+            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px; width: 76px; max-width: 76px;">
                 <i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Filtros
             </button>
-            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
+            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;width: 92px; max-width: 92px;">
                 <i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes
             </button>
         </div>

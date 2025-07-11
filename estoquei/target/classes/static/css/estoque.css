@@ -97,6 +97,9 @@ h2 {
 }
 
 .btn {
+    min-height: 30px;
+    height: 30px;
+    max-height: 30px;
     background-color: #1e94a3;
     color: white;
     border: none;
@@ -104,6 +107,7 @@ h2 {
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
+
 }
 
 .btn:hover{
@@ -111,7 +115,6 @@ h2 {
 }
 
 .btn.limpar {
-    height: 30px;
     align-self: flex-end;
     display: flex;
 }

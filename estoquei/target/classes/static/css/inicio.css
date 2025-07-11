@@ -17,21 +17,21 @@ h2 {
     margin: 0 0 15px 0;
 }
 
-nav ul {
+/* nav ul {
     list-style: none;
     display: flex;
     gap: 10px;
     margin: 0;
     padding: 0;
-}
+} */
 
-nav a {
+/* nav a {
     background-color: #1E94A3;
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
     text-decoration: none;
-}
+} */
 
 .notification {
     position: relative;
