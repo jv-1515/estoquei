@@ -563,6 +563,31 @@ function renderizarProdutos(produtos) {
             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
 
             const quantidadeVermelha = p.quantidade <= p.limiteMinimo;
+            let iconeAbastecer = '';
+            if (precisaAbastecer) {
+                const corIcone = quantidadeVermelha ? 'red' : '#fbc02d';
+                const corFundo = quantidadeVermelha ? '#fff' : '#000';
+                iconeAbastecer = `
+                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
+                        style="
+                            position: absolute;
+                            top: 50%;
+                            right: 0;
+                            transform: translateY(-50%);
+                            width: 20px;
+                            height: 20px;
+                            text-decoration: none;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            pointer-events: auto;
+                            padding-right: 23px;
+                        ">
+                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                        <i class="fa-solid fa-triangle-exclamation" style="color:${corIcone};position:relative;z-index:1;"></i>
+                    </a>
+                `;
+            }
             const rowHtml = `
                 <tr>
                     <td>
@@ -578,24 +603,7 @@ function renderizarProdutos(produtos) {
                     <td class="genero">${p.genero}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
-                        <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
-                            style="
-                                position: absolute;
-                                top: 50%;
-                                right: 0;
-                                transform: translateY(-50%);
-                                width: 20px;
-                                height: 20px;
-                                text-decoration: none;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                pointer-events: auto;
-                                padding-right: 23px;
-                            ">
-                            <span style="background:${p.quantidade <= p.limiteMinimo ? '#fff' : '#000'};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-                            <i class="fa-solid fa-triangle-exclamation" style="color:${p.quantidade <= p.limiteMinimo ? 'red' : '#fbc02d'};position:relative;z-index:1;"></i>
-                        </a>
+                        ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
@@ -1212,7 +1220,7 @@ function atualizarDetalhesInfo(produtos) {
     document.getElementById('detalhe-total-produtos').textContent = total;
 
     // Baixo estoque: quantidade > 0 e <= limiteMinimo
-    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= Number(p.limiteMinimo))).length;
+    const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
     document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
 
     // Estoque zerado: quantidade == 0
