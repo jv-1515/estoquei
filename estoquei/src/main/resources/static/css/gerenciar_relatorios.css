@@ -78,6 +78,13 @@ h2 {
     padding: 0 7px;
 }
 
+#filter-data-criacao-busca,
+#filter-data-inicio-busca,
+#filter-data-fim-busca {
+    width: 150px;
+    max-width: 150px;
+}
+
 .input-group {
     position: relative;
     flex: 1 1 90px;
@@ -126,14 +133,14 @@ h2 {
     background-color: #277580;
 }
 
-.limpar {
+.cancelar {
     background-color: white;
     color: #1e94a3;
     border: 1px solid #1e94a3;
     width: 120px;
 }
 
-.limpar:hover {
+.cancelar:hover {
     background-color: #1e94a3;
     color: white;
     border: none;

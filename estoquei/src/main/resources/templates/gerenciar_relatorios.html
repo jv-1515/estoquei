@@ -33,7 +33,7 @@
         <div class="filters">
             <h2>Buscar Relatórios</h2>
             <div class="filters-row">
-                <div class="input-group" style="flex:1; min-width:180px; max-width:400px;">
+                <div class="input-group">
                     <label for="busca-relatorio">Título</label>
                     <div style="position:relative; display:flex;align-items: flex-end;">
                         <input type="text" id="busca-relatorio" placeholder="Digite o título do relatório" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
@@ -43,19 +43,19 @@
                         <div id="busca-sugestoes-relatorio"></div>
                     </div>
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-criacao-busca">Data Criação</label>
                     <input type="date" id="filter-data-criacao-busca" />
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-inicio-busca">Data Início</label>
                     <input type="date" id="filter-data-inicio-busca" />
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-fim-busca">Data Fim</label>
                     <input type="date" id="filter-data-fim-busca" />
                 </div>
-                <button id="btn-limpar-filtros-busca" class="btn limpar">
+                <button id="btn-limpar-filtros-busca" class="btn">
                     <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
                 </button>
                 <button id="btn-exibir-detalhes-busca" class="btn" style="background:#fff; border:1px solid #1e94a3; color:#1e94a3;;width: 92px; max-width: 92px;">
@@ -105,7 +105,7 @@
                     <label for="filter-data-fim">Data Fim</label>
                     <input type="date" id="filter-data-fim" />
                 </div>
-                <button id="btn-cancelar-gerar" class="btn limpar" style="max-width: 90px;">
+                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
                     <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
                 </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
@@ -203,13 +203,12 @@
             <thead id="relatorios-thead">
                 <tr>
                     <th class="ordenar">Título <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Data de Criação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Data Criação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Período <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="product-table-body">
-                <!-- Relatórios serão listados aqui -->
             </tbody>
         </table>
         <div id="paginacao" style="text-align: center; margin-top: 8px"></div>

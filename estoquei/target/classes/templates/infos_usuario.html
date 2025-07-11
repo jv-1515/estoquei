@@ -18,6 +18,20 @@
         </button>
     </a>
 
+    <div style="display: flex; gap: 12px; position:fixed; top:20px; right:20px; z-index:1000; align-items:center;">
+        <div id="nots" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+            <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
+                <span style="display: inline-block; position: relative;">
+                    <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
+                </span>
+                <span class="badge"></span>
+            </div>
+        </div>
+        <div style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
+            <i onclick="confirmarSaida(event)" class="fa-solid fa-arrow-right-from-bracket" style="cursor:pointer;font-size:18px;"></i>
+        </div>
+    </div>
+
     <h1 style="font-size: 28px; margin-bottom: 10px; color: #277580; text-align:center;">Informações de Cadastro</h1>
     <form class="form-container" action="/usuarios" method="POST" enctype="multipart/form-data">
         <input type="hidden" id="usuario-id" th:value="${usuarioLogado.id}" />
@@ -33,11 +47,11 @@
             </div>
             
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required readonly placeholder="seu@email.com" tabindex="1" th:value="${usuarioLogado.email}">
+            <input type="email" id="email" name="email" required readonly placeholder="seu@email.com" tabindex="1" th:value="${usuarioLogado.email}" style="color: #757575;">
 
             <label for="Senha">Senha</label>
             <div style="display: flex; gap: 10px; height: 30px;">
-                <input type="password" id="senha" name="senha" readonly placeholder="Digite sua senha" minlength="8" autocomplete="current-password" tabindex="2" th:value="${usuarioLogado.senha}" style="flex: 2;">
+                <input type="password" id="senha" name="senha" readonly placeholder="Digite sua senha" minlength="8" autocomplete="current-password" tabindex="2" th:value="${usuarioLogado.senha}" style="flex: 2; color: #757575;">
                 <button type="button" id="btn-redefinir-senha" style="flex: 1; margin-top: 0; padding: 0;">Redefinir senha</button>
             </div>
 
@@ -66,7 +80,7 @@
                         <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
                     </span>
                 </div>
-                <a href="" class="register-link">Esqueceu sua senha? Clique aqui</a>
+                <a href="/andamento" class="register-link">Esqueceu sua senha? Clique aqui</a>
                 <button type="submit" id="save" tabindex="8">Confirmar Alterações</button>
             </div>
         </div>
