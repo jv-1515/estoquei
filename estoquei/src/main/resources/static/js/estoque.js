@@ -341,7 +341,7 @@ function atualizarPlaceholderQuantidade() {
     const input = document.getElementById('filter-quantidade');
     let texto = 'Todas';
     let ativo = true;
-    
+
     // Todas as combinações possíveis
     if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
         texto = 'Todas';
@@ -358,6 +358,7 @@ function atualizarPlaceholderQuantidade() {
         texto = 'Zerados';
     } else {
         texto = 'Todas';
+        ativo = false;
     }
     if (input) input.placeholder = texto;
 
@@ -371,10 +372,10 @@ function atualizarPlaceholderQuantidade() {
 }
 
 // Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
-['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
-});
+// ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+//     const el = document.getElementById(id);
+//     if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+// });
 
 document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 
@@ -521,7 +522,6 @@ function filtrar() {
             // Só zerados
             return Number(p.quantidade) === 0;
         } else {
-            // Personalizado ou nenhum marcado
             return true;
         }
     });
@@ -1062,6 +1062,7 @@ function aplicarFiltroQtdFaixa() {
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
     if (qtdInput.value === "0 - 999") {
+        qtdInput.value = "Todas";
         ativo = false;
     }
     qtdPopup.style.display = 'none';
@@ -1077,6 +1078,7 @@ function aplicarFiltroQtdFaixa() {
 }
 document.addEventListener('mousedown', function(e) {
     if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+        atualizarPlaceholderQuantidade();
         aplicarFiltroQtdFaixa();
     }
 });
@@ -1680,7 +1682,7 @@ function atualizarPlaceholderGeneroMulti() {
         placeholder.textContent = selecionados.join(', ');
     }
 
-        if (ativo) {
+    if (ativo) {
         select.style.border = '2px solid #1e94a3';
         select.style.color = '#1e94a3';
     } else {
@@ -1722,32 +1724,32 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- QUANTIDADE FAIXA CHECKBOXES ---
-const chkTodos = document.getElementById('quantidade-todas-popup');
-const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-const chkZerados = document.getElementById('quantidade-zerados-popup');
+// const chkTodos = document.getElementById('quantidade-todas-popup');
+// const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+// const chkZerados = document.getElementById('quantidade-zerados-popup');
 
-function marcarApenas(qual) {
-    chkTodos.checked = qual === 'todos';
-    chkBaixo.checked = qual === 'baixo';
-    chkZerados.checked = qual === 'zerados';
-}
+// function marcarApenas(qual) {
+//     chkTodos.checked = qual === 'todos';
+//     chkBaixo.checked = qual === 'baixo';
+//     chkZerados.checked = qual === 'zerados';
+// }
 
-chkTodos.addEventListener('change', function() {
-    if (chkTodos.checked) {
-        marcarApenas('todos');
-        filtrar();
-    }
+// chkTodos.addEventListener('change', function() {
+//     if (chkTodos.checked) {
+//         marcarApenas('todos');
+//         filtrar();
+//     }
 
-});
-chkBaixo.addEventListener('change', function() {
-    if (chkBaixo.checked) {
-        marcarApenas('baixo');
-        filtrar();
-    }
-});
-chkZerados.addEventListener('change', function() {
-    if (chkZerados.checked) {
-        marcarApenas('zerados');
-        filtrar();
-    }
-});
+// });
+// chkBaixo.addEventListener('change', function() {
+//     if (chkBaixo.checked) {
+//         marcarApenas('baixo');
+//         filtrar();
+//     }
+// });
+// chkZerados.addEventListener('change', function() {
+//     if (chkZerados.checked) {
+//         marcarApenas('zerados');
+//         filtrar();
+//     }
+// });
