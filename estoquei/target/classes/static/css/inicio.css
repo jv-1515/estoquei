@@ -56,10 +56,15 @@ nav a {
 .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 21px;
+    gap: 20px 21px;
     justify-items: center;
     padding: 0;
     max-width: 900px;
+    width: 900px;
+    min-width: 900px;
+    min-height: 320px;
+    height: 320px;
+    max-height: 320px;
     align-items: center;
 }
 
