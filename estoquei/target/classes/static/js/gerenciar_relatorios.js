@@ -630,13 +630,13 @@ document.addEventListener('DOMContentLoaded', function() {
             gerarVisivel = !gerarVisivel;
             if (gerarVisivel) {
                 areaGerar.style.display = 'flex';
-                btnGerar.innerHTML = '<i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Relatórios';
+                btnGerar.innerHTML = '<i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Novo Relatório';
                 btnGerar.style.background = '#1e94a3';
                 btnGerar.style.color = '#fff';
                 btnGerar.style.border = 'none';
             } else {
                 areaGerar.style.display = 'none';
-                btnGerar.innerHTML = '<i class="fa-solid fa-file-excel" style="margin-right: 6px;"></i>Relatórios';
+                btnGerar.innerHTML = '<i class="fa-solid fa-file-excel" style="margin-right: 6px;"></i>Novo Relatório';
                 btnGerar.style.background = '#fff';
                 btnGerar.style.color = '#1e94a3';
                 btnGerar.style.border = '1px solid #1e94a3';
