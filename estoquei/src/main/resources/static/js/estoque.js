@@ -364,10 +364,10 @@ function atualizarPlaceholderQuantidade() {
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
-        input.style.color = '#1e94a3';
+        input.classList.add('quantidade-ativa');
     } else {
         input.style.border = '';
-        input.style.color = '';
+        input.classList.remove('quantidade-ativa');
     }
 }
 
@@ -993,6 +993,7 @@ function aplicarFiltroPrecoFaixa() {
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
     if (precoInput.value === "R$ 0,00 - R$ 999,99") {
+        precoInput.value = 'Todos';
         ativo = false;
     }
 
@@ -1122,6 +1123,7 @@ function aplicarFiltroLimiteFaixa() {
     limiteMax.value = max;
     limiteInput.value = `${min} - ${max}`;
     if (limiteInput.value === "1 - 999") {
+        limiteInput.value = "Todos";
         ativo = false;
     }
     limitePopup.style.display = 'none';
@@ -1593,7 +1595,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
