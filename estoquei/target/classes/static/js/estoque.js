@@ -298,7 +298,23 @@ function atualizarPlaceholderTamanhoMulti() {
             ativo = false;
         }
     } else {
-        texto = selecionados.join(', ');
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+        } else {
+            texto = selecionados.join(', ');
+        }
     }
 
     if (ativo) {
@@ -394,16 +410,14 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
+    // Filtros de categoria, tamanho, gênero, etc
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
     if (!checks[0].checked) {
-        categoriasSelecionadas = checks.slice(1)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
+        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
     }
-
-    let tamanhosSelecionados = getTamanhosSelecionados();
-    let generosSelecionados = getGenerosSelecionados();
+    let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados() : [];
+    let generosSelecionados = getGenerosSelecionados ? getGenerosSelecionados() : [];
 
     // Faixas
     let qtdMinVal = document.getElementById("quantidade-min").value;
@@ -423,7 +437,13 @@ function filtrar() {
     precoMax = precoMax ? parseInt(precoMax) / 100 : null;
     if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
 
-    // Filtro em memória
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+
+    if (chkBaixo.checked) chkTodos.checked = false;
+    if (chkZerados.checked) chkTodos.checked = false;
+
     let produtosFiltrados = produtos.filter(p => {
         // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
@@ -437,7 +457,20 @@ function filtrar() {
         if (limiteMaxVal !== null && p.limiteMinimo > limiteMaxVal) return false;
         if (precoMin !== null && p.preco < precoMin) return false;
         if (precoMax !== null && p.preco > precoMax) return false;
-        return true;
+
+        if (chkBaixo.checked && chkZerados.checked) {
+            return Number(p.quantidade) === 0 || (Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo));
+        } else if (chkBaixo.checked) {
+            return Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo);
+        } else if (chkZerados.checked) {
+            return Number(p.quantidade) === 0;
+        } else if (chkTodos.checked) {
+            if (qtdMinVal !== null && Number(p.quantidade) < qtdMinVal) return false;
+            if (qtdMaxVal !== null && Number(p.quantidade) > qtdMaxVal) return false;
+            return true;
+        } else {
+            return true;
+        }
     });
 
     paginaAtual = 1;
@@ -445,25 +478,6 @@ function filtrar() {
     atualizarDetalhesInfo(produtosFiltrados);
     window.atualizarDetalhesEstoque(produtosFiltrados);
 }    
-
-// function limpar() {
-//     document.querySelectorAll(".filters input, .filters select").forEach(el => {
-//         el.value = "";
-//         if (el.dataset) el.dataset.valor = "";
-//     });
-//     precoMin.value = "";
-//     precoMax.value = "";
-//     qtdMin.value = "";
-//     qtdMax.value = "";
-//     limiteMin.value = "";
-//     limiteMax.value = "";
-//     precoInput.value = "";
-//     qtdInput.value = "";
-//     limiteInput.value = "";
-
-//     carregarProdutos(document.getElementById('registros-select').value);
-//     setTimeout(filtrar, 100); // Garante que renderiza todos após carregar
-// }
 
 function removerProduto(id) {
     Swal.fire({
@@ -1481,7 +1495,7 @@ function atualizarPlaceholderTamanhoMulti() {
         // Se tem ambos, mostra "Todos"
         else {
             texto = 'Todos';
-            ativo = false; // Não está ativo se todos estão selecionados
+            ativo = false;
         }
     } else {
         // Verifica se todos em letras estão marcados
@@ -1516,6 +1530,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
+    select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1643,4 +1658,40 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 
     atualizarPlaceholderGeneroMulti();
+});
+
+// --- QUANTIDADE FAIXA CHECKBOXES ---
+const chkTodos = document.getElementById('quantidade-todas-popup');
+const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+const chkZerados = document.getElementById('quantidade-zerados-popup');
+
+function marcarApenas(qual) {
+    chkTodos.checked = qual === 'todos';
+    chkBaixo.checked = qual === 'baixo';
+    chkZerados.checked = qual === 'zerados';
+}
+
+chkTodos.addEventListener('change', function() {
+    if (chkTodos.checked) {
+        marcarApenas('todos');
+        filtrar();
+    }
+});
+chkBaixo.addEventListener('change', function() {
+    if (chkBaixo.checked) {
+        marcarApenas('baixo');
+        filtrar();
+    } else if (!chkZerados.checked) {
+        marcarApenas('todos');
+        filtrar();
+    }
+});
+chkZerados.addEventListener('change', function() {
+    if (chkZerados.checked) {
+        marcarApenas('zerados');
+        filtrar();
+    } else if (!chkBaixo.checked) {
+        marcarApenas('todos');
+        filtrar();
+    }
 });
