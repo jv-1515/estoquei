@@ -31,6 +31,27 @@ h2 {
     margin: 10px 0 5px 0;
 }
 
+.notification {
+    position: relative;
+    font-size: 24px;
+}
+
+.notification .badge {
+    position: absolute;
+    top: 2px;
+    left: 16px;
+    font-size: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 100%;
+}
+
+.notification .badge:hover {
+    background-color: rgb(204, 9, 9);
+    transition: background 0.2s, color 0.2s;
+}
+
+
 .form-container {
     background-color: white;
     border-radius: 10px;
@@ -55,6 +76,9 @@ h2 {
     font-size: 12px;
 }
 
+input:focus[readonly] {
+    outline: none !important;
+}
 
 .form-container button {
     background-color: #1E94A3;
