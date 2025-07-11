@@ -333,6 +333,51 @@ function atualizarPlaceholderTamanhoMulti() {
     select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
+// Atualiza placeholder da quantidade conforme seleção dos checkboxes
+function atualizarPlaceholderQuantidade() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const input = document.getElementById('filter-quantidade');
+    let texto = 'Todas';
+    let ativo = true;
+    
+    // Todas as combinações possíveis
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+        texto = 'Todas';
+        ativo = false;
+    } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+        texto = 'Todas exceto zerados';
+    } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        texto = 'Todas exceto baixo estoque';
+    } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+        texto = 'Baixo estoque e zerados';
+    } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+        texto = 'Baixo estoque';
+    } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        texto = 'Zerados';
+    } else {
+        texto = 'Todas';
+    }
+    if (input) input.placeholder = texto;
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+}
+
+// Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
+
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
 // Atualiza tamanhos ao mudar qualquer checkbox de categoria
 document.querySelectorAll('.categoria-multi-check').forEach(cb => {
     cb.addEventListener('change', updateOptions);
@@ -441,9 +486,6 @@ function filtrar() {
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
     const chkZerados = document.getElementById('quantidade-zerados-popup');
 
-    if (chkBaixo.checked) chkTodos.checked = false;
-    if (chkZerados.checked) chkTodos.checked = false;
-
     let produtosFiltrados = produtos.filter(p => {
         // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
@@ -458,17 +500,28 @@ function filtrar() {
         if (precoMin !== null && p.preco < precoMin) return false;
         if (precoMax !== null && p.preco > precoMax) return false;
 
-        if (chkBaixo.checked && chkZerados.checked) {
-            return Number(p.quantidade) === 0 || (Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo));
-        } else if (chkBaixo.checked) {
-            return Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo);
-        } else if (chkZerados.checked) {
-            return Number(p.quantidade) === 0;
-        } else if (chkTodos.checked) {
-            if (qtdMinVal !== null && Number(p.quantidade) < qtdMinVal) return false;
-            if (qtdMaxVal !== null && Number(p.quantidade) > qtdMaxVal) return false;
+        // Lógica de filtragem de quantidade
+        // Todas as combinações possíveis
+        if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+            // Todas
             return true;
+        } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+            // Todas exceto zerados
+            return Number(p.quantidade) > 0;
+        } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+            // Todas exceto baixo estoque: zerados OU acima do baixo estoque
+            return Number(p.quantidade) === 0 || Number(p.quantidade) > 2 * Number(p.limiteMinimo);
+        } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
+            // Baixo estoque e zerados
+            return Number(p.quantidade) === 0 || (Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo));
+        } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
+            // Só baixo estoque
+            return Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo);
+        } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+            // Só zerados
+            return Number(p.quantidade) === 0;
         } else {
+            // Personalizado ou nenhum marcado
             return true;
         }
     });
@@ -838,6 +891,14 @@ window.onload = function() {
 
         // Limpa categorias: marca "Todas"
         // Marca "Todas" nas categorias
+
+        // Marca todos os checkboxes de quantidade como true
+        const quantidadeChecks = document.querySelectorAll('#quantidade-faixa-popup input[type="checkbox"]');
+        if (quantidadeChecks) {
+            quantidadeChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderQuantidade();
+        }
+
         const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
         if (categoriaChecks) {
             categoriaChecks.forEach(cb => cb.checked = true);
@@ -1676,22 +1737,17 @@ chkTodos.addEventListener('change', function() {
         marcarApenas('todos');
         filtrar();
     }
+
 });
 chkBaixo.addEventListener('change', function() {
     if (chkBaixo.checked) {
         marcarApenas('baixo');
-        filtrar();
-    } else if (!chkZerados.checked) {
-        marcarApenas('todos');
         filtrar();
     }
 });
 chkZerados.addEventListener('change', function() {
     if (chkZerados.checked) {
         marcarApenas('zerados');
-        filtrar();
-    } else if (!chkBaixo.checked) {
-        marcarApenas('todos');
         filtrar();
     }
 });
