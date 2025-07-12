@@ -352,20 +352,28 @@ function filtrarRelatorios() {
     const dataInicio = document.getElementById('filter-data-inicio-busca').value;
     const dataFim = document.getElementById('filter-data-fim-busca').value;
     const titulo = document.getElementById('busca-relatorio').value.toLowerCase();
-
+    // Códigos selecionados
+    let codigosSelecionados = [];
+    const checksCodigo = document.querySelectorAll('.codigo-multi-check');
+    if (checksCodigo.length > 0) {
+        codigosSelecionados = Array.from(checksCodigo)
+            .filter(cb => cb.checked && cb.value)
+            .map(cb => cb.value);
+    }
     let filtrados = window.relatoriosGerados.filter(r => {
         let ok = true;
+        // Filtro por código (se algum selecionado e não "Todos")
+        if (codigosSelecionados.length > 0) {
+            if (!codigosSelecionados.includes(r.codigoProduto)) ok = false;
+        }
         // Filtro por título
         if (titulo && !r.nome.toLowerCase().includes(titulo)) ok = false;
-
         // Filtro por data de criação (exata)
         if (dataCriacao) {
-            // r.dataCriacao pode ser string ou Date
             let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
             let dataFiltro = new Date(dataCriacao);
             if (!dataRel || dataRel.toISOString().slice(0,10) !== dataCriacao) ok = false;
         }
-
         // Filtro por período (data início/fim)
         if (dataInicio) {
             let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
@@ -688,608 +696,353 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+}
+
+// Função para pegar tamanhos selecionados
+function getTamanhosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+// Controle de expansão do multiselect de tamanhos
+window.expandedTamanhoMulti = false;
+
+function showCheckboxesTamanhoMulti() {
+    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+    if (!window.expandedTamanhoMulti) {
+        checkboxes.style.display = "block";
+        window.expandedTamanhoMulti = true;
+
+        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
+        atualizarPlaceholderTamanhoMulti();
+
+        // Fecha ao clicar fora
+        function handleClickOutside(e) {
+            if (
+                checkboxes &&
+                !checkboxes.contains(e.target) &&
+                !document.querySelector('.multiselect .overSelect').contains(e.target)
+            ) {
+                checkboxes.style.display = "none";
+                window.expandedTamanhoMulti = false;
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedTamanhoMulti = false;
+    }
+}
+
+function marcarOuDesmarcarTodosTamanhos() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        cb.checked = todas.checked;
+    });
+    // Atualiza "Todos Letras" e "Todos Numéricos" conforme o estado de "Todos"
+    todasLetra.checked = todas.checked;
+    todasNum.checked = todas.checked;
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+// Atualiza "Todos" se ambos "Todos Letras" e "Todos Numéricos" estiverem marcados
+function atualizarTodosTamanhosCheck() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    todas.checked = todasLetra.checked && todasNum.checked;
+}
+
+// Adiciona listeners para manter sincronização
+document.addEventListener('DOMContentLoaded', function() {
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    if (todasLetra && todasNum) {
+        todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
+        todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
+    }
+});
+
+function marcarOuDesmarcarLetras() {
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todas = document.getElementById('tamanho-multi-todas');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+
+    checks.forEach(cb => {
+        if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
+    });
+    const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
+    todasLetras.checked = checksLetra.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function marcarOuDesmarcarNumericos() {
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todas = document.getElementById('tamanho-multi-todas');
+    const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+    });
+    const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
+    todasNum.checked = checksNum.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function atualizarPlaceholderTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const select = document.getElementById('filter-tamanho');
+    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+
+    // Só conta os tamanhos individuais visíveis (não os grupos)
+    const individuaisVisiveis = checks.filter(cb =>
+        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+    );
+    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+        // Se só tem letras visíveis, mostra "Todos em Letras"
+        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+            texto = 'Todos em Letras';
+        }
+        // Se só tem números visíveis, mostra "Todos Numéricos"
+        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+            texto = 'Todos Numéricos';
+        }
+        // Se tem ambos, mostra "Todos"
+        else {
+            texto = 'Todos';
+            ativo = false;
+        }
+    } else {
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+        } else {
+            texto = selecionados.join(', ');
+        }
+    }
+
+    if (ativo) {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
+    }
+
+    // Atualiza o texto da option placeholder
+    if (placeholderOption) placeholderOption.textContent = texto;
+    // Garante que a option placeholder está selecionada visualmente
+    select.selectedIndex = 0;
+    // Atualiza cor do select
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+}
+
+// --- MULTISELECT CÓDIGO (CHECKBOXES) ---
+function showCheckboxesCodigoMulti() {
+    const checkboxes = document.getElementById('checkboxes-codigo-multi');
+    if (checkboxes.style.display === 'block') {
+        checkboxes.style.display = 'none';
+    } else {
+        checkboxes.style.display = 'block';
+    }
+}
+
+function atualizarPlaceholderCodigoMulti() {
+    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+    const select = document.getElementById('filter-codigo-multi');
+    const placeholderOption = document.getElementById('codigo-multi-placeholder');
+    const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
+    let texto = 'Todos';
+    if (selecionados.length === 1) texto = selecionados[0];
+    else if (selecionados.length > 1) texto = selecionados.join(', ');
+    if (placeholderOption) placeholderOption.textContent = texto;
+    select.selectedIndex = 0;
     select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
-// Atualiza placeholder da quantidade conforme seleção dos checkboxes
-function atualizarPlaceholderQuantidade() {
-    const chkTodos = document.getElementById('quantidade-todas-popup');
-    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-    const chkZerados = document.getElementById('quantidade-zerados-popup');
-    const input = document.getElementById('filter-quantidade');
-    let texto = 'Todas';
-    let ativo = true;
-
-    // Todas as combinações possíveis
-    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
-        texto = 'Todas';
-        ativo = false;
-    } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
-        texto = 'Todas exceto zerados';
-    } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
-        texto = 'Todas exceto baixo estoque';
-    } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
-        texto = 'Baixo estoque e zerados';
-    } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
-        texto = 'Baixo estoque';
-    } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
-        texto = 'Zerados';
-    } else {
-        texto = 'Todas';
-        ativo = false;
-    }
-    if (input) input.placeholder = texto;
-
-    if (ativo) {
-        input.style.border = '2px solid #1e94a3';
-        input.classList.add('quantidade-ativa');
-    } else {
-        input.style.border = '';
-        input.classList.remove('quantidade-ativa');
-    }
-}
-
-// Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
-// ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
-//     const el = document.getElementById(id);
-//     if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
-// });
-
-document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
-
-// Atualiza tamanhos ao mudar qualquer checkbox de categoria
-document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-    cb.addEventListener('change', updateOptions);
-});
-
-// Atualiza ao carregar a página
-window.addEventListener('DOMContentLoaded', function() {
-    updateOptions();
-});
-
-window.addEventListener('DOMContentLoaded', function() {
-    updateOptions();
-    
-    const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
-    const detalhesDiv = document.getElementById('detalhes-estoque');
-
-    // Começa visível ou oculta conforme seu HTML
-    btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-
-    btnExibirDetalhes.addEventListener('click', function() {
-        const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
-        if (estaVisivel) {
-            detalhesDiv.style.display = 'none';
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
-            // Ajuste visual quando desativado
-            btnExibirDetalhes.style.border = '1px solid #1e94a3';
-            btnExibirDetalhes.style.background = '#fff';
-            btnExibirDetalhes.style.color = '#1e94a3';
-        } else {
-            detalhesDiv.style.display = 'flex';
-            window.atualizarDetalhesEstoque(produtos);
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-            // Volta ao visual padrão (ajuste conforme seu tema)
-            btnExibirDetalhes.style.border = '';
-            btnExibirDetalhes.style.background = '';
-            btnExibirDetalhes.style.color = '';
-        }
-    });
-});
-
-
-    // Atualiza tamanhos ao mudar qualquer checkbox de categoria
-    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', updateOptions);
-    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
-    });
-
-    // Atualiza ao mudar qualquer select/input (exceto faixas)
-    document.querySelectorAll('#filtros-avancados input:not([readonly]):not(#filter-quantidade):not(#filter-limite):not(#filter-preco), #filtros-avancados select').forEach(el => {
-        el.addEventListener('change', filtrar);
-        el.addEventListener('input', filtrar);
-    });
-
-    // Mantém listeners das faixas como estão
-    // ...restante do código...
-
-    const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
-    const detalhesDiv = document.getElementById('detalhes-estoque');
-
-    btnExibirDetalhes.addEventListener('click', function() {
-        if (detalhesDiv.style.display === 'none') {
-            detalhesDiv.style.display = 'flex';
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-        } else {
-            detalhesDiv.style.display = 'none';
-            btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
-        }
-    });
-});
-
-//var global e controle de paginação
-let produtos = [];
-let paginaAtual = 1;
-let itensPorPagina = 10;
-
-function filtrar() {
-    // Filtros de categoria, tamanho, gênero, etc
-    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    let categoriasSelecionadas = [];
-    if (!checks[0].checked) {
-        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-    }
-    let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados() : [];
-    let generosSelecionados = getGenerosSelecionados ? getGenerosSelecionados() : [];
-
-    // Faixas
-    let qtdMinVal = document.getElementById("quantidade-min").value;
-    let qtdMaxVal = document.getElementById("quantidade-max").value;
-    qtdMinVal = qtdMinVal === "" ? null : parseInt(qtdMinVal);
-    qtdMaxVal = qtdMaxVal === "" ? null : parseInt(qtdMaxVal);
-    if (qtdMinVal > qtdMaxVal) [qtdMinVal, qtdMaxVal] = [qtdMaxVal, qtdMinVal];
-
-    // let limiteMinVal = parseInt(document.getElementById("limite-min").value) || 1;
-    // let limiteMaxVal = parseInt(document.getElementById("limite-max").value) || 999;
-    // if (limiteMinVal > limiteMaxVal) [limiteMinVal, limiteMaxVal] = [limiteMaxVal, limiteMinVal];
-
-    // Preço faixa
-    let precoMin = document.getElementById("preco-min").value.replace(/\D/g, '');
-    let precoMax = document.getElementById("preco-max").value.replace(/\D/g, '');
-    precoMin = precoMin ? parseInt(precoMin) / 100 : null;
-    precoMax = precoMax ? parseInt(precoMax) / 100 : null;
-    if (precoMin !== null && precoMax !== null && precoMin > precoMax) [precoMin, precoMax] = [precoMax, precoMin];
-
-    const chkTodos = document.getElementById('quantidade-todas-popup');
-    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-    const chkZerados = document.getElementById('quantidade-zerados-popup');
-
-    let produtosFiltrados = produtos.filter(p => {
-        // Filtra pelas categorias selecionadas nos checkboxes
-        if (categoriasSelecionadas.length) {
-            if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
-        }
-        if (tamanhosSelecionados.length > 0 && !tamanhosSelecionados.includes(p.tamanho.toString().toUpperCase())) return false;
-        if (generosSelecionados.length > 0 && !generosSelecionados.includes(p.genero.toString().toUpperCase())) return false;
-        if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
-        if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
-        if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
-        if (limiteMaxVal !== null && p.limiteMinimo > limiteMaxVal) return false;
-        if (precoMin !== null && p.preco < precoMin) return false;
-        if (precoMax !== null && p.preco > precoMax) return false;
-
-        // Lógica de filtragem de quantidade
-        // Todas as combinações possíveis
-        if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
-            // Todas
-            return true;
-        } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
-            // Todas exceto zerados
-            return Number(p.quantidade) > 0;
-        } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
-            // Todas exceto baixo estoque: zerados OU acima do baixo estoque
-            return Number(p.quantidade) === 0 || Number(p.quantidade) > 2 * Number(p.limiteMinimo);
-        } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
-            // Baixo estoque e zerados
-            return Number(p.quantidade) === 0 || (Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo));
-        } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked) {
-            // Só baixo estoque
-            return Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo);
-        } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
-            // Só zerados
-            return Number(p.quantidade) === 0;
-        } else {
-            return true;
-        }
-    });
-
-    paginaAtual = 1;
-    // renderizarProdutos(produtosFiltrados);
-    // atualizarDetalhesInfo(produtosFiltrados);
-    // window.atualizarDetalhesEstoque(produtosFiltrados);
-}    
-
-function removerProduto(id) {
-    Swal.fire({
-        title: 'Tem certeza?',
-        text: 'Esta ação não poderá ser desfeita.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#1E94A3',
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-
-            fetch('/produtos/' + id, {
-                method: 'DELETE'
-            }).then(response => {
-                if (response.ok) {
-                    Swal.fire({
-                        title: 'Removendo...',
-                        text: 'Aguarde enquanto o produto é removido.',
-                        icon: 'info',
-                        showConfirmButton: true,
-                        confirmButtonColor: '#1E94A3',
-                        allowOutsideClick: false,
-                        timer: 1500,
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: 'Não foi possível remover.',
-                        icon: 'error',
-                        confirmButtonColor: '#1E94A3'
-                    });
-                }
-            });
-        }
-    });
-}
-
-function exibirTamanho(tamanho) {
-    if (tamanho === 'ÚNICO') return 'Único';
-    if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
-    return tamanho;
-}
-
-// function renderizarProdutos(produtos) {
-//     const tbody = document.getElementById('product-table-body');
-//     // Mostra o loading imediatamente
-//     tbody.innerHTML = `<tr style="background-color: #fff">
-//         <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-//             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-//                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-//             </span>
-//             <span id="loading-text">Carregando produtos</span>
-//         </td>
-//     </tr>`;
-
-//     const select = document.getElementById('registros-select');
-//     itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
-
-//     const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
-//     const inicio = (paginaAtual - 1) * itensPorPagina;
-//     const fim = inicio + itensPorPagina;
-//     const produtosPagina = produtos.slice(inicio, fim);
-
-//     if (produtosPagina.length === 0) {
-//         tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
-//         document.getElementById('paginacao').innerHTML = '';
-//         return;
-//     }
-
-//     // Aguarda todas as imagens carregarem antes de renderizar as linhas
-//     const promessasImagens = produtosPagina.map(p => {
-//         return new Promise(resolve => {
-//             if (p.url_imagem) {
-//                 const img = new Image();
-//                 img.src = p.url_imagem;
-//                 img.onload = () => resolve();
-//                 img.onerror = () => resolve();
-//             } else {
-//                 resolve();
-//             }
-//         });
-//     });
-
-//     Promise.all(promessasImagens).then(() => {
-//         tbody.innerHTML = ''; // Limpa o loading
-//         produtosPagina.forEach(p => {
-//             const imageUrl = p.url_imagem;
-//             const precoFormatado = p.preco.toFixed(2).replace('.', ',');        
-//             const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
-//             const tamanhoExibido = exibirTamanho(p.tamanho);
-//             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
-//             p.categoria = p.categoria.charAt(0).toUpperCase() + p.categoria.slice(1).toLowerCase();
-
-//             const quantidadeVermelha = p.quantidade <= p.limiteMinimo;
-//             let iconeAbastecer = '';
-//             if (precisaAbastecer) {
-//                 const corIcone = quantidadeVermelha ? 'red' : '#fbc02d';
-//                 const corFundo = quantidadeVermelha ? '#fff' : '#000';
-//                 iconeAbastecer = `
-//                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
-//                         style="
-//                             position: absolute;
-//                             top: 50%;
-//                             right: 0;
-//                             transform: translateY(-50%);
-//                             width: 20px;
-//                             height: 20px;
-//                             text-decoration: none;
-//                             display: flex;
-//                             align-items: center;
-//                             justify-content: center;
-//                             pointer-events: auto;
-//                             padding-right: 23px;
-//                         ">
-//                         <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
-//                         <i class="fa-solid fa-triangle-exclamation" style="color:${corIcone};position:relative;z-index:1;"></i>
-//                     </a>
-//                 `;
-//             }
-//             const rowHtml = `
-//                 <tr>
-//                     <td>
-//                         ${imageUrl 
-//                             ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" style="cursor:pointer;" onclick="visualizarImagem('${imageUrl}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')" />` 
-//                             : `<span class="produto-img icon" style="cursor:pointer;" onclick="visualizarImagem('', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')"><i class="fa-regular fa-image"></i></span>`
-//                         }
-//                     </td>
-//                     <td>${p.codigo}</td>
-//                     <td>${p.nome}</td>
-//                     <td class="categoria">${p.categoria}</td>
-//                     <td>${tamanhoExibido}</td>
-//                     <td class="genero">${p.genero}</td>
-//                     <td style="position: relative; text-align: center;">
-//                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
-//                         ${iconeAbastecer}
-//                     </td>
-//                     <td>${p.limiteMinimo}</td>
-//                     <td>${precoFormatado}</td>
-//                     <td class="actions">
-//                         <a href="/editar-produto?id=${p.id}" title="Editar">
-//                             <i class="fa-solid fa-pen"></i>
-//                         </a>
-//                         <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
-//                             <i class="fa-solid fa-trash"></i>
-//                         </button>
-//                     </td>
-//                 </tr>
-//             `;
-//             tbody.innerHTML += rowHtml;
-//         });
-
-//         renderizarPaginacao(totalPaginas);
-//     });
-// }
-
-function renderizarPaginacao(totalPaginas) {
-    const paginacaoDiv = document.getElementById('paginacao');
-    paginacaoDiv.innerHTML = '';
-    if (totalPaginas <= 1) return;
-    for (let i = 1; i <= totalPaginas; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
-        btn.onclick = function() {
-            paginaAtual = i;
-            renderizarProdutos(produtos);
-        };
-        paginacaoDiv.appendChild(btn);
-    }
-}
-
-function carregarProdutos(top) {
-    let url = '/produtos';
-    if (top && top !== "") {
-        url += `?top=${top}`;
-    }
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar produtos. Status: ' + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            produtos = data;
-            renderizarProdutos(produtos);
-            atualizarDetalhesInfo(produtos);
-            window.atualizarDetalhesEstoque(produtos);
-            const buscaInput = document.getElementById('busca-produto');
-            const buscaSugestoes = document.getElementById('busca-sugestoes');
-            buscaInput.addEventListener('input', function() {
-                const termo = this.value.trim();
-                buscaSugestoes.innerHTML = '';
-                if (!termo) {
-                    buscaSugestoes.style.display = 'none';
-                    return;
-                }
-                let encontrados;
-                let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
-                if (mostrarCodigoPrimeiro) {
-                    encontrados = produtos.filter(p => p.codigo.includes(termo));
-                } else {
-                    encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
-                }
-                encontrados.forEach(p => {
-                    const div = document.createElement('div');
-                    div.textContent = mostrarCodigoPrimeiro
-                        ? `${p.codigo} - ${p.nome}`
-                        : `${p.nome} - ${p.codigo}`;
-                    div.style.padding = '6px 12px';
-                    div.style.cursor = 'pointer';
-                    div.addEventListener('mousedown', function(e) {
-                        e.preventDefault();
-                        buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
-                        buscaSugestoes.style.display = 'none';
-                    });
-                    buscaSugestoes.appendChild(div);
+document.addEventListener('DOMContentLoaded', function() {
+    // Popular checkboxes de código dinamicamente
+    const checkboxesDiv = document.getElementById('checkboxes-codigo-multi');
+    const select = document.getElementById('filter-codigo-multi');
+    if (checkboxesDiv && select) {
+        fetch('/produtos')
+            .then(res => res.json())
+            .then(produtos => {
+                checkboxesDiv.innerHTML = '';
+                checkboxesDiv.innerHTML += `<label><input type="checkbox" id="codigo-multi-todos" class="codigo-multi-check" value="" checked onclick="marcarOuDesmarcarTodosCodigos()" data-label="Todos" /> Todos</label>`;
+                produtos.forEach(prod => {
+                    checkboxesDiv.innerHTML += `<label><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
                 });
-                buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+                aplicarListenersCodigoMulti();
+                atualizarPlaceholderCodigoMulti();
             });
-            document.addEventListener('mousedown', function(e) {
-                if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
-                    buscaSugestoes.style.display = 'none';
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Erro na API:', error);
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+    }
+});
+
+function marcarOuDesmarcarTodosCodigos() {
+    const todas = document.getElementById('codigo-multi-todos');
+    const checks = document.querySelectorAll('.codigo-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
         });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    atualizarPlaceholderCodigoMulti();
+    filtrarRelatorios();
 }
 
-// window.onload = function() {
-//     const select = document.getElementById('registros-select');
-//     carregarProdutos(select.value);
-//     select.addEventListener('change', function() {
-//         itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
-//         paginaAtual = 1;
-//         renderizarProdutos(produtos);
-//     });
+function aplicarListenersCodigoMulti() {
+    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+    const todas = document.getElementById('codigo-multi-todos');
+    checks.forEach(cb => {
+        if (cb.id !== 'codigo-multi-todos') {
+            cb.addEventListener('change', function() {
+                if (!cb.checked && todas) todas.checked = false;
+                else if (todas) {
+                    todas.checked = checks.slice(1).every(c => c.checked);
+                }
+                atualizarPlaceholderCodigoMulti();
+                filtrarRelatorios();
+            });
+        }
+    });
+    if (todas) {
+        todas.addEventListener('change', function() {
+            marcarOuDesmarcarTodosCodigos();
+        });
+    }
+}
 
-//     //campos para ordenação
-//     const campos = [
-//         'codigo',   
-//         'nome',       
-//         'categoria',  
-//         'tamanho',    
-//         'genero',    
-//         'quantidade',
-//         'limiteMinimo',
-//         'preco'       
-//     ];
+// Atualiza detalhes do estoque ao abrir a página
+window.addEventListener('DOMContentLoaded', function() {
+    const detalhesDiv = document.getElementById('detalhes-estoque');
+    if (detalhesDiv) {
+        detalhesDiv.style.display = 'none';
+    }
+    fetch('/produtos')
+        .then(response => response.json())
+        .then(produtos => {
+            window.atualizarDetalhesEstoque(produtos);
+            const total = produtos.reduce((soma, p) => soma + (parseInt(p.quantidade) || 0), 0);
+            const baixoEstoque = produtos.filter(p => p.quantidade > 0 && p.quantidade <= (2 * p.limiteMinimo)).length;
+            const zerados = produtos.filter(p => p.quantidade === 0).length;
+            const elTotal = document.getElementById('detalhe-total-produtos');
+            const elBaixo = document.getElementById('detalhe-baixo-estoque');
+            const elZerados = document.getElementById('detalhe-estoque-zerado');
+            if (elTotal) elTotal.textContent = total;
+            if (elBaixo) elBaixo.textContent = baixoEstoque;
+            if (elZerados) elZerados.textContent = zerados;
+        });
+});
 
-//     //inicia com true (decrescente)
-//     let estadoOrdenacao = Array(campos.length).fill(true);
+document.addEventListener('DOMContentLoaded', function() {
+    // Controle de exibição dos detalhes
+    const btnDetalhes = document.getElementById('btn-exibir-detalhes');
+    const detalhesEstoque = document.getElementById('detalhes-estoque');
+    let detalhesVisiveis = true; // começa visível
+    if (btnDetalhes && detalhesEstoque) {
+        detalhesEstoque.style.display = 'flex';
+        btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
 
-//     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
-//         const icon = th.querySelector('.sort-icon');
-//         th.addEventListener('mouseenter', function() {
-//             icon.style.display = 'inline-block';
-//         });
-//         th.addEventListener('mouseleave', function() {
-//             if (!th.classList.contains('sorted')) {
-//                 icon.style.display = 'none';
-//             }
-//         });
-//         th.addEventListener('click', function() {
-//             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
-//             th.classList.add('sorted');
+        btnDetalhes.addEventListener('click', function() {
+            detalhesVisiveis = !detalhesVisiveis;
+            if (detalhesVisiveis) {
+                detalhesEstoque.style.display = 'flex';
+                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+                btnDetalhes.style.background = '#1e94a3';
+                btnDetalhes.style.color = '#fff';
+                btnDetalhes.style.border = 'none';
+            } else {
+                detalhesEstoque.style.display = 'none';
+                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
+                btnDetalhes.style.background = '#fff';
+                btnDetalhes.style.color = '#1e94a3';
+                btnDetalhes.style.border = '1px solid #1e94a3';
+            }
+        });
+    }
 
-//             const campo = campos[idx];
-//             produtos.sort((a, b) => {
-//                 if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
-//                     // numérico
-//                     return estadoOrdenacao[idx]
-//                         ? b[campo] - a[campo]
-//                         : a[campo] - b[campo];
-//                 } else {
-//                     // alfabético
-//                     return estadoOrdenacao[idx]
-//                         ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
-//                         : b[campo].localeCompare(a[campo], undefined, { numeric: true });
-//                 }
-//             });
-//             //altera o estado de ordenação
-//             estadoOrdenacao[idx] = !estadoOrdenacao[idx];
-//             icon.innerHTML = estadoOrdenacao[idx]
-//                 // true seta para baixo (decrescente) false seta para cima (crescente)
-//                 ? '<i class="fa-solid fa-arrow-down"></i>'
-//                 : '<i class="fa-solid fa-arrow-up"></i>';
-//             renderizarProdutos(produtos);
-//             icon.style.display = 'inline-block';
-//         });
-//     });
+    // Limpar filtros da barra de busca
+    const btnLimpar = document.getElementById('btn-limpar-filtros-busca');
+    const btnCancelar = document.getElementById('btn-cancelar-gerar');
+    if (btnLimpar) {
+        btnLimpar.addEventListener('click', function() {
+            // Limpa todos os campos da barra de busca de relatórios
+            const camposBusca = [
+                'busca-relatorio',
+                'filter-data-criacao-busca',
+                'filter-data-inicio-busca',
+                'filter-data-fim-busca'
+            ];
+            camposBusca.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            filtrarRelatorios();
+        });
+    }
 
-    // const btnFiltrarProdutos = document.getElementById('btn-filtrar-produtos');
-    // const filtrosAvancados = document.getElementById('filtros-avancados');
-    // const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function() {
+            document.getElementById('filter-categoria').value = '';
+            document.getElementById('filter-tamanho').value = '';
+            document.getElementById('filter-genero').value = '';
+            document.getElementById('filter-data-criacao').value = '';
+            document.getElementById('filter-data-inicio').value = '';
+            document.getElementById('filter-data-fim').value = '';
+        });
+    }
+});
 
-    // // Sempre começa oculto
-    // filtrosAvancados.style.display = 'none';
-
-    // // Botão "Filtrar Produtos" inicia com fundo branco, borda e cor #1e94a3, ícone -circle-xmark
-    // btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
-    // btnFiltrarProdutos.style.border = '1px solid #1e94a3';
-    // btnFiltrarProdutos.style.background = '#fff';
-    // btnFiltrarProdutos.style.color = '#1e94a3';
-
-    // btnFiltrarProdutos.addEventListener('click', function() {
-    //     if (filtrosAvancados.style.display === 'flex') {
-    //         filtrosAvancados.style.display = 'none';
-    //         btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Filtros';
-    //         btnFiltrarProdutos.style.border = '1px solid #1e94a3';
-    //         btnFiltrarProdutos.style.background = '#fff';
-    //         btnFiltrarProdutos.style.color = '#1e94a3';
-    //     } else {
-    //         filtrosAvancados.style.display = 'flex';
-    //         btnFiltrarProdutos.innerHTML = '<i class="fa-solid fa-filter"></i> Filtros';
-    //         btnFiltrarProdutos.style.border = '';
-    //         btnFiltrarProdutos.style.background = '#1e94a3';
-    //         btnFiltrarProdutos.style.color = '#fff';
-    //     }
-    // });
-
-    // // Botão "Limpar Filtros"
-    // btnLimparFiltros.addEventListener('click', function(e) {
-    //     e.preventDefault();
-
-    //     // Limpa todos os inputs e selects dos filtros avançados
-    //     filtrosAvancados.querySelectorAll('input, select').forEach(el => {
-    //         if (el.type === 'select-one') el.selectedIndex = 0;
-    //         else if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
-    //         else el.value = '';
-    //     });
-
-    //     // Limpa faixas (preço, quantidade, limite)
-    //     precoMin.value = "";
-    //     precoMax.value = "";
-    //     precoInput.value = "";
-    //     qtdMin.value = "";
-    //     qtdMax.value = "";
-    //     qtdInput.value = "";
-    //     limiteMin.value = "";
-    //     limiteMax.value = "";
-    //     limiteInput.value = "";
-
-    //     //remover a border dos inputs de faixa
-    //     precoInput.style.border = '';
-    //     limiteInput.style.border = '';
-    //     qtdInput.style.border = '';
-
-
-        // Limpa categorias: marca "Todas"
-        // Marca "Todas" nas categorias
-
-        // Marca todos os checkboxes de quantidade como true
-//         const quantidadeChecks = document.querySelectorAll('#quantidade-faixa-popup input[type="checkbox"]');
-//         if (quantidadeChecks) {
-//             quantidadeChecks.forEach(cb => cb.checked = true);
-//             atualizarPlaceholderQuantidade();
-//         }
-
-//         const categoriaChecks = document.querySelectorAll('.categoria-multi-check');
-//         if (categoriaChecks) {
-//             categoriaChecks.forEach(cb => cb.checked = true);
-//             categoriaChecks[0].checked = true; // "Todas"
-//             atualizarPlaceholderCategoriaMulti();
-//             updateOptions();
-//             atualizarPlaceholderTamanhoMulti();
-//         }
-
-//         // Marca "Todos" nos gêneros
-//         const generoChecks = document.querySelectorAll('.genero-multi-check');
-//         if (generoChecks) {
-//             generoChecks.forEach(cb => cb.checked = true);
-//             generoChecks[0].checked = true; // "Todos"
-//             atualizarPlaceholderGeneroMulti();
-//         }
-
-//         // Limpa faixas de preço, quantidade e limite
-//         limparFaixaPreco();
-//         qtdMin.value = '';
-//         qtdMax.value = '';
-//         qtdInput.value = '';
-//         limiteMin.value = '';
-//         limiteMax.value = '';
-//         limiteInput.value = '';
-
-//         filtrar(); // Atualiza lista
-//     });
-
-//     // Clicou fora, esconde
-
-// }
-
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('filter-data-inicio-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('filter-data-fim-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('filter-data-criacao-busca').addEventListener('change', filtrarRelatorios);
+    document.getElementById('busca-relatorio').addEventListener('input', filtrarRelatorios);
+});
 
 // --- PREÇO E QUANTIDADE FAIXA ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -1960,90 +1713,114 @@ function atualizarPlaceholderTamanhoMulti() {
     // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
-// Função para pegar tamanhos selecionados
-function getTamanhosSelecionados() {
+// --- MULTISELECT CÓ
+    todasNum.checked = todas.checked;
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+
+// Atualiza "Todos" se ambos "Todos Letras" e "Todos Numéricos" estiverem marcados
+function atualizarTodosTamanhosCheck() {
+    const todas = document.getElementById('tamanho-multi-todas');
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    todas.checked = todasLetra.checked && todasNum.checked;
+}
+
+// Adiciona listeners para manter sincronização
+document.addEventListener('DOMContentLoaded', function() {
+    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    if (todasLetra && todasNum) {
+        todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
+        todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
+    }
+});
+
+function marcarOuDesmarcarLetras() {
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todas = document.getElementById('tamanho-multi-todas');
+    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+
+    checks.forEach(cb => {
+        if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
+    });
+    const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
+    todasLetras.checked = checksLetra.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function marcarOuDesmarcarNumericos() {
+    const todasNum = document.getElementById('tamanho-multi-todas-num');
+    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+    const todas = document.getElementById('tamanho-multi-todas');
+    const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
+    const checks = document.querySelectorAll('.tamanho-multi-check');
+    checks.forEach(cb => {
+        if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+    });
+    const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
+    todasNum.checked = checksNum.every(cb => cb.checked);
+
+    // Atualiza "Todos" corretamente
+    todas.checked = todasLetras.checked && todasNum.checked;
+
+    atualizarPlaceholderTamanhoMulti();
+    filtrar();
+}
+
+function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const todas = checks[0];
-    if (todas.checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-}
+    const select = document.getElementById('filter-tamanho');
+    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
 
-// Controle de expansão do multiselect de tamanhos
-window.expandedTamanhoMulti = false;
-
-function showCheckboxesTamanhoMulti() {
-    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-    if (!window.expandedTamanhoMulti) {
-        checkboxes.style.display = "block";
-        window.expandedTamanhoMulti = true;
-
-        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
-        atualizarPlaceholderTamanhoMulti();
-
-        // Fecha ao clicar fora
-        function handleClickOutside(e) {
-            if (
-                checkboxes &&
-                !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect .overSelect').contains(e.target)
-            ) {
-                checkboxes.style.display = "none";
-                window.expandedTamanhoMulti = false;
-                document.removeEventListener('mousedown', handleClickOutside);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-    } else {
-        checkboxes.style.display = "none";
-        window.expandedTamanhoMulti = false;
-    }
-}
-
-window.expandedGeneroMulti = false;
-
-function showCheckboxesGeneroMulti() {
-    var checkboxes = document.getElementById("checkboxes-genero-multi");
-    if (!window.expandedGeneroMulti) {
-        checkboxes.style.display = "block";
-        window.expandedGeneroMulti = true;
-
-        // Fecha ao clicar fora
-        function handleClickOutside(e) {
-            if (
-                checkboxes &&
-                !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect-genero .overSelect').contains(e.target)
-            ) {
-                checkboxes.style.display = "none";
-                window.expandedGeneroMulti = false;
-                document.removeEventListener('mousedown', handleClickOutside);
-                atualizarPlaceholderGeneroMulti();
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-    } else {
-        checkboxes.style.display = "none";
-        window.expandedGeneroMulti = false;
-        atualizarPlaceholderGeneroMulti();
-    }
-}
-
-function atualizarPlaceholderGeneroMulti() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
-    const select = document.getElementById('filter-genero');
-    const selecionados = checks.slice(1)
-        .filter(cb => cb.checked)
+    // Só conta os tamanhos individuais visíveis (não os grupos)
+    const individuaisVisiveis = checks.filter(cb =>
+        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+    );
+    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
-    todas.checked = checks.slice(1).every(cb => cb.checked);
 
+    let texto = 'Todos';
     let ativo = true;
-    if (todas.checked || selecionados.length === 0) {
-        placeholder.textContent = 'Todos';
-        ativo = false;
+    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+        // Se só tem letras visíveis, mostra "Todos em Letras"
+        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+            texto = 'Todos em Letras';
+        }
+        // Se só tem números visíveis, mostra "Todos Numéricos"
+        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+            texto = 'Todos Numéricos';
+        }
+        // Se tem ambos, mostra "Todos"
+        else {
+            texto = 'Todos';
+            ativo = false;
+        }
     } else {
-        placeholder.textContent = selecionados.join(', ');
+        // Verifica se todos em letras estão marcados
+        const todosLetrasMarcados = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+        // Verifica se todos numéricos estão marcados
+        const todosNumericosMarcados = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value))
+            .every(cb => cb.checked) &&
+            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+        if (todosLetrasMarcados && !todosNumericosMarcados) {
+            texto = 'Todos em Letras, ' + selecionados.join(', ');
+        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+        } else {
+            texto = selecionados.join(', ');
+        }
     }
 
     if (ativo) {
@@ -2053,37 +1830,94 @@ function atualizarPlaceholderGeneroMulti() {
         select.style.border = '';
         select.style.color = '';
     }
+
+    // Atualiza o texto da option placeholder
+    if (placeholderOption) placeholderOption.textContent = texto;
+    // Garante que a option placeholder está selecionada visualmente
+    select.selectedIndex = 0;
+    // Atualiza cor do select
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
-function getGenerosSelecionados() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    if (todas.checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+// --- MULTISELECT CÓDIGO (CHECKBOXES) ---
+function showCheckboxesCodigoMulti() {
+    const checkboxes = document.getElementById('checkboxes-codigo-multi');
+    if (checkboxes.style.display === 'block') {
+        checkboxes.style.display = 'none';
+    } else {
+        checkboxes.style.display = 'block';
+    }
 }
 
-// Listeners de seleção para generos
-window.addEventListener('DOMContentLoaded', function() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
+function atualizarPlaceholderCodigoMulti() {
+    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+    const select = document.getElementById('filter-codigo');
+    const placeholderOption = document.getElementById('codigo-multi-placeholder');
+    const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
+    let texto = 'Todos';
+    if (selecionados.length === 1) texto = selecionados[0];
+    else if (selecionados.length > 1) texto = selecionados.join(', ');
+    if (placeholderOption) placeholderOption.textContent = texto;
+    select.selectedIndex = 0;
+    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+}
 
-    // "Todos" marca/desmarca todos
-    todas.addEventListener('change', function() {
-        checks.forEach(cb => cb.checked = todas.checked);
-        atualizarPlaceholderGeneroMulti();
-        filtrar();
-    });
-
-    // Se todos individuais marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
-    checks.slice(1).forEach(cb => {
-        cb.addEventListener('change', function() {
-            todas.checked = checks.slice(1).every(c => c.checked);
-            atualizarPlaceholderGeneroMulti();
-            filtrar();
-        });
-    });
-
-    atualizarPlaceholderGeneroMulti();
+document.addEventListener('DOMContentLoaded', function() {
+    // Popular checkboxes de código dinamicamente
+    const checkboxesDiv = document.getElementById('checkboxes-codigo-multi');
+    const select = document.getElementById('filter-codigo');
+    if (checkboxesDiv && select) {
+        fetch('/produtos')
+            .then(res => res.json())
+            .then(produtos => {
+                checkboxesDiv.innerHTML = '';
+                checkboxesDiv.innerHTML += `<label><input type="checkbox" id="codigo-multi-todos" class="codigo-multi-check" value="" checked onclick="marcarOuDesmarcarTodosCodigos()" data-label="Todos" /> Todos</label>`;
+                produtos.forEach(prod => {
+                    checkboxesDiv.innerHTML += `<label><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
+                });
+                aplicarListenersCodigoMulti();
+                atualizarPlaceholderCodigoMulti();
+            });
+    }
 });
+
+function marcarOuDesmarcarTodosCodigos() {
+    const todas = document.getElementById('codigo-multi-todos');
+    const checks = document.querySelectorAll('.codigo-multi-check');
+    if (todas.checked) {
+        checks.forEach(cb => {
+            cb.checked = true;
+            cb.setAttribute('checked', 'checked');
+        });
+    } else {
+        checks.forEach(cb => {
+            cb.checked = false;
+            cb.removeAttribute('checked');
+        });
+    }
+    atualizarPlaceholderCodigoMulti();
+    filtrarRelatorios();
+}
+
+function aplicarListenersCodigoMulti() {
+    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+    const todas = document.getElementById('codigo-multi-todos');
+    checks.forEach(cb => {
+        if (cb.id !== 'codigo-multi-todos') {
+            cb.addEventListener('change', function() {
+                if (!cb.checked && todas) todas.checked = false;
+                else if (todas) {
+                    todas.checked = checks.slice(1).every(c => c.checked);
+                }
+                atualizarPlaceholderCodigoMulti();
+                filtrarRelatorios();
+            });
+        }
+    });
+    if (todas) {
+        todas.addEventListener('change', function() {
+            marcarOuDesmarcarTodosCodigos();
+        });
+    }
+}
 
