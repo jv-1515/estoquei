@@ -2,7 +2,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
 
     // 2. Gráfico de categoria
     const categorias = [
-        "CAMISA", "CAMISETA", "BERMUDA", "CALCA", "SHORTS", "SAPATO", "MEIA"
+        "CAMISA", "CAMISETA", "BERMUDA", "CALÇA", "SHORTS", "SAPATO", "MEIA"
     ];
     const categoriasTipo = [
         "Camisa", "Camiseta", "Bermuda", "Calça", "Shorts", "Sapato", "Meia"

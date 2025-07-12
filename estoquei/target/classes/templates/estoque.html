@@ -28,18 +28,18 @@
     </div>
     <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1200px;">
         <h2>Buscar Produtos</h2>
-        <div style="display: flex; align-items: center; gap: 8px; position: relative;">
+        <div style="display: flex; align-items: center; gap: 8px; position: relative; height: 30px; max-height: 30px;">
             <div style="flex:1; position:relative; display:flex;">
-                <input type="text" id="busca-produto" placeholder="Digite nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
+                <input type="text" id="busca-produto" placeholder="Digite o nome ou código do produto" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
                 <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                     <i class="fa fa-search"></i>
                 </span>
                 <div id="busca-sugestoes"></div>
             </div>
-            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px;">
+            <button id="btn-filtrar-produtos" class="btn" style="font-size:12px; width: 76px; max-width: 76px;">
                 <i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Filtros
             </button>
-            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;">
+            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;width: 92px; max-width: 92px;">
                 <i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes
             </button>
         </div>
@@ -120,14 +120,6 @@
                 <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
                     <div style="display: flex; flex-direction: column; align-items: stretch;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
-                            <span style="min-width: 28px;">de:</span>
-                            <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;margin-bottom: 8px;">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
-                            <span style="min-width: 28px;">até:</span>
-                            <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
-                        </div>
                         <label for="quantidade-todas-popup" class="quantidade-check-label">
                             <input type="checkbox" id="quantidade-todas-popup" checked style="margin:0;" />Todas
                         </label>
@@ -137,6 +129,15 @@
                         <label for="quantidade-zerados-popup" class="quantidade-check-label">
                             <input type="checkbox" id="quantidade-zerados-popup" style="margin:0;" checked />Produtos zerados
                         </label>
+                        <div style="display: flex; align-items: center; gap: 8px; margin:8px 0;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -163,11 +164,11 @@
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                         <div style="display: flex; align-items: center;">
                             <span style="min-width: 28px;">de:</span>
-                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="width:90px;margin-bottom: 2px;">
+                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
                         </div>
                         <div style="display: flex; align-items: center;">
                             <span style="min-width: 28px;">até:</span>
-                            <input type="text" id="preco-max" placeholder="R$ 999,99" style="width:90px;">
+                            <input type="text" id="preco-max" placeholder="R$ 999,99">
                         </div>
                     </div>
                 </div>

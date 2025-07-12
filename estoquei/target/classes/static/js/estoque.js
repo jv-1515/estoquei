@@ -341,7 +341,7 @@ function atualizarPlaceholderQuantidade() {
     const input = document.getElementById('filter-quantidade');
     let texto = 'Todas';
     let ativo = true;
-    
+
     // Todas as combinações possíveis
     if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
         texto = 'Todas';
@@ -358,15 +358,16 @@ function atualizarPlaceholderQuantidade() {
         texto = 'Zerados';
     } else {
         texto = 'Todas';
+        ativo = false;
     }
     if (input) input.placeholder = texto;
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
-        input.style.color = '#1e94a3';
+        input.classList.add('quantidade-ativa');
     } else {
         input.style.border = '';
-        input.style.color = '';
+        input.classList.remove('quantidade-ativa');
     }
 }
 
@@ -521,7 +522,6 @@ function filtrar() {
             // Só zerados
             return Number(p.quantidade) === 0;
         } else {
-            // Personalizado ou nenhum marcado
             return true;
         }
     });
@@ -955,7 +955,6 @@ precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
 
 precoInput.addEventListener('click', function(e) {
     precoPopup.style.display = 'block';
-    precoInput.style.border = '';
     precoMin.focus();
     e.stopPropagation();
 });
@@ -993,6 +992,7 @@ function aplicarFiltroPrecoFaixa() {
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
     if (precoInput.value === "R$ 0,00 - R$ 999,99") {
+        precoInput.value = 'Todos';
         ativo = false;
     }
 
@@ -1030,7 +1030,6 @@ const qtdMax = document.getElementById('quantidade-max');
 
 qtdInput.addEventListener('click', function(e) {
     qtdPopup.style.display = 'block';
-    qtdInput.style.border = '';
     qtdMin.focus();
     e.stopPropagation();
 });
@@ -1062,6 +1061,7 @@ function aplicarFiltroQtdFaixa() {
     qtdMax.value = max;
     qtdInput.value = `${min} - ${max}`;
     if (qtdInput.value === "0 - 999") {
+        qtdInput.value = "Todas";
         ativo = false;
     }
     qtdPopup.style.display = 'none';
@@ -1077,6 +1077,7 @@ function aplicarFiltroQtdFaixa() {
 }
 document.addEventListener('mousedown', function(e) {
     if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+        atualizarPlaceholderQuantidade();
         aplicarFiltroQtdFaixa();
     }
 });
@@ -1089,7 +1090,6 @@ const limiteMax = document.getElementById('limite-max');
 
 limiteInput.addEventListener('click', function(e) {
     limitePopup.style.display = 'block';
-    limiteInput.style.border = '';
     limiteMin.focus();
     e.stopPropagation();
 });
@@ -1120,6 +1120,7 @@ function aplicarFiltroLimiteFaixa() {
     limiteMax.value = max;
     limiteInput.value = `${min} - ${max}`;
     if (limiteInput.value === "1 - 999") {
+        limiteInput.value = "Todos";
         ativo = false;
     }
     limitePopup.style.display = 'none';
@@ -1591,7 +1592,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1680,7 +1681,7 @@ function atualizarPlaceholderGeneroMulti() {
         placeholder.textContent = selecionados.join(', ');
     }
 
-        if (ativo) {
+    if (ativo) {
         select.style.border = '2px solid #1e94a3';
         select.style.color = '#1e94a3';
     } else {
@@ -1722,32 +1723,32 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 // --- QUANTIDADE FAIXA CHECKBOXES ---
-const chkTodos = document.getElementById('quantidade-todas-popup');
-const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-const chkZerados = document.getElementById('quantidade-zerados-popup');
+// const chkTodos = document.getElementById('quantidade-todas-popup');
+// const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+// const chkZerados = document.getElementById('quantidade-zerados-popup');
 
-function marcarApenas(qual) {
-    chkTodos.checked = qual === 'todos';
-    chkBaixo.checked = qual === 'baixo';
-    chkZerados.checked = qual === 'zerados';
-}
+// function marcarApenas(qual) {
+//     chkTodos.checked = qual === 'todos';
+//     chkBaixo.checked = qual === 'baixo';
+//     chkZerados.checked = qual === 'zerados';
+// }
 
-chkTodos.addEventListener('change', function() {
-    if (chkTodos.checked) {
-        marcarApenas('todos');
-        filtrar();
-    }
+// chkTodos.addEventListener('change', function() {
+//     if (chkTodos.checked) {
+//         marcarApenas('todos');
+//         filtrar();
+//     }
 
-});
-chkBaixo.addEventListener('change', function() {
-    if (chkBaixo.checked) {
-        marcarApenas('baixo');
-        filtrar();
-    }
-});
-chkZerados.addEventListener('change', function() {
-    if (chkZerados.checked) {
-        marcarApenas('zerados');
-        filtrar();
-    }
-});
+// });
+// chkBaixo.addEventListener('change', function() {
+//     if (chkBaixo.checked) {
+//         marcarApenas('baixo');
+//         filtrar();
+//     }
+// });
+// chkZerados.addEventListener('change', function() {
+//     if (chkZerados.checked) {
+//         marcarApenas('zerados');
+//         filtrar();
+//     }
+// });
