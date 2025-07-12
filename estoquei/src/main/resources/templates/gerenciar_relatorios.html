@@ -67,7 +67,7 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
-        <div class="filters-row" style="display:flex; gap:8px;">
+        <div class="filters-row">
             <div class="multiselect input-group">
               <label for="filter-categoria-multi">Categorias</label>
               <div>
@@ -186,9 +186,6 @@
                     <label for="filter-data-fim">Data Fim</label>
                     <input type="date" id="filter-data-fim" />
                 </div>
-                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
-                    <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
-                </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
                     <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
                 </button>
@@ -273,6 +270,10 @@
                 <option value="100">100</option>
             </select>
         </div>
+
+        <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
+            <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
+        </button>
     </div>
     <div class="main-container">
         <div class="table-space"></div>
