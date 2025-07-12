@@ -407,9 +407,41 @@ document.addEventListener('mousedown', function(e) {
     ) {
         checkboxes.style.display = "none";
         window.expandedGeneroMulti = false;
-        atualizarPlaceholderGeneroMulti();
+        if (typeof atualizarPlaceholderGeneroMulti === 'function') atualizarPlaceholderGeneroMulti();
     }
 });
+
+// Função para mostrar/ocultar o dropdown de gêneros (copiado do estoque.js)
+window.expandedGeneroMulti = false;
+function showCheckboxesGeneroMulti() {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    if (!window.expandedGeneroMulti) {
+        checkboxes.style.display = "block";
+        window.expandedGeneroMulti = true;
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedGeneroMulti = false;
+    }
+}
+
+// Função para atualizar o placeholder do multiselect de gêneros (copiado do estoque.js)
+function atualizarPlaceholderGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const select = document.getElementById('filter-genero');
+    const placeholderOption = document.getElementById('genero-multi-placeholder');
+    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let texto = 'Todos';
+    if (checks[0] && checks[0].checked) {
+        texto = 'Todos';
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+    } else if (selecionados.length > 1) {
+        texto = selecionados.join(', ');
+    }
+    if (placeholderOption) placeholderOption.textContent = texto;
+    if (select) select.selectedIndex = 0;
+    if (select) select.style.color = texto === 'Todos' ? '#757575' : 'black';
+}
 // Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
 document.querySelectorAll('.genero-multi-check').forEach(cb => {
     if (cb.id !== 'genero-multi-todos') {
@@ -893,8 +925,10 @@ function atualizarPlaceholderCodigoMulti() {
     if (selecionados.length === 1) texto = selecionados[0];
     else if (selecionados.length > 1) texto = selecionados.join(', ');
     if (placeholderOption) placeholderOption.textContent = texto;
-    select.selectedIndex = 0;
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    if (select) {
+        select.selectedIndex = 0;
+        select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1205,58 +1239,65 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-limiteInput.addEventListener('click', function(e) {
-    limitePopup.style.display = 'block';
-    limiteInput.style.border = '';
-    limiteMin.focus();
-    e.stopPropagation();
-});
-limiteMin.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
-});
-limiteMax.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
-});
-function aplicarFiltroLimiteFaixa() {
-    let min = limiteMin.value;
-    let max = limiteMax.value;
-    let ativo = true;
-
-    // Se ambos vazios, limpa o input para mostrar o placeholder
-    if (!min && !max) {
-        limiteInput.value = '';
-        limitePopup.style.display = 'none';
-        ativo = false;
-        filtrar();
-        return;
-    }
-
-    min = parseInt(min) || 1;
-    max = parseInt(max) || 999;
-    if (min > max) [min, max] = [max, min];
-    limiteMin.value = min;
-    limiteMax.value = max;
-    limiteInput.value = `${min} - ${max}`;
-    if (limiteInput.value === "1 - 999") {
-        limiteInput.value = "Todos";
-        ativo = false;
-    }
-    limitePopup.style.display = 'none';
-
-    if (ativo) {
-        limiteInput.style.border = '2px solid #1e94a3';
-        limiteInput.style.color = '#1e94a3';
-    } else {
+// Protege uso de limiteInput e limitePopup
+const limiteInput = document.getElementById('filter-limite');
+const limitePopup = document.getElementById('limite-faixa-popup');
+const limiteMin = document.getElementById('limite-min');
+const limiteMax = document.getElementById('limite-max');
+if (limiteInput && limitePopup && limiteMin && limiteMax) {
+    limiteInput.addEventListener('click', function(e) {
+        limitePopup.style.display = 'block';
         limiteInput.style.border = '';
-        limiteInput.style.color = '';
+        limiteMin.focus();
+        e.stopPropagation();
+    });
+    limiteMin.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    });
+    limiteMax.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    });
+    function aplicarFiltroLimiteFaixa() {
+        let min = limiteMin.value;
+        let max = limiteMax.value;
+        let ativo = true;
+
+        // Se ambos vazios, limpa o input para mostrar o placeholder
+        if (!min && !max) {
+            limiteInput.value = '';
+            limitePopup.style.display = 'none';
+            ativo = false;
+            filtrar();
+            return;
+        }
+
+        min = parseInt(min) || 1;
+        max = parseInt(max) || 999;
+        if (min > max) [min, max] = [max, min];
+        limiteMin.value = min;
+        limiteMax.value = max;
+        limiteInput.value = `${min} - ${max}`;
+        if (limiteInput.value === "1 - 999") {
+            limiteInput.value = "Todos";
+            ativo = false;
+        }
+        limitePopup.style.display = 'none';
+
+        if (ativo) {
+            limiteInput.style.border = '2px solid #1e94a3';
+            limiteInput.style.color = '#1e94a3';
+        } else {
+            limiteInput.style.border = '';
+            limiteInput.style.color = '';
+        }
+        filtrar();
     }
-    filtrar();
+    document.addEventListener('mousedown', function(e) {
+        if (limitePopup.style.display === 'block' && !limitePopup.contains(e.target) && e.target !== limiteInput) {
+            aplicarFiltroLimiteFaixa();
+        }
+    });
 }
-document.addEventListener('mousedown', function(e) {
-    if (limitePopup.style.display === 'block' && !limitePopup.contains(e.target) && e.target !== limiteInput) {
-        aplicarFiltroLimiteFaixa();
-    }
-});
 
 // --- SUGESTÃO DE CÓDIGOS "LIKE" ---
 const codigoInput = document.getElementById('filter-codigo');
