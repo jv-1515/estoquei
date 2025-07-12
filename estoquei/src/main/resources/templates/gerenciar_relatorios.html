@@ -67,42 +67,52 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
-        <div class="filters-row">
-            <div class="multiselect input-group">
-              <label for="filter-categoria-multi">Categorias</label>
-              <div>
-                <select id="filter-categoria" style="padding-left: 1px;">
-                  <option id="categoria-multi-placeholder">Todas</option>
-                </select>
-                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
-              </div>
-              <div id="checkboxes-categoria-multi">
-                <label>
-                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-shorts" class="categoria-multi-check" value="SHORTS" checked /> Shorts
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
-                </label>
-              </div>
-            </div>
+            <div class="filters-row">
+                <div class="multiselect input-group">
+                  <label for="filter-codigo-multi">Códigos</label>
+                  <div>
+                    <select id="filter-codigo-multi" style="padding-left: 1px;">
+                      <option id="codigo-multi-placeholder">Todos</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesCodigoMulti()"></div>
+                  </div>
+                  <div id="checkboxes-codigo-multi" style="display:none;"></div>
+                </div>
+                <div class="multiselect input-group">
+                  <label for="filter-categoria-multi">Categorias</label>
+                  <div>
+                    <select id="filter-categoria" style="padding-left: 1px;">
+                      <option id="categoria-multi-placeholder">Todas</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
+                  </div>
+                  <div id="checkboxes-categoria-multi">
+                    <label>
+                        <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-shorts" class="categoria-multi-check" value="SHORTS" checked /> Shorts
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
+                    </label>
+                  </div>
+                </div>
             <div class="multiselect input-group">
               <label for="filter-tamanho-multi">Tamanhos</label>
               <div>
