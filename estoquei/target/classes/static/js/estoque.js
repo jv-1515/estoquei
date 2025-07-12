@@ -372,10 +372,10 @@ function atualizarPlaceholderQuantidade() {
 }
 
 // Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
-// ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
-//     const el = document.getElementById(id);
-//     if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
-// });
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
 
 document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 
@@ -955,7 +955,6 @@ precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
 
 precoInput.addEventListener('click', function(e) {
     precoPopup.style.display = 'block';
-    precoInput.style.border = '';
     precoMin.focus();
     e.stopPropagation();
 });
@@ -1031,7 +1030,6 @@ const qtdMax = document.getElementById('quantidade-max');
 
 qtdInput.addEventListener('click', function(e) {
     qtdPopup.style.display = 'block';
-    qtdInput.style.border = '';
     qtdMin.focus();
     e.stopPropagation();
 });
@@ -1092,7 +1090,6 @@ const limiteMax = document.getElementById('limite-max');
 
 limiteInput.addEventListener('click', function(e) {
     limitePopup.style.display = 'block';
-    limiteInput.style.border = '';
     limiteMin.focus();
     e.stopPropagation();
 });
