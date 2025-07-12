@@ -104,16 +104,33 @@ function atualizarCardProdutos() {
         });
 }
 
-// Chame esta função para atualizar todos os cards de uma vez
 function atualizarCardsInfo() {
-    atualizarCardFuncionarios();
-    atualizarCardRelatorios();
-    atualizarCardProdutos();
+    const tipoUser = document.getElementById('avatar-tipo');
+    const tipo = tipoUser ? tipoUser.textContent.trim() : '';
 
-    document.getElementById('valor-fornecedores').textContent = 0;
-    document.getElementById('valor-movimentacoes').textContent = 0;
+    if (document.getElementById('valor-produtos-cadastrados')) {
+        atualizarCardProdutos();
+    }
+    if (document.getElementById('valor-total-produtos')) {
+        atualizarCardProdutos();
+    }
+    if (document.getElementById('valor-movimentacoes')) {
+        document.getElementById('valor-movimentacoes').textContent = 0;
+    }
+
+    // Só gerente ou admin
+    if (tipo === 'Gerente' || tipo === 'Admin') {
+        if (document.getElementById('valor-fornecedores')) {
+            document.getElementById('valor-fornecedores').textContent = 0;
+        }
+        if (document.getElementById('valor-funcionarios')) {
+            atualizarCardFuncionarios();
+        }
+        if (document.getElementById('valor-relatorios')) {
+            atualizarCardRelatorios();
+        }
+    }
 }
-
 window.addEventListener('pageshow', function() {
     atualizarBadgeBaixoEstoque();
 });
@@ -121,54 +138,60 @@ window.addEventListener('pageshow', function() {
 window.addEventListener('DOMContentLoaded', function () {
     atualizarCardsInfo();
 
-    const cards = document.querySelectorAll('.container .card');
-    const originalTexts = [
-        "Gerenciar Fornecedores",
-        "Gerenciar Funcionários",
-        "Relatório de Desempenho",
-        "Cadastrar Produto",
-        "Acessar Estoque",
-        "Registrar Movimentação"
-    ];
-    const hoverTitles = [
-        "Total de<br>Fornecedores<br>",
-        "Total de<br>Funcionários<br>",
-        "Total de<br>Relatórios<br>",
-        "Produtos<br>Cadastrados<br>",
-        "Total de<br>Produtos<br>",
-        "Entradas e<br>Saídas Hoje<br>"
-    ];
-    const spanIds = [
-        "valor-fornecedores",
-        "valor-funcionarios",
-        "valor-relatorios",
-        "valor-produtos-cadastrados",
-        "valor-total-produtos",
-        "valor-movimentacoes"
+    const cardTextMap = [
+        {
+            id: 'card-fornecedores',
+            original: 'Gerenciar Fornecedores',
+            hover: 'Total de<br>Fornecedores<br>'
+        },
+        {
+            id: 'card-funcionarios',
+            original: 'Gerenciar Funcionários',
+            hover: 'Total de<br>Funcionários<br>'
+        },
+        {
+            id: 'card-relatorios',
+            original: 'Relatório de Desempenho',
+            hover: 'Total de<br>Relatórios<br>'
+        },
+        {
+            id: 'card-produtos-cadastrados',
+            original: 'Cadastrar Produto',
+            hover: 'Produtos<br>Cadastrados<br>'
+        },
+        {
+            id: 'card-total-produtos',
+            original: 'Acessar Estoque',
+            hover: 'Total de<br>Produtos<br>'
+        },
+        {
+            id: 'card-movimentacoes',
+            original: 'Registrar Movimentação',
+            hover: 'Entradas e<br>Saídas Hoje<br>'
+        }
     ];
 
-    cards.forEach((card, idx) => {
+    cardTextMap.forEach((cardInfo, idx) => {
+        const card = document.getElementById(cardInfo.id);
+        if (!card) return;
         const p = card.querySelector('p');
         const span = card.querySelector('span.card-value');
         const icon = card.querySelector('i');
         if (!p || !span) return;
 
         card.addEventListener('mouseenter', () => {
-            p.innerHTML = hoverTitles[idx];
+            p.innerHTML = cardInfo.hover;
             span.style.display = "inline";
             p.appendChild(span);
-
             if (idx === 0 && icon) {
                 icon.classList.remove('fa-regular');
                 icon.classList.add('fa-solid');
             }
         });
-
         card.addEventListener('mouseleave', () => {
-            p.innerHTML = originalTexts[idx] + "<br>";
+            p.innerHTML = cardInfo.original + "<br>";
             span.style.display = "none";
             p.appendChild(span);
-
             if (idx === 0 && icon) {
                 icon.classList.remove('fa-solid');
                 icon.classList.add('fa-regular');

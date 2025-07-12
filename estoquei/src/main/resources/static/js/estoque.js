@@ -638,7 +638,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                         style="
                             position: absolute;
-                            top: 50%;
+                            top: 53%;
                             right: 0;
                             transform: translateY(-50%);
                             width: 20px;
@@ -664,7 +664,7 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td>${p.nome}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>

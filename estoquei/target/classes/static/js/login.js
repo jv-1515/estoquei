@@ -11,3 +11,19 @@ document.getElementById("fa-eye-slash").addEventListener("click", function() {
         eyeIcon.classList.add("fa-eye-slash");
     }
 });
+
+if (typeof window.erro !== "undefined" && window.erro) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Erro ao logar',
+        text: 'Email ou senha inválidos. Tente novamente.',
+        timer: 1500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        scrollbarPadding: false,
+    });
+    const emailInput = document.getElementById("email");
+    const senhaInput = document.getElementById("senha");
+    if (emailInput) emailInput.style.border = '2px solid #f27474';
+    if (senhaInput) senhaInput.style.border = '2px solid #f27474';
+}
