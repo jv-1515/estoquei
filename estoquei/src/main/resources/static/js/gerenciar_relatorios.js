@@ -1290,163 +1290,167 @@ function carregarProdutos(top) {
 
 // }
 
-// --- PREÇO FAIXA ---
-const precoInput = document.getElementById('filter-preco');
-const precoPopup = document.getElementById('preco-faixa-popup');
-const precoMin = document.getElementById('preco-min');
-const precoMax = document.getElementById('preco-max');
 
-// Máscara para 0,00 até 999,99
-function mascaraPrecoFaixa(input) {
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 5) value = value.slice(0, 5);
-    if (value.length > 0) {
-        value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-        input.value = 'R$ ' + value;
-    } else {
-        input.value = '';
+// --- PREÇO E QUANTIDADE FAIXA ---
+document.addEventListener('DOMContentLoaded', function() {
+    // --- PREÇO FAIXA ---
+    const precoInput = document.getElementById('filter-preco');
+    const precoPopup = document.getElementById('preco-faixa-popup');
+    const precoMin = document.getElementById('preco-min');
+    const precoMax = document.getElementById('preco-max');
+
+    // Máscara para 0,00 até 999,99
+    function mascaraPrecoFaixa(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value.length > 5) value = value.slice(0, 5);
+        if (value.length > 0) {
+            value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
+            input.value = 'R$ ' + value;
+        } else {
+            input.value = '';
+        }
     }
-}
 
-precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
-precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+    if (precoMin) precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+    if (precoMax) precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
 
-precoInput.addEventListener('click', function(e) {
-    precoPopup.style.display = 'block';
-    precoInput.style.border = '';
-    precoMin.focus();
-    e.stopPropagation();
+    if (precoInput && precoPopup && precoMin && precoMax) {
+        precoInput.addEventListener('click', function(e) {
+            precoPopup.style.display = 'block';
+            precoInput.style.border = '';
+            precoMin.focus();
+            e.stopPropagation();
+        });
+
+        // Função para aplicar o filtro só ao fechar o popup
+        function aplicarFiltroPrecoFaixa() {
+            let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
+            let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
+            let ativo = true;
+
+            // Se ambos vazios, limpa o input para mostrar o placeholder
+            if (!min && !max) {
+                precoInput.value = '';
+                precoPopup.style.display = 'none';
+                ativo = false;
+                filtrar();
+                return;
+            }
+
+            // Se só "de" preenchido, assume até 999,99
+            if (min && !max) max = '999.99';
+            // Se só "até" preenchido, assume de 0,00
+            if (!min && max) min = '0.00';
+
+            // Converte para número para comparar
+            let minNum = parseFloat(min) || 0;
+            let maxNum = parseFloat(max) || 999.99;
+            
+            // Inverte se min > max
+            if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
+
+            // Formata de volta para string
+            min = minNum.toFixed(2).replace('.', ',');
+            max = maxNum.toFixed(2).replace('.', ',');
+
+            precoInput.value = `R$ ${min} - R$ ${max}`;
+            if (precoInput.value === "R$ 0,00 - R$ 999,99") {
+                precoInput.value = 'Todos';
+                ativo = false;
+            }
+
+            precoPopup.style.display = 'none';
+
+            if (ativo) {
+                precoInput.style.border = '2px solid #1e94a3';
+                precoInput.style.color = '#1e94a3';
+            } else {
+                precoInput.style.border = '';
+                precoInput.style.color = '';
+            }
+            filtrar();
+        }
+
+        // Fecha popup ao clicar fora e aplica filtro
+        document.addEventListener('mousedown', function(e) {
+            if (precoPopup.style.display === 'block' && !precoPopup.contains(e.target) && e.target !== precoInput) {
+                aplicarFiltroPrecoFaixa();
+            }
+        });
+    }
+
+    // Limpa campos ao limpar filtros
+    window.limparFaixaPreco = function() {
+        if (precoMin) precoMin.value = '';
+        if (precoMax) precoMax.value = '';
+        if (precoInput) precoInput.value = '';
+    };
+
+    // --- QUANTIDADE FAIXA ---
+    const qtdInput = document.getElementById('filter-quantidade');
+    const qtdPopup = document.getElementById('quantidade-faixa-popup');
+    const qtdMin = document.getElementById('quantidade-min');
+    const qtdMax = document.getElementById('quantidade-max');
+
+    if (qtdInput && qtdPopup && qtdMin && qtdMax) {
+        qtdInput.addEventListener('click', function(e) {
+            qtdPopup.style.display = 'block';
+            qtdInput.style.border = '';
+            qtdMin.focus();
+            e.stopPropagation();
+        });
+        qtdMin.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 3);
+        });
+        qtdMax.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 3);
+        });
+
+        function aplicarFiltroQtdFaixa() {
+            let min = qtdMin.value;
+            let max = qtdMax.value;
+            let ativo = true;
+
+            // Se ambos vazios, limpa o input para mostrar o placeholder
+            if (min === "" && max === "") {
+                qtdInput.value = '';
+                qtdPopup.style.display = 'none';
+                ativo = false;
+                filtrar();
+                return;
+            }
+
+            min = min === "" ? 0 : parseInt(min);
+            max = max === "" ? 999 : parseInt(max);
+
+            if (min > max) [min, max] = [max, min];
+            qtdMin.value = min;
+            qtdMax.value = max;
+            qtdInput.value = `${min} - ${max}`;
+            if (qtdInput.value === "0 - 999") {
+                qtdInput.value = "Todas";
+                ativo = false;
+            }
+            qtdPopup.style.display = 'none';
+
+            if (ativo) {
+                qtdInput.style.border = '2px solid #1e94a3';
+                qtdInput.style.color = '#1e94a3';
+            } else {
+                qtdInput.style.border = '';
+                qtdInput.style.color = '';
+            }
+            filtrar();
+        }
+
+        document.addEventListener('mousedown', function(e) {
+            if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+                atualizarPlaceholderQuantidade();
+                aplicarFiltroQtdFaixa();
+            }
+        });
+    }
 });
-
-// Função para aplicar o filtro só ao fechar o popup
-function aplicarFiltroPrecoFaixa() {
-    let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
-    let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
-    let ativo = true;
-
-    // Se ambos vazios, limpa o input para mostrar o placeholder
-    if (!min && !max) {
-        precoInput.value = '';
-        precoPopup.style.display = 'none';
-        ativo = false;
-        filtrar();
-        return;
-    }
-
-    // Se só "de" preenchido, assume até 999,99
-    if (min && !max) max = '999.99';
-    // Se só "até" preenchido, assume de 0,00
-    if (!min && max) min = '0.00';
-
-    // Converte para número para comparar
-    let minNum = parseFloat(min) || 0;
-    let maxNum = parseFloat(max) || 999.99;
-    
-    // Inverte se min > max
-    if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
-
-    // Formata de volta para string
-    min = minNum.toFixed(2).replace('.', ',');
-    max = maxNum.toFixed(2).replace('.', ',');
-
-    precoInput.value = `R$ ${min} - R$ ${max}`;
-    if (precoInput.value === "R$ 0,00 - R$ 999,99") {
-        precoInput.value = 'Todos';
-        ativo = false;
-    }
-
-    precoPopup.style.display = 'none';
-
-    if (ativo) {
-        precoInput.style.border = '2px solid #1e94a3';
-        precoInput.style.color = '#1e94a3';
-    } else {
-        precoInput.style.border = '';
-        precoInput.style.color = '';
-    }
-    filtrar();
-}
-
-// Fecha popup ao clicar fora e aplica filtro
-document.addEventListener('mousedown', function(e) {
-    if (precoPopup.style.display === 'block' && !precoPopup.contains(e.target) && e.target !== precoInput) {
-        aplicarFiltroPrecoFaixa();
-    }
-});
-
-// Limpa campos ao limpar filtros
-function limparFaixaPreco() {
-    precoMin.value = '';
-    precoMax.value = '';
-    precoInput.value = '';
-}
-
-// --- QUANTIDADE FAIXA ---
-const qtdInput = document.getElementById('filter-quantidade');
-const qtdPopup = document.getElementById('quantidade-faixa-popup');
-const qtdMin = document.getElementById('quantidade-min');
-const qtdMax = document.getElementById('quantidade-max');
-
-qtdInput.addEventListener('click', function(e) {
-    qtdPopup.style.display = 'block';
-    qtdInput.style.border = '';
-    qtdMin.focus();
-    e.stopPropagation();
-});
-qtdMin.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
-});
-qtdMax.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
-});
-function aplicarFiltroQtdFaixa() {
-    let min = qtdMin.value;
-    let max = qtdMax.value;
-    let ativo = true;
-
-    // Se ambos vazios, limpa o input para mostrar o placeholder
-    if (min === "" && max === "") {
-        qtdInput.value = '';
-        qtdPopup.style.display = 'none';
-        ativo = false;
-        filtrar();
-        return;
-    }
-
-    min = min === "" ? 0 : parseInt(min);
-    max = max === "" ? 999 : parseInt(max);
-
-    if (min > max) [min, max] = [max, min];
-    qtdMin.value = min;
-    qtdMax.value = max;
-    qtdInput.value = `${min} - ${max}`;
-    if (qtdInput.value === "0 - 999") {
-        qtdInput.value = "Todas";
-        ativo = false;
-    }
-    qtdPopup.style.display = 'none';
-
-    if (ativo) {
-        qtdInput.style.border = '2px solid #1e94a3';
-        qtdInput.style.color = '#1e94a3';
-    } else {
-        qtdInput.style.border = '';
-        qtdInput.style.color = '';
-    }
-    filtrar();
-}
-document.addEventListener('mousedown', function(e) {
-    if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
-        atualizarPlaceholderQuantidade();
-        aplicarFiltroQtdFaixa();
-    }
-});
-
-// --- LIMITE MÍNIMO FAIXA ---
-const limiteInput = document.getElementById('filter-limite');
-const limitePopup = document.getElementById('limite-faixa-popup');
-const limiteMin = document.getElementById('limite-min');
-const limiteMax = document.getElementById('limite-max');
 
 limiteInput.addEventListener('click', function(e) {
     limitePopup.style.display = 'block';
