@@ -31,7 +31,7 @@
                 <span style="display: inline-block; position: relative;">
                     <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
                 </span>
-                <span class="badge">2</span>
+                <span class="badge"></span>
             </div>
         </div>
         <div style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
@@ -48,40 +48,52 @@
         <!-- Acesso limitado ao Gerente -->
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/andamento}">
-                <i class="fa-regular fa-handshake"></i>
-                <p>Gerenciar Fornecedores<br><span class="card-value" id="valor-fornecedores" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-regular fa-handshake"></i></div>
+                <div class="text-container">
+                    <p>Gerenciar Fornecedores<br><span class="card-value" id="valor-fornecedores" style="display:none"></span></p>
+                </div>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-funcionarios}">
-                <i class="fa-solid fa-users"></i>
-                <p>Gerenciar Funcionários<br><span class="card-value" id="valor-funcionarios" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-solid fa-users"></i></div>
+                <div class="text-container">
+                    <p>Gerenciar Funcionários<br><span class="card-value" id="valor-funcionarios" style="display:none"></span></p>
+                </div>
             </a>
         </div>
         <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-relatorios}">
-                <i class="fa-solid fa-chart-line"></i>
-                <p>Relatório de Desempenho<br><span class="card-value" id="valor-relatorios" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="text-container">
+                    <p>Relatório de Desempenho<br><span class="card-value" id="valor-relatorios" style="display:none"></span></p>
+                </div>
             </a>
         </div>
         <!-- Acesso limitado ao Gerente -->
 
         <div class="card">
             <a th:href="@{/cadastrar-produto}">
-                <i class="fa-solid fa-shirt"></i>
-                <p>Cadastrar Produto<br><span class="card-value" id="valor-produtos-cadastrados" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-solid fa-shirt"></i></div>
+                <div class="text-container">
+                    <p>Cadastrar Produto<br><span class="card-value" id="valor-produtos-cadastrados" style="display:none"></span></p>
+                </div>
             </a>
         </div>
         <div class="card">
             <a th:href="@{/estoque}">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <p>Acessar Estoque<br><span class="card-value" id="valor-total-produtos" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div class="text-container">
+                    <p>Acessar Estoque<br><span class="card-value" id="valor-total-produtos" style="display:none"></span></p>
+                </div>
             </a>
         </div>
         <div class="card">
             <a th:href="@{/movimentar-produto}">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-                <p>Registrar Movimentação<br><span class="card-value" id="valor-movimentacoes" style="display:none"></span></p>
+                <div class="icon-container"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <div class="text-container">
+                    <p>Registrar Movimentação<br><span class="card-value" id="valor-movimentacoes" style="display:none"></span></p>
+                </div>
             </a>
         </div>
     </div>
