@@ -1,3 +1,71 @@
+function confirmarSaida(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Deseja realmente sair?',
+        text: "Você será redirecionado para a página de login.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Sair',
+        cancelButtonText: 'Voltar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Desconectando sua conta...',
+                text: 'Aguarde',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            setTimeout(() => {
+                window.location.href = '/admin/logout';
+            }, 1500);
+        }
+    });
+}
+
+
+function atualizarBadgeBaixoEstoque() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/baixo-estoque')
+        .then(res => res.json())
+        .then(produtos => {
+            const qtd = produtos.length;
+            if (qtd < 0) {
+                const bellIcon = document.querySelector('.fa-regular.fa-bell');
+                const notification = document.querySelector('.notification');
+                const nots = document.getElementById('nots');
+                if (bellIcon && notification && nots) {
+                    bellIcon.style.display = 'none';
+                    notification.style.display = 'none';
+                    nots.style.display = 'none';
+                }
+                return;
+            }
+
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.removeAttribute('style');
+            badge.style.display = 'inline-block';
+
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+        });
+}
+
 let funcionarios = [];
 
 function getIniciais(nome) {
@@ -275,3 +343,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);

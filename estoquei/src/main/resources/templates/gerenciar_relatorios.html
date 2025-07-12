@@ -30,11 +30,10 @@
         <h1>Gerenciar Relatórios de Desempenho</h1>
     </div>
     <div class="filters-container">
-        <div class="filters">
-            <h2>Buscar Relatórios</h2>
+        <div class="filters" style="gap: 0;">
+            <h2 style="margin-bottom: -10px; gap: 10px;">Buscar Relatórios</h2>
             <div class="filters-row">
-                <div class="input-group" style="flex:1; min-width:180px; max-width:400px;">
-                    <label for="busca-relatorio">Título</label>
+                <div class="input-group">
                     <div style="position:relative; display:flex;align-items: flex-end;">
                         <input type="text" id="busca-relatorio" placeholder="Digite o título do relatório" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
                         <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
@@ -43,26 +42,23 @@
                         <div id="busca-sugestoes-relatorio"></div>
                     </div>
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-criacao-busca">Data Criação</label>
                     <input type="date" id="filter-data-criacao-busca" />
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-inicio-busca">Data Início</label>
                     <input type="date" id="filter-data-inicio-busca" />
                 </div>
-                <div class="input-group" style="min-width:140px; max-width:180px;">
+                <div class="input-group" style="flex: unset;">
                     <label for="filter-data-fim-busca">Data Fim</label>
                     <input type="date" id="filter-data-fim-busca" />
                 </div>
-                <button id="btn-limpar-filtros-busca" class="btn limpar">
+                <button id="btn-limpar-filtros-busca" class="btn">
                     <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
                 </button>
-                <button id="btn-exibir-detalhes-busca" class="btn" style="background:#fff; border:1px solid #1e94a3; color:#1e94a3;">
+                <button id="btn-exibir-detalhes-busca" class="btn" style="background:#fff; border:1px solid #1e94a3; color:#1e94a3;;width: 92px; max-width: 92px;">
                     <i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes
-                </button>
-                <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0; background:#1e94a3; color:#fff;">
-                    <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Relatórios
                 </button>
             </div>
         </div>
@@ -71,35 +67,117 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
-            <div class="filters-row">
-                <div class="input-group">
-                    <label for="filter-categoria">Categorias</label>
-                    <select id="filter-categoria" onchange="updateOptions()">
-                        <option value="" selected>Todas</option>
-                        <option value="CAMISA">Camisa</option>
-                        <option value="CAMISETA">Camiseta</option>
-                        <option value="BERMUDA">Bermuda</option>
-                        <option value="CALCA">Calça</option>
-                        <option value="SHORTS">Shorts</option>
-                        <option value="SAPATO">Sapato</option>
-                        <option value="MEIA">Meia</option>
-                    </select>
+        <div class="filters-row" style="display:flex; gap:8px;">
+            <div class="multiselect input-group">
+              <label for="filter-categoria-multi">Categorias</label>
+              <div>
+                <select id="filter-categoria" style="padding-left: 1px;">
+                  <option id="categoria-multi-placeholder">Todas</option>
+                </select>
+                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
+              </div>
+              <div id="checkboxes-categoria-multi">
+                <label>
+                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-shorts" class="categoria-multi-check" value="SHORTS" checked /> Shorts
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
+                </label>
+                <label>
+                  <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
+                </label>
+              </div>
+            </div>
+            <div class="multiselect input-group">
+              <label for="filter-tamanho-multi">Tamanhos</label>
+              <div>
+                <select id="filter-tamanho" style="padding-left: 1px;">
+                  <option id="tamanho-multi-placeholder">Todos</option>
+                </select>
+                <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
+              </div>
+              <div id="checkboxes-tamanho-multi" style="display:none;"></div>
+            </div>
+            <div class="multiselect input-group">
+                <label for="filter-genero-multi">Gêneros</label>
+                <div>
+                <select id="filter-genero" style="padding-left: 1px;">
+                    <option id="genero-multi-placeholder">Todos</option>
+                </select>
+                <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
                 </div>
-                <div class="input-group">
-                    <label for="filter-tamanho">Tamanhos</label>
-                    <select id="filter-tamanho"> 
-                        <option value="" selected>Todos</option>
-                    </select>
+                <div id="checkboxes-genero-multi" style="display:none;">
+                    <label>
+                        <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
+                    </label>
+                    <label>
+                        <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
+                    </label>
                 </div>
-                <div class="input-group">
-                    <label for="filter-genero">Gêneros</label>
-                    <select id="filter-genero"> 
-                        <option value="" selected>Todos</option>
-                        <option value="MASCULINO">Masculino</option>
-                        <option value="FEMININO">Feminino</option>
-                        <option value="UNISSEX">Unissex</option>
-                    </select>
+            </div>
+            <div class="input-group">
+                <label for="filter-quantidade">Quantidades</label>
+                <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
+                <div id="quantidade-faixa-popup" class="faixa-popup">
+                    <div style="display: flex; flex-direction: column; align-items: stretch;">
+                        <label for="quantidade-todas-popup" class="quantidade-check-label">
+                            <input type="checkbox" id="quantidade-todas-popup" checked style="margin:0;" />Todas
+                        </label>
+                        <label for="quantidade-baixo-estoque-popup" class="quantidade-check-label">
+                            <input type="checkbox" id="quantidade-baixo-estoque-popup" style="margin:2px 0;" checked />Baixo estoque
+                        </label>
+                        <label for="quantidade-zerados-popup" class="quantidade-check-label">
+                            <input type="checkbox" id="quantidade-zerados-popup" style="margin:0;" checked />Produtos zerados
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 8px; margin:8px 0;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                        </div>
+
+                    </div>
                 </div>
+            </div>
+            <div class="input-group">
+                <label for="filter-preco">Preços</label>
+                <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+                <div id="preco-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="preco-max" placeholder="R$ 999,99">
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="input-group">
                     <label for="filter-data-inicio">Data Início</label>
                     <input type="date" id="filter-data-inicio" />
@@ -108,7 +186,7 @@
                     <label for="filter-data-fim">Data Fim</label>
                     <input type="date" id="filter-data-fim" />
                 </div>
-                <button id="btn-cancelar-gerar" class="btn limpar" style="max-width: 90px;">
+                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
                     <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
                 </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
@@ -202,13 +280,12 @@
             <thead id="relatorios-thead">
                 <tr>
                     <th class="ordenar">Título <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Data de Criação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Data Criação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Período <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="product-table-body">
-                <!-- Relatórios serão listados aqui -->
             </tbody>
         </table>
         <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
