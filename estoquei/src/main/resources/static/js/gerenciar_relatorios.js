@@ -308,6 +308,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+        // Controle de exibição da área de gerar relatório
+    const btnGerar = document.getElementById('btn-gerar-busca');
+    const areaGerar = document.querySelector('.filters-container + .filters-container');
+    if (btnGerar && areaGerar) {
+        btnGerar.addEventListener('click', function() {
+            areaGerar.style.display = 'flex';
+        });
+    }
+
     // Limpar filtros da barra de busca
     const btnLimpar = document.getElementById('btn-limpar-filtros-busca');
     const btnCancelar = document.getElementById('btn-cancelar-gerar');
@@ -925,13 +935,16 @@ function atualizarPlaceholderCodigoMulti() {
     // Se o primeiro checkbox ("Todos") estiver marcado, sempre mostra "Todos"
     if (checks[0] && checks[0].checked) {
         texto = 'Todos';
+    } else if (selecionados.length === 0) {
+        texto = 'Todos';
     } else {
-        texto = selecionados.join(', ');
+        texto = '';
+        texto = `${selecionados.length} produtos selecionados`;
     }
     if (placeholderOption) placeholderOption.textContent = texto;
     if (select) {
         select.selectedIndex = 0;
-        select.style.color = texto === 'Todos' ? '#757575' : 'black';
+        // select.style.color = texto === 'Todos' ? '#757575' : 'black';
     }
 }
 
