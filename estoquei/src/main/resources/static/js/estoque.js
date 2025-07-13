@@ -493,8 +493,9 @@ function filtrar() {
     let produtosFiltrados = produtos.filter(p => {
         // Busca por nome OU código
         if (termoBusca) {
-            const buscaCodigo = p.codigo && p.codigo.toString().toLowerCase().includes(termoBusca.toLowerCase());
-            const buscaNome = p.nome && p.nome.toLowerCase().includes(termoBusca.toLowerCase());
+            const termo = termoBusca.toLowerCase();
+            const buscaCodigo = p.codigo && p.codigo.toString().toLowerCase().includes(termo);
+            const buscaNome = p.nome && p.nome.toLowerCase().includes(termo);
             if (!buscaCodigo && !buscaNome) return false;
         }
         // Filtra pelas categorias selecionadas nos checkboxes
@@ -1662,7 +1663,7 @@ function getGenerosSelecionados() {
 window.addEventListener('DOMContentLoaded', function() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
+    // const placeholder = document.getElementById('genero-multi-placeholder');
 
     // "Todos" marca/desmarca todos
     todas.addEventListener('change', function() {
@@ -1682,34 +1683,3 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
-
-// --- QUANTIDADE FAIXA CHECKBOXES ---
-// const chkTodos = document.getElementById('quantidade-todas-popup');
-// const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-// const chkZerados = document.getElementById('quantidade-zerados-popup');
-
-// function marcarApenas(qual) {
-//     chkTodos.checked = qual === 'todos';
-//     chkBaixo.checked = qual === 'baixo';
-//     chkZerados.checked = qual === 'zerados';
-// }
-
-// chkTodos.addEventListener('change', function() {
-//     if (chkTodos.checked) {
-//         marcarApenas('todos');
-//         filtrar();
-//     }
-
-// });
-// chkBaixo.addEventListener('change', function() {
-//     if (chkBaixo.checked) {
-//         marcarApenas('baixo');
-//         filtrar();
-//     }
-// });
-// chkZerados.addEventListener('change', function() {
-//     if (chkZerados.checked) {
-//         marcarApenas('zerados');
-//         filtrar();
-//     }
-// });

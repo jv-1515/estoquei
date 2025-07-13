@@ -922,8 +922,12 @@ function atualizarPlaceholderCodigoMulti() {
     const placeholderOption = document.getElementById('codigo-multi-placeholder');
     const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
     let texto = 'Todos';
-    if (selecionados.length === 1) texto = selecionados[0];
-    else if (selecionados.length > 1) texto = selecionados.join(', ');
+    // Se o primeiro checkbox ("Todos") estiver marcado, sempre mostra "Todos"
+    if (checks[0] && checks[0].checked) {
+        texto = 'Todos';
+    } else {
+        texto = selecionados.join(', ');
+    }
     if (placeholderOption) placeholderOption.textContent = texto;
     if (select) {
         select.selectedIndex = 0;
@@ -942,7 +946,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkboxesDiv.innerHTML = '';
                 checkboxesDiv.innerHTML += `<label><input type="checkbox" id="codigo-multi-todos" class="codigo-multi-check" value="" checked onclick="marcarOuDesmarcarTodosCodigos()" data-label="Todos" /> Todos</label>`;
                 produtos.forEach(prod => {
-                    checkboxesDiv.innerHTML += `<label><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
+                    checkboxesDiv.innerHTML += `<label title="${prod.codigo} - ${prod.nome}" style="gap: 2px 2px 8px 10px"><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
                 });
                 aplicarListenersCodigoMulti();
                 atualizarPlaceholderCodigoMulti();
@@ -1618,28 +1622,28 @@ function showCheckboxesTamanhoMulti() {
     }
 }
 
-function marcarOuDesmarcarTodosTamanhos() {
-    const todas = document.getElementById('tamanho-multi-todas');
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const checks = document.querySelectorAll('.tamanho-multi-check');
-    checks.forEach(cb => {
-        cb.checked = todas.checked;
-    });
-    // Atualiza "Todos Letras" e "Todos Numéricos" conforme o estado de "Todos"
-    todasLetra.checked = todas.checked;
-    todasNum.checked = todas.checked;
-    atualizarPlaceholderTamanhoMulti();
-    filtrar();
-}
+// function marcarOuDesmarcarTodosTamanhos() {
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     const checks = document.querySelectorAll('.tamanho-multi-check');
+//     checks.forEach(cb => {
+//         cb.checked = todas.checked;
+//     });
+//     // Atualiza "Todos Letras" e "Todos Numéricos" conforme o estado de "Todos"
+//     todasLetra.checked = todas.checked;
+//     todasNum.checked = todas.checked;
+//     atualizarPlaceholderTamanhoMulti();
+//     filtrar();
+// }
 
 // Atualiza "Todos" se ambos "Todos Letras" e "Todos Numéricos" estiverem marcados
-function atualizarTodosTamanhosCheck() {
-    const todas = document.getElementById('tamanho-multi-todas');
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    todas.checked = todasLetra.checked && todasNum.checked;
-}
+// function atualizarTodosTamanhosCheck() {
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     todas.checked = todasLetra.checked && todasNum.checked;
+// }
 
 // Adiciona listeners para manter sincronização
 document.addEventListener('DOMContentLoaded', function() {
@@ -1760,12 +1764,12 @@ function atualizarPlaceholderTamanhoMulti() {
     filtrar();
 
 // Atualiza "Todos" se ambos "Todos Letras" e "Todos Numéricos" estiverem marcados
-function atualizarTodosTamanhosCheck() {
-    const todas = document.getElementById('tamanho-multi-todas');
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    todas.checked = todasLetra.checked && todasNum.checked;
-}
+// function atualizarTodosTamanhosCheck() {
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     todas.checked = todasLetra.checked && todasNum.checked;
+// }
 
 // Adiciona listeners para manter sincronização
 document.addEventListener('DOMContentLoaded', function() {
@@ -1881,84 +1885,84 @@ function atualizarPlaceholderTamanhoMulti() {
 }
 
 // --- MULTISELECT CÓDIGO (CHECKBOXES) ---
-function showCheckboxesCodigoMulti() {
-    const checkboxes = document.getElementById('checkboxes-codigo-multi');
-    if (checkboxes.style.display === 'block') {
-        checkboxes.style.display = 'none';
-    } else {
-        checkboxes.style.display = 'block';
-    }
-}
+// function showCheckboxesCodigoMulti() {
+//     const checkboxes = document.getElementById('checkboxes-codigo-multi');
+//     if (checkboxes.style.display === 'block') {
+//         checkboxes.style.display = 'none';
+//     } else {
+//         checkboxes.style.display = 'block';
+//     }
+// }
 
-function atualizarPlaceholderCodigoMulti() {
-    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
-    const select = document.getElementById('filter-codigo');
-    const placeholderOption = document.getElementById('codigo-multi-placeholder');
-    const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
-    let texto = 'Todos';
-    if (selecionados.length === 1) texto = selecionados[0];
-    else if (selecionados.length > 1) texto = selecionados.join(', ');
-    if (placeholderOption) placeholderOption.textContent = texto;
-    select.selectedIndex = 0;
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
-}
+// function atualizarPlaceholderCodigoMulti() {
+//     const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+//     const select = document.getElementById('filter-codigo');
+//     const placeholderOption = document.getElementById('codigo-multi-placeholder');
+//     const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
+//     let texto = 'Todos';
+//     if (selecionados.length === 1) texto = selecionados[0];
+//     else if (selecionados.length > 1) texto = selecionados.join(', ');
+//     if (placeholderOption) placeholderOption.textContent = texto;
+//     select.selectedIndex = 0;
+//     select.style.color = texto === 'Todos' ? '#757575' : 'black';
+// }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Popular checkboxes de código dinamicamente
-    const checkboxesDiv = document.getElementById('checkboxes-codigo-multi');
-    const select = document.getElementById('filter-codigo');
-    if (checkboxesDiv && select) {
-        fetch('/produtos')
-            .then(res => res.json())
-            .then(produtos => {
-                checkboxesDiv.innerHTML = '';
-                checkboxesDiv.innerHTML += `<label><input type="checkbox" id="codigo-multi-todos" class="codigo-multi-check" value="" checked onclick="marcarOuDesmarcarTodosCodigos()" data-label="Todos" /> Todos</label>`;
-                produtos.forEach(prod => {
-                    checkboxesDiv.innerHTML += `<label><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
-                });
-                aplicarListenersCodigoMulti();
-                atualizarPlaceholderCodigoMulti();
-            });
-    }
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Popular checkboxes de código dinamicamente
+//     const checkboxesDiv = document.getElementById('checkboxes-codigo-multi');
+//     const select = document.getElementById('filter-codigo');
+//     if (checkboxesDiv && select) {
+//         fetch('/produtos')
+//             .then(res => res.json())
+//             .then(produtos => {
+//                 checkboxesDiv.innerHTML = '';
+//                 checkboxesDiv.innerHTML += `<label><input type="checkbox" id="codigo-multi-todos" class="codigo-multi-check" value="" checked onclick="marcarOuDesmarcarTodosCodigos()" data-label="Todos" /> Todos</label>`;
+//                 produtos.forEach(prod => {
+//                     checkboxesDiv.innerHTML += `<label><input type="checkbox" class="codigo-multi-check" value="${prod.codigo}" checked data-label="${prod.codigo} - ${prod.nome}" /> ${prod.codigo} - ${prod.nome}</label>`;
+//                 });
+//                 aplicarListenersCodigoMulti();
+//                 atualizarPlaceholderCodigoMulti();
+//             });
+//     }
+// });
 
-function marcarOuDesmarcarTodosCodigos() {
-    const todas = document.getElementById('codigo-multi-todos');
-    const checks = document.querySelectorAll('.codigo-multi-check');
-    if (todas.checked) {
-        checks.forEach(cb => {
-            cb.checked = true;
-            cb.setAttribute('checked', 'checked');
-        });
-    } else {
-        checks.forEach(cb => {
-            cb.checked = false;
-            cb.removeAttribute('checked');
-        });
-    }
-    atualizarPlaceholderCodigoMulti();
-    filtrarRelatorios();
-}
+// function marcarOuDesmarcarTodosCodigos() {
+//     const todas = document.getElementById('codigo-multi-todos');
+//     const checks = document.querySelectorAll('.codigo-multi-check');
+//     if (todas.checked) {
+//         checks.forEach(cb => {
+//             cb.checked = true;
+//             cb.setAttribute('checked', 'checked');
+//         });
+//     } else {
+//         checks.forEach(cb => {
+//             cb.checked = false;
+//             cb.removeAttribute('checked');
+//         });
+//     }
+//     atualizarPlaceholderCodigoMulti();
+//     filtrarRelatorios();
+// }
 
-function aplicarListenersCodigoMulti() {
-    const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
-    const todas = document.getElementById('codigo-multi-todos');
-    checks.forEach(cb => {
-        if (cb.id !== 'codigo-multi-todos') {
-            cb.addEventListener('change', function() {
-                if (!cb.checked && todas) todas.checked = false;
-                else if (todas) {
-                    todas.checked = checks.slice(1).every(c => c.checked);
-                }
-                atualizarPlaceholderCodigoMulti();
-                filtrarRelatorios();
-            });
-        }
-    });
-    if (todas) {
-        todas.addEventListener('change', function() {
-            marcarOuDesmarcarTodosCodigos();
-        });
-    }
-}
+// function aplicarListenersCodigoMulti() {
+//     const checks = Array.from(document.querySelectorAll('.codigo-multi-check'));
+//     const todas = document.getElementById('codigo-multi-todos');
+//     checks.forEach(cb => {
+//         if (cb.id !== 'codigo-multi-todos') {
+//             cb.addEventListener('change', function() {
+//                 if (!cb.checked && todas) todas.checked = false;
+//                 else if (todas) {
+//                     todas.checked = checks.slice(1).every(c => c.checked);
+//                 }
+//                 atualizarPlaceholderCodigoMulti();
+//                 filtrarRelatorios();
+//             });
+//         }
+//     });
+//     if (todas) {
+//         todas.addEventListener('change', function() {
+//             marcarOuDesmarcarTodosCodigos();
+//         });
+//     }
+// }
 
