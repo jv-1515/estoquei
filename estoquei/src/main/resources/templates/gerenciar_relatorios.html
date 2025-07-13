@@ -64,7 +64,7 @@
         </div>
     </div>
     <!-- Área de gerar relatório (mantida abaixo) -->
-    <div class="filters-container">
+    <div class="filters-container" style="display: none;">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
             <div class="filters-row">
@@ -190,16 +190,16 @@
             </div>
                 <div class="input-group" style="position: relative;">
                     <label for="filter-periodo">Período*</label>
-                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly required style="cursor:pointer;min-width: 146px;" />
+                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;min-width: 146px;" />
                     <div id="periodo-popup" class="faixa-popup" style="display:none; position:absolute; z-index:100;">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <div>
                                 <span>Data Início:</span>
-                                <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
+                                <input style="height: 25px; margin-top: 2px;" required type="date" id="periodo-data-inicio" />
                             </div>
                             <div>
                                 <span>Data Fim:</span>
-                                <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
+                                <input style="height: 25px; margin-top: 2px;" required type="date" id="periodo-data-fim" />
                             </div>
                         </div>
                     </div>
@@ -328,6 +328,10 @@
                 <option value="100">100</option>
             </select>
         </div>
+
+        <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0">
+            <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Novo Relatório
+        </button>
     </div>
     <div class="main-container">
         <div class="table-space"></div>
