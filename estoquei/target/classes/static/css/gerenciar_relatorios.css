@@ -88,7 +88,6 @@ h2 {
 .input-group {
     position: relative;
     flex: 1 1 90px;
-    min-width: 90px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
@@ -350,13 +349,8 @@ h2 {
     margin: 0;
 } */
 
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
 
-.input-group {
+/* .input-group {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
@@ -364,7 +358,7 @@ h2 {
     flex-direction: column;
     margin-bottom: 0;
     gap: 2px;
-}
+} */
 
 .input-group label {
     font-size: 12px;
@@ -562,19 +556,7 @@ button:hover,
     transition: background-color 0.2s, color 0.2s;
 }
 
-/* .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-} */
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.input-group {
+/* .input-group {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
@@ -582,7 +564,7 @@ button:hover,
     flex-direction: column;
     margin-bottom: 0;
     gap: 2px;
-}
+} */
 
 .input-group input,
 .input-group select {
@@ -615,7 +597,8 @@ button:hover,
     gap: 2px;
     padding: 10px;
     z-index: 10;
-    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     color: #757575;
 }
@@ -623,15 +606,6 @@ button:hover,
 .faixa-popup input {
     height: 25px;
 }
-
-.input-group:has(#filter-preco) {
-    min-width: 137px;
-}
-
-.input-group:has(#filter-nome) {
-    min-width: 180px;
-}
-
 
 #codigo-sugestoes {
     position: absolute;
@@ -711,7 +685,8 @@ select#registros-select option {
 }
 #checkboxes-categoria-multi,
 #checkboxes-tamanho-multi,
-#checkboxes-genero-multi {
+#checkboxes-genero-multi,
+#checkboxes-codigo-multi {
     display: none;
     border: 1px #aaa solid;
     border-radius: 4px 0 0 4px;
@@ -723,13 +698,15 @@ select#registros-select option {
     max-height: 90px;
     overflow-y: auto;
 }
-#checkboxes-genero-multi {
-    border-radius: 4px;;
+#checkboxes-genero-multi,
+#checkboxes-codigo-multi {
+    border-radius: 4px;
 }
 
 #checkboxes-categoria-multi label,
 #checkboxes-tamanho-multi label,
-#checkboxes-genero-multi label {
+#checkboxes-genero-multi label,
+#checkboxes-codigo-multi label {
     display: flex;
     flex-direction: row-reverse; /* Inverte a ordem: checkbox à direita */
     align-items: center;
@@ -745,14 +722,16 @@ select#registros-select option {
 
 #checkboxes-categoria-multi label:hover,
 #checkboxes-tamanho-multi label:hover,
-#checkboxes-genero-multi label:hover {
+#checkboxes-genero-multi label:hover,
+#checkboxes-codigo-multi label:hover {
     background-color: #f3f3f3;
     color: #fff;
 }
 
 #checkboxes-categoria-multi input[type="checkbox"],
 #checkboxes-tamanho-multi input[type="checkbox"],
-#checkboxes-genero-multi input[type="checkbox"] {
+#checkboxes-genero-multi input[type="checkbox"],
+#checkboxes-codigo-multi input[type="checkbox"] {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
