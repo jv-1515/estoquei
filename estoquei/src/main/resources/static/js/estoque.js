@@ -487,7 +487,17 @@ function filtrar() {
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
     const chkZerados = document.getElementById('quantidade-zerados-popup');
 
+    // Filtro por busca (nome OU código)
+    const termoBusca = buscaInput && buscaInput.value ? buscaInput.value.trim() : '';
+
     let produtosFiltrados = produtos.filter(p => {
+        // Busca por nome OU código
+        if (termoBusca) {
+            const termo = termoBusca.toLowerCase();
+            const buscaCodigo = p.codigo && p.codigo.toString().toLowerCase().includes(termo);
+            const buscaNome = p.nome && p.nome.toLowerCase().includes(termo);
+            if (!buscaCodigo && !buscaNome) return false;
+        }
         // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
             if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
@@ -530,7 +540,7 @@ function filtrar() {
     renderizarProdutos(produtosFiltrados);
     atualizarDetalhesInfo(produtosFiltrados);
     window.atualizarDetalhesEstoque(produtosFiltrados);
-}    
+}
 
 function removerProduto(id) {
     Swal.fire({
@@ -638,7 +648,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                         style="
                             position: absolute;
-                            top: 50%;
+                            top: 53%;
                             right: 0;
                             transform: translateY(-50%);
                             width: 20px;
@@ -664,7 +674,7 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td>${p.nome}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
@@ -1140,59 +1150,6 @@ document.addEventListener('mousedown', function(e) {
     }
 });
 
-// --- SUGESTÃO DE CÓDIGOS "LIKE" ---
-const codigoInput = document.getElementById('filter-codigo');
-
-// Cria o container das sugestões
-let sugestaoContainer = document.createElement('div');
-sugestaoContainer.id = 'codigo-sugestoes';
-
-codigoInput.parentNode.appendChild(sugestaoContainer);
-
-codigoInput.addEventListener('input', function() {
-    // Permite apenas números
-    this.value = this.value.replace(/\D/g, '');
-    const termo = this.value.trim();
-    sugestaoContainer.innerHTML = '';
-    if (!termo) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    // Busca códigos que contenham o termo digitado
-    const encontrados = produtos.filter(p => p.codigo.includes(termo));
-    if (encontrados.length === 0) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    encontrados.forEach(p => {
-        const div = document.createElement('div');
-        div.textContent = `${p.codigo} - ${p.nome}`;
-        div.style.padding = '4px 8px';
-        div.style.cursor = 'pointer';
-        div.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            codigoInput.value = p.codigo;
-            sugestaoContainer.style.display = 'none';
-            filtrar();
-        });
-        sugestaoContainer.appendChild(div);
-    });
-    // Posiciona o container logo abaixo do input
-    const rect = codigoInput.getBoundingClientRect();
-    sugestaoContainer.style.top = (codigoInput.offsetTop + codigoInput.offsetHeight) + 'px';
-    sugestaoContainer.style.left = codigoInput.offsetLeft + 'px';
-    sugestaoContainer.style.display = 'block';
-    filtrar();
-});
-
-// Esconde sugestões ao clicar fora
-document.addEventListener('mousedown', function(e) {
-    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
-        sugestaoContainer.style.display = 'none';
-    }
-});
 
 const buscaInput = document.getElementById('busca-produto');
 const buscaSugestoes = document.getElementById('busca-sugestoes');
@@ -1202,6 +1159,7 @@ buscaInput.addEventListener('input', function() {
     buscaSugestoes.innerHTML = '';
     if (!termo) {
         buscaSugestoes.style.display = 'none';
+        filtrar(); // Atualiza a lista para mostrar todos se o campo está vazio
         return;
     }
     let encontrados;
@@ -1222,10 +1180,14 @@ buscaInput.addEventListener('input', function() {
             e.preventDefault();
             buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
             buscaSugestoes.style.display = 'none';
+            filtrar(); // Filtra ao selecionar sugestão
         });
         buscaSugestoes.appendChild(div);
     });
     buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+
+    // Filtra produtos conforme digita
+    filtrar();
 });
 
 document.addEventListener('mousedown', function(e) {
@@ -1701,7 +1663,7 @@ function getGenerosSelecionados() {
 window.addEventListener('DOMContentLoaded', function() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
+    // const placeholder = document.getElementById('genero-multi-placeholder');
 
     // "Todos" marca/desmarca todos
     todas.addEventListener('change', function() {
@@ -1721,34 +1683,3 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
-
-// --- QUANTIDADE FAIXA CHECKBOXES ---
-// const chkTodos = document.getElementById('quantidade-todas-popup');
-// const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-// const chkZerados = document.getElementById('quantidade-zerados-popup');
-
-// function marcarApenas(qual) {
-//     chkTodos.checked = qual === 'todos';
-//     chkBaixo.checked = qual === 'baixo';
-//     chkZerados.checked = qual === 'zerados';
-// }
-
-// chkTodos.addEventListener('change', function() {
-//     if (chkTodos.checked) {
-//         marcarApenas('todos');
-//         filtrar();
-//     }
-
-// });
-// chkBaixo.addEventListener('change', function() {
-//     if (chkBaixo.checked) {
-//         marcarApenas('baixo');
-//         filtrar();
-//     }
-// });
-// chkZerados.addEventListener('change', function() {
-//     if (chkZerados.checked) {
-//         marcarApenas('zerados');
-//         filtrar();
-//     }
-// });

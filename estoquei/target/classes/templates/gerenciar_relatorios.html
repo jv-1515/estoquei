@@ -67,43 +67,53 @@
     <div class="filters-container">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
-        <div class="filters-row" style="display:flex; gap:8px;">
-            <div class="multiselect input-group">
-              <label for="filter-categoria-multi">Categorias</label>
-              <div>
-                <select id="filter-categoria" style="padding-left: 1px;">
-                  <option id="categoria-multi-placeholder">Todas</option>
-                </select>
-                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
-              </div>
-              <div id="checkboxes-categoria-multi">
-                <label>
-                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-shorts" class="categoria-multi-check" value="SHORTS" checked /> Shorts
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
-                </label>
-                <label>
-                  <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
-                </label>
-              </div>
-            </div>
-            <div class="multiselect input-group">
+            <div class="filters-row">
+                <div class="multiselect input-group">
+                  <label for="filter-codigo-multi">Produtos</label>
+                  <div>
+                    <select id="filter-codigo-multi" style="padding-left: 1px;">
+                      <option id="codigo-multi-placeholder">Todos</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesCodigoMulti()"></div>
+                  </div>
+                  <div id="checkboxes-codigo-multi" style="display:none;"></div>
+                </div>
+                <div class="multiselect input-group" style="max-width: 120x;">
+                  <label for="filter-categoria-multi">Categorias</label>
+                  <div>
+                    <select id="filter-categoria" style="padding-left: 1px;">
+                      <option id="categoria-multi-placeholder">Todas</option>
+                    </select>
+                    <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
+                  </div>
+                  <div id="checkboxes-categoria-multi">
+                    <label>
+                        <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-shorts" class="categoria-multi-check" value="SHORTS" checked /> Shorts
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
+                    </label>
+                    <label>
+                      <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
+                    </label>
+                  </div>
+                </div>
+            <div class="multiselect input-group" style="max-width: 120x;">
               <label for="filter-tamanho-multi">Tamanhos</label>
               <div>
                 <select id="filter-tamanho" style="padding-left: 1px;">
@@ -113,7 +123,7 @@
               </div>
               <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
-            <div class="multiselect input-group">
+            <div class="multiselect input-group" style="max-width: 105px;">
                 <label for="filter-genero-multi">Gêneros</label>
                 <div>
                 <select id="filter-genero" style="padding-left: 1px;">
@@ -136,7 +146,7 @@
                     </label>
                 </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="max-width: 125px;">
                 <label for="filter-quantidade">Quantidades</label>
                 <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
@@ -162,7 +172,7 @@
                     </div>
                 </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="max-width: 125px;">
                 <label for="filter-preco">Preços</label>
                 <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
                 <div id="preco-faixa-popup" class="faixa-popup">
@@ -178,16 +188,59 @@
                     </div>
                 </div>
             </div>
-                <div class="input-group">
-                    <label for="filter-data-inicio">Data Início</label>
-                    <input type="date" id="filter-data-inicio" />
+                <div class="input-group" style="position: relative;">
+                    <label for="filter-periodo">Período</label>
+                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;min-width: 160px;" />
+                    <div id="periodo-popup" class="faixa-popup" style="display:none; position:absolute; z-index:100;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>de:</span>
+                                <input type="date" id="periodo-data-inicio" />
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span>até:</span>
+                                <input type="date" id="periodo-data-fim" />
+                            </div>
+                            <button type="button" class="btn" id="periodo-aplicar-btn" style="margin-top: 6px;">Aplicar</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="filter-data-fim">Data Fim</label>
-                    <input type="date" id="filter-data-fim" />
-                </div>
-                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
-                    <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const periodoInput = document.getElementById('filter-periodo');
+                    const popup = document.getElementById('periodo-popup');
+                    const dataInicio = document.getElementById('periodo-data-inicio');
+                    const dataFim = document.getElementById('periodo-data-fim');
+                    const aplicarBtn = document.getElementById('periodo-aplicar-btn');
+
+                    periodoInput.addEventListener('click', function(e) {
+                        popup.style.display = 'block';
+                        const rect = periodoInput.getBoundingClientRect();
+
+                    });
+
+                    aplicarBtn.addEventListener('click', function() {
+                        if (dataInicio.value && dataFim.value) {
+                            periodoInput.value = `${dataInicio.value} - ${dataFim.value}`;
+                        } else if (dataInicio.value) {
+                            periodoInput.value = `de ${dataInicio.value}`;
+                        } else if (dataFim.value) {
+                            periodoInput.value = `até ${dataFim.value}`;
+                        } else {
+                            periodoInput.value = '';
+                        }
+                        popup.style.display = 'none';
+                    });
+
+                    document.addEventListener('mousedown', function(e) {
+                        if (!popup.contains(e.target) && e.target !== periodoInput) {
+                            popup.style.display = 'none';
+                        }
+                    });
+                });
+                </script>
+                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 80px;">
+                    <i class="fa-solid fa-eraser" style="margin-right: 4px;"></i>Limpar
                 </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
                     <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
