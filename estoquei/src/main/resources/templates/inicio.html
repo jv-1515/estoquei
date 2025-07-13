@@ -20,7 +20,7 @@
             </div>
             <div style="display:flex;flex-direction:column;line-height:1.1;">
                 <span id="avatar-nome" style="font-size:12px;font-weight:bold;color:#222;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-                <span id="avatar-tipo" style="font-size:10px;color:#888;" th:text="${tipo}">Admin</span>
+                <span id="avatar-tipo" style="font-size:10px;color:#888;" th:text="${tipo == 'FUNCIONARIO' ? 'Funcionário' : tipo}"></span>
             </div>
         </a>
     </div>
@@ -46,7 +46,7 @@
     <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
         <div class="container">
         <!-- Acesso limitado ao Gerente -->
-        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+        <div class="card" id="card-fornecedores" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/andamento}">
                 <div class="icon-container"><i class="fa-regular fa-handshake"></i></div>
                 <div class="text-container">
@@ -54,7 +54,7 @@
                 </div>
             </a>
         </div>
-        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+        <div class="card" id="card-funcionarios" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-funcionarios}">
                 <div class="icon-container"><i class="fa-solid fa-users"></i></div>
                 <div class="text-container">
@@ -62,7 +62,7 @@
                 </div>
             </a>
         </div>
-        <div class="card" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+        <div class="card" id="card-relatorios" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
             <a th:href="@{/gerenciar-relatorios}">
                 <div class="icon-container"><i class="fa-solid fa-chart-line"></i></div>
                 <div class="text-container">
@@ -72,7 +72,7 @@
         </div>
         <!-- Acesso limitado ao Gerente -->
 
-        <div class="card">
+        <div class="card" id="card-produtos-cadastrados">
             <a th:href="@{/cadastrar-produto}">
                 <div class="icon-container"><i class="fa-solid fa-shirt"></i></div>
                 <div class="text-container">
@@ -80,7 +80,7 @@
                 </div>
             </a>
         </div>
-        <div class="card">
+        <div class="card" id="card-total-produtos">
             <a th:href="@{/estoque}">
                 <div class="icon-container"><i class="fa-solid fa-boxes-stacked"></i></div>
                 <div class="text-container">
@@ -88,7 +88,7 @@
                 </div>
             </a>
         </div>
-        <div class="card">
+        <div class="card" id="card-movimentacoes">
             <a th:href="@{/movimentar-produto}">
                 <div class="icon-container"><i class="fa-solid fa-money-bill-transfer"></i></div>
                 <div class="text-container">
