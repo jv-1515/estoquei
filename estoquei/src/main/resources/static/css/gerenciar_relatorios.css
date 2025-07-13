@@ -71,10 +71,12 @@ h2 {
 #filter-data-fim,
 #filter-data-criacao-busca,
 #filter-data-inicio-busca,
-#filter-data-fim-busca {
+#filter-data-fim-busca,
+#periodo-data-inicio,
+#periodo-data-fim {
     font-family: Arial, sans-serif;
     color: #757575;
-    height: 30px !important;
+    height: 30px;
     padding: 0 7px;
 }
 
@@ -708,16 +710,12 @@ select#registros-select option {
 #checkboxes-genero-multi label,
 #checkboxes-codigo-multi label {
     display: flex;
-    flex-direction: row-reverse; /* Inverte a ordem: checkbox à direita */
     align-items: center;
     justify-content: space-between;
-    font-size: 12px !important;
     color: #757575 !important;
     font-weight: normal !important;
     pointer-events: auto !important;
-    cursor: pointer !important;
-    padding: 2px 10px;
-    gap: 8px;
+    padding: 2px 0 8px 10px;
 }
 
 #checkboxes-categoria-multi label:hover,

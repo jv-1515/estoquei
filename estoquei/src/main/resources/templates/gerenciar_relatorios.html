@@ -78,7 +78,7 @@
                   </div>
                   <div id="checkboxes-codigo-multi" style="display:none;"></div>
                 </div>
-                <div class="multiselect input-group" style="max-width: 120x;">
+                <div class="multiselect input-group" style="max-width: 100px;">
                   <label for="filter-categoria-multi">Categorias</label>
                   <div>
                     <select id="filter-categoria" style="padding-left: 1px;">
@@ -113,7 +113,7 @@
                     </label>
                   </div>
                 </div>
-            <div class="multiselect input-group" style="max-width: 120x;">
+            <div class="multiselect input-group" style="max-width: 120px;">
               <label for="filter-tamanho-multi">Tamanhos</label>
               <div>
                 <select id="filter-tamanho" style="padding-left: 1px;">
@@ -172,7 +172,7 @@
                     </div>
                 </div>
             </div>
-            <div class="input-group" style="max-width: 125px;">
+            <div class="input-group" style="max-width: 120px;">
                 <label for="filter-preco">Preços</label>
                 <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
                 <div id="preco-faixa-popup" class="faixa-popup">
@@ -189,19 +189,18 @@
                 </div>
             </div>
                 <div class="input-group" style="position: relative;">
-                    <label for="filter-periodo">Período</label>
-                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;min-width: 160px;" />
+                    <label for="filter-periodo">Período*</label>
+                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly required style="cursor:pointer;min-width: 146px;" />
                     <div id="periodo-popup" class="faixa-popup" style="display:none; position:absolute; z-index:100;">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span>de:</span>
-                                <input type="date" id="periodo-data-inicio" />
+                            <div>
+                                <span>Data Início:</span>
+                                <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span>até:</span>
-                                <input type="date" id="periodo-data-fim" />
+                            <div>
+                                <span>Data Fim:</span>
+                                <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
                             </div>
-                            <button type="button" class="btn" id="periodo-aplicar-btn" style="margin-top: 6px;">Aplicar</button>
                         </div>
                     </div>
                 </div>
@@ -219,23 +218,26 @@
 
                     });
 
-                    aplicarBtn.addEventListener('click', function() {
+                    document.addEventListener('mousedown', function(e) {
+                        function formatarDataBR(data) {
+                            if (!data) return '';
+                            const [ano, mes, dia] = data.split('-');
+                            return `${dia}/${mes}/${ano}`;
+                        }
                         if (dataInicio.value && dataFim.value) {
-                            periodoInput.value = `${dataInicio.value} - ${dataFim.value}`;
+                            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
                         } else if (dataInicio.value) {
-                            periodoInput.value = `de ${dataInicio.value}`;
+                            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
                         } else if (dataFim.value) {
-                            periodoInput.value = `até ${dataFim.value}`;
+                            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
                         } else {
                             periodoInput.value = '';
                         }
-                        popup.style.display = 'none';
-                    });
-
-                    document.addEventListener('mousedown', function(e) {
+                        // popup.style.display = 'none';
                         if (!popup.contains(e.target) && e.target !== periodoInput) {
                             popup.style.display = 'none';
                         }
+                        
                     });
                 });
                 </script>
