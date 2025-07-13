@@ -38,7 +38,6 @@ public class AdminController {
         } else {
             model.addAttribute("erro", "Email ou senha inválidos.");
             model.addAttribute("email", email);
-            model.addAttribute("senha", senha);
             return "login";
         }
     }
