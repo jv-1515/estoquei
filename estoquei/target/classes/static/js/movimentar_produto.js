@@ -53,14 +53,8 @@ window.addEventListener('DOMContentLoaded', function() {
     const codigoInput = document.getElementById('filter-codigo');
     let selectProdutos = null;
     let produtoSelecionado = {};
-    // Se não houver produto selecionado, ao sair do input de código mostra o select (só se não estiver visível)
-    if (!id && codigoInput) {
-        codigoInput.addEventListener('blur', function() {
-            if (!selectProdutos || selectProdutos.style.display === 'none') {
-                mostrarSelectProdutosDefault();
-            }
-        });
-    }
+    // Se não houver produto selecionado, mostra o select SEMPRE e oculta o input
+    // (não adiciona blur nem lógica para esconder o select)
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
@@ -313,11 +307,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     // Sempre redireciona para ?id=ID ao selecionar
                     window.location.search = '?id=' + opt.value;
                 });
-
-                selectProdutos.addEventListener('blur', function() {
-                    selectProdutos.style.display = 'none';
-                    codigoInput.style.display = '';
-                });
+                // Não adiciona blur para esconder o select enquanto não houver id
             });
     }
 
