@@ -4,8 +4,8 @@ function getFiltros() {
         tamanho: document.getElementById('filter-tamanho') ? document.getElementById('filter-tamanho').value : '',
         genero: document.getElementById('filter-genero') ? document.getElementById('filter-genero').value : '',
         preco: document.getElementById('filter-preco') ? document.getElementById('filter-preco').value : '',
-        dataInicio: document.getElementById('filter-data-inicio') ? document.getElementById('filter-data-inicio').value : '',
-        dataFim: document.getElementById('filter-data-fim') ? document.getElementById('filter-data-fim').value : ''
+        dataInicio: document.getElementById('periodo-data-inicio') ? document.getElementById('periodo-data-inicio').value : '',
+        dataFim: document.getElementById('periodo-data-fim') ? document.getElementById('periodo-data-fim').value : ''
     };
 }
 
@@ -16,27 +16,53 @@ function formatarDataBR(data) {
 }
 
 function gerar() {
+    const areaGerar = document.querySelector('.filters-container + .filters-container');
+    areaGerar.style.display = 'none';
+
     const filtros = getFiltros();
 
-    // Se dataFim está preenchido e dataInicio está vazio, impede gerar e foca no campo
-    if (filtros.dataFim && !filtros.dataInicio) {
-        const dataInicioInput = document.getElementById('filter-data-inicio');
-        dataInicioInput.required = true;
-        dataInicioInput.reportValidity(); // Mostra a mensagem nativa do navegador
-        dataInicioInput.focus();
+
+    // Impede gerar se qualquer um dos campos de período estiver vazio
+    if (!filtros.dataInicio) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-inicio');
+            if (input) input.focus();
+        }
+        areaGerar.style.display = 'flex';
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção',
+            text: 'Selecione a Data Início.',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true
+
+        });
+        return;
+    }
+    if (!filtros.dataFim) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-fim');
+            if (input) input.focus();
+        }
+        areaGerar.style.display = 'flex';
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção',
+            text: 'Selecione a Data Fim.',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true
+
+        });
         return;
     }
 
-    // Se dataInicio preenchido e dataFim não, preenche dataFim com hoje
-    if (filtros.dataInicio && !filtros.dataFim) {
-        const hoje = new Date();
-        const yyyy = hoje.getFullYear();
-        const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dd = String(hoje.getDate()).padStart(2, '0');
-        filtros.dataFim = `${yyyy}-${mm}-${dd}`;
-    }
-
-    limparFiltros();              // Só limpe depois, se quiser
+    limparFiltros();
 
     Object.keys(filtros).forEach(key => {
         if (filtros[key] === "") filtros[key] = null;
