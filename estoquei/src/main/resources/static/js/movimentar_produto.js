@@ -52,9 +52,15 @@ window.addEventListener('DOMContentLoaded', function() {
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
     const codigoInput = document.getElementById('filter-codigo');
     let selectProdutos = null;
-    let ultimoProdutoId = null;
-    let ultimoTipo = "ENTRADA";
     let produtoSelecionado = {};
+    // Se não houver produto selecionado, ao sair do input de código mostra o select (só se não estiver visível)
+    if (!id && codigoInput) {
+        codigoInput.addEventListener('blur', function() {
+            if (!selectProdutos || selectProdutos.style.display === 'none') {
+                mostrarSelectProdutosDefault();
+            }
+        });
+    }
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
