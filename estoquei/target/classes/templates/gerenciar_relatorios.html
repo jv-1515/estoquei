@@ -69,7 +69,7 @@
             <h2>Gerar Relatório</h2>
             <div class="filters-row">
                 <div class="multiselect input-group">
-                  <label for="filter-codigo-multi">Códigos</label>
+                  <label for="filter-codigo-multi">Produtos</label>
                   <div>
                     <select id="filter-codigo-multi" style="padding-left: 1px;">
                       <option id="codigo-multi-placeholder">Todos</option>
@@ -78,7 +78,7 @@
                   </div>
                   <div id="checkboxes-codigo-multi" style="display:none;"></div>
                 </div>
-                <div class="multiselect input-group">
+                <div class="multiselect input-group" style="max-width: 120x;">
                   <label for="filter-categoria-multi">Categorias</label>
                   <div>
                     <select id="filter-categoria" style="padding-left: 1px;">
@@ -113,7 +113,7 @@
                     </label>
                   </div>
                 </div>
-            <div class="multiselect input-group">
+            <div class="multiselect input-group" style="max-width: 120x;">
               <label for="filter-tamanho-multi">Tamanhos</label>
               <div>
                 <select id="filter-tamanho" style="padding-left: 1px;">
@@ -123,7 +123,7 @@
               </div>
               <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
-            <div class="multiselect input-group">
+            <div class="multiselect input-group" style="max-width: 105px;">
                 <label for="filter-genero-multi">Gêneros</label>
                 <div>
                 <select id="filter-genero" style="padding-left: 1px;">
@@ -146,7 +146,7 @@
                     </label>
                 </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="max-width: 125px;">
                 <label for="filter-quantidade">Quantidades</label>
                 <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
@@ -172,7 +172,7 @@
                     </div>
                 </div>
             </div>
-            <div class="input-group">
+            <div class="input-group" style="max-width: 125px;">
                 <label for="filter-preco">Preços</label>
                 <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
                 <div id="preco-faixa-popup" class="faixa-popup">
@@ -190,7 +190,7 @@
             </div>
                 <div class="input-group" style="position: relative;">
                     <label for="filter-periodo">Período</label>
-                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;min-width: 150px;" />
+                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;min-width: 160px;" />
                     <div id="periodo-popup" class="faixa-popup" style="display:none; position:absolute; z-index:100;">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -239,6 +239,9 @@
                     });
                 });
                 </script>
+                <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 80px;">
+                    <i class="fa-solid fa-eraser" style="margin-right: 4px;"></i>Limpar
+                </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
                     <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
                 </button>
@@ -323,10 +326,6 @@
                 <option value="100">100</option>
             </select>
         </div>
-
-        <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 90px;">
-            <i class="fa-solid fa-xmark" style="margin-right: 6px;"></i>Cancelar
-        </button>
     </div>
     <div class="main-container">
         <div class="table-space"></div>
