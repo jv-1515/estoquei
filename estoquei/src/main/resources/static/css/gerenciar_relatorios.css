@@ -88,7 +88,6 @@ h2 {
 .input-group {
     position: relative;
     flex: 1 1 90px;
-    min-width: 90px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
@@ -350,13 +349,8 @@ h2 {
     margin: 0;
 } */
 
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
 
-.input-group {
+/* .input-group {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
@@ -364,7 +358,7 @@ h2 {
     flex-direction: column;
     margin-bottom: 0;
     gap: 2px;
-}
+} */
 
 .input-group label {
     font-size: 12px;
@@ -562,19 +556,7 @@ button:hover,
     transition: background-color 0.2s, color 0.2s;
 }
 
-/* .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-} */
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.input-group {
+/* .input-group {
     position: relative;
     flex: 1 1 90px;
     min-width: 90px;
@@ -582,7 +564,7 @@ button:hover,
     flex-direction: column;
     margin-bottom: 0;
     gap: 2px;
-}
+} */
 
 .input-group input,
 .input-group select {
@@ -624,15 +606,6 @@ button:hover,
 .faixa-popup input {
     height: 25px;
 }
-
-.input-group:has(#filter-preco) {
-    min-width: 137px;
-}
-
-.input-group:has(#filter-nome) {
-    min-width: 180px;
-}
-
 
 #codigo-sugestoes {
     position: absolute;
