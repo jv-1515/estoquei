@@ -56,8 +56,17 @@ window.addEventListener('DOMContentLoaded', function() {
     let ultimoTipo = "ENTRADA";
     let produtoSelecionado = {};
 
-    // Função para criar o main-container dinâmico (mantendo layout e imagem)
+    // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
+        // Determina o max do input de quantidade
+        let maxQuantidade = 999;
+        let qtdAtual = 0;
+        if (produto && produto.quantidade) {
+            qtdAtual = parseInt(produto.quantidade) || 0;
+        }
+        if (tipo === 'VENDA') {
+            maxQuantidade = qtdAtual;
+        }
         mainContainerPlaceholder.innerHTML = `
             <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
             <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
@@ -71,19 +80,19 @@ window.addEventListener('DOMContentLoaded', function() {
             <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
             <label for="valor-compra">Valor da Compra (R$)*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
             <label for="valor-compra">Valor da Venda (R$)*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$10,00" min="1">
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
             `}
             <div style="display: flex; gap: 10px;">
             <div style="display: flex; flex-direction: column; flex: 3;">
                 <label for="quantidade">Quantidade*</label>
-                <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="999">
+                <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
                 <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
@@ -212,7 +221,16 @@ window.addEventListener('DOMContentLoaded', function() {
         const quantidadeAtualInput = document.getElementById('filter-quantidade');
         if (!quantidadeInput || !quantidadeFinalInput || !quantidadeAtualInput) return;
         let atual = parseInt(quantidadeAtualInput.value) || 0;
-        let maxPermitido = 999 - atual;
+        let tipo = 'ENTRADA';
+        const tipoRadio = document.querySelector('input[name="tipo-movimentacao"]:checked');
+        if (tipoRadio) tipo = tipoRadio.value;
+
+        let maxPermitido;
+        if (tipo === 'VENDA') {
+            maxPermitido = atual;
+        } else {
+            maxPermitido = 999 - atual;
+        }
         if (maxPermitido < 0) maxPermitido = 0;
 
         let entrada = quantidadeInput.value.replace(/\D/g, '');
@@ -222,23 +240,100 @@ window.addEventListener('DOMContentLoaded', function() {
         if (entradaNum > maxPermitido) {
             entradaNum = maxPermitido;
             quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
-            quantidadeFinalInput.value = atual + entradaNum;
-            Swal.fire({
-                icon: 'warning',
-                title: 'Limite atingido!',
-                text: `Você só pode abastecer até ${maxPermitido} unidades.`,
-                timer: 2500,
-                showConfirmButton: false
-            });
+            if (tipo === 'VENDA') {
+                quantidadeFinalInput.value = atual - entradaNum;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Estoque insuficiente!',
+                    text: `Você só pode vender até ${maxPermitido} unidades.`,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            } else {
+                quantidadeFinalInput.value = atual + entradaNum;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limite atingido!',
+                    text: `Você só pode abastecer até ${maxPermitido} unidades.`,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            }
             return;
         } else {
             quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
         }
 
-        quantidadeFinalInput.value = atual + entradaNum;
+        if (tipo === 'VENDA') {
+            quantidadeFinalInput.value = atual - entradaNum;
+        } else {
+            quantidadeFinalInput.value = atual + entradaNum;
+        }
     }
 
-    // Select de código ao passar mouse
+    // Função para mostrar o select de produtos como padrão
+    function mostrarSelectProdutosDefault() {
+        if (selectProdutos) {
+            selectProdutos.style.display = '';
+            codigoInput.style.display = 'none';
+            return;
+        }
+        fetch('/produtos')
+            .then(response => response.json())
+            .then(produtos => {
+                selectProdutos = document.createElement('select');
+                selectProdutos.id = 'select-produtos';
+                selectProdutos.className = 'filter-select';
+                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
+                produtos.forEach(prod => {
+                    selectProdutos.innerHTML += `<option value="${prod.id}" 
+                        data-codigo="${prod.codigo}" 
+                        data-nome="${prod.nome}" 
+                        data-categoria="${prod.categoria}" 
+                        data-tamanho="${prod.tamanho}" 
+                        data-genero="${prod.genero}" 
+                        data-quantidade="${prod.quantidade}" 
+                        data-limite="${prod.limiteMinimo}" 
+                        data-preco="${prod.preco}" 
+                        data-url_imagem="${prod.url_imagem || ''}"
+                    >${prod.codigo} - ${prod.nome}</option>`;
+                });
+                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
+                codigoInput.style.display = 'none';
+
+                selectProdutos.addEventListener('change', function() {
+                    const opt = this.selectedOptions[0];
+                    if (!opt.value) return;
+                    // Sempre redireciona para ?id=ID ao selecionar
+                    window.location.search = '?id=' + opt.value;
+                });
+
+                selectProdutos.addEventListener('blur', function() {
+                    selectProdutos.style.display = 'none';
+                    codigoInput.style.display = '';
+                });
+            });
+    }
+
+    // Troca tipo de movimentação (sempre adiciona listeners)
+    document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (!produtoSelecionado) produtoSelecionado = {};
+            criarMainContainer(this.value, produtoSelecionado);
+            ultimoTipo = this.value;
+        });
+    });
+
+    // Sempre mostrar o select como padrão se não tem id na URL
+    if (!id) {
+        mostrarSelectProdutosDefault();
+        criarMainContainer("ENTRADA", {});
+        // Máscara de preço para filtros
+        formatarPrecoInput(document.getElementById('filter-preco'));
+        return;
+    }
+
+    // Se tem id, input de código aparece normalmente e select só aparece ao mouseover
     codigoInput.addEventListener('mouseover', function() {
         if (selectProdutos) {
             selectProdutos.style.display = '';
@@ -271,31 +366,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 selectProdutos.addEventListener('change', function() {
                     const opt = this.selectedOptions[0];
                     if (!opt.value) return;
-                    const produto = {
-                        id: opt.value,
-                        codigo: opt.dataset.codigo,
-                        nome: opt.dataset.nome,
-                        categoria: opt.dataset.categoria,
-                        tamanho: opt.dataset.tamanho,
-                        genero: opt.dataset.genero,
-                        quantidade: opt.dataset.quantidade,
-                        limiteMinimo: opt.dataset.limite,
-                        preco: opt.dataset.preco,
-                        url_imagem: opt.dataset.url_imagem
-                    };
-                    preencherCampos(produto);
-
-                    // Atualiza main-container só se mudou o produto ou o tipo for SAIDA
-                    const tipoSelecionado = document.querySelector('input[name="tipo-movimentacao"]:checked').value;
-                    if (produto.id !== ultimoProdutoId || tipoSelecionado !== ultimoTipo) {
-                        criarMainContainer(tipoSelecionado, produto);
-                        ultimoProdutoId = produto.id;
-                        ultimoTipo = tipoSelecionado;
-                    }
-                    produtoSelecionado = produto;
-
-                    selectProdutos.style.display = 'none';
-                    codigoInput.style.display = '';
+                    // Sempre redireciona para ?id=ID ao selecionar
+                    window.location.search = '?id=' + opt.value;
                 });
 
                 selectProdutos.addEventListener('blur', function() {
@@ -305,38 +377,22 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Troca tipo de movimentação
-    document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (!produtoSelecionado) produtoSelecionado = {};
-            criarMainContainer(this.value, produtoSelecionado);
-            ultimoTipo = this.value;
-        });
-    });
-
-    // Inicialização: se tem id, busca produto e preenche, senão mostra select
-    if (!id) {
-        // Se não tem id, mostra o select de produtos imediatamente
-        if (typeof mostrarSelectProdutos === 'function') mostrarSelectProdutos();
-        document.getElementById('filter-codigo').style.display = 'none';
-        criarMainContainer("ENTRADA", {});
-        return;
+    // Busca o produto (mantém apenas a lógica correta)
+    if (id) {
+        fetch(`/produtos/${id}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Produto não encontrado');
+                return response.json();
+            })
+            .then(produto => {
+                produtoSelecionado = produto;
+                const tipoSelecionado = document.querySelector('input[name="tipo-movimentacao"]:checked')?.value || "ENTRADA";
+                criarMainContainer(tipoSelecionado, produto);
+            })
+            .catch(error => {
+                Swal.fire('Erro!', error.message, 'error');
+            });
     }
-
-    // Busca o produto
-    fetch(`/produtos/${id}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Produto não encontrado');
-            return response.json();
-        })
-        .then(produto => {
-            produtoSelecionado = produto;
-            criarMainContainer("ENTRADA", produto);
-        })
-        .catch(error => {
-            Swal.fire('Erro!', error.message, 'error');
-        });
-
     // Máscara de preço para filtros
     formatarPrecoInput(document.getElementById('filter-preco'));
 });

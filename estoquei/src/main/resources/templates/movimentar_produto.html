@@ -30,18 +30,38 @@
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Detalhes do Produto</h2>
             <div class="filters-group">
-                <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" pattern="\d{9}" class="filter-input" />
-                <input type="text" id="filter-nome" placeholder="Nome" class="filter-input" readonly />
-
-                <input type="text" id="filter-categoria" readonly class="filter-select" placeholder="Categoria" />
-
-                <input type="text" id="filter-tamanho" class="filter-select" placeholder="Tamanho" readonly />
-
-                <input type="text" id="filter-genero" class="filter-select" placeholder="Gênero" readonly />
-
-                <input type="number" id="filter-quantidade" placeholder="Quantidade" class="filter-input" readonly />
-                <input type="number" id="filter-limite" placeholder="Limite Mínimo" class="filter-input" readonly />
-                <input type="text" id="filter-preco" placeholder="Preço (R$)" class="filter-input" readonly />
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-codigo">Código</label>
+                    <input type="text" id="filter-codigo" placeholder="Código" maxlength="9" minlength="9" pattern="\d{9}" class="filter-input" />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-nome">Nome</label>
+                    <input type="text" id="filter-nome" placeholder="Nome" class="filter-input" readonly style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-categoria">Categoria</label>
+                    <input type="text" id="filter-categoria" readonly class="filter-select" placeholder="Categoria" />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-tamanho">Tamanho</label>
+                    <input type="text" id="filter-tamanho" class="filter-select" placeholder="Tamanho" readonly />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-genero">Gênero</label>
+                    <input type="text" id="filter-genero" class="filter-select" placeholder="Gênero" readonly />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-quantidade">Quantidade</label>
+                    <input type="number" id="filter-quantidade" placeholder="Quantidade" class="filter-input" readonly />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-limite">Limite Mínimo</label>
+                    <input type="number" id="filter-limite" placeholder="Limite Mínimo" class="filter-input" readonly />
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                    <label for="filter-preco">Preço (R$)</label>
+                    <input type="text" id="filter-preco" placeholder="Preço (R$)" class="filter-input" readonly />
+                </div>
             </div>
         </div>
     </div>
