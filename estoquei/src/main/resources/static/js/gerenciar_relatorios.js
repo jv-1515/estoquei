@@ -315,6 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnGerar && areaGerar) {
         btnGerar.addEventListener('click', function() {
             areaGerar.style.display = 'flex';
+            const periodoInput = document.getElementById('filter-periodo');
+            if (periodoInput) {
+                setTimeout(() => periodoInput.focus(), 10);
+            }
         });
     }
 
@@ -381,7 +385,7 @@ function filtrarRelatorios() {
         // Filtro por data de criação (exata)
         if (dataCriacao) {
             let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
-            let dataFiltro = new Date(dataCriacao);
+            // let dataFiltro = new Date(dataCriacao);
             if (!dataRel || dataRel.toISOString().slice(0,10) !== dataCriacao) ok = false;
         }
         // Filtro por período (data início/fim)
@@ -921,8 +925,24 @@ function showCheckboxesCodigoMulti() {
     const checkboxes = document.getElementById('checkboxes-codigo-multi');
     if (checkboxes.style.display === 'block') {
         checkboxes.style.display = 'none';
+        // Remove listener se já estava aberto
+        if (window._codigoMultiListener) {
+            document.removeEventListener('mousedown', window._codigoMultiListener);
+            window._codigoMultiListener = null;
+        }
     } else {
         checkboxes.style.display = 'block';
+        // Adiciona listener para fechar ao clicar fora
+        window._codigoMultiListener = function(e) {
+            const isVisible = checkboxes && window.getComputedStyle(checkboxes).display !== 'none';
+            const select = document.getElementById('filter-codigo-multi');
+            if (isVisible && !checkboxes.contains(e.target) && e.target !== select) {
+                checkboxes.style.display = 'none';
+                document.removeEventListener('mousedown', window._codigoMultiListener);
+                window._codigoMultiListener = null;
+            }
+        };
+        document.addEventListener('mousedown', window._codigoMultiListener);
     }
 }
 
@@ -937,6 +957,8 @@ function atualizarPlaceholderCodigoMulti() {
         texto = 'Todos';
     } else if (selecionados.length === 0) {
         texto = 'Todos';
+    }  else if (selecionados.length === 1) {
+        texto = selecionados[0];
     } else {
         texto = '';
         texto = `${selecionados.length} produtos selecionados`;
@@ -1248,8 +1270,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         document.addEventListener('mousedown', function(e) {
-            if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
-                atualizarPlaceholderQuantidade();
+            // Considera popup visível para qualquer valor diferente de 'none' (block, flex, etc)
+            const isVisible = qtdPopup && window.getComputedStyle(qtdPopup).display !== 'none';
+            if (isVisible && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+                if (typeof atualizarPlaceholderQuantidade === 'function') atualizarPlaceholderQuantidade();
                 aplicarFiltroQtdFaixa();
             }
         });
