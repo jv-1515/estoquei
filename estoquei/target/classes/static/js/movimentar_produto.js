@@ -91,12 +91,12 @@ window.addEventListener('DOMContentLoaded', function() {
             `}
             <div style="display: flex; gap: 10px;">
             <div style="display: flex; flex-direction: column; flex: 3;">
-                <label for="quantidade">Quantidade*</label>
-                <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
+            <label for="quantidade">Quantidade*</label>
+            <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
-                <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
-                <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
+            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
+            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
             </div>
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
@@ -104,6 +104,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
             </div>
             <div class="right-column">
+            <label for="foto">Produto</label>
             <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
             ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 30px"></i>`}
             <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
