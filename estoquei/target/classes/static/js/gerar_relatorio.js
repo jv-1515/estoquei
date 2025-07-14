@@ -19,7 +19,33 @@ function gerar() {
     const areaGerar = document.querySelector('.filters-container + .filters-container');
     areaGerar.style.display = 'none';
 
+
     const filtros = getFiltros();
+    const hoje = new Date();
+    const hojeStr = hoje.toISOString().slice(0, 10);
+
+    if (filtros.dataInicio && filtros.dataInicio > hojeStr) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data Início não pode ser posterior à frente de hoje.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        areaGerar.style.display = 'flex';
+        return;
+    }
+    if (filtros.dataFim && filtros.dataFim > hojeStr) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data Fim não pode ser posterior à data de hoje.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        areaGerar.style.display = 'flex';
+        return;
+    }
 
 
     // Impede gerar se qualquer um dos campos de período estiver vazio
