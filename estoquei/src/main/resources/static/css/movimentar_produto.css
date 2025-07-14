@@ -123,7 +123,7 @@ input:focus[readonly] {
     justify-content: center;
     color: #777;
     align-items: center;
-    border: dashed 2px #aaa;
+    border: solid 2px #aaa;
     background-color: #f9f9f9;
     overflow: hidden;
 }
@@ -155,22 +155,21 @@ button:hover {
     background-color: #277580;
 }
 
-.filters .filter-input {
-    width: 145px;
-    padding: 7px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-
+.filters .filter-input,
 .filters .filter-select {
     width: 145px;
     padding: 7px;
     border: 1px solid #aaa;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 10px;
     box-sizing: border-box;
+    min-height: 26px;
+    height: 26px;
+    max-height: 26px;
+}
+
+#select-produtos {
+    padding-left: 1px;
 }
 
 #select-produtos option[disabled][hidden] {
@@ -180,7 +179,7 @@ button:hover {
 .filters-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 0 10px;
     max-width: 620px;
 }
 
@@ -195,7 +194,6 @@ button:hover {
 .right-column {
 display: flex;
 flex-direction: column;
-padding-top: 24px;
 }
 
 .swal2-confirm-custom {
@@ -250,3 +248,4 @@ input:focus[readonly] {
     color: #1E94A3;
     transition: color 0.2s;
 }
+
