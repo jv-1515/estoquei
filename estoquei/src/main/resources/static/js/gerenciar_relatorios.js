@@ -759,6 +759,8 @@ window.expandedTamanhoMulti = false;
 function showCheckboxesTamanhoMulti() {
     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
     if (!window.expandedTamanhoMulti) {
+        updateOptions();
+
         checkboxes.style.display = "block";
         window.expandedTamanhoMulti = true;
 
@@ -1631,33 +1633,33 @@ function atualizarPlaceholderCategoriaMulti() {
     }
 }
 
-function showCheckboxesTamanhoMulti() {
-    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-    if (!window.expandedTamanhoMulti) {
-        checkboxes.style.display = "block";
-        window.expandedTamanhoMulti = true;
+// function showCheckboxesTamanhoMulti() {
+//     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+//     if (!window.expandedTamanhoMulti) {
+//         checkboxes.style.display = "block";
+//         window.expandedTamanhoMulti = true;
 
-        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
-        atualizarPlaceholderTamanhoMulti();
+//         // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
+//         atualizarPlaceholderTamanhoMulti();
 
-        // Fecha ao clicar fora
-        function handleClickOutside(e) {
-            if (
-                checkboxes &&
-                !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect .overSelect').contains(e.target)
-            ) {
-                checkboxes.style.display = "none";
-                window.expandedTamanhoMulti = false;
-                document.removeEventListener('mousedown', handleClickOutside);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-    } else {
-        checkboxes.style.display = "none";
-        window.expandedTamanhoMulti = false;
-    }
-}
+//         // Fecha ao clicar fora
+//         function handleClickOutside(e) {
+//             if (
+//                 checkboxes &&
+//                 !checkboxes.contains(e.target) &&
+//                 !document.querySelector('.multiselect .overSelect').contains(e.target)
+//             ) {
+//                 checkboxes.style.display = "none";
+//                 window.expandedTamanhoMulti = false;
+//                 document.removeEventListener('mousedown', handleClickOutside);
+//             }
+//         }
+//         document.addEventListener('mousedown', handleClickOutside);
+//     } else {
+//         checkboxes.style.display = "none";
+//         window.expandedTamanhoMulti = false;
+//     }
+// }
 
 // function marcarOuDesmarcarTodosTamanhos() {
 //     const todas = document.getElementById('tamanho-multi-todas');
