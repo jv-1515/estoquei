@@ -64,7 +64,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (produto && produto.quantidade) {
             qtdAtual = parseInt(produto.quantidade) || 0;
         }
-        if (tipo === 'VENDA') {
+        if (tipo === 'SAIDA') {
             maxQuantidade = qtdAtual;
         }
         mainContainerPlaceholder.innerHTML = `
@@ -139,6 +139,18 @@ window.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('movimentacao-form');
         if (form) {
             form.addEventListener('submit', function(event) {
+                // Validação: impedir envio sem produto selecionado
+                if (!produtoSelecionado.id || !produtoSelecionado.codigo) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selecione um produto!',
+                        text: 'Nenhum produto foi selecionado.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
                 event.preventDefault();
                 form.reset();
                 Swal.fire({
@@ -184,10 +196,10 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('filter-categoria').value = categoriaFormatada;
         document.getElementById('filter-tamanho').value = tamanhoExibido;
         document.getElementById('filter-genero').value = generoFormatado;
-        document.getElementById('filter-quantidade').value = produto.quantidade || '';
+        document.getElementById('filter-quantidade').value = (produto.quantidade !== undefined && produto.quantidade !== null) ? produto.quantidade : '';
         document.getElementById('filter-limite').value = produto.limiteMinimo || '';
         document.getElementById('filter-preco').value = precoFormatado;
-        document.getElementById('quantidade-final').value = produto.quantidade || '';
+        document.getElementById('quantidade-final').value = (produto.quantidade !== undefined && produto.quantidade !== null) ? produto.quantidade : '';
 
         // Imagem
         const preview = document.getElementById('image-preview');
@@ -226,7 +238,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (tipoRadio) tipo = tipoRadio.value;
 
         let maxPermitido;
-        if (tipo === 'VENDA') {
+        if (tipo === 'SAIDA') {
             maxPermitido = atual;
         } else {
             maxPermitido = 999 - atual;
@@ -240,12 +252,30 @@ window.addEventListener('DOMContentLoaded', function() {
         if (entradaNum > maxPermitido) {
             entradaNum = maxPermitido;
             quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
-            if (tipo === 'VENDA') {
+            if (tipo === 'SAIDA' && maxPermitido > 0) {
                 quantidadeFinalInput.value = atual - entradaNum;
                 Swal.fire({
                     icon: 'warning',
                     title: 'Estoque insuficiente!',
                     text: `Você só pode vender até ${maxPermitido} unidades.`,
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            } else if (tipo === 'SAIDA' && maxPermitido === 0) {
+                quantidadeFinalInput.value = atual - entradaNum;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Estoque insuficiente!',
+                    text: `O produto precisa ser reabastecido.`,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else if (tipo === 'ENTRADA' && maxPermitido === 0) {
+                quantidadeFinalInput.value = atual;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limite de estoque atingido!',
+                    text: 'Este produto não pode ser abastecido.',
                     timer: 2500,
                     showConfirmButton: false
                 });
@@ -264,7 +294,7 @@ window.addEventListener('DOMContentLoaded', function() {
             quantidadeInput.value = entradaNum > 0 ? entradaNum : '';
         }
 
-        if (tipo === 'VENDA') {
+        if (tipo === 'SAIDA') {
             quantidadeFinalInput.value = atual - entradaNum;
         } else {
             quantidadeFinalInput.value = atual + entradaNum;
