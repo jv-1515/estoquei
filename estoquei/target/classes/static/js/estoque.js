@@ -648,7 +648,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                         style="
                             position: absolute;
-                            top: 53%;
+                            top: 50%;
                             right: 0;
                             transform: translateY(-50%);
                             width: 20px;
@@ -660,11 +660,30 @@ function renderizarProdutos(produtos) {
                             pointer-events: auto;
                             padding-right: 23px;
                         ">
-                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
                         <i class="fa-solid fa-triangle-exclamation" style="color:${corIcone};position:relative;z-index:1;"></i>
                     </a>
                 `;
             }
+            // Formatação das datas
+            let ultimaEntrada = '-';
+            if (p.dtUltimaEntrada) {
+                ultimaEntrada = new Date(p.dtUltimaEntrada).toLocaleDateString('pt-BR');
+            } else {
+                ultimaEntrada = `<span style="
+                    display:inline-block;
+                    padding:2px 10px;
+                    border-radius:12px;
+                    font-size:12px;
+                    color:#fff;
+                    background:#888;
+                ">Pendente</span>`;
+            }
+            let ultimaSaida = '-';
+            if (p.dtUltimaSaida) {
+                ultimaSaida = new Date(p.dtUltimaSaida).toLocaleDateString('pt-BR');
+            }
+
             const rowHtml = `
                 <tr>
                     <td>
@@ -674,7 +693,7 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
@@ -684,6 +703,8 @@ function renderizarProdutos(produtos) {
                     </td>
                     <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
+                    <td>${ultimaEntrada}</td>
+                    <td>${ultimaSaida}</td>
                     <td class="actions">
                         <a href="/editar-produto?id=${p.id}" title="Editar">
                             <i class="fa-solid fa-pen"></i>
