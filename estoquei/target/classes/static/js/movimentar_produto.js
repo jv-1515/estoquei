@@ -140,9 +140,10 @@ window.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('movimentacao-form');
         if (form) {
             form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
                 // Validação: impedir envio sem produto selecionado
                 if (!produtoSelecionado.id || !produtoSelecionado.codigo) {
-                    event.preventDefault();
                     Swal.fire({
                         icon: 'warning',
                         title: 'Selecione um produto!',
@@ -152,28 +153,65 @@ window.addEventListener('DOMContentLoaded', function() {
                     });
                     return;
                 }
-                event.preventDefault();
-                form.reset();
-                Swal.fire({
-                    title: "Sucesso!",
-                    text: tipo === 'ENTRADA' ? "Abastecimento registrado!" : "Venda registrada!",
-                    icon: "success",
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Visualizar Estoque',
-                    cancelButtonText: 'Voltar para Início',
-                    allowOutsideClick: false,
-                    customClass: {
-                        confirmButton: 'swal2-confirm-custom',
-                        cancelButton: 'swal2-cancel-custom'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "/baixo-estoque";
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = "/inicio";
-                    }
-                });
+
+                // Descobre o tipo de movimentação
+                const tipoRadio = document.querySelector('input[name="tipo-movimentacao"]:checked');
+                const tipoMovimentacao = tipoRadio ? tipoRadio.value : "ENTRADA";
+
+                if (tipoMovimentacao === "ENTRADA") {
+                    const entrada = {
+                        codigo: produtoSelecionado.codigo,
+                        nome: produtoSelecionado.nome,
+                        codigoCompra: document.getElementById('codigo-compra').value,
+                        dataEntrada: document.getElementById('data-compra').value, // "YYYY-MM-DD"
+                        fornecedor: document.getElementById('fornecedor').value,
+                        quantidade: parseInt(document.getElementById('quantidade').value, 10),
+                        valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
+                    };
+                    console.log("Enviando entrada:", entrada); // Adicione este log para ver no navegador
+
+                    fetch('/entradas', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(entrada)
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro ao registrar entrada');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Sucesso!', 'Entrada registrada com sucesso!', 'success');
+                    })
+                    .catch(error => {
+                        Swal.fire('Erro!', error.message, 'error');
+                    });
+                } else if (tipoMovimentacao === "SAIDA") {
+                    const saida = {
+                        codigo: produtoSelecionado.codigo,
+                        nome: produtoSelecionado.nome,
+                        codigoVenda: document.getElementById('codigo-compra').value,
+                        dataSaida: document.getElementById('data-compra').value,
+                        comprador: document.getElementById('comprador').value,
+                        quantidade: parseInt(document.getElementById('quantidade').value, 10),
+                        valorVenda: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
+                    };
+
+                    fetch('/saidas', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(saida)
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro ao registrar saída');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Sucesso!', 'Saída registrada com sucesso!', 'success');
+                    })
+                    .catch(error => {
+                        Swal.fire('Erro!', error.message, 'error');
+                    });
+                }
             });
         }
         setTimeout(atualizarQuantidadeFinal, 0);
