@@ -40,6 +40,9 @@ public class Produto {
 
     private String url_imagem;
 
+    private java.time.LocalDate dtUltimaEntrada;
+    private java.time.LocalDate dtUltimaSaida;
+
     
     public Produto(){
     }
@@ -55,6 +58,22 @@ public class Produto {
         this.preco=preco;
         this.descricao=descricao;
         this.url_imagem = url_imagem;
+    }
+
+    public java.time.LocalDate getDtUltimaEntrada() {
+        return dtUltimaEntrada;
+    }
+
+    public void setDtUltimaEntrada(java.time.LocalDate dtUltimaEntrada) {
+        this.dtUltimaEntrada = dtUltimaEntrada;
+    }
+
+    public java.time.LocalDate getDtUltimaSaida() {
+        return dtUltimaSaida;
+    }
+
+    public void setDtUltimaSaida(java.time.LocalDate dtUltimaSaida) {
+        this.dtUltimaSaida = dtUltimaSaida;
     }
 
     public String getNome() {
