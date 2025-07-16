@@ -230,8 +230,8 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    right: 8px;
     top: 50%;
+    padding-left: 2px;
     transform: translateY(-50%);
     display: none;
     pointer-events: none;
