@@ -648,7 +648,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" 
                         style="
                             position: absolute;
-                            top: 53%;
+                            top: 50%;
                             right: 0;
                             transform: translateY(-50%);
                             width: 20px;
@@ -658,33 +658,64 @@ function renderizarProdutos(produtos) {
                             align-items: center;
                             justify-content: center;
                             pointer-events: auto;
-                            padding-right: 23px;
+                            padding-right: 12px;
                         ">
-                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:23%;top:51%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                        <span style="background:${corFundo};width:5px;height:7px;position:absolute;left:32%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
                         <i class="fa-solid fa-triangle-exclamation" style="color:${corIcone};position:relative;z-index:1;"></i>
                     </a>
                 `;
             }
+            // Formatação das datas
+            let ultimaEntrada = '-';
+            if (p.dtUltimaEntrada) {
+                const dataEntrada = new Date(p.dtUltimaEntrada).toLocaleDateString('pt-BR');
+                if (p.quantidade === 0) {
+                    ultimaEntrada = `<span style="color:red;">${dataEntrada}</span>`;
+                } else {
+                    ultimaEntrada = dataEntrada;
+                }
+            } else {
+                ultimaEntrada = `<span style="
+                    display:inline-block;
+                    padding:2px 10px;
+                    border-radius:12px;
+                    font-size:12px;
+                    color:#fff;
+                    background:#888;
+                ">Pendente</span>`;
+            }
+            let ultimaSaida = '-';
+            if (p.dtUltimaSaida) {
+                ultimaSaida = new Date(p.dtUltimaSaida).toLocaleDateString('pt-BR');
+            }
+
+            let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
+            let saidasHoje = p.saidasHoje !== undefined ? p.saidasHoje : 0;
+
             const rowHtml = `
                 <tr>
-                    <td>
+                    <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${imageUrl 
                             ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" style="cursor:pointer;" onclick="visualizarImagem('${imageUrl}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')" />` 
                             : `<span class="produto-img icon" style="cursor:pointer;" onclick="visualizarImagem('', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')"><i class="fa-regular fa-image"></i></span>`
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
+                    <td>${p.limiteMinimo}</td>
+                    <td>${precoFormatado}</td>
+                    <td>${entradasHoje}</td>
+                    <td>${ultimaEntrada}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
-                    <td>${p.limiteMinimo}</td>
-                    <td>${precoFormatado}</td>
-                    <td class="actions">
+                    <td>${saidasHoje}</td>
+                    <td>${ultimaSaida}</td>
+                    <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <a href="/editar-produto?id=${p.id}" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </a>
