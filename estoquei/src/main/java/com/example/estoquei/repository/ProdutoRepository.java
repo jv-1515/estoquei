@@ -226,4 +226,11 @@ public class ProdutoRepository {
             entityManager.remove(produto);
         }
     }
+
+    public Produto findByCodigo(String codigo) {
+        String jpql = "SELECT p FROM Produto p WHERE p.codigo = :codigo";
+        return entityManager.createQuery(jpql, Produto.class)
+            .setParameter("codigo", codigo)
+            .getSingleResult();
+    }
 }
