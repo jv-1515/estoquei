@@ -1302,7 +1302,7 @@ function atualizarDetalhesInfo(produtos) {
         });
 
     // Saídas hoje
-    fetch('/entradas/total-hoje')
+    fetch('/saidas/total-hoje')
         .then(response => response.json())
         .then(total => {
             document.getElementById('detalhe-saidas-hoje').textContent = total;
