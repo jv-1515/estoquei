@@ -77,15 +77,15 @@ window.addEventListener('DOMContentLoaded', function() {
             <div class="main-container">
             <div class="form-column">
             <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
-            <input type="text" id="codigo-compra" name="codigo-compra" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
+            <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
             <label for="valor-compra">Valor da Compra (R$)*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
-            <label for="valor-compra">Valor da Venda (R$)*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
+            <label for="valor-venda">Valor da Venda (R$)*</label>
+            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
             `}
@@ -100,7 +100,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
-            <input type="date" id="data-compra" name="data-compra" required>
+            <input type="date" id="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" name="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" required>
             <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
             </div>
             <div class="right-column">
@@ -189,16 +189,20 @@ window.addEventListener('DOMContentLoaded', function() {
                     const saida = {
                         codigo: produtoSelecionado.codigo,
                         nome: produtoSelecionado.nome,
-                        codigoVenda: document.getElementById('codigo-compra').value,
-                        dataSaida: document.getElementById('data-compra').value,
+                        codigoVenda: document.getElementById('codigo-venda').value,    
+                        dataSaida: document.getElementById('data-venda').value,          
                         comprador: document.getElementById('comprador').value,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
-                        valorVenda: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
+                        valorVenda: parseFloat(document.getElementById('valor-venda').value.replace(/[^\d,]/g, '').replace(',', '.'))  // ✅ CORRIGIDO
                     };
 
+                    console.log('Enviando saída:', saida);
+                    
                     fetch('/saidas', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(saida)
                     })
                     .then(response => {
@@ -207,8 +211,17 @@ window.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire('Sucesso!', 'Saída registrada com sucesso!', 'success');
+                        // Limpar o formulário ou fazer reload
+                        document.getElementById('movimentacao-form').reset();
+                        // Recarregar a página se necessário
+                        if (window.atualizarDetalhesEstoque) {
+                            fetch('/produtos')
+                                .then(response => response.json())
+                                .then(produtos => window.atualizarDetalhesEstoque(produtos));
+                        }
                     })
                     .catch(error => {
+                        console.error('Erro completo:', error);
                         Swal.fire('Erro!', error.message, 'error');
                     });
                 }
