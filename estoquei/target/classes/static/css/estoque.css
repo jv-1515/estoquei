@@ -21,8 +21,8 @@ h2 {
 }
 
 .filters-container {
-    width: 1200px;
-    min-width: 1200px;
+    width: 1300px;
+    min-width: 1300px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -122,8 +122,8 @@ h2 {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 1200px;
-    min-width: 1200px;
+    width: 1300px;
+    min-width: 1300px;
     margin: 0 auto;
     box-sizing: border-box;
 }
