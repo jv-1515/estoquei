@@ -433,9 +433,6 @@ window.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('input', filtrar);
     });
 
-    // Mantém listeners das faixas como estão
-    // ...restante do código...
-
     const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
     const detalhesDiv = document.getElementById('detalhes-estoque');
 
@@ -666,15 +663,8 @@ function renderizarProdutos(produtos) {
                 `;
             }
             // Formatação das datas
-            let ultimaEntrada = '-';
-            if (p.dtUltimaEntrada) {
-                const dataEntrada = new Date(p.dtUltimaEntrada).toLocaleDateString('pt-BR');
-                if (p.quantidade === 0) {
-                    ultimaEntrada = `<span style="color:red;">${dataEntrada}</span>`;
-                } else {
-                    ultimaEntrada = dataEntrada;
-                }
-            } else {
+            let ultimaEntrada = formatarData(p.dtUltimaEntrada);
+            if (ultimaEntrada === '-') {
                 ultimaEntrada = `<span style="
                     display:inline-block;
                     padding:2px 10px;
@@ -683,6 +673,8 @@ function renderizarProdutos(produtos) {
                     color:#fff;
                     background:#888;
                 ">Pendente</span>`;
+            } else if (p.quantidade <= p.limiteMinimo) {
+                ultimaEntrada = `<span style="color:red; font-weight: bold">${ultimaEntrada}</span>`;
             }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
@@ -705,7 +697,6 @@ function renderizarProdutos(produtos) {
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
-                    <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
                     <td>${entradasHoje}</td>
                     <td>${ultimaEntrada}</td>
@@ -713,6 +704,7 @@ function renderizarProdutos(produtos) {
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
+                    <td>${p.limiteMinimo}</td>
                     <td>${saidasHoje}</td>
                     <td>${ultimaSaida}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
@@ -765,6 +757,7 @@ function carregarProdutos(top) {
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
+            carregarDadosCards();
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -1714,3 +1707,46 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
+
+// Função para atualizar detalhes do estoque
+function formatarData(data) {
+    if (!data) return '-';
+    const dataObj = new Date(data + 'T00:00:00');
+    const dia = dataObj.getDate().toString().padStart(2, '0');
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+    const ano = dataObj.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
+// Função para carregar dados dos cards
+function carregarDadosCards() {
+    // Entradas hoje
+    fetch('/entradas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-entradas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-entradas-hoje').textContent = '0';
+        });
+
+    // Saídas hoje (quando implementar)
+    fetch('/saidas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-saidas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-saidas-hoje').textContent = '0';
+        });
+
+    // Total de produtos cadastrados
+    fetch('/produtos/count')
+        .then(response => response.json())
+        .then(count => {
+            document.getElementById('detalhe-produtos-cadastrados').textContent = count;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-produtos-cadastrados').textContent = '0';
+        });
+}
