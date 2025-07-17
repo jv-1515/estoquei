@@ -757,7 +757,6 @@ function carregarProdutos(top) {
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
-            carregarDadosCards();
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -1288,6 +1287,29 @@ function atualizarDetalhesInfo(produtos) {
     // Estoque zerado: quantidade == 0
     const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
     document.getElementById('detalhe-estoque-zerado').textContent = zerados;
+
+    // Total de produtos cadastrados
+    document.getElementById('detalhe-produtos-cadastrados').textContent = produtos.length;
+
+    // Entradas hoje
+    fetch('/entradas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-entradas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-entradas-hoje').textContent = '0';
+        });
+
+    // Saídas hoje
+    fetch('/entradas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-saidas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-saidas-hoje').textContent = '0';
+        });
 }
 
 window.expandedCategoriaMulti = false;
@@ -1716,37 +1738,4 @@ function formatarData(data) {
     const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
     const ano = dataObj.getFullYear();
     return `${dia}/${mes}/${ano}`;
-}
-
-// Função para carregar dados dos cards
-function carregarDadosCards() {
-    // Entradas hoje
-    fetch('/entradas/total-hoje')
-        .then(response => response.json())
-        .then(total => {
-            document.getElementById('detalhe-entradas-hoje').textContent = total;
-        })
-        .catch(error => {
-            document.getElementById('detalhe-entradas-hoje').textContent = '0';
-        });
-
-    // Saídas hoje (quando implementar)
-    fetch('/saidas/total-hoje')
-        .then(response => response.json())
-        .then(total => {
-            document.getElementById('detalhe-saidas-hoje').textContent = total;
-        })
-        .catch(error => {
-            document.getElementById('detalhe-saidas-hoje').textContent = '0';
-        });
-
-    // Total de produtos cadastrados
-    fetch('/produtos/count')
-        .then(response => response.json())
-        .then(count => {
-            document.getElementById('detalhe-produtos-cadastrados').textContent = count;
-        })
-        .catch(error => {
-            document.getElementById('detalhe-produtos-cadastrados').textContent = '0';
-        });
 }
