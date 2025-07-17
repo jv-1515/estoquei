@@ -330,7 +330,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Atualiza placeholder da quantidade conforme seleção dos checkboxes
@@ -673,9 +673,7 @@ function renderizarProdutos(produtos) {
                     color:#fff;
                     background:#888;
                 ">Pendente</span>`;
-            } else if (p.quantidade <= p.limiteMinimo) {
-                ultimaEntrada = `<span style="color:red; font-weight: bold">${ultimaEntrada}</span>`;
-            }
+            } 
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
                 ultimaSaida = new Date(p.dtUltimaSaida).toLocaleDateString('pt-BR');
@@ -1310,6 +1308,40 @@ function atualizarDetalhesInfo(produtos) {
         .catch(error => {
             document.getElementById('detalhe-saidas-hoje').textContent = '0';
         });
+
+    // Calcular entradas e saídas hoje por produto
+    const hoje = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    Promise.all([
+        fetch('/entradas').then(r => r.json()),
+        fetch('/saidas').then(r => r.json())
+    ]).then(([entradas, saidas]) => {
+        // Filtra entradas de hoje
+        const entradasHoje = entradas.filter(e => e.dataEntrada === hoje);
+        const saidasHoje = saidas.filter(s => s.dataSaida === hoje);
+        
+        // Adiciona as informações aos produtos
+        produtos.forEach(produto => {
+            produto.entradasHoje = entradasHoje
+                .filter(e => e.codigo === produto.codigo)
+                .reduce((total, e) => total + e.quantidade, 0);
+                
+            produto.saidasHoje = saidasHoje
+                .filter(s => s.codigo === produto.codigo)
+                .reduce((total, s) => total + s.quantidade, 0);
+        });
+        
+        // Re-renderiza os produtos com as informações atualizadas
+        renderizarProdutos(produtos);
+    }).catch(error => {
+        console.error('Erro ao buscar movimentações:', error);
+        // Se der erro, renderiza sem as informações de hoje
+        produtos.forEach(produto => {
+            produto.entradasHoje = 0;
+            produto.saidasHoje = 0;
+        });
+        renderizarProdutos(produtos);
+    });
 }
 
 window.expandedCategoriaMulti = false;
