@@ -33,20 +33,32 @@ public class EntradaProdutoResource {
 
     @PostMapping
     public EntradaProduto registrarEntrada(@RequestBody EntradaProduto entrada) {
+        System.out.println("Recebendo entrada: " + entrada.getCodigo());
+        
         // Salva a entrada
         EntradaProduto entradaSalva = entradaRepo.save(entrada);
         
-        // Busca o produto pelo código
-        Produto produto = produtoRepo.findByCodigo(entrada.getCodigo());
-        if (produto != null) {
-            // Atualiza a quantidade do produto
-            produto.setQuantidade(produto.getQuantidade() + entrada.getQuantidade());
-            
-            // Atualiza a data da última entrada
-            produto.setDtUltimaEntrada(entrada.getDataEntrada());
-            
-            // Salva o produto atualizado
-            produtoRepo.save(produto);
+        try {
+            // Busca o produto pelo código
+            Produto produto = produtoRepo.findByCodigo(entrada.getCodigo());
+            if (produto != null) {
+                System.out.println("Produto encontrado: " + produto.getNome());
+                
+                // Atualiza a quantidade do produto
+                produto.setQuantidade(produto.getQuantidade() + entrada.getQuantidade());
+                
+                // Atualiza a data da última entrada
+                produto.setDtUltimaEntrada(entrada.getDataEntrada());
+                
+                // Salva o produto atualizado
+                produtoRepo.save(produto);
+                System.out.println("Produto atualizado com sucesso");
+            } else {
+                System.out.println("Produto não encontrado com código: " + entrada.getCodigo());
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar produto: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return entradaSalva;
