@@ -26,7 +26,7 @@
     <div>
         <h1>Gerenciar Estoque</h1>
     </div>
-    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1200px;">
+    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1300px;">
         <h2>Buscar Produtos</h2>
         <div style="display: flex; align-items: center; gap: 8px; position: relative; height: 30px; max-height: 30px;">
             <div style="flex:1; position:relative; display:flex;">
@@ -44,7 +44,7 @@
             </button>
         </div>
     </div>
-    <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; gap:8px; width:1200px;">
+    <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; gap:8px; width:1300px;">
         <h2>Filtros Avançados</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
             <div class="multiselect input-group">
@@ -116,6 +116,22 @@
                 </div>
             </div>
             <div class="input-group">
+                <label for="filter-preco">Preços</label>
+                <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+                <div id="preco-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="preco-max" placeholder="R$ 999,99">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
                 <label for="filter-quantidade">Quantidades</label>
                 <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
                 <div id="quantidade-faixa-popup" class="faixa-popup">
@@ -157,42 +173,40 @@
                     </div>
                 </div>
             </div>
-            <div class="input-group">
-                <label for="filter-preco">Preços</label>
-                <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
-                <div id="preco-faixa-popup" class="faixa-popup">
-                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
-                        <div style="display: flex; align-items: center;">
-                            <span style="min-width: 28px;">de:</span>
-                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="min-width: 28px;">até:</span>
-                            <input type="text" id="preco-max" placeholder="R$ 999,99">
-                        </div>
-                    </div>
-                </div>
-            </div>
             <button id="btn-limpar-filtros" class="btn limpar" style="font-size:12px;">
                 <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
             </button>
         </div>
     </div>
     <div id="detalhes-estoque"
-     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
-    <div style="display: flex; flex-direction: column; width: 240x; min-width: 240px; flex-shrink: 0;">
+     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
+    <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
             <h2 style="margin: 0; font-size: 20px;">Detalhes do Estoque</h2>
         </div>
         <div style="height: 8px;"></div>
         <div style="display: flex; flex-direction: column; gap: 10px; height: 130px;">
-            <div style="display: flex; flex-direction: row; height: 55px;">
-                <div class="detalhe-card" style="background: #f7f7f7; border-radius: 8px; padding: 10px 10px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="color: #18404a; font-size: 12px; font-weight: bold;">Estoque Total</div>
+            <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
+                <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas Hoje</div>
+                    <div id="detalhe-entradas-hoje" style="font-size: 22px; font-weight: bold; color: #2e7d32;">0</div>
+                </div>
+                <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas Hoje</div>
+                    <div id="detalhe-saidas-hoje" style="font-size: 22px; font-weight: bold; color: #e65100;">0</div>
+                </div>
+                <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: #18404a; font-size: 12px; font-weight: bold;">Estoque Atual</div>
                     <div id="detalhe-total-produtos" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
                 </div>
             </div>
             <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                <a href="/cadastrar-produto" style="flex:1; text-decoration: none;">
+                    <button id="produtos-cadastrados" class="detalhe-card" style="background: #e0f2f1; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                        <div style="color: #00695c; font-size: 12px; font-weight: bold;">Produtos<br>Cadastrados</div>
+                        <div id="detalhe-produtos-cadastrados" style="font-size: 22px; font-weight: bold; color: #00695c;">0</div>
+                    </button>
+                </a>
                 <a href="/baixo-estoque" style="flex:1; text-decoration: none;">
                     <button id="baixo-estoque" class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
                         <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Baixo<br>Estoque</div>
@@ -201,7 +215,7 @@
                 </a>
                 <a href="/movimentar-produto" style="flex:1; text-decoration: none;">
                     <button id="movimentar-produto" class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
-                        <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos<br>Zerados</div>
+                        <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos Zerados</div>
                         <div id="detalhe-estoque-zerado" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
                     </button>
                 </a>
@@ -270,19 +284,19 @@
                     <th class="ordenar">Categoria <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Tamanho <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Gênero <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Limite Mínimo<span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Preço (R$)<span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Entradas Hoje <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Última Entrada <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Quantidade <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Limite Mínimo <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Entradas Hoje <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Saídas Hoje <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Última Entrada <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Última Saída <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th style="width: 35px; max-width: 35px; padding-right:20px" ></th>
                 </tr>
             </thead>
             <tbody id="product-table-body">
                 <tr>
-                    <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+                    <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
                         <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                             <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
                         </span>

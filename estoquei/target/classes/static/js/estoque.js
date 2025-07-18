@@ -330,7 +330,7 @@ function atualizarPlaceholderTamanhoMulti() {
     // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
     // Atualiza cor do select
-    select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
 // Atualiza placeholder da quantidade conforme seleção dos checkboxes
@@ -432,9 +432,6 @@ window.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('change', filtrar);
         el.addEventListener('input', filtrar);
     });
-
-    // Mantém listeners das faixas como estão
-    // ...restante do código...
 
     const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
     const detalhesDiv = document.getElementById('detalhes-estoque');
@@ -593,7 +590,7 @@ function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     // Mostra o loading imediatamente
     tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
             </span>
@@ -610,7 +607,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -666,27 +663,24 @@ function renderizarProdutos(produtos) {
                 `;
             }
             // Formatação das datas
-            let ultimaEntrada = '-';
-            if (p.dtUltimaEntrada) {
-                const dataEntrada = new Date(p.dtUltimaEntrada).toLocaleDateString('pt-BR');
-                if (p.quantidade === 0) {
-                    ultimaEntrada = `<span style="color:red;">${dataEntrada}</span>`;
-                } else {
-                    ultimaEntrada = dataEntrada;
-                }
-            } else {
-                ultimaEntrada = `<span style="
-                    display:inline-block;
-                    padding:2px 10px;
-                    border-radius:12px;
-                    font-size:12px;
-                    color:#fff;
-                    background:#888;
-                ">Pendente</span>`;
+            let ultimaEntrada = formatarData(p.dtUltimaEntrada);
+            if (ultimaEntrada === '-') {
+                ultimaEntrada = `
+                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
+                        <span style="
+                            display:inline-block;
+                            padding:2px 10px;
+                            border-radius:12px;
+                            font-size:12px;
+                            color:#fff;
+                            background:#888;
+                        ">Pendente</span>
+                    </a>
+                `;
             }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
-                ultimaSaida = new Date(p.dtUltimaSaida).toLocaleDateString('pt-BR');
+                ultimaSaida = formatarData(p.dtUltimaSaida);
             }
 
             let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
@@ -701,19 +695,19 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${p.nome}">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
-                    <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
-                    <td>${entradasHoje}</td>
-                    <td>${ultimaEntrada}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
+                    <td>${p.limiteMinimo}</td>
+                    <td>${entradasHoje}</td>
                     <td>${saidasHoje}</td>
+                    <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <a href="/editar-produto?id=${p.id}" title="Editar">
@@ -753,6 +747,7 @@ function carregarProdutos(top) {
     if (top && top !== "") {
         url += `?top=${top}`;
     }
+    
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -762,9 +757,16 @@ function carregarProdutos(top) {
         })
         .then(data => {
             produtos = data;
+
+            produtos.sort((a, b) => {
+                const valorA = (a.codigo || '').toString().toLowerCase();
+                const valorB = (b.codigo || '').toString().toLowerCase();
+                return valorA.localeCompare(valorB, undefined, { numeric: true });
+            });
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
+            
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -806,7 +808,7 @@ function carregarProdutos(top) {
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
         });
 }
 
@@ -819,22 +821,34 @@ window.onload = function() {
         renderizarProdutos(produtos);
     });
 
-    //campos para ordenação
+        //campos para ordenação
     const campos = [
-        'codigo',   
-        'nome',       
-        'categoria',  
-        'tamanho',    
-        'genero',    
-        'quantidade',
-        'limiteMinimo',
-        'preco'       
+        null,               
+        'codigo',          // 1 - Código
+        'nome',            // 2 - Nome
+        'categoria',       // 3 - Categoria
+        'tamanho',         // 4 - Tamanho
+        'genero',          // 5 - Gênero
+        'preco',           // 6 - Preço
+        'quantidade',      // 7 - Quantidade
+        'limiteMinimo',    // 8 - Limite Mínimo
+        'entradasHoje',    // 9 - Entradas Hoje
+        'saidasHoje',      // 10 - Saídas Hoje
+        'dtUltimaEntrada', // 11 - Última Entrada
+        'dtUltimaSaida',   // 12 - Última Saída
+        null               
     ];
-
+    
     //inicia com true (decrescente)
     let estadoOrdenacao = Array(campos.length).fill(true);
-
+    
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        // Pega o índice real da coluna na tabela
+        const realIdx = Array.from(th.parentNode.children).indexOf(th);
+        const campo = campos[realIdx];
+        
+        if (!campo) return; // Pula colunas não ordenáveis (imagem e ações)
+        
         const icon = th.querySelector('.sort-icon');
         th.addEventListener('mouseenter', function() {
             icon.style.display = 'inline-block';
@@ -847,24 +861,33 @@ window.onload = function() {
         th.addEventListener('click', function() {
             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
             th.classList.add('sorted');
-
-            const campo = campos[idx];
+    
             produtos.sort((a, b) => {
-                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
+                let valorA, valorB;
+                
+                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco' || campo === 'entradasHoje' || campo === 'saidasHoje') {
                     // numérico
-                    return estadoOrdenacao[idx]
-                        ? b[campo] - a[campo]
-                        : a[campo] - b[campo];
+                    valorA = Number(a[campo]) || 0;
+                    valorB = Number(b[campo]) || 0;
+                    return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
+                } else if (campo === 'dtUltimaEntrada' || campo === 'dtUltimaSaida') {
+                    // datas - valores null ficam por último
+                    valorA = a[campo] ? new Date(a[campo]) : new Date('1900-01-01');
+                    valorB = b[campo] ? new Date(b[campo]) : new Date('1900-01-01');
+                    return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
                 } else {
                     // alfabético
-                    return estadoOrdenacao[idx]
-                        ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
-                        : b[campo].localeCompare(a[campo], undefined, { numeric: true });
+                    valorA = (a[campo] || '').toString().toLowerCase();
+                    valorB = (b[campo] || '').toString().toLowerCase();
+                    return estadoOrdenacao[realIdx]
+                        ? valorA.localeCompare(valorB, undefined, { numeric: true })
+                        : valorB.localeCompare(valorA, undefined, { numeric: true });
                 }
             });
+            
             //altera o estado de ordenação
-            estadoOrdenacao[idx] = !estadoOrdenacao[idx];
-            icon.innerHTML = estadoOrdenacao[idx]
+            estadoOrdenacao[realIdx] = !estadoOrdenacao[realIdx];
+            icon.innerHTML = estadoOrdenacao[realIdx]
                 // true seta para baixo (decrescente) false seta para cima (crescente)
                 ? '<i class="fa-solid fa-arrow-down"></i>'
                 : '<i class="fa-solid fa-arrow-up"></i>';
@@ -1288,13 +1311,38 @@ function atualizarDetalhesInfo(produtos) {
     const total = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
     document.getElementById('detalhe-total-produtos').textContent = total;
 
-    // Baixo estoque: quantidade > 0 e <= limiteMinimo
+    // Baixo estoque: quantidade > 0 e <= 2 * limiteMinimo
     const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
     document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
 
     // Estoque zerado: quantidade == 0
     const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
     document.getElementById('detalhe-estoque-zerado').textContent = zerados;
+
+    // Total de produtos cadastrados
+    document.getElementById('detalhe-produtos-cadastrados').textContent = produtos.length;
+
+    // Entradas hoje - usando endpoint específico para totais
+    fetch('/entradas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-entradas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-entradas-hoje').textContent = '0';
+        });
+
+    // Saídas hoje - usando endpoint específico para totais
+    fetch('/saidas/total-hoje')
+        .then(response => response.json())
+        .then(total => {
+            document.getElementById('detalhe-saidas-hoje').textContent = total;
+        })
+        .catch(error => {
+            document.getElementById('detalhe-saidas-hoje').textContent = '0';
+        });
+
+    renderizarProdutos(produtos);
 }
 
 window.expandedCategoriaMulti = false;
@@ -1714,3 +1762,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
     atualizarPlaceholderGeneroMulti();
 });
+
+// Função para atualizar detalhes do estoque
+function formatarData(data) {
+    if (!data) return '-';
+    const dataObj = new Date(data + 'T00:00:00');
+    const dia = dataObj.getDate().toString().padStart(2, '0');
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+    const ano = dataObj.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
