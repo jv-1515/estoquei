@@ -1,10 +1,13 @@
 package com.example.estoquei.resources;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +23,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.estoquei.model.EntradaProduto;
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.SaidaProduto;
+import com.example.estoquei.repository.EntradaProdutoRepository;
+import com.example.estoquei.repository.SaidaProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
 
 @RestController
@@ -28,6 +35,12 @@ import com.example.estoquei.service.ProdutoService;
 public class ProdutoResource {
 
     private final ProdutoService produtoService;
+    
+    @Autowired
+    private EntradaProdutoRepository entradaRepo;
+    
+    @Autowired
+    private SaidaProdutoRepository saidaRepo;
 
     public ProdutoResource(ProdutoService produtoService) {
         this.produtoService = produtoService;
@@ -64,14 +77,45 @@ public class ProdutoResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos(@RequestParam(required = false) Integer top) {
-    List<Produto> produtos;
-        if (top != null) {
-            produtos = produtoService.listarTop(top);
-        } else {
-            produtos = produtoService.listarTodos();
-        }
-        return ResponseEntity.ok(produtos);
+    public List<Map<String, Object>> listarProdutos() {
+        List<Produto> produtos = produtoService.listarTodos();
+        LocalDate hoje = LocalDate.now();
+        
+        List<EntradaProduto> entradasHoje = entradaRepo.findByDataEntrada(hoje);
+        
+        List<SaidaProduto> saidasHoje = saidaRepo.findByDataSaida(hoje);
+        
+        Map<String, Integer> entradasPorCodigo = entradasHoje.stream()
+            .collect(Collectors.groupingBy(
+                EntradaProduto::getCodigo,
+                Collectors.summingInt(EntradaProduto::getQuantidade)
+            ));
+        
+        Map<String, Integer> saidasPorCodigo = saidasHoje.stream()
+            .collect(Collectors.groupingBy(
+                SaidaProduto::getCodigo,
+                Collectors.summingInt(SaidaProduto::getQuantidade)
+            ));
+        
+        return produtos.stream().map(produto -> {
+            Map<String, Object> produtoMap = new HashMap<>();
+            produtoMap.put("id", produto.getId());
+            produtoMap.put("codigo", produto.getCodigo());
+            produtoMap.put("nome", produto.getNome());
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().toString() : "");
+            produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
+            produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
+            produtoMap.put("quantidade", produto.getQuantidade()); 
+            produtoMap.put("limiteMinimo", produto.getLimiteMinimo());
+            produtoMap.put("preco", produto.getPreco());
+            produtoMap.put("descricao", produto.getDescricao());
+            produtoMap.put("url_imagem", produto.getUrl_imagem());
+            produtoMap.put("dtUltimaEntrada", produto.getDtUltimaEntrada());
+            produtoMap.put("dtUltimaSaida", produto.getDtUltimaSaida());
+            produtoMap.put("entradasHoje", entradasPorCodigo.getOrDefault(produto.getCodigo(), 0));
+            produtoMap.put("saidasHoje", saidasPorCodigo.getOrDefault(produto.getCodigo(), 0));
+            return produtoMap;
+        }).collect(Collectors.toList());
     }
 
     
@@ -143,5 +187,13 @@ public class ProdutoResource {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{codigo}/movimentacao-hoje")
+    public Map<String, Integer> movimentacaoHoje(@PathVariable String codigo) {
+        Map<String, Integer> resultado = new HashMap<>();
+        resultado.put("entradasHoje", entradaRepo.somaEntradasHojePorCodigo(codigo));
+        resultado.put("saidasHoje", saidaRepo.somaSaidasHojePorCodigo(codigo));
+        return resultado;
     }
 }
