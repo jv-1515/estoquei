@@ -104,6 +104,25 @@ function atualizarCardProdutos() {
         });
 }
 
+function atualizarCardMovimentacoes() {
+    const promiseEntradas = fetch('/entradas/total-hoje')
+        .then(res => res.json())
+        .catch(() => 0);
+    
+    const promiseSaidas = fetch('/saidas/total-hoje')
+        .then(res => res.json())
+        .catch(() => 0);
+    
+    Promise.all([promiseEntradas, promiseSaidas])
+        .then(([entradas, saidas]) => {
+            const totalMovimentacoes = entradas + saidas;
+            document.getElementById('valor-movimentacoes').textContent = totalMovimentacoes;
+        })
+        .catch(() => {
+            document.getElementById('valor-movimentacoes').textContent = 0;
+        });
+}
+
 function atualizarCardsInfo() {
     const tipoUser = document.getElementById('avatar-tipo');
     const tipo = tipoUser ? tipoUser.textContent.trim() : '';
@@ -115,7 +134,7 @@ function atualizarCardsInfo() {
         atualizarCardProdutos();
     }
     if (document.getElementById('valor-movimentacoes')) {
-        document.getElementById('valor-movimentacoes').textContent = 0;
+        atualizarCardMovimentacoes();
     }
 
     // Só gerente ou admin
