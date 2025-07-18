@@ -665,19 +665,15 @@ function renderizarProdutos(produtos) {
             // Formatação das datas
             let ultimaEntrada = formatarData(p.dtUltimaEntrada);
             if (ultimaEntrada === '-') {
-                ultimaEntrada = `
-                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
-                        <span style="
-                            display:inline-block;
-                            padding:2px 10px;
-                            border-radius:12px;
-                            font-size:12px;
-                            color:#fff;
-                            background:#888;
-                        ">Pendente</span>
-                    </a>
-                `;
-            }
+                ultimaEntrada = `<span style="
+                    display:inline-block;
+                    padding:2px 10px;
+                    border-radius:12px;
+                    font-size:12px;
+                    color:#fff;
+                    background:#888;
+                ">Pendente</span>`;
+            } 
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
                 ultimaSaida = formatarData(p.dtUltimaSaida);
@@ -695,7 +691,7 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${p.nome}">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
@@ -747,6 +743,7 @@ function carregarProdutos(top) {
     if (top && top !== "") {
         url += `?top=${top}`;
     }
+
     fetch(url)
         .then(response => {
             if (!response.ok) {
