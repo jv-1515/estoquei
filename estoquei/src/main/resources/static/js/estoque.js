@@ -590,7 +590,7 @@ function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     // Mostra o loading imediatamente
     tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
             </span>
@@ -607,7 +607,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -665,15 +665,19 @@ function renderizarProdutos(produtos) {
             // Formatação das datas
             let ultimaEntrada = formatarData(p.dtUltimaEntrada);
             if (ultimaEntrada === '-') {
-                ultimaEntrada = `<span style="
-                    display:inline-block;
-                    padding:2px 10px;
-                    border-radius:12px;
-                    font-size:12px;
-                    color:#fff;
-                    background:#888;
-                ">Pendente</span>`;
-            } 
+                ultimaEntrada = `
+                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
+                        <span style="
+                            display:inline-block;
+                            padding:2px 10px;
+                            border-radius:12px;
+                            font-size:12px;
+                            color:#fff;
+                            background:#888;
+                        ">Pendente</span>
+                    </a>
+                `;
+            }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
                 ultimaSaida = formatarData(p.dtUltimaSaida);
@@ -696,13 +700,13 @@ function renderizarProdutos(produtos) {
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
                     <td>${precoFormatado}</td>
-                    <td>${entradasHoje}</td>
-                    <td>${saidasHoje}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
+                    <td>${entradasHoje}</td>
+                    <td>${saidasHoje}</td>
                     <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
@@ -743,6 +747,8 @@ function carregarProdutos(top) {
     if (top && top !== "") {
         url += `?top=${top}`;
     }
+    
+    url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
     fetch(url)
         .then(response => {
@@ -756,6 +762,7 @@ function carregarProdutos(top) {
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
+            
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -797,7 +804,7 @@ function carregarProdutos(top) {
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar produtos. Verifique o console.</td></tr>`;
         });
 }
 
