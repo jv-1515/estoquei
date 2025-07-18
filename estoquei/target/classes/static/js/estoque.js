@@ -748,8 +748,6 @@ function carregarProdutos(top) {
         url += `?top=${top}`;
     }
     
-    url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -759,6 +757,12 @@ function carregarProdutos(top) {
         })
         .then(data => {
             produtos = data;
+
+            produtos.sort((a, b) => {
+                const valorA = (a.codigo || '').toString().toLowerCase();
+                const valorB = (b.codigo || '').toString().toLowerCase();
+                return valorA.localeCompare(valorB, undefined, { numeric: true });
+            });
             renderizarProdutos(produtos);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
@@ -817,22 +821,34 @@ window.onload = function() {
         renderizarProdutos(produtos);
     });
 
-    //campos para ordenação
+        //campos para ordenação
     const campos = [
-        'codigo',   
-        'nome',       
-        'categoria',  
-        'tamanho',    
-        'genero',    
-        'quantidade',
-        'limiteMinimo',
-        'preco'       
+        null,               
+        'codigo',          // 1 - Código
+        'nome',            // 2 - Nome
+        'categoria',       // 3 - Categoria
+        'tamanho',         // 4 - Tamanho
+        'genero',          // 5 - Gênero
+        'preco',           // 6 - Preço
+        'quantidade',      // 7 - Quantidade
+        'limiteMinimo',    // 8 - Limite Mínimo
+        'entradasHoje',    // 9 - Entradas Hoje
+        'saidasHoje',      // 10 - Saídas Hoje
+        'dtUltimaEntrada', // 11 - Última Entrada
+        'dtUltimaSaida',   // 12 - Última Saída
+        null               
     ];
-
+    
     //inicia com true (decrescente)
     let estadoOrdenacao = Array(campos.length).fill(true);
-
+    
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        // Pega o índice real da coluna na tabela
+        const realIdx = Array.from(th.parentNode.children).indexOf(th);
+        const campo = campos[realIdx];
+        
+        if (!campo) return; // Pula colunas não ordenáveis (imagem e ações)
+        
         const icon = th.querySelector('.sort-icon');
         th.addEventListener('mouseenter', function() {
             icon.style.display = 'inline-block';
@@ -845,24 +861,33 @@ window.onload = function() {
         th.addEventListener('click', function() {
             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
             th.classList.add('sorted');
-
-            const campo = campos[idx];
+    
             produtos.sort((a, b) => {
-                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco') {
+                let valorA, valorB;
+                
+                if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco' || campo === 'entradasHoje' || campo === 'saidasHoje') {
                     // numérico
-                    return estadoOrdenacao[idx]
-                        ? b[campo] - a[campo]
-                        : a[campo] - b[campo];
+                    valorA = Number(a[campo]) || 0;
+                    valorB = Number(b[campo]) || 0;
+                    return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
+                } else if (campo === 'dtUltimaEntrada' || campo === 'dtUltimaSaida') {
+                    // datas - valores null ficam por último
+                    valorA = a[campo] ? new Date(a[campo]) : new Date('1900-01-01');
+                    valorB = b[campo] ? new Date(b[campo]) : new Date('1900-01-01');
+                    return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
                 } else {
                     // alfabético
-                    return estadoOrdenacao[idx]
-                        ? a[campo].localeCompare(b[campo], undefined, { numeric: true })
-                        : b[campo].localeCompare(a[campo], undefined, { numeric: true });
+                    valorA = (a[campo] || '').toString().toLowerCase();
+                    valorB = (b[campo] || '').toString().toLowerCase();
+                    return estadoOrdenacao[realIdx]
+                        ? valorA.localeCompare(valorB, undefined, { numeric: true })
+                        : valorB.localeCompare(valorA, undefined, { numeric: true });
                 }
             });
+            
             //altera o estado de ordenação
-            estadoOrdenacao[idx] = !estadoOrdenacao[idx];
-            icon.innerHTML = estadoOrdenacao[idx]
+            estadoOrdenacao[realIdx] = !estadoOrdenacao[realIdx];
+            icon.innerHTML = estadoOrdenacao[realIdx]
                 // true seta para baixo (decrescente) false seta para cima (crescente)
                 ? '<i class="fa-solid fa-arrow-down"></i>'
                 : '<i class="fa-solid fa-arrow-up"></i>';
