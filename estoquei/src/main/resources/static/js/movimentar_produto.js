@@ -2,10 +2,15 @@ function formatarPrecoInput(input) {
     if (!input) return;
     input.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 7) value = value.slice(0, 7);
+        if (value.length > 8) value = value.slice(0, 8);
         if (value.length > 0) {
-            value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-            e.target.value = 'R$' + value;
+            let floatValue = (parseInt(value) / 100).toFixed(2);
+            // Adiciona pontos para milhares
+            let partes = floatValue.split('.');
+            let inteiro = partes[0];
+            let decimal = partes[1];
+            inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = 'R$' + inteiro + ',' + decimal;
         } else {
             e.target.value = '';
         }
@@ -116,7 +121,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
         // Máscara de preço
         const valorCompraInput = document.getElementById('valor-compra');
+        const valorVendaInput = document.getElementById('valor-venda');
+        
         if (valorCompraInput) formatarPrecoInput(valorCompraInput);
+        if (valorVendaInput) formatarPrecoInput(valorVendaInput);
 
         // Preencher campos do produto
         if (produto && produto.codigo) preencherCampos(produto);

@@ -691,19 +691,19 @@ function renderizarProdutos(produtos) {
                         }
                     </td>
                     <td>${p.codigo}</td>
-                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.nome}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${p.nome}">${p.nome}</td>
                     <td class="categoria">${p.categoria}</td>
                     <td>${tamanhoExibido}</td>
                     <td class="genero">${p.genero}</td>
                     <td>${precoFormatado}</td>
                     <td>${entradasHoje}</td>
-                    <td>${ultimaEntrada}</td>
+                    <td>${saidasHoje}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
-                    <td>${saidasHoje}</td>
+                    <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <a href="/editar-produto?id=${p.id}" title="Editar">
@@ -743,6 +743,7 @@ function carregarProdutos(top) {
     if (top && top !== "") {
         url += `?top=${top}`;
     }
+
     fetch(url)
         .then(response => {
             if (!response.ok) {
