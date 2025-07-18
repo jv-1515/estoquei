@@ -1,8 +1,9 @@
 package com.example.estoquei.resources;
 
-import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,30 +33,32 @@ public class SaidaProdutoResource {
     }
 
     @PostMapping
-    public SaidaProduto registrarSaida(@RequestBody SaidaProduto saida) {
-        // Salva a saída
-        SaidaProduto saidaSalva = saidaRepo.save(saida);
-        
-        // Busca o produto pelo código
-        Produto produto = produtoRepo.findByCodigo(saida.getCodigo());
-        if (produto != null) {
-            // Atualiza a quantidade do produto (subtrai)
-            produto.setQuantidade(produto.getQuantidade() - saida.getQuantidade());
+    public ResponseEntity<SaidaProduto> registrarSaida(@RequestBody SaidaProduto saida) {
+        try {
+            // Salva a saída
+            SaidaProduto saidaSalva = saidaRepo.save(saida);
             
-            // Atualiza a data da última saída
-            produto.setDtUltimaSaida(saida.getDataSaida());
+            // Busca o produto pelo código
+            Produto produto = produtoRepo.findByCodigo(saida.getCodigo());
+            if (produto != null) {
+                // Atualiza a quantidade do produto (subtrai)
+                produto.setQuantidade(produto.getQuantidade() - saida.getQuantidade());
+                
+                // Atualiza a data da última saída
+                produto.setDtUltimaSaida(saida.getDataSaida());
+                
+                // Salva o produto atualizado
+                produtoRepo.save(produto);
+            }
             
-            // Salva o produto atualizado
-            produtoRepo.save(produto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saidaSalva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        
-        return saidaSalva;
     }
 
     @GetMapping("/total-hoje")
     public int totalSaidasHoje() {
-        LocalDate hoje = LocalDate.now();
-        List<SaidaProduto> saidasHoje = saidaRepo.findByDataSaida(hoje);
-        return saidasHoje.stream().mapToInt(SaidaProduto::getQuantidade).sum();
+        return saidaRepo.somaSaidasHoje();
     }
 }
