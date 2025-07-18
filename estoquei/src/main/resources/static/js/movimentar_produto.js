@@ -188,7 +188,28 @@ window.addEventListener('DOMContentLoaded', function() {
                         return response.json();
                     })
                     .then(data => {
-                        Swal.fire('Sucesso!', 'Entrada registrada com sucesso!', 'success');
+                        Swal.fire({
+                        title: "Sucesso!",
+                        text: "Entrada registrada com sucesso!",
+                        icon: "success",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Visualizar Estoque',
+                        cancelButtonText: 'Voltar ao Início',
+                        allowOutsideClick: false,
+                        customClass: {
+                            confirmButton: 'swal2-confirm-custom',
+                            cancelButton: 'swal2-cancel-custom'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/estoque";
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = "/baixo-estoque";
+                        } else if (result.dismiss === Swal.DismissReason.close) {
+                            window.location.href = "/inicio";
+                        }
+                    });
                     })
                     .catch(error => {
                         Swal.fire('Erro!', error.message, 'error');
@@ -218,15 +239,28 @@ window.addEventListener('DOMContentLoaded', function() {
                         return response.json();
                     })
                     .then(data => {
-                        Swal.fire('Sucesso!', 'Saída registrada com sucesso!', 'success');
-                        // Limpar o formulário ou fazer reload
-                        document.getElementById('movimentacao-form').reset();
-                        // Recarregar a página se necessário
-                        if (window.atualizarDetalhesEstoque) {
-                            fetch('/produtos')
-                                .then(response => response.json())
-                                .then(produtos => window.atualizarDetalhesEstoque(produtos));
+                        Swal.fire({
+                        title: "Sucesso!",
+                        text: "Saída registrada com sucesso!",
+                        icon: "success",
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Visualizar Estoque',
+                        cancelButtonText: 'Voltar ao Início',
+                        allowOutsideClick: false,
+                        customClass: {
+                            confirmButton: 'swal2-confirm-custom',
+                            cancelButton: 'swal2-cancel-custom'
                         }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/estoque";
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = "/inicio";
+                        } else if (result.dismiss === Swal.DismissReason.close) {
+                            window.location.href = "/movimentar-produto";
+                        }
+                    });
                     })
                     .catch(error => {
                         console.error('Erro completo:', error);
