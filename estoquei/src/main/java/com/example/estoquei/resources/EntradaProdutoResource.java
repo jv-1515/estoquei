@@ -1,6 +1,5 @@
 package com.example.estoquei.resources;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,8 +65,6 @@ public class EntradaProdutoResource {
 
     @GetMapping("/total-hoje")
     public int totalEntradasHoje() {
-        LocalDate hoje = LocalDate.now();
-        List<EntradaProduto> entradasHoje = entradaRepo.findByDataEntrada(hoje);
-        return entradasHoje.stream().mapToInt(EntradaProduto::getQuantidade).sum();
+        return entradaRepo.somaEntradasHoje();
     }
 }

@@ -665,18 +665,22 @@ function renderizarProdutos(produtos) {
             // Formatação das datas
             let ultimaEntrada = formatarData(p.dtUltimaEntrada);
             if (ultimaEntrada === '-') {
-                ultimaEntrada = `<span style="
-                    display:inline-block;
-                    padding:2px 10px;
-                    border-radius:12px;
-                    font-size:12px;
-                    color:#fff;
-                    background:#888;
-                ">Pendente</span>`;
-            } 
+                ultimaEntrada = `
+                    <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
+                        <span style="
+                            display:inline-block;
+                            padding:2px 10px;
+                            border-radius:12px;
+                            font-size:12px;
+                            color:#fff;
+                            background:#888;
+                        ">Pendente</span>
+                    </a>
+                `;
+            }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
-                ultimaSaida = new Date(p.dtUltimaSaida).toLocaleDateString('pt-BR');
+                ultimaSaida = formatarData(p.dtUltimaSaida);
             }
 
             let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
@@ -697,13 +701,13 @@ function renderizarProdutos(produtos) {
                     <td class="genero">${p.genero}</td>
                     <td>${precoFormatado}</td>
                     <td>${entradasHoje}</td>
-                    <td>${ultimaEntrada}</td>
+                    <td>${saidasHoje}</td>
                     <td style="position: relative; text-align: center;">
                         <span style="display: inline-block;${quantidadeVermelha ? 'color:red;font-weight:bold;' : ''}">${p.quantidade}</span>
                         ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
-                    <td>${saidasHoje}</td>
+                    <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <a href="/editar-produto?id=${p.id}" title="Editar">
@@ -1278,7 +1282,7 @@ function atualizarDetalhesInfo(produtos) {
     const total = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
     document.getElementById('detalhe-total-produtos').textContent = total;
 
-    // Baixo estoque: quantidade > 0 e <= limiteMinimo
+    // Baixo estoque: quantidade > 0 e <= 2 * limiteMinimo
     const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
     document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
 
@@ -1289,7 +1293,7 @@ function atualizarDetalhesInfo(produtos) {
     // Total de produtos cadastrados
     document.getElementById('detalhe-produtos-cadastrados').textContent = produtos.length;
 
-    // Entradas hoje
+    // Entradas hoje - usando endpoint específico para totais
     fetch('/entradas/total-hoje')
         .then(response => response.json())
         .then(total => {
@@ -1299,7 +1303,7 @@ function atualizarDetalhesInfo(produtos) {
             document.getElementById('detalhe-entradas-hoje').textContent = '0';
         });
 
-    // Saídas hoje
+    // Saídas hoje - usando endpoint específico para totais
     fetch('/saidas/total-hoje')
         .then(response => response.json())
         .then(total => {
@@ -1309,39 +1313,7 @@ function atualizarDetalhesInfo(produtos) {
             document.getElementById('detalhe-saidas-hoje').textContent = '0';
         });
 
-    // Calcular entradas e saídas hoje por produto
-    const hoje = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    Promise.all([
-        fetch('/entradas').then(r => r.json()),
-        fetch('/saidas').then(r => r.json())
-    ]).then(([entradas, saidas]) => {
-        // Filtra entradas de hoje
-        const entradasHoje = entradas.filter(e => e.dataEntrada === hoje);
-        const saidasHoje = saidas.filter(s => s.dataSaida === hoje);
-        
-        // Adiciona as informações aos produtos
-        produtos.forEach(produto => {
-            produto.entradasHoje = entradasHoje
-                .filter(e => e.codigo === produto.codigo)
-                .reduce((total, e) => total + e.quantidade, 0);
-                
-            produto.saidasHoje = saidasHoje
-                .filter(s => s.codigo === produto.codigo)
-                .reduce((total, s) => total + s.quantidade, 0);
-        });
-        
-        // Re-renderiza os produtos com as informações atualizadas
-        renderizarProdutos(produtos);
-    }).catch(error => {
-        console.error('Erro ao buscar movimentações:', error);
-        // Se der erro, renderiza sem as informações de hoje
-        produtos.forEach(produto => {
-            produto.entradasHoje = 0;
-            produto.saidasHoje = 0;
-        });
-        renderizarProdutos(produtos);
-    });
+    renderizarProdutos(produtos);
 }
 
 window.expandedCategoriaMulti = false;
