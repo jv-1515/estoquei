@@ -23,11 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.estoquei.model.EntradaProduto;
 import com.example.estoquei.model.Produto;
-import com.example.estoquei.model.SaidaProduto;
-import com.example.estoquei.repository.EntradaProdutoRepository;
-import com.example.estoquei.repository.SaidaProdutoRepository;
+import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
 
 @RestController
@@ -37,10 +34,7 @@ public class ProdutoResource {
     private final ProdutoService produtoService;
     
     @Autowired
-    private EntradaProdutoRepository entradaRepo;
-    
-    @Autowired
-    private SaidaProdutoRepository saidaRepo;
+    private MovimentacaoProdutoRepository movimentacaoRepo;
 
     public ProdutoResource(ProdutoService produtoService) {
         this.produtoService = produtoService;
@@ -81,20 +75,19 @@ public class ProdutoResource {
         List<Produto> produtos = produtoService.listarTodos();
         LocalDate hoje = LocalDate.now();
         
-        List<EntradaProduto> entradasHoje = entradaRepo.findByDataEntrada(hoje);
-        
-        List<SaidaProduto> saidasHoje = saidaRepo.findByDataSaida(hoje);
+        List<Object[]> entradasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("ENTRADA", hoje);
+        List<Object[]> saidasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("SAIDA", hoje);
         
         Map<String, Integer> entradasPorCodigo = entradasHoje.stream()
-            .collect(Collectors.groupingBy(
-                EntradaProduto::getCodigo,
-                Collectors.summingInt(EntradaProduto::getQuantidade)
+            .collect(Collectors.toMap(
+                row -> (String) row[0], // codigo_produto
+                row -> ((Number) row[1]).intValue() // quantidade
             ));
         
         Map<String, Integer> saidasPorCodigo = saidasHoje.stream()
-            .collect(Collectors.groupingBy(
-                SaidaProduto::getCodigo,
-                Collectors.summingInt(SaidaProduto::getQuantidade)
+            .collect(Collectors.toMap(
+                row -> (String) row[0], // codigo_produto
+                row -> ((Number) row[1]).intValue() // quantidade
             ));
         
         return produtos.stream().map(produto -> {
@@ -191,9 +184,10 @@ public class ProdutoResource {
 
     @GetMapping("/{codigo}/movimentacao-hoje")
     public Map<String, Integer> movimentacaoHoje(@PathVariable String codigo) {
+        LocalDate hoje = LocalDate.now();
         Map<String, Integer> resultado = new HashMap<>();
-        resultado.put("entradasHoje", entradaRepo.somaEntradasHojePorCodigo(codigo));
-        resultado.put("saidasHoje", saidaRepo.somaSaidasHojePorCodigo(codigo));
+        resultado.put("entradasHoje", movimentacaoRepo.somaMovimentacaoHojePorCodigo(codigo, "ENTRADA", hoje));
+        resultado.put("saidasHoje", movimentacaoRepo.somaMovimentacaoHojePorCodigo(codigo, "SAIDA", hoje));
         return resultado;
     }
 }

@@ -178,7 +178,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     };
                     console.log("Enviando entrada:", entrada); // Adicione este log para ver no navegador
 
-                    fetch('/entradas', {
+                    fetch('/api/movimentacoes/entrada', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(entrada)
@@ -227,7 +227,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
                     console.log('Enviando saída:', saida);
                     
-                    fetch('/saidas', {
+                    fetch('/api/movimentacoes/saida', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

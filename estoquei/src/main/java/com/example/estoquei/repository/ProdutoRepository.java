@@ -3,6 +3,7 @@ package com.example.estoquei.repository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -227,10 +228,15 @@ public class ProdutoRepository {
         }
     }
 
-    public Produto findByCodigo(String codigo) {
+    public Optional<Produto> findByCodigo(String codigo) {
         String jpql = "SELECT p FROM Produto p WHERE p.codigo = :codigo";
-        return entityManager.createQuery(jpql, Produto.class)
-            .setParameter("codigo", codigo)
-            .getSingleResult();
+        try {
+            Produto produto = entityManager.createQuery(jpql, Produto.class)
+                .setParameter("codigo", codigo)
+                .getSingleResult();
+            return Optional.of(produto);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }
