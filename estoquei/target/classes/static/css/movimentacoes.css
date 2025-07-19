@@ -210,3 +210,19 @@ select#registros-select option {
 .tipo-saida {
     background-color: #e65100;
 }
+
+.actions a, .actions button {
+    background: none;
+    border: none;
+    color: #555;
+    padding: 0;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size: 12px;
+    vertical-align: middle;
+    outline: none;
+    text-decoration: none;
+}
+.actions a:hover, .actions button:hover {
+    color: #1e94a3;
+}
