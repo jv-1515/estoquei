@@ -1,9 +1,11 @@
 package com.example.estoquei.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.estoquei.model.MovimentacaoProduto;
@@ -22,4 +24,13 @@ public interface MovimentacaoProdutoRepository extends JpaRepository<Movimentaca
     // Busca movimentações por tipo (ENTRADA ou SAIDA)
     @Query("SELECT m FROM MovimentacaoProduto m WHERE m.tipoMovimentacao = ?1 ORDER BY m.data DESC")
     List<MovimentacaoProduto> findByTipoMovimentacaoOrderByDataDesc(String tipoMovimentacao);
+    
+    @Query("SELECT COALESCE(SUM(m.quantidadeMovimentada), 0) FROM MovimentacaoProduto m WHERE m.data = :data AND m.tipoMovimentacao = :tipo")
+    long countByDataAndTipoMovimentacao(@Param("data") LocalDate data, @Param("tipo") String tipo);
+    
+    @Query("SELECT m.codigoProduto, SUM(m.quantidadeMovimentada) FROM MovimentacaoProduto m WHERE m.tipoMovimentacao = ?1 AND m.data = ?2 GROUP BY m.codigoProduto")
+    List<Object[]> somaMovimentacaoPorTipoEData(String tipo, LocalDate data);
+
+    @Query("SELECT COALESCE(SUM(m.quantidadeMovimentada), 0) FROM MovimentacaoProduto m WHERE m.codigoProduto = ?1 AND m.tipoMovimentacao = ?2 AND m.data = ?3")
+    int somaMovimentacaoHojePorCodigo(String codigo, String tipo, LocalDate data);
 }
