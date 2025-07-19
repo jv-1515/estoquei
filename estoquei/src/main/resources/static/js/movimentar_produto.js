@@ -101,7 +101,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
             <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
-            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
+            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f9f9f9" readonly>
             </div>
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>

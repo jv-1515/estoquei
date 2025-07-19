@@ -208,7 +208,8 @@ select#registros-select option {
 }
 
 .tipo-saida {
-    background-color: #e65100;
+    background-color: #1e94a3;
+    padding: 4px 12px;
 }
 
 .actions a, .actions button {
@@ -225,4 +226,25 @@ select#registros-select option {
 }
 .actions a:hover, .actions button:hover {
     color: #1e94a3;
+}
+.swal2-confirm-custom {
+    background-color: #1E94A3 !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+}
+.swal2-confirm-custom:hover {
+    background-color: #277580 !important;
+}
+.swal2-cancel-custom {
+    background-color: #ccc !important;
+    color: #000 !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+}
+.swal2-cancel-custom:hover {
+    background-color: #aaa !important;
+}
+.swal2-container {
+    backdrop-filter: blur(2px) !important;
 }
