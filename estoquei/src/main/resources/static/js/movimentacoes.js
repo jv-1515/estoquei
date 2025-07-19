@@ -383,6 +383,8 @@ function carregarMovimentacoes(top) {
             
             renderizarMovimentacoes(movimentacoes);
             atualizarDetalhesInfo(movimentacoes);
+
+            criarGraficosMovimentacoes(movimentacoes);
         })
         .catch(error => {
             console.error('Erro na API:', error);
