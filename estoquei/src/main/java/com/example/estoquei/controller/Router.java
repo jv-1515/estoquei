@@ -187,5 +187,12 @@ public class Router {
         if (usuario==null) return "redirect:/";
         return "andamento";
     }
+
+    @GetMapping("/movimentacoes")
+    public String movimentacoes(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario==null) return "redirect:/";
+        return "movimentacoes";
+    }
     
 }

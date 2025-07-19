@@ -2,6 +2,7 @@ package com.example.estoquei.resources;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import com.example.estoquei.model.EntradaProduto;
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.repository.EntradaProdutoRepository;
 import com.example.estoquei.repository.ProdutoRepository;
+import com.example.estoquei.service.MovimentacaoService;
 
 @RestController
 @RequestMapping("/entradas")
@@ -19,6 +21,9 @@ public class EntradaProdutoResource {
 
     private final EntradaProdutoRepository entradaRepo;
     private final ProdutoRepository produtoRepo;
+
+    @Autowired
+    private MovimentacaoService movimentacaoService;
 
     public EntradaProdutoResource(EntradaProdutoRepository entradaRepo, ProdutoRepository produtoRepo) {
         this.entradaRepo = entradaRepo;
@@ -45,13 +50,14 @@ public class EntradaProdutoResource {
                 
                 // Atualiza a quantidade do produto
                 produto.setQuantidade(produto.getQuantidade() + entrada.getQuantidade());
-                
-                // Atualiza a data da última entrada
                 produto.setDtUltimaEntrada(entrada.getDataEntrada());
                 
                 // Salva o produto atualizado
                 produtoRepo.save(produto);
+                
                 System.out.println("Produto atualizado com sucesso");
+                
+                movimentacaoService.registrarEntrada(entrada, produto);
             } else {
                 System.out.println("Produto não encontrado com código: " + entrada.getCodigo());
             }
