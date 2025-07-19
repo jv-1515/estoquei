@@ -54,7 +54,7 @@ function renderizarMovimentacoes(movimentacoes) {
     
     // Mostra o loading imediatamente
     tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="11" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+        <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
             </span>
@@ -71,7 +71,7 @@ function renderizarMovimentacoes(movimentacoes) {
     const movimentacoesPagina = movimentacoes.slice(inicio, fim);
 
     if (movimentacoesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -90,7 +90,7 @@ function renderizarMovimentacoes(movimentacoes) {
             const tipoTexto = m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída';
             const rowHtml = `
                 <tr>
-                    <td>${formatarData(m.data)}</td>
+                    <td style="padding-left:20px;">${formatarData(m.data)}</td>
                     <td>${m.codigoProduto}</td>
                     <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
                     <td class="categoria">${categoria}</td>
@@ -101,13 +101,14 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.quantidadeMovimentada}</td>
                     <td>${m.estoqueFinal}</td>
                     <td class="${valorClass}">${formatarMoeda(m.valorMovimentacao)}</td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:20px;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
                 </tr>
             `;
             tbody.innerHTML += rowHtml;
         });
 
         renderizarPaginacao(totalPaginas);
-    }, 300); // Simula carregamento igual ao estoque
+    }, 300);
 }
 
 function renderizarPaginacao(totalPaginas) {
@@ -158,13 +159,31 @@ function carregarMovimentacoes(top) {
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('movimentacao-table-body');
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
         });
 }
 
-function atualizarDetalhesInfo(movimentacoes) {
-    const hoje = new Date().toISOString().split('T')[0];
+function atualizarDetalhesInfo(movimentacoes) {    
+    Promise.all([
+        fetch('/entradas/total-hoje?_t=' + Date.now()).then(r => r.json()),
+        fetch('/saidas/total-hoje?_t=' + Date.now()).then(r => r.json())
+    ]).then(([entradasHoje, saidasHoje]) => {
+        const totalMovimentacoes = movimentacoes.length;
+        
+        // Atualiza a interface com os dados do backend
+        document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
+        document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
+        document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
+        
+    }).catch(error => {
+        console.error('Erro ao carregar totais:', error);
+        atualizarDetalhesInfoLocal(movimentacoes);
+    });
+}
+
+function atualizarDetalhesInfoLocal(movimentacoes) {
     
+    const hoje = new Date().toISOString().split('T')[0];
     const totalMovimentacoes = movimentacoes.length;
     const entradasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'ENTRADA').length;
     const saidasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'SAIDA').length;
@@ -188,7 +207,7 @@ window.onload = function() {
     const campos = [
         'data', 'codigoProduto', 'nome', 'categoria', 'tamanho', 
         'genero', 'tipoMovimentacao', 'codigoMovimentacao', 
-        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao'
+        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao', 'parteEnvolvida' // ✅ MINÚSCULO
     ];
     
     let estadoOrdenacao = Array(campos.length).fill(true);

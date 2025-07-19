@@ -27,7 +27,8 @@ public class MovimentacaoService {
             entrada.getCodigoCompra(),
             entrada.getQuantidade(),
             produto.getQuantidade(),
-            entrada.getValorCompra()
+            entrada.getValorCompra(),
+            entrada.getFornecedor()
         );
         movimentacaoRepo.save(movimentacao);
     }
@@ -44,7 +45,8 @@ public class MovimentacaoService {
             saida.getCodigoVenda(),
             saida.getQuantidade(),
             produto.getQuantidade(),
-            saida.getValorVenda()
+            saida.getValorVenda(),
+            saida.getComprador()
         );
         movimentacaoRepo.save(movimentacao);
     }
