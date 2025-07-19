@@ -1,0 +1,204 @@
+package com.example.estoquei.resources;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.estoquei.model.MovimentacaoProduto;
+import com.example.estoquei.model.Produto;
+import com.example.estoquei.repository.MovimentacaoProdutoRepository;
+import com.example.estoquei.repository.ProdutoRepository;
+
+@RestController
+@RequestMapping("/api/movimentacoes")
+public class MovimentacaoProdutoResource {
+    
+    @Autowired
+    private MovimentacaoProdutoRepository movimentacaoRepo;
+
+    @Autowired
+    private ProdutoRepository produtoRepo;
+
+    @GetMapping
+    public List<MovimentacaoProduto> listarMovimentacoes() {
+        return movimentacaoRepo.findAllOrderByDataDesc();
+    }
+    
+    @GetMapping("/produto")
+    public List<MovimentacaoProduto> listarPorProduto(@RequestParam String codigo) {
+        return movimentacaoRepo.findByCodigoProdutoOrderByDataDesc(codigo);
+    }
+    
+    @GetMapping("/tipo")
+    public List<MovimentacaoProduto> listarPorTipo(@RequestParam String tipo) {
+        return movimentacaoRepo.findByTipoMovimentacaoOrderByDataDesc(tipo);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovimentacaoProduto> atualizarMovimentacao(@PathVariable Long id, @RequestBody MovimentacaoProduto movimentacaoAtualizada) {
+        Optional<MovimentacaoProduto> movimentacaoExistente = movimentacaoRepo.findById(id);
+        
+        if (movimentacaoExistente.isPresent()) {
+            MovimentacaoProduto movimentacao = movimentacaoExistente.get();
+            
+            // Atualiza APENAS a movimentação
+            movimentacao.setData(movimentacaoAtualizada.getData());
+            movimentacao.setCodigoMovimentacao(movimentacaoAtualizada.getCodigoMovimentacao());
+            movimentacao.setQuantidadeMovimentada(movimentacaoAtualizada.getQuantidadeMovimentada());
+            movimentacao.setValorMovimentacao(movimentacaoAtualizada.getValorMovimentacao());
+            movimentacao.setParteEnvolvida(movimentacaoAtualizada.getParteEnvolvida());
+            
+            MovimentacaoProduto movimentacaoSalva = movimentacaoRepo.save(movimentacao);
+            return ResponseEntity.ok(movimentacaoSalva);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarMovimentacao(@PathVariable Long id) {
+        if (movimentacaoRepo.existsById(id)) {
+            movimentacaoRepo.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/entradas/total-hoje")
+    @ResponseBody
+    public long totalEntradasHoje() {
+        LocalDate hoje = LocalDate.now();
+        return movimentacaoRepo.countByDataAndTipoMovimentacao(hoje, "ENTRADA");
+    }
+
+    @GetMapping("/saidas/total-hoje")
+    @ResponseBody
+    public long totalSaidasHoje() {
+        LocalDate hoje = LocalDate.now();
+        return movimentacaoRepo.countByDataAndTipoMovimentacao(hoje, "SAIDA");
+    }
+
+    @PostMapping("/entrada")
+    public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada) {
+        try {
+            System.out.println("🔍 Dados recebidos: " + dadosEntrada);
+            
+            String codigo = (String) dadosEntrada.get("codigo");
+            String codigoCompra = (String) dadosEntrada.get("codigoCompra");
+            String dataEntrada = (String) dadosEntrada.get("dataEntrada");
+            String fornecedor = (String) dadosEntrada.get("fornecedor");
+            int quantidade = Integer.parseInt(dadosEntrada.get("quantidade").toString());
+            double valorCompra = Double.parseDouble(dadosEntrada.get("valorCompra").toString());
+
+            // Busca o produto
+            Optional<Produto> produtoOpt = produtoRepo.findByCodigo(codigo);
+            if (!produtoOpt.isPresent()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Produto produto = produtoOpt.get();
+            
+            // Atualiza estoque
+            produto.setQuantidade(produto.getQuantidade() + quantidade);
+            produto.setDtUltimaEntrada(LocalDate.parse(dataEntrada));
+            produtoRepo.save(produto);
+
+            // Cria movimentação
+            MovimentacaoProduto movimentacao = new MovimentacaoProduto();
+            movimentacao.setData(LocalDate.parse(dataEntrada));
+            movimentacao.setCodigoProduto(codigo);
+            movimentacao.setNome(produto.getNome());
+            
+            movimentacao.setCategoria(produto.getCategoria());
+            movimentacao.setTamanho(produto.getTamanho());    
+            movimentacao.setGenero(produto.getGenero());      
+            
+            movimentacao.setTipoMovimentacao("ENTRADA");
+            movimentacao.setCodigoMovimentacao(codigoCompra);
+            movimentacao.setQuantidadeMovimentada(quantidade);
+            movimentacao.setEstoqueFinal(produto.getQuantidade());
+            movimentacao.setValorMovimentacao(BigDecimal.valueOf(valorCompra));
+            movimentacao.setParteEnvolvida(fornecedor);
+
+            MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
+            return ResponseEntity.ok(salva);
+
+        } catch (Exception e) {
+            System.out.println("ERRO: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/saida") 
+    public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida) {
+        try {
+            System.out.println("🔍 Dados recebidos: " + dadosSaida);
+            
+            String codigo = (String) dadosSaida.get("codigo");
+            String codigoVenda = (String) dadosSaida.get("codigoVenda");
+            String dataSaida = (String) dadosSaida.get("dataSaida");
+            String comprador = (String) dadosSaida.get("comprador");
+            int quantidade = Integer.parseInt(dadosSaida.get("quantidade").toString());
+            double valorVenda = Double.parseDouble(dadosSaida.get("valorVenda").toString());
+
+            // Busca o produto
+            Optional<Produto> produtoOpt = produtoRepo.findByCodigo(codigo);
+            if (!produtoOpt.isPresent()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Produto produto = produtoOpt.get();
+            
+            // Verifica estoque
+            if (produto.getQuantidade() < quantidade) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Atualiza estoque
+            produto.setQuantidade(produto.getQuantidade() - quantidade);
+            produto.setDtUltimaSaida(LocalDate.parse(dataSaida));
+            produtoRepo.save(produto);
+
+            // Cria movimentação
+            MovimentacaoProduto movimentacao = new MovimentacaoProduto();
+            movimentacao.setData(LocalDate.parse(dataSaida));
+            movimentacao.setCodigoProduto(codigo);
+            movimentacao.setNome(produto.getNome());
+            movimentacao.setCategoria(produto.getCategoria());
+            movimentacao.setTamanho(produto.getTamanho());
+            movimentacao.setGenero(produto.getGenero());
+
+            movimentacao.setTipoMovimentacao("SAIDA");
+            movimentacao.setCodigoMovimentacao(codigoVenda);
+            movimentacao.setQuantidadeMovimentada(quantidade);
+            movimentacao.setEstoqueFinal(produto.getQuantidade());
+            movimentacao.setValorMovimentacao(BigDecimal.valueOf(valorVenda));
+            movimentacao.setParteEnvolvida(comprador);
+
+            MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
+            return ResponseEntity.ok(salva);
+
+        } catch (Exception e) {
+            System.out.println("ERRO: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+}
