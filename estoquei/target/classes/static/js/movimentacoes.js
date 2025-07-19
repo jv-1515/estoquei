@@ -58,14 +58,13 @@ function aplicarMascaraDinheiro(input) {
             return;
         }
         value = (parseInt(value) / 100).toFixed(2);
-        e.target.value = 'R$ ' + value.replace('.', ',');
+        e.target.value = value.replace('.', ',');
     });
 }
 
 function renderizarMovimentacoes(movimentacoes) {
     const tbody = document.getElementById('movimentacao-table-body');
     
-    // Mostra o loading imediatamente - 13 COLUNAS AGORA
     tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
@@ -90,7 +89,7 @@ function renderizarMovimentacoes(movimentacoes) {
     }
 
     setTimeout(() => {
-        tbody.innerHTML = ''; // Limpa o loading
+        tbody.innerHTML = '';
         movimentacoesPagina.forEach(m => {
             const tipoClass = m.tipoMovimentacao === 'ENTRADA' ? 'tipo-entrada' : 'tipo-saida';
             const valorClass = m.tipoMovimentacao === 'ENTRADA' ? 'valor-positivo' : 'valor-negativo';
@@ -102,9 +101,13 @@ function renderizarMovimentacoes(movimentacoes) {
             
             const tipoTexto = m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída';
             
+            const valorFormatado = m.valorMovimentacao ? 
+                new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(m.valorMovimentacao) : 
+                '0,00';
+            
             const rowHtml = `
                 <tr>
-                    <td style="padding-left:20px;">${formatarData(m.data)}</td>
+                    <td style="padding-left:10px;">${formatarData(m.data)}</td>
                     <td>${m.codigoProduto}</td>
                     <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
                     <td class="categoria">${categoria}</td>
@@ -114,7 +117,7 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.codigoMovimentacao || '-'}</td>
                     <td>${m.quantidadeMovimentada}</td>
                     <td>${m.estoqueFinal}</td>
-                    <td class="${valorClass}">${formatarMoeda(m.valorMovimentacao)}</td>
+                    <td class="${valorClass}">${valorFormatado}</td>
                     <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
@@ -133,40 +136,23 @@ function renderizarMovimentacoes(movimentacoes) {
     }, 300);
 }
 
-// FUNÇÃO PARA ABRIR EDIÇÃO DE MOVIMENTAÇÃO
 function abrirEdicaoMovimentacao(id) {
     const movimentacao = movimentacoes.find(m => m.id === id);
     if (!movimentacao) return;
 
-    // Busca os dados do produto para preencher todos os campos
+    // Busca os dados do produto para a imagem
     fetch(`/produtos/codigo/${movimentacao.codigoProduto}`)
         .then(response => response.json())
         .then(produto => {
-            // Preenche campos do produto (readonly)
-            document.getElementById('edit-codigo-produto').value = movimentacao.codigoProduto;
-            document.getElementById('edit-nome-produto').value = movimentacao.nome;
-            document.getElementById('edit-categoria').value = capitalizar(movimentacao.categoria);
-            document.getElementById('edit-tamanho').value = exibirTamanho(movimentacao.tamanho);
-            document.getElementById('edit-genero').value = capitalizar(movimentacao.genero);
-            document.getElementById('edit-quantidade-atual').value = produto.quantidade || 0;
-            document.getElementById('edit-limite-minimo').value = produto.limiteMinimo || 0;
-            document.getElementById('edit-preco-produto').value = produto.preco ? formatarMoeda(produto.preco) : 'R$ 0,00';
-
-            // Configura tipo de movimentação (disabled)
+            // Configura labels baseado no tipo de movimentação
             if (movimentacao.tipoMovimentacao === 'ENTRADA') {
-                document.getElementById('edit-tipo-entrada').checked = true;
-                document.getElementById('edit-titulo-detalhes').textContent = 'Detalhes da Compra';
                 document.getElementById('edit-label-valor').textContent = 'Valor da Compra (R$)*';
                 document.getElementById('edit-label-parte-envolvida').textContent = 'Fornecedor*';
                 document.getElementById('edit-label-data').textContent = 'Data da Compra*';
-                document.getElementById('edit-btn-confirmar').textContent = 'Salvar Alterações - Entrada';
             } else {
-                document.getElementById('edit-tipo-saida').checked = true;
-                document.getElementById('edit-titulo-detalhes').textContent = 'Detalhes da Venda';
                 document.getElementById('edit-label-valor').textContent = 'Valor da Venda (R$)*';
                 document.getElementById('edit-label-parte-envolvida').textContent = 'Comprador*';
                 document.getElementById('edit-label-data').textContent = 'Data da Venda*';
-                document.getElementById('edit-btn-confirmar').textContent = 'Salvar Alterações - Saída';
             }
 
             // Preenche campos editáveis
@@ -221,45 +207,95 @@ function fecharEdicaoMovimentacao() {
 
 // FUNÇÃO PARA SALVAR EDIÇÃO
 function salvarEdicaoMovimentacao() {
-    const id = document.getElementById('editar-movimentacao').dataset.movimentacaoId;
-    
-    const dadosAtualizados = {
-        data: document.getElementById('edit-data').value,
-        codigoMovimentacao: document.getElementById('edit-codigo-movimentacao').value,
-        quantidadeMovimentada: parseInt(document.getElementById('edit-quantidade').value),
-        valorMovimentacao: parseFloat(document.getElementById('edit-valor').value.replace('R$', '').replace(',', '.').trim()),
-        parteEnvolvida: document.getElementById('edit-parte-envolvida').value
-    };
+    // Desabilita o botão para evitar cliques múltiplos
+    const btnConfirmar = document.getElementById('edit-btn-confirmar');
+    const textoOriginal = btnConfirmar.textContent;
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = 'Salvando <i class="fa-solid fa-spinner fa-spin"></i>';
 
-    fetch(`/api/movimentacoes/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dadosAtualizados)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Erro ao atualizar movimentação');
-        return response.json();
-    })
-    .then(data => {
-        Swal.fire({
-            title: 'Sucesso!',
-            text: 'Movimentação atualizada com sucesso!',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        
-        fecharEdicaoMovimentacao();
-        carregarMovimentacoes(); // Recarrega a lista
-    })
-    .catch(error => {
-        Swal.fire({
-            title: 'Erro!',
-            text: 'Erro ao atualizar movimentação: ' + error.message,
-            icon: 'error'
-        });
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: 'As alterações não poderão ser desfeitas.',
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-confirm-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const id = document.getElementById('editar-movimentacao').dataset.movimentacaoId;
+            
+            const dadosAtualizados = {
+                data: document.getElementById('edit-data').value,
+                codigoMovimentacao: document.getElementById('edit-codigo-movimentacao').value,
+                quantidadeMovimentada: parseInt(document.getElementById('edit-quantidade').value),
+                valorMovimentacao: parseFloat(document.getElementById('edit-valor').value.replace('R$ ', '').replace('.', '').replace(',', '.').trim()),
+                parteEnvolvida: document.getElementById('edit-parte-envolvida').value
+            };
+
+            fetch(`/api/movimentacoes/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dadosAtualizados)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao atualizar movimentação');
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    title: "Alterações salvas!",
+                    icon: "success",
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Visualizar Movimentações',
+                    cancelButtonText: 'Voltar para Início',
+                    allowOutsideClick: false,
+                    customClass: {
+                        confirmButton: 'swal2-confirm-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    }
+                }).then((result) => {
+                    // Restaura o botão
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.textContent = textoOriginal;
+                    
+                    fecharEdicaoMovimentacao();
+                    carregarMovimentacoes(); // Recarrega a lista
+                    
+                    if (result.isConfirmed) {
+                        // Já está na página de movimentações, apenas fecha o modal
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        window.location.href = "/inicio";
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao salvar alterações:', error);
+                Swal.fire({
+                    title: 'Erro!',
+                    text: error.message || 'Não foi possível salvar as alterações.',
+                    icon: 'error',
+                    confirmButtonColor: '#1E94A3'
+                });
+                
+                // Restaura o botão em caso de erro
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = textoOriginal;
+            });
+        } else {
+            // Se cancelar, apenas restaura o botão
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = textoOriginal;
+        }
     });
 }
 
