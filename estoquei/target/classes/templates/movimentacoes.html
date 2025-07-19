@@ -44,10 +44,7 @@
     </div>
 
     <!-- Detalhes -->
-        <!-- REMOVA TODA A SEÇÃO id="graficos-movimentacoes" QUE ESTÁ DUPLICADA -->
-    
-    <!-- MANTENHA APENAS O #detalhes-estoque E MODIFIQUE ELE ASSIM: -->
-    <div id="detalhes-estoque"
+        <div id="detalhes-estoque"
          style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
         
         <!-- Coluna Esquerda - Cards de Detalhes -->
@@ -56,7 +53,7 @@
                 <h2 style="margin: 0; font-size: 20px;">Detalhes das Movimentações</h2>
             </div>
             <div style="height: 8px;"></div>
-            <div style="display: flex; flex-direction: column; gap: 10px; height: 130px;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
                     <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
                         <div style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas Hoje</div>
@@ -67,7 +64,7 @@
                         <div id="detalhe-saidas-hoje" style="font-size: 22px; font-weight: bold; color: #e65100;">0</div>
                     </div>
                     <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
-                        <div style="color: #18404a; font-size: 12px; font-weight: bold;">Total Movimentações</div>
+                        <div style="color: #18404a; font-size: 12px; font-weight: bold;">Movimentações</div>
                         <div id="detalhe-total-movimentacoes" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
                     </div>
                 </div>
@@ -99,124 +96,96 @@
                 </div>
             </div>
         </div>
-    
-                <!-- SUBSTITUA a seção "Coluna Direita - Gráficos das Categorias" por esta: -->
                 <!-- Coluna Direita - Gráficos das Categorias -->
-                <div style="flex: 1; display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; height: 28px; margin-bottom: 8px;">
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+                    <!-- <div style="display: flex; align-items: center; height: 28px; margin-bottom: 8px;">
                         <h2 style="margin: 0; font-size: 20px;">Movimentações Hoje por Categoria</h2>
-                    </div>
+                    </div> -->
                     
-                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; height: 130px; overflow: hidden;">
-                        <!-- Camisa -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Camisa</span>
-                            <canvas id="grafico-camisa-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="camisa-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="camisa-saidas">0</strong></span>
-                                </div>
-                            </div>
-                        </div>
-        
-                        <!-- Camiseta -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Camiseta</span>
-                            <canvas id="grafico-camiseta-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="camiseta-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="camiseta-saidas">0</strong></span>
+                    <!-- Container das barras horizontais -->
+                    <div style="display: flex; flex-direction: column; gap: 15px; height: 166px; justify-content: flex-end;">
+                        
+                        <!-- Barra de Entradas -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div style="align-items: center; gap: 10px;">
+                                <!-- <span id="total-entradas" style="
+                                    font-size: 14px; 
+                                    font-weight: bold; 
+                                    color: #4CAF50;
+                                    min-width: 60px;
+                                ">0</span> -->
+                                <span style="font-size: 12px; color: #333; font-weight: bold;">Entradas</span>
+                                
+                                <!-- Barra horizontal de entradas -->
+                                <div style="
+                                    flex: 1; 
+                                    height: 30px; 
+                                    background: #f0f0f0; 
+                                    border-radius: 8px; 
+                                    overflow: hidden;
+                                    display: flex;
+                                    margin-top: 4px;
+                                " id="barra-entradas">
+                                    <!-- Segmentos serão gerados dinamicamente -->
                                 </div>
                             </div>
                         </div>
-        
-                        <!-- Bermuda -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Bermuda</span>
-                            <canvas id="grafico-bermuda-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="bermuda-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="bermuda-saidas">0</strong></span>
-                                </div>
-                            </div>
-                        </div>
-        
-                        <!-- Calça -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Calça</span>
-                            <canvas id="grafico-calca-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="calca-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="calca-saidas">0</strong></span>
+
+                        <!-- Barra de Saídas -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div style="align-items: center; gap: 10px;">
+                                <!-- <span id="total-saidas" style="
+                                    font-size: 14px; 
+                                    font-weight: bold; 
+                                    color: #FF5722;
+                                    min-width: 60px;
+                                ">0</span> -->
+                                <span style="font-size: 12px; color: #333; font-weight: bold;">Saídas</span>
+
+                                <!-- Barra horizontal de saídas -->
+                                <div style="
+                                    flex: 1; 
+                                    height: 30px; 
+                                    background: #f0f0f0; 
+                                    border-radius: 8px; 
+                                    overflow: hidden;
+                                    display: flex;
+                                    margin-top: 4px;
+                                " id="barra-saidas">
+                                    <!-- Segmentos serão gerados dinamicamente -->
                                 </div>
                             </div>
                         </div>
-        
-                        <!-- Shorts -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Shorts</span>
-                            <canvas id="grafico-shorts-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="shorts-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="shorts-saidas">0</strong></span>
-                                </div>
+
+                        <!-- Legenda das categorias -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; margin-top: 5px;">
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #1e94a3; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Camisa</span>
                             </div>
-                        </div>
-        
-                        <!-- Sapato -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Sapato</span>
-                            <canvas id="grafico-sapato-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="sapato-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="sapato-saidas">0</strong></span>
-                                </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #277580; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Camiseta</span>
                             </div>
-                        </div>
-        
-                        <!-- Meia -->
-                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Meia</span>
-                            <canvas id="grafico-meia-mov" width="80" height="100"></canvas>
-                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
-                                    <span>Entradas: <strong id="meia-entradas">0</strong></span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 2px;">
-                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
-                                    <span>Saídas: <strong id="meia-saidas">0</strong></span>
-                                </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #bfa100; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Bermuda</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #c0392b; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Calça</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #e67e22; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Shorts</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #8e44ad; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Sapato</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                                <div style="width: 12px; height: 12px; background: #16a085; border-radius: 2px;"></div>
+                                <span style="font-size: 10px; color: #333;">Meia</span>
                             </div>
                         </div>
                     </div>
