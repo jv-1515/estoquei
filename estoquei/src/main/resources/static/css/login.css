@@ -108,10 +108,10 @@ input:focus {
 
 }
 .login-divider {
-    width: 1.5px;
+    width: 1px;
     height: 187px;
     background: #277580;
-    border-radius: 1.5px;
+    border-radius: 1px;
     align-self: center;
 }
 .login-logo-box {

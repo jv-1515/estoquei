@@ -101,7 +101,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
             <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
-            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" readonly>
+            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f9f9f9" readonly>
             </div>
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
@@ -178,7 +178,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     };
                     console.log("Enviando entrada:", entrada); // Adicione este log para ver no navegador
 
-                    fetch('/entradas', {
+                    fetch('/api/movimentacoes/entrada', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(entrada)
@@ -189,27 +189,27 @@ window.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire({
-                        title: "Sucesso!",
-                        text: "Entrada registrada com sucesso!",
-                        icon: "success",
-                        showCloseButton: true,
-                        showCancelButton: true,
-                        confirmButtonText: 'Visualizar Estoque',
-                        cancelButtonText: 'Voltar ao Início',
-                        allowOutsideClick: false,
-                        customClass: {
-                            confirmButton: 'swal2-confirm-custom',
-                            cancelButton: 'swal2-cancel-custom'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "/estoque";
-                        } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            window.location.href = "/baixo-estoque";
-                        } else if (result.dismiss === Swal.DismissReason.close) {
-                            window.location.href = "/inicio";
-                        }
-                    });
+                            title: "Sucesso!",
+                            text: "Entrada registrada com sucesso!",
+                            icon: "success",
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            confirmButtonText: 'Visualizar Estoque',
+                            cancelButtonText: 'Visualizar Movimentações',
+                            allowOutsideClick: false,
+                            customClass: {
+                                confirmButton: 'swal2-confirm-custom',
+                                cancelButton: 'swal2-cancel-custom'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/estoque";
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                window.location.href = "/movimentacoes";
+                            } else if (result.dismiss === Swal.DismissReason.close) {
+                                window.location.href = "/movimentar-produto";
+                            }
+                        });
                     })
                     .catch(error => {
                         Swal.fire('Erro!', error.message, 'error');
@@ -227,7 +227,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
                     console.log('Enviando saída:', saida);
                     
-                    fetch('/saidas', {
+                    fetch('/api/movimentacoes/saida', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -246,7 +246,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         showCloseButton: true,
                         showCancelButton: true,
                         confirmButtonText: 'Visualizar Estoque',
-                        cancelButtonText: 'Voltar ao Início',
+                        cancelButtonText: 'Visualizar Movimentações',
                         allowOutsideClick: false,
                         customClass: {
                             confirmButton: 'swal2-confirm-custom',
@@ -256,7 +256,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         if (result.isConfirmed) {
                             window.location.href = "/estoque";
                         } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            window.location.href = "/inicio";
+                            window.location.href = "/movimentacoes";
                         } else if (result.dismiss === Swal.DismissReason.close) {
                             window.location.href = "/movimentar-produto";
                         }
