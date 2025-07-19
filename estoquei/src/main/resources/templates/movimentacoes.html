@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movimentações do Estoque</title>
+    <link rel="icon" type="image/png" href="/images/logo_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/css/movimentacoes.css" />
+    <script src="/js/movimentacoes.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js" defer></script>
+</head>
+<body>
+    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+    <a href="/inicio" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+        <button tabindex="13" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-house" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    
+    <div>
+        <h1>Movimentações do Estoque</h1>
+    </div>
+    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1300px;">
+        <h2>Buscar Movimentações</h2>
+        <div style="display: flex; align-items: center; gap: 8px; position: relative; height: 30px; max-height: 30px;">
+            <div style="flex:1; position:relative; display:flex;">
+                <input type="text" id="busca-movimentacao" placeholder="Digite o código do produto ou código da movimentação" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div id="busca-sugestoes"></div>
+            </div>
+            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;width: 92px; max-width: 92px;">
+                <i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes
+            </button>
+        </div>
+    </div>
+
+    <!-- Detalhes -->
+        <!-- REMOVA TODA A SEÇÃO id="graficos-movimentacoes" QUE ESTÁ DUPLICADA -->
+    
+    <!-- MANTENHA APENAS O #detalhes-estoque E MODIFIQUE ELE ASSIM: -->
+    <div id="detalhes-estoque"
+         style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
+        
+        <!-- Coluna Esquerda - Cards de Detalhes -->
+        <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
+            <div style="display: flex; align-items: flex-end; height: 28px;">
+                <h2 style="margin: 0; font-size: 20px;">Detalhes das Movimentações</h2>
+            </div>
+            <div style="height: 8px;"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px; height: 130px;">
+                <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas Hoje</div>
+                        <div id="detalhe-entradas-hoje" style="font-size: 22px; font-weight: bold; color: #2e7d32;">0</div>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas Hoje</div>
+                        <div id="detalhe-saidas-hoje" style="font-size: 22px; font-weight: bold; color: #e65100;">0</div>
+                    </div>
+                    <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #18404a; font-size: 12px; font-weight: bold;">Total Movimentações</div>
+                        <div id="detalhe-total-movimentacoes" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                    <a href="/estoque" style="flex:1; text-decoration: none;">
+                        <button class="detalhe-card" style="background: #e0f2f1; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                            <div style="color: #00695c; font-size: 12px; font-weight: bold;">Visualizar<br>Estoque</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #00695c;">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </div>
+                        </button>
+                    </a>
+                    <a href="/movimentar-produto" style="flex:1; text-decoration: none;">
+                        <button class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                            <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Movimentar<br>Produto</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #bfa100;">
+                                <i class="fa-solid fa-dolly"></i>
+                            </div>
+                        </button>
+                    </a>
+                    <a href="/baixo-estoque" style="flex:1; text-decoration: none;">
+                        <button class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                            <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Baixo<br>Estoque</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #c0392b;">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+                <!-- SUBSTITUA a seção "Coluna Direita - Gráficos das Categorias" por esta: -->
+                <!-- Coluna Direita - Gráficos das Categorias -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: center; height: 28px; margin-bottom: 8px;">
+                        <h2 style="margin: 0; font-size: 20px;">Movimentações Hoje por Categoria</h2>
+                    </div>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; height: 130px; overflow: hidden;">
+                        <!-- Camisa -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Camisa</span>
+                            <canvas id="grafico-camisa-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="camisa-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="camisa-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Camiseta -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Camiseta</span>
+                            <canvas id="grafico-camiseta-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="camiseta-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="camiseta-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Bermuda -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Bermuda</span>
+                            <canvas id="grafico-bermuda-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="bermuda-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="bermuda-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Calça -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Calça</span>
+                            <canvas id="grafico-calca-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="calca-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="calca-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Shorts -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Shorts</span>
+                            <canvas id="grafico-shorts-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="shorts-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="shorts-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Sapato -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Sapato</span>
+                            <canvas id="grafico-sapato-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="sapato-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="sapato-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Meia -->
+                        <div style="display: flex; flex-direction: column; align-items: center; min-width: 100px; max-width: 100px;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333; margin-bottom: 4px;">Meia</span>
+                            <canvas id="grafico-meia-mov" width="80" height="100"></canvas>
+                            <div style="display: flex; gap: 8px; margin-top: 4px; font-size: 9px;">
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #4CAF50; border-radius: 1px;"></div>
+                                    <span>Entradas: <strong id="meia-entradas">0</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 2px;">
+                                    <div style="width: 6px; height: 6px; background: #FF5722; border-radius: 1px;"></div>
+                                    <span>Saídas: <strong id="meia-saidas">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+    </div>
+
+    <!-- Controles da tabela -->
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="registros-select">Mostrando</label>
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; font-size: 12px; height:30px; width: 55px;">
+                <option value="">Todos</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <button class="btn" style="margin-left: auto; height:30px;" onclick="window.location.href='/movimentar-produto'">
+            <i class="fa-solid fa-money-bill-transfer" style="margin-right: 4px;"></i> Movimentar
+        </button>
+    </div>
+
+    <!-- Main container -->
+    <div class="main-container">
+        <div class="table-space"></div>
+        <table id="movimentacao-list">
+            <thead>
+                <tr>
+                    <th style="padding-left:10px;" class="ordenar">Data <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Código Produto <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Categoria <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Tamanho <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Gênero <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Movimentação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Quantidade <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Estoque Final <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Valor (R$) <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Parte Envolvida <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th style="width: 35px; min-width: 35px; padding-right:20px"></th>
+                </tr>
+            </thead>
+            <tbody id="movimentacao-table-body">
+                <tr>
+                    <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+                        <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
+                            <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
+                        </span>
+                        <span id="loading-text">Carregando movimentações</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
+    </div>
+
+<span id="editar-movimentacao" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+    <div style="background:white; border-radius:10px; width:650px; margin:auto; position:relative; overflow:hidden;">
+        <!-- Botão Fechar -->
+        <button type="button" onclick="fecharEdicaoMovimentacao()" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:24px; cursor:pointer; z-index:10; color:#999;">&times;</button>
+        
+        <!-- Header -->
+        <div style="padding:20px;  padding-bottom:0;">
+            <h2 style="margin:0; color:#277580; font-size:24px;">Editar Movimentação</h2>
+        </div>
+
+        <!-- Formulário Principal -->
+        <form onsubmit="event.preventDefault(); salvarEdicaoMovimentacao();" style="display:flex; padding:20px; gap:20px;">
+            <!-- Coluna Esquerda - Campos -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+                <div style="border-radius:8px;">                    
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Código da Movimentação*</label>
+                        <input type="text" id="edit-codigo-movimentacao" required maxlength="9" minlength="9" pattern="\d{9}" placeholder="000000000" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label id="edit-label-valor" style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Valor (R$)*</label>
+                        <input type="text" id="edit-valor" required placeholder="R$1000,00" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label id="edit-label-parte-envolvida" style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Parte Envolvida*</label>
+                        <input type="text" id="edit-parte-envolvida" required placeholder="Nome do fornecedor ou cliente" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:3;">
+                            <label style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Quantidade*</label>
+                            <input type="number" id="edit-quantidade" required placeholder="10" min="1" max="999" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                        </div>
+                        <div style="flex:2;">
+                            <label style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Estoque Final:</label>
+                            <input type="number" id="edit-estoque-final" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; background:#f9f9f9; color:#666;" />
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:15px;">
+                        <label id="edit-label-data" style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Data*</label>
+                        <input type="date" id="edit-data" required style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; font-family: Arial, sans-serif;" />
+                    </div>
+
+                    <button type="submit" id="edit-btn-confirmar" style="padding:8px; border:none; border-radius:4px; background-color:#1E94A3; color:white; font-size:12px; cursor:pointer; width:100%;">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coluna Direita - Imagem -->
+            <div style="display:flex; flex-direction:column; justify-content: flex-end;">
+                <label style="display:block; font-size:12px; font-weight:bold; color:#333; margin-bottom:3px;">Produto</label>
+                <div id="edit-image-preview" style="width:285px; height:285px; display:flex; justify-content:center; color:#777; align-items:center; border:solid 2px #aaa; background-color:#f9f9f9; overflow:hidden;">
+                    <i class="fa-regular fa-image" style="font-size:30px"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</span>
+
+    <!-- Botão voltar ao topo -->
+    <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+        <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
+        </button>
+    </a>
+</body>
+</html>
