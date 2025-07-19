@@ -281,3 +281,97 @@ window.atualizarDetalhesEstoque = function(produtos) {
         listaGenero.appendChild(li);
     });
 };
+
+function criarGraficosMovimentacoes(movimentacoes) {
+    console.log('🔍 Criando gráficos com movimentações:', movimentacoes);
+    
+    const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'SHORTS', 'SAPATO', 'MEIA'];
+    const hoje = new Date().toLocaleDateString('pt-BR').split('/').reverse().join('-'); // YYYY-MM-DD formato brasileiro
+    
+    
+    categorias.forEach(categoria => {
+        // 🎯 FILTRA APENAS MOVIMENTAÇÕES DE HOJE
+        const entradasHoje = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'ENTRADA' &&
+            m.data === hoje
+        ).reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        const saidasHoje = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'SAIDA' &&
+            m.data === hoje  
+        ).reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        console.log(`📊 ${categoria}: ${entradasHoje} entradas, ${saidasHoje} saídas`);
+        
+        // Atualiza os números
+        const categoriaLower = categoria.toLowerCase().replace('ç', 'c');
+        const elementoEntradas = document.getElementById(`${categoriaLower}-entradas`);
+        const elementoSaidas = document.getElementById(`${categoriaLower}-saidas`);
+        
+        if (elementoEntradas) {
+            elementoEntradas.textContent = entradasHoje;
+            console.log(`✅ Atualizou ${categoriaLower}-entradas: ${entradasHoje}`);
+        }
+        
+        if (elementoSaidas) {
+            elementoSaidas.textContent = saidasHoje;
+            console.log(`✅ Atualizou ${categoriaLower}-saidas: ${saidasHoje}`);
+        }
+        
+        // 🎯 CRIA O GRÁFICO DE COLUNAS
+        const ctx = document.getElementById(`grafico-${categoriaLower}-mov`);
+        if (ctx) {
+            // Destrói gráfico existente se houver
+            if (ctx.chart) {
+                ctx.chart.destroy();
+            }
+            
+            // Cria novo gráfico de barras
+            ctx.chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Entradas', 'Saídas'],
+                    datasets: [{
+                        data: [entradasHoje, saidasHoje],
+                        backgroundColor: ['#4CAF50', '#FF5722'],
+                        borderWidth: 0,
+                        borderRadius: 2,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' unidades';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false,
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            console.log(`🎨 Criou gráfico para ${categoria}`);
+        } else {
+            console.log(`❌ Canvas ${categoriaLower}-mov não encontrado`);
+        }
+    });
+}
