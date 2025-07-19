@@ -1,0 +1,212 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ccc;
+    margin: 0;
+    padding: 20px;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 40px;
+    color: #277580;
+    text-align: center;
+    margin: 40px 0 20px 0;
+}
+
+h2 {
+    font-size: 20px;
+    color: #277580;
+    text-align: left;
+    margin: 0;
+}
+
+.filters-container {
+    width: 1300px;
+    min-width: 1300px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#busca-movimentacao {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    height: 30px;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.btn {
+    min-height: 30px;
+    height: 30px;
+    max-height: 30px;
+    background-color: #1e94a3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: #277580;
+}
+
+.main-container {
+    background: white;
+    border-radius: 10px;
+    width: 1300px;
+    min-width: 1300px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+table {
+    width: 100%;
+    background-color: white;
+    border-collapse: collapse;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    font-size: 12px;
+    margin: 0;
+}
+
+th, td {
+    padding: 10px 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    color: #333;
+    font-weight: bold;
+}
+
+tbody tr:hover,
+tbody tr:nth-child(odd):hover {
+    background-color: #e0e0e0;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+
+th.ordenar {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+th.ordenar .sort-icon {
+    position: absolute;
+    top: 50%;
+    padding-left: 2px;
+    transform: translateY(-50%);
+    display: none;
+    pointer-events: none;
+    font-size: 10px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+th.ordenar:hover .sort-icon,
+th.ordenar.sorted .sort-icon {
+    display: inline-block;
+    color: #1E94A3;
+}
+
+#paginacao button {
+    margin: 0 3px 9px 3px;
+    padding: 5px 8px;
+    border: 1px solid #1E94A3;
+    background: #fff;
+    color: #1E94A3;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background 0.2s, color 0.2s;
+}
+
+#paginacao button.pagina-ativa {
+    background: #1E94A3;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #1E94A3;
+}
+
+#paginacao button.pagina-ativa:hover {
+    background: #277580;
+    border: 1px solid #277580;
+}
+
+#paginacao button:hover:not(.pagina-ativa) {
+    background: #1E94A3;
+    color: #fff;
+}
+
+select#registros-select {
+    color: #1E94A3;
+    border: #1e94a3 2px solid;
+}
+
+select#registros-select option {
+    color: #757575;
+}
+
+#busca-sugestoes {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: auto;
+    background: #fff;
+    border-radius: 4px 0 0 4px;
+    width: 100%;
+    z-index: 1000;
+    border: 1px solid #aaa;
+    display: none;
+    max-height: 90px;
+    overflow-y: auto;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#busca-sugestoes .sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #333;
+}
+
+#busca-sugestoes div:hover {
+    background-color: #e0e0e0;
+}
+
+.fa-arrow-left:hover,
+.fa-house:hover,
+.fa-arrow-up:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}
+
+/* Tipo de movimentação */
+.tipo-entrada,
+.tipo-saida {
+    font-size: 12px;
+    color: #fff;
+    background: #43b04a;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.tipo-saida {
+    background-color: #e65100;
+}

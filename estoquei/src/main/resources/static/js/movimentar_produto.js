@@ -189,27 +189,27 @@ window.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire({
-                        title: "Sucesso!",
-                        text: "Entrada registrada com sucesso!",
-                        icon: "success",
-                        showCloseButton: true,
-                        showCancelButton: true,
-                        confirmButtonText: 'Visualizar Estoque',
-                        cancelButtonText: 'Voltar ao Início',
-                        allowOutsideClick: false,
-                        customClass: {
-                            confirmButton: 'swal2-confirm-custom',
-                            cancelButton: 'swal2-cancel-custom'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "/estoque";
-                        } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            window.location.href = "/baixo-estoque";
-                        } else if (result.dismiss === Swal.DismissReason.close) {
-                            window.location.href = "/inicio";
-                        }
-                    });
+                            title: "Sucesso!",
+                            text: "Entrada registrada com sucesso!",
+                            icon: "success",
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            confirmButtonText: 'Visualizar Estoque',
+                            cancelButtonText: 'Visualizar Movimentações',
+                            allowOutsideClick: false,
+                            customClass: {
+                                confirmButton: 'swal2-confirm-custom',
+                                cancelButton: 'swal2-cancel-custom'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/estoque";
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                window.location.href = "/movimentacoes";
+                            } else if (result.dismiss === Swal.DismissReason.close) {
+                                window.location.href = "/movimentar-produto";
+                            }
+                        });
                     })
                     .catch(error => {
                         Swal.fire('Erro!', error.message, 'error');
@@ -246,7 +246,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         showCloseButton: true,
                         showCancelButton: true,
                         confirmButtonText: 'Visualizar Estoque',
-                        cancelButtonText: 'Voltar ao Início',
+                        cancelButtonText: 'Visualizar Movimentações',
                         allowOutsideClick: false,
                         customClass: {
                             confirmButton: 'swal2-confirm-custom',
@@ -256,7 +256,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         if (result.isConfirmed) {
                             window.location.href = "/estoque";
                         } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            window.location.href = "/inicio";
+                            window.location.href = "/movimentacoes";
                         } else if (result.dismiss === Swal.DismissReason.close) {
                             window.location.href = "/movimentar-produto";
                         }

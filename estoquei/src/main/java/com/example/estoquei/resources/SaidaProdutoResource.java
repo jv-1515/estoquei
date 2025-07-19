@@ -2,8 +2,7 @@ package com.example.estoquei.resources;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +13,7 @@ import com.example.estoquei.model.Produto;
 import com.example.estoquei.model.SaidaProduto;
 import com.example.estoquei.repository.ProdutoRepository;
 import com.example.estoquei.repository.SaidaProdutoRepository;
+import com.example.estoquei.service.MovimentacaoService;
 
 @RestController
 @RequestMapping("/saidas")
@@ -21,6 +21,9 @@ public class SaidaProdutoResource {
 
     private final SaidaProdutoRepository saidaRepo;
     private final ProdutoRepository produtoRepo;
+
+    @Autowired
+    private MovimentacaoService movimentacaoService;
 
     public SaidaProdutoResource(SaidaProdutoRepository saidaRepo, ProdutoRepository produtoRepo) {
         this.saidaRepo = saidaRepo;
@@ -33,28 +36,37 @@ public class SaidaProdutoResource {
     }
 
     @PostMapping
-    public ResponseEntity<SaidaProduto> registrarSaida(@RequestBody SaidaProduto saida) {
+    public SaidaProduto registrarSaida(@RequestBody SaidaProduto saida) {
+        System.out.println("Recebendo saída: " + saida.getCodigo());
+        
+        // Salva a saída
+        SaidaProduto saidaSalva = saidaRepo.save(saida);
+        
         try {
-            // Salva a saída
-            SaidaProduto saidaSalva = saidaRepo.save(saida);
-            
             // Busca o produto pelo código
             Produto produto = produtoRepo.findByCodigo(saida.getCodigo());
             if (produto != null) {
-                // Atualiza a quantidade do produto (subtrai)
-                produto.setQuantidade(produto.getQuantidade() - saida.getQuantidade());
+                System.out.println("Produto encontrado: " + produto.getNome());
                 
-                // Atualiza a data da última saída
+                // Atualiza a quantidade do produto
+                produto.setQuantidade(produto.getQuantidade() - saida.getQuantidade());
                 produto.setDtUltimaSaida(saida.getDataSaida());
                 
                 // Salva o produto atualizado
                 produtoRepo.save(produto);
+                
+                System.out.println("Produto atualizado com sucesso");
+                
+                movimentacaoService.registrarSaida(saida, produto);
+            } else {
+                System.out.println("Produto não encontrado com código: " + saida.getCodigo());
             }
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(saidaSalva);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            System.out.println("Erro ao atualizar produto: " + e.getMessage());
+            e.printStackTrace();
         }
+        
+        return saidaSalva;
     }
 
     @GetMapping("/total-hoje")
