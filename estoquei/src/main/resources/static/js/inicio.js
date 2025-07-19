@@ -185,7 +185,7 @@ window.addEventListener('DOMContentLoaded', function () {
         },
         {
             id: 'card-movimentacoes',
-            original: 'Movimentação do Estoque',
+            original: 'Movimentações do Estoque',
             hover: 'Entradas e<br>Saídas Hoje<br>'
         }
     ];
