@@ -111,7 +111,7 @@ function renderizarFuncionarios(lista) {
             <td>
                 <span style="
                     display:inline-block;
-                    padding:2px 10px;
+                    padding:${f.ativo ? '4px 12px' : '4px 8px'};
                     border-radius:12px;
                     font-size:12px;
                     color:#fff;
