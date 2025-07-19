@@ -129,11 +129,12 @@
                     <th class="ordenar">Estoque Final <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Valor <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Parte Envolvida <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th style="width: 35px; min-width: 35px; padding-right:20px"></th>
                 </tr>
             </thead>
             <tbody id="movimentacao-table-body">
                 <tr>
-                    <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+                    <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
                         <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                             <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
                         </span>
@@ -144,6 +145,120 @@
         </table>
         <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
     </div>
+
+<span id="editar-movimentacao" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+    <div style="background:white; border-radius:10px; width:650px; margin:auto; position:relative; overflow:hidden;">
+        <!-- Botão Fechar -->
+        <button type="button" onclick="fecharEdicaoMovimentacao()" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:24px; cursor:pointer; z-index:10; color:#999;">&times;</button>
+        
+        <!-- Header -->
+        <div style="padding:20px; padding-bottom: 0">
+            <h2 style="margin:0; color:#277580; font-size:24px;">Editar Movimentação</h2>
+        </div>
+
+        <!-- Detalhes do Produto -->
+        <div style="background:white; padding: 0 20px;">
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Código*</label>
+                    <input type="text" id="edit-codigo-produto" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:2; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Nome</label>
+                    <input type="text" id="edit-nome-produto" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666; text-overflow:ellipsis;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Categoria</label>
+                    <input type="text" id="edit-categoria" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Tamanho</label>
+                    <input type="text" id="edit-tamanho" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Gênero</label>
+                    <input type="text" id="edit-genero" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Quantidade Atual</label>
+                    <input type="number" id="edit-quantidade-atual" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Limite Mínimo</label>
+                    <input type="number" id="edit-limite-minimo" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; min-width:140px;">
+                    <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Preço (R$)</label>
+                    <input type="text" id="edit-preco-produto" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
+                </div>
+            </div>
+
+            <!-- Tipo de Movimentação -->
+            <div style="display:flex; gap:5px; align-items:center; padding:15px; border-radius:8px;">
+                <label style="font-weight:bold; font-size:12px; color:#333;">Tipo de Movimentação:</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:12px;">
+                    <input type="radio" id="edit-tipo-entrada" name="edit-tipo-movimentacao" value="ENTRADA" disabled style="accent-color: #1e94a3;"> Entrada
+                </label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:12px;">
+                    <input type="radio" id="edit-tipo-saida" name="edit-tipo-movimentacao" value="SAIDA" disabled style="accent-color: #1e94a3;"> Saída
+                </label>
+            </div>
+        </div>
+
+        <!-- Formulário Principal -->
+        <form onsubmit="event.preventDefault(); salvarEdicaoMovimentacao();" style="display:flex; padding:20px; padding-top: 0; gap:20px;">
+            <!-- Coluna Esquerda - Campos -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+                <div style="border-radius:8px;">
+                    <h2 id="edit-titulo-detalhes" style="color:#277580; font-size:18px; margin:0 0 15px 0;">Detalhes da Movimentação</h2>
+                    
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Código da Movimentação*</label>
+                        <input type="text" id="edit-codigo-movimentacao" required maxlength="9" minlength="9" pattern="\d{9}" placeholder="000000000" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label id="edit-label-valor" style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Valor (R$)*</label>
+                        <input type="text" id="edit-valor" required placeholder="R$1000,00" min="1" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="margin-bottom:10px;">
+                        <label id="edit-label-parte-envolvida" style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Parte Envolvida*</label>
+                        <input type="text" id="edit-parte-envolvida" required placeholder="Nome" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:3;">
+                            <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Quantidade*</label>
+                            <input type="number" id="edit-quantidade" required placeholder="10" min="1" max="999" style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box;" />
+                        </div>
+                        <div style="flex:2;">
+                            <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Estoque Final:</label>
+                            <input type="number" id="edit-estoque-final" readonly style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; background:#f9f9f9; color:#666;" />
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:15px;">
+                        <label id="edit-label-data" style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Data*</label>
+                        <input type="date" id="edit-data" required style="padding:7px; font-size:10px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; color:#757575;" />
+                    </div>
+
+                    <button type="submit" id="edit-btn-confirmar" style="padding:8px; border:none; border-radius:4px; background-color:#1E94A3; color:white; font-size:12px; cursor:pointer; width:100%;">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coluna Direita - Imagem -->
+            <div style="display:flex; flex-direction:column; justify-content: flex-end;">
+                <label style="font-size:12px; font-weight:bold; color:#333; padding:5px 0;">Produto</label>
+                <div id="edit-image-preview" style="width:268px; height:268px; display:flex; justify-content:center; color:#777; align-items:center; border:solid 2px #aaa; background-color:#f9f9f9; overflow:hidden;">
+                    <i class="fa-regular fa-image" style="font-size:30px"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</span>
 
     <!-- Botão voltar ao topo -->
     <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">

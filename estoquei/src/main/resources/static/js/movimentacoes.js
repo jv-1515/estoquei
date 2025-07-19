@@ -49,12 +49,25 @@ function exibirTamanho(tamanho) {
     return tamanho;
 }
 
+// FUNÇÃO PARA APLICAR MÁSCARA DE DINHEIRO
+function aplicarMascaraDinheiro(input) {
+    input.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length === 0) {
+            e.target.value = '';
+            return;
+        }
+        value = (parseInt(value) / 100).toFixed(2);
+        e.target.value = 'R$ ' + value.replace('.', ',');
+    });
+}
+
 function renderizarMovimentacoes(movimentacoes) {
     const tbody = document.getElementById('movimentacao-table-body');
     
-    // Mostra o loading imediatamente
+    // Mostra o loading imediatamente - 13 COLUNAS AGORA
     tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+        <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
             </span>
@@ -71,7 +84,7 @@ function renderizarMovimentacoes(movimentacoes) {
     const movimentacoesPagina = movimentacoes.slice(inicio, fim);
 
     if (movimentacoesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -88,6 +101,7 @@ function renderizarMovimentacoes(movimentacoes) {
             const categoria = m.categoria ? m.categoria.charAt(0).toUpperCase() + m.categoria.slice(1).toLowerCase() : '';
             
             const tipoTexto = m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída';
+            
             const rowHtml = `
                 <tr>
                     <td style="padding-left:20px;">${formatarData(m.data)}</td>
@@ -101,7 +115,15 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.quantidadeMovimentada}</td>
                     <td>${m.estoqueFinal}</td>
                     <td class="${valorClass}">${formatarMoeda(m.valorMovimentacao)}</td>
-                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:20px;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
+                    <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
+                        <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button type="button" onclick="removerMovimentacao(${m.id})" title="Excluir" style="background:none; border:none; cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             `;
             tbody.innerHTML += rowHtml;
@@ -109,6 +131,176 @@ function renderizarMovimentacoes(movimentacoes) {
 
         renderizarPaginacao(totalPaginas);
     }, 300);
+}
+
+// FUNÇÃO PARA ABRIR EDIÇÃO DE MOVIMENTAÇÃO
+function abrirEdicaoMovimentacao(id) {
+    const movimentacao = movimentacoes.find(m => m.id === id);
+    if (!movimentacao) return;
+
+    // Busca os dados do produto para preencher todos os campos
+    fetch(`/produtos/codigo/${movimentacao.codigoProduto}`)
+        .then(response => response.json())
+        .then(produto => {
+            // Preenche campos do produto (readonly)
+            document.getElementById('edit-codigo-produto').value = movimentacao.codigoProduto;
+            document.getElementById('edit-nome-produto').value = movimentacao.nome;
+            document.getElementById('edit-categoria').value = capitalizar(movimentacao.categoria);
+            document.getElementById('edit-tamanho').value = exibirTamanho(movimentacao.tamanho);
+            document.getElementById('edit-genero').value = capitalizar(movimentacao.genero);
+            document.getElementById('edit-quantidade-atual').value = produto.quantidade || 0;
+            document.getElementById('edit-limite-minimo').value = produto.limiteMinimo || 0;
+            document.getElementById('edit-preco-produto').value = produto.preco ? formatarMoeda(produto.preco) : 'R$ 0,00';
+
+            // Configura tipo de movimentação (disabled)
+            if (movimentacao.tipoMovimentacao === 'ENTRADA') {
+                document.getElementById('edit-tipo-entrada').checked = true;
+                document.getElementById('edit-titulo-detalhes').textContent = 'Detalhes da Compra';
+                document.getElementById('edit-label-valor').textContent = 'Valor da Compra (R$)*';
+                document.getElementById('edit-label-parte-envolvida').textContent = 'Fornecedor*';
+                document.getElementById('edit-label-data').textContent = 'Data da Compra*';
+                document.getElementById('edit-btn-confirmar').textContent = 'Salvar Alterações - Entrada';
+            } else {
+                document.getElementById('edit-tipo-saida').checked = true;
+                document.getElementById('edit-titulo-detalhes').textContent = 'Detalhes da Venda';
+                document.getElementById('edit-label-valor').textContent = 'Valor da Venda (R$)*';
+                document.getElementById('edit-label-parte-envolvida').textContent = 'Comprador*';
+                document.getElementById('edit-label-data').textContent = 'Data da Venda*';
+                document.getElementById('edit-btn-confirmar').textContent = 'Salvar Alterações - Saída';
+            }
+
+            // Preenche campos editáveis
+            document.getElementById('edit-data').value = movimentacao.data;
+            document.getElementById('edit-codigo-movimentacao').value = movimentacao.codigoMovimentacao || '';
+            document.getElementById('edit-quantidade').value = movimentacao.quantidadeMovimentada;
+            document.getElementById('edit-valor').value = formatarMoeda(movimentacao.valorMovimentacao);
+            document.getElementById('edit-parte-envolvida').value = movimentacao.parteEnvolvida || '';
+            document.getElementById('edit-estoque-final').value = movimentacao.estoqueFinal;
+
+            // Imagem do produto
+            const preview = document.getElementById('edit-image-preview');
+            preview.innerHTML = '';
+            if (produto.url_imagem) {
+                const img = document.createElement('img');
+                img.src = produto.url_imagem;
+                img.alt = 'Imagem do produto';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                preview.appendChild(img);
+            } else {
+                const icon = document.createElement('i');
+                icon.className = 'fa-regular fa-image';
+                icon.style.fontSize = '30px';
+                preview.appendChild(icon);
+            }
+
+            // Aplica máscara de dinheiro
+            const inputValor = document.getElementById('edit-valor');
+            aplicarMascaraDinheiro(inputValor);
+
+            // Armazena o ID e mostra o modal
+            document.getElementById('editar-movimentacao').dataset.movimentacaoId = id;
+            document.getElementById('editar-movimentacao').style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Erro ao buscar produto:', error);
+            Swal.fire('Erro!', 'Erro ao carregar dados do produto', 'error');
+        });
+}
+
+// Função para capitalizar (adicione se não existir)
+function capitalizar(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// FUNÇÃO PARA FECHAR EDIÇÃO
+function fecharEdicaoMovimentacao() {
+    document.getElementById('editar-movimentacao').style.display = 'none';
+}
+
+// FUNÇÃO PARA SALVAR EDIÇÃO
+function salvarEdicaoMovimentacao() {
+    const id = document.getElementById('editar-movimentacao').dataset.movimentacaoId;
+    
+    const dadosAtualizados = {
+        data: document.getElementById('edit-data').value,
+        codigoMovimentacao: document.getElementById('edit-codigo-movimentacao').value,
+        quantidadeMovimentada: parseInt(document.getElementById('edit-quantidade').value),
+        valorMovimentacao: parseFloat(document.getElementById('edit-valor').value.replace('R$', '').replace(',', '.').trim()),
+        parteEnvolvida: document.getElementById('edit-parte-envolvida').value
+    };
+
+    fetch(`/api/movimentacoes/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dadosAtualizados)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erro ao atualizar movimentação');
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            title: 'Sucesso!',
+            text: 'Movimentação atualizada com sucesso!',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+        
+        fecharEdicaoMovimentacao();
+        carregarMovimentacoes(); // Recarrega a lista
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Erro ao atualizar movimentação: ' + error.message,
+            icon: 'error'
+        });
+    });
+}
+
+// FUNÇÃO PARA REMOVER MOVIMENTAÇÃO
+function removerMovimentacao(id) {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/api/movimentacoes/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao remover movimentação');
+                
+                Swal.fire({
+                    title: 'Removido!',
+                    text: 'Movimentação removida com sucesso.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                carregarMovimentacoes(); // Recarrega a lista
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: 'Erro ao remover movimentação: ' + error.message,
+                    icon: 'error'
+                });
+            });
+        }
+    });
 }
 
 function renderizarPaginacao(totalPaginas) {
@@ -159,7 +351,7 @@ function carregarMovimentacoes(top) {
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('movimentacao-table-body');
-            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
         });
 }
 
@@ -182,7 +374,6 @@ function atualizarDetalhesInfo(movimentacoes) {
 }
 
 function atualizarDetalhesInfoLocal(movimentacoes) {
-    
     const hoje = new Date().toISOString().split('T')[0];
     const totalMovimentacoes = movimentacoes.length;
     const entradasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'ENTRADA').length;
@@ -203,11 +394,11 @@ window.onload = function() {
         renderizarMovimentacoes(movimentacoes);
     });
 
-    // Ordenação
+    // Ordenação - SEM AÇÕES NA ORDENAÇÃO
     const campos = [
         'data', 'codigoProduto', 'nome', 'categoria', 'tamanho', 
         'genero', 'tipoMovimentacao', 'codigoMovimentacao', 
-        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao', 'parteEnvolvida' // ✅ MINÚSCULO
+        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao', 'parteEnvolvida'
     ];
     
     let estadoOrdenacao = Array(campos.length).fill(true);
