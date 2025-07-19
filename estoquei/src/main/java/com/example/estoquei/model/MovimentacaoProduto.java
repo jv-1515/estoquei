@@ -51,13 +51,18 @@ public class MovimentacaoProduto {
     @Column(name = "valor_movimentacao")
     private BigDecimal valorMovimentacao;
 
+    // 🎯 NOVO CAMPO - Parte Envolvida (fornecedor ou cliente)
+    @Column(name = "parte_envolvida")
+    private String parteEnvolvida;
+
     // Construtores
     public MovimentacaoProduto() {}
 
+    // 🎯 CONSTRUTOR ATUALIZADO com parteEnvolvida
     public MovimentacaoProduto(LocalDate data, String codigoProduto, String nome, Categoria categoria, 
                               Tamanho tamanho, Genero genero, String tipoMovimentacao, 
                               String codigoMovimentacao, int quantidadeMovimentada, 
-                              int estoqueFinal, BigDecimal valorMovimentacao) {
+                              int estoqueFinal, BigDecimal valorMovimentacao, String parteEnvolvida) {
         this.data = data;
         this.codigoProduto = codigoProduto;
         this.nome = nome;
@@ -69,6 +74,7 @@ public class MovimentacaoProduto {
         this.quantidadeMovimentada = quantidadeMovimentada;
         this.estoqueFinal = estoqueFinal;
         this.valorMovimentacao = valorMovimentacao;
+        this.parteEnvolvida = parteEnvolvida;
     }
 
     // Getters e Setters
@@ -106,4 +112,7 @@ public class MovimentacaoProduto {
 
     public BigDecimal getValorMovimentacao() { return valorMovimentacao; }
     public void setValorMovimentacao(BigDecimal valorMovimentacao) { this.valorMovimentacao = valorMovimentacao; }
+
+    public String getParteEnvolvida() { return parteEnvolvida; }
+    public void setParteEnvolvida(String parteEnvolvida) { this.parteEnvolvida = parteEnvolvida; }
 }
