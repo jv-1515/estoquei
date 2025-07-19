@@ -286,11 +286,22 @@ function criarGraficosMovimentacoes(movimentacoes) {
     console.log('🔍 Criando gráficos com movimentações:', movimentacoes);
     
     const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'SHORTS', 'SAPATO', 'MEIA'];
-    const hoje = new Date().toLocaleDateString('pt-BR').split('/').reverse().join('-'); // YYYY-MM-DD formato brasileiro
+    const categoriasNomes = ['Camisa', 'Camiseta', 'Bermuda', 'Calça', 'Shorts', 'Sapato', 'Meia'];
+    const categoriasPlural = ['Camisas', 'Camisetas', 'Bermudas', 'Calças', 'Shorts', 'Sapatos', 'Meias'];
+    const cores = ["#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"];
     
+    const hoje = new Date().toISOString().split('T')[0]; // YYYY-MM-DD formato
+    console.log('📅 Data de hoje:', hoje);
     
-    categorias.forEach(categoria => {
-        // 🎯 FILTRA APENAS MOVIMENTAÇÕES DE HOJE
+    const dadosEntradas = [];
+    const dadosSaidas = [];
+    let totalEntradas = 0;
+    let totalSaidas = 0;
+    
+    // 🎯 ARRAY PARA ARMAZENAR DADOS DE CADA CATEGORIA
+    const dadosCategoriasCompletos = [];
+    
+    categorias.forEach((categoria, index) => {
         const entradasHoje = movimentacoes.filter(m => 
             m.categoria === categoria && 
             m.tipoMovimentacao === 'ENTRADA' &&
@@ -303,75 +314,215 @@ function criarGraficosMovimentacoes(movimentacoes) {
             m.data === hoje  
         ).reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
         
-        console.log(`📊 ${categoria}: ${entradasHoje} entradas, ${saidasHoje} saídas`);
+        const totalCategoria = entradasHoje + saidasHoje;
         
-        // Atualiza os números
-        const categoriaLower = categoria.toLowerCase().replace('ç', 'c');
-        const elementoEntradas = document.getElementById(`${categoriaLower}-entradas`);
-        const elementoSaidas = document.getElementById(`${categoriaLower}-saidas`);
+        dadosEntradas.push({ categoria: categoriasNomes[index], valor: entradasHoje, cor: cores[index] });
+        dadosSaidas.push({ categoria: categoriasNomes[index], valor: saidasHoje, cor: cores[index] });
         
-        if (elementoEntradas) {
-            elementoEntradas.textContent = entradasHoje;
-            console.log(`✅ Atualizou ${categoriaLower}-entradas: ${entradasHoje}`);
-        }
+        // 🎯 DADOS COMPLETOS PARA LEGENDA
+        dadosCategoriasCompletos.push({
+            nome: totalCategoria === 1 ? categoriasNomes[index] : categoriasPlural[index],
+            valor: totalCategoria,
+            cor: cores[index]
+        });
         
-        if (elementoSaidas) {
-            elementoSaidas.textContent = saidasHoje;
-            console.log(`✅ Atualizou ${categoriaLower}-saidas: ${saidasHoje}`);
-        }
+        totalEntradas += entradasHoje;
+        totalSaidas += saidasHoje;
         
-        // 🎯 CRIA O GRÁFICO DE COLUNAS
-        const ctx = document.getElementById(`grafico-${categoriaLower}-mov`);
-        if (ctx) {
-            // Destrói gráfico existente se houver
-            if (ctx.chart) {
-                ctx.chart.destroy();
-            }
+        console.log(`📊 ${categoria}: ${entradasHoje} entradas, ${saidasHoje} saídas, total: ${totalCategoria}`);
+    });
+    
+    // 🎯 CRIA BARRA DE ENTRADAS
+    criarBarraHorizontal('barra-entradas', dadosEntradas, totalEntradas, 'Entradas');
+    
+    // 🎯 CRIA BARRA DE SAÍDAS  
+    criarBarraHorizontal('barra-saidas', dadosSaidas, totalSaidas, 'Saídas');
+    
+    // 🎯 ATUALIZA LEGENDA COM NÚMEROS COLORIDOS
+    atualizarLegendaMovimentacoes(dadosCategoriasCompletos);
+    
+    console.log(`✅ Gráficos de barras horizontais criados - ${totalEntradas} entradas, ${totalSaidas} saídas`);
+}
+
+// 🎯 FUNÇÃO PARA ATUALIZAR LEGENDA COM NÚMEROS COLORIDOS
+function atualizarLegendaMovimentacoes(dados) {
+    // 🎯 ENCONTRA A LEGENDA NO HTML (substitua pelo seletor correto se necessário)
+    const legendaContainer = document.querySelector('.filters-container + div .legend-container') || 
+                            document.querySelector('[style*="flex-wrap: wrap"]') ||
+                            criarContainerLegenda();
+    
+    if (!legendaContainer) return;
+    
+    legendaContainer.innerHTML = '';
+    
+    dados.forEach(item => {
+        const legendaItem = document.createElement('div');
+        legendaItem.style.cssText = 'display: flex; align-items: center;';
+        
+        legendaItem.innerHTML = `
+            <span style="
+                display: inline-block;
+                min-width: 3ch;
+                text-align: right;
+                font-weight: bold;
+                color: #fff;
+                background: ${item.cor};
+                border-radius: 4px;
+                padding: 2px 5px 2px 10px;
+                margin-right: 5px;
+                font-size: 10px;
+            ">${item.valor}</span>
+            <span style="font-size: 10px; color: #333;">${item.nome}</span>
+        `;
+        
+        legendaContainer.appendChild(legendaItem);
+    });
+    
+    console.log('✅ Legenda atualizada com números coloridos');
+}
+
+// 🎯 CRIA CONTAINER DA LEGENDA SE NÃO EXISTIR
+function criarContainerLegenda() {
+    // Encontra o container pai (aquele que tem as barras)
+    const barraEntradas = document.getElementById('barra-entradas');
+    if (!barraEntradas) return null;
+    
+    const containerPai = barraEntradas.closest('[style*="gap: 20px"]') || 
+                        barraEntradas.closest('[style*="flex-direction: column"]');
+    
+    if (!containerPai) return null;
+    
+    // Cria o container da legenda
+    const legendaContainer = document.createElement('div');
+    legendaContainer.className = 'legend-container';
+    legendaContainer.style.cssText = `
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 8px; 
+        justify-content: flex-start; 
+        margin-top: 10px;
+    `;
+    
+    containerPai.appendChild(legendaContainer);
+    return legendaContainer;
+}
+
+// 🎯 FUNÇÃO AUXILIAR PARA CRIAR BARRA HORIZONTAL
+function criarBarraHorizontal(containerId, dados, total, tipo) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = ''; // Limpa conteúdo anterior
+    
+    if (total === 0) {
+        // 🎯 BARRA CINZA QUANDO SEM DADOS
+        const segmentoVazio = document.createElement('div');
+        segmentoVazio.style.cssText = `
+            width: 100%;
+            height: 100%;
+            background: #cccccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+            border-radius: 10px;
+        `;
+        segmentoVazio.textContent = `Sem ${tipo.toLowerCase()} hoje`;
+        container.appendChild(segmentoVazio);
+        return;
+    }
+    
+    // 🎯 CRIA SEGMENTOS COLORIDOS
+    dados.forEach(item => {
+        if (item.valor > 0) {
+            const porcentagem = (item.valor / total) * 100;
+            const segmento = document.createElement('div');
+            segmento.style.cssText = `
+                width: ${porcentagem}%;
+                height: 100%;
+                background: ${item.cor};
+                position: relative;
+                cursor: pointer;
+                transition: opacity 0.2s;
+            `;
             
-            // Cria novo gráfico de barras
-            ctx.chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Entradas', 'Saídas'],
-                    datasets: [{
-                        data: [entradasHoje, saidasHoje],
-                        backgroundColor: ['#4CAF50', '#FF5722'],
-                        borderWidth: 0,
-                        borderRadius: 2,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: false,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: true,
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y + ' unidades';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: false
-                        },
-                        y: {
-                            display: false,
-                            beginAtZero: true
-                        }
-                    }
-                }
+            // 🎯 REMOVE O TITLE PADRÃO E ADICIONA TOOLTIP CUSTOMIZADO
+            segmento.addEventListener('mouseenter', function(e) {
+                this.style.opacity = '0.8';
+                mostrarTooltip(e, `${item.categoria}: ${item.valor} ${item.valor === 1 ? 'unidade' : 'unidades'}`);
             });
             
-            console.log(`🎨 Criou gráfico para ${categoria}`);
-        } else {
-            console.log(`❌ Canvas ${categoriaLower}-mov não encontrado`);
+            segmento.addEventListener('mouseleave', function() {
+                this.style.opacity = '1';
+                esconderTooltip();
+            });
+            
+            segmento.addEventListener('mousemove', function(e) {
+                moverTooltip(e);
+            });
+            
+            container.appendChild(segmento);
         }
     });
 }
+
+// 🎯 FUNÇÕES PARA TOOLTIP CUSTOMIZADO (IGUAL CHART.JS)
+let tooltipElement = null;
+
+function mostrarTooltip(event, texto) {
+    esconderTooltip(); // Remove tooltip anterior se existir
+    
+    tooltipElement = document.createElement('div');
+    tooltipElement.style.cssText = `
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-family: Arial, sans-serif;
+        z-index: 9999;
+        pointer-events: none;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    `;
+    tooltipElement.textContent = texto;
+    
+    document.body.appendChild(tooltipElement);
+    moverTooltip(event);
+}
+
+function moverTooltip(event) {
+    if (!tooltipElement) return;
+    
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    let left = event.pageX + 10;
+    let top = event.pageY - tooltipRect.height - 10;
+    
+    // 🎯 AJUSTA POSIÇÃO PARA NÃO SAIR DA TELA
+    if (left + tooltipRect.width > windowWidth) {
+        left = event.pageX - tooltipRect.width - 10;
+    }
+    
+    if (top < 0) {
+        top = event.pageY + 10;
+    }
+    
+    tooltipElement.style.left = left + 'px';
+    tooltipElement.style.top = top + 'px';
+}
+
+function esconderTooltip() {
+    if (tooltipElement) {
+        tooltipElement.remove();
+        tooltipElement = null;
+    }
+}
+
+// 🎯 ESCONDE TOOLTIP AO ROLAR A PÁGINA
+document.addEventListener('scroll', esconderTooltip);
+document.addEventListener('click', esconderTooltip);
