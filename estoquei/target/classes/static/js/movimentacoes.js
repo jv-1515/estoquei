@@ -390,7 +390,7 @@ function atualizarDetalhesInfo(movimentacoes) {
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
         document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
-        document.getElementById('detalhe-produtos-cadastrados').textContent = totalProdutos;
+        document.getElementById('detalhe-produtos-cadastrados').textContent = estoqueAtual;
         document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
         document.getElementById('detalhe-estoque-zerado').textContent = zerados;
         
