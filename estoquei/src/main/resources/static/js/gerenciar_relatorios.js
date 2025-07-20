@@ -10,7 +10,6 @@ function mascaraPreco(input) {
     }
 }
 
-
 window.onload = function() {
     renderizarRelatorios(window.relatoriosGerados);
 }
@@ -858,69 +857,69 @@ function marcarOuDesmarcarNumericos() {
     filtrar();
 }
 
-function atualizarPlaceholderTamanhoMulti() {
-    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const select = document.getElementById('filter-tamanho');
-    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+// function atualizarPlaceholderTamanhoMulti() {
+//     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+//     const select = document.getElementById('filter-tamanho');
+//     const placeholderOption = document.getElementById('tamanho-multi-placeholder');
 
-    // Só conta os tamanhos individuais visíveis (não os grupos)
-    const individuaisVisiveis = checks.filter(cb =>
-        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
-    );
-    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
-        .map(cb => cb.parentNode.textContent.trim());
+//     // Só conta os tamanhos individuais visíveis (não os grupos)
+//     const individuaisVisiveis = checks.filter(cb =>
+//         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+//     );
+//     const selecionados = individuaisVisiveis.filter(cb => cb.checked)
+//         .map(cb => cb.parentNode.textContent.trim());
 
-    let texto = 'Todos';
-    let ativo = true;
-    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
-        // Se só tem letras visíveis, mostra "Todos em Letras"
-        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
-            texto = 'Todos em Letras';
-        }
-        // Se só tem números visíveis, mostra "Todos Numéricos"
-        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
-            texto = 'Todos Numéricos';
-        }
-        // Se tem ambos, mostra "Todos"
-        else {
-            texto = 'Todos';
-            ativo = false;
-        }
-    } else {
-        // Verifica se todos em letras estão marcados
-        const todosLetrasMarcados = individuaisVisiveis
-            .filter(cb => !/^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
-        // Verifica se todos numéricos estão marcados
-        const todosNumericosMarcados = individuaisVisiveis
-            .filter(cb => /^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
-        if (todosLetrasMarcados && !todosNumericosMarcados) {
-            texto = 'Todos em Letras, ' + selecionados.join(', ');
-        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
-            texto = 'Todos Numéricos, ' + selecionados.join(', ');
-        } else {
-            texto = selecionados.join(', ');
-        }
-    }
+//     let texto = 'Todos';
+//     let ativo = true;
+//     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+//         // Se só tem letras visíveis, mostra "Todos em Letras"
+//         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+//             texto = 'Todos em Letras';
+//         }
+//         // Se só tem números visíveis, mostra "Todos Numéricos"
+//         else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+//             texto = 'Todos Numéricos';
+//         }
+//         // Se tem ambos, mostra "Todos"
+//         else {
+//             texto = 'Todos';
+//             ativo = false;
+//         }
+//     } else {
+//         // Verifica se todos em letras estão marcados
+//         const todosLetrasMarcados = individuaisVisiveis
+//             .filter(cb => !/^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+//         // Verifica se todos numéricos estão marcados
+//         const todosNumericosMarcados = individuaisVisiveis
+//             .filter(cb => /^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+//         if (todosLetrasMarcados && !todosNumericosMarcados) {
+//             texto = 'Todos em Letras, ' + selecionados.join(', ');
+//         } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+//             texto = 'Todos Numéricos, ' + selecionados.join(', ');
+//         } else {
+//             texto = selecionados.join(', ');
+//         }
+//     }
 
-    if (ativo) {
-        select.style.border = '2px solid #1e94a3';
-        select.style.color = '#1e94a3';
-    } else {
-        select.style.border = '';
-        select.style.color = '';
-    }
+//     if (ativo) {
+//         select.style.border = '2px solid #1e94a3';
+//         select.style.color = '#1e94a3';
+//     } else {
+//         select.style.border = '';
+//         select.style.color = '';
+//     }
 
-    // Atualiza o texto da option placeholder
-    if (placeholderOption) placeholderOption.textContent = texto;
-    // Garante que a option placeholder está selecionada visualmente
-    select.selectedIndex = 0;
-    // Atualiza cor do select
-    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
-}
+//     // Atualiza o texto da option placeholder
+//     if (placeholderOption) placeholderOption.textContent = texto;
+//     // Garante que a option placeholder está selecionada visualmente
+//     select.selectedIndex = 0;
+//     // Atualiza cor do select
+//     // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+// }
 
 // --- MULTISELECT CÓDIGO (CHECKBOXES) ---
 function showCheckboxesCodigoMulti() {
@@ -1053,71 +1052,71 @@ window.addEventListener('DOMContentLoaded', function() {
         });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Controle de exibição dos detalhes
-    const btnDetalhes = document.getElementById('btn-exibir-detalhes');
-    const detalhesEstoque = document.getElementById('detalhes-estoque');
-    let detalhesVisiveis = true; // começa visível
-    if (btnDetalhes && detalhesEstoque) {
-        detalhesEstoque.style.display = 'flex';
-        btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Controle de exibição dos detalhes
+//     const btnDetalhes = document.getElementById('btn-exibir-detalhes');
+//     const detalhesEstoque = document.getElementById('detalhes-estoque');
+//     let detalhesVisiveis = true; // começa visível
+//     if (btnDetalhes && detalhesEstoque) {
+//         detalhesEstoque.style.display = 'flex';
+//         btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
 
-        btnDetalhes.addEventListener('click', function() {
-            detalhesVisiveis = !detalhesVisiveis;
-            if (detalhesVisiveis) {
-                detalhesEstoque.style.display = 'flex';
-                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-                btnDetalhes.style.background = '#1e94a3';
-                btnDetalhes.style.color = '#fff';
-                btnDetalhes.style.border = 'none';
-            } else {
-                detalhesEstoque.style.display = 'none';
-                btnDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
-                btnDetalhes.style.background = '#fff';
-                btnDetalhes.style.color = '#1e94a3';
-                btnDetalhes.style.border = '1px solid #1e94a3';
-            }
-        });
-    }
+//         btnDetalhes.addEventListener('click', function() {
+//             detalhesVisiveis = !detalhesVisiveis;
+//             if (detalhesVisiveis) {
+//                 detalhesEstoque.style.display = 'flex';
+//                 btnDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
+//                 btnDetalhes.style.background = '#1e94a3';
+//                 btnDetalhes.style.color = '#fff';
+//                 btnDetalhes.style.border = 'none';
+//             } else {
+//                 detalhesEstoque.style.display = 'none';
+//                 btnDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
+//                 btnDetalhes.style.background = '#fff';
+//                 btnDetalhes.style.color = '#1e94a3';
+//                 btnDetalhes.style.border = '1px solid #1e94a3';
+//             }
+//         });
+//     }
 
     // Limpar filtros da barra de busca
-    const btnLimpar = document.getElementById('btn-limpar-filtros-busca');
-    const btnCancelar = document.getElementById('btn-cancelar-gerar');
-    if (btnLimpar) {
-        btnLimpar.addEventListener('click', function() {
-            // Limpa todos os campos da barra de busca de relatórios
-            const camposBusca = [
-                'busca-relatorio',
-                'filter-data-criacao-busca',
-                'filter-data-inicio-busca',
-                'filter-data-fim-busca'
-            ];
-            camposBusca.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-            filtrarRelatorios();
-        });
-    }
+//     const btnLimpar = document.getElementById('btn-limpar-filtros-busca');
+//     const btnCancelar = document.getElementById('btn-cancelar-gerar');
+//     if (btnLimpar) {
+//         btnLimpar.addEventListener('click', function() {
+//             // Limpa todos os campos da barra de busca de relatórios
+//             const camposBusca = [
+//                 'busca-relatorio',
+//                 'filter-data-criacao-busca',
+//                 'filter-data-inicio-busca',
+//                 'filter-data-fim-busca'
+//             ];
+//             camposBusca.forEach(id => {
+//                 const el = document.getElementById(id);
+//                 if (el) el.value = '';
+//             });
+//             filtrarRelatorios();
+//         });
+//     }
 
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', function() {
-            document.getElementById('filter-categoria').value = '';
-            document.getElementById('filter-tamanho').value = '';
-            document.getElementById('filter-genero').value = '';
-            document.getElementById('filter-data-criacao').value = '';
-            document.getElementById('filter-data-inicio').value = '';
-            document.getElementById('filter-data-fim').value = '';
-        });
-    }
-});
+//     if (btnCancelar) {
+//         btnCancelar.addEventListener('click', function() {
+//             document.getElementById('filter-categoria').value = '';
+//             document.getElementById('filter-tamanho').value = '';
+//             document.getElementById('filter-genero').value = '';
+//             document.getElementById('filter-data-criacao').value = '';
+//             document.getElementById('filter-data-inicio').value = '';
+//             document.getElementById('filter-data-fim').value = '';
+//         });
+//     }
+// });
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('filter-data-inicio-busca').addEventListener('change', filtrarRelatorios);
-    document.getElementById('filter-data-fim-busca').addEventListener('change', filtrarRelatorios);
-    document.getElementById('filter-data-criacao-busca').addEventListener('change', filtrarRelatorios);
-    document.getElementById('busca-relatorio').addEventListener('input', filtrarRelatorios);
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     document.getElementById('filter-data-inicio-busca').addEventListener('change', filtrarRelatorios);
+//     document.getElementById('filter-data-fim-busca').addEventListener('change', filtrarRelatorios);
+//     document.getElementById('filter-data-criacao-busca').addEventListener('change', filtrarRelatorios);
+//     document.getElementById('busca-relatorio').addEventListener('input', filtrarRelatorios);
+// });
 
 // --- PREÇO E QUANTIDADE FAIXA ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -1685,117 +1684,117 @@ function atualizarPlaceholderCategoriaMulti() {
 // }
 
 // Adiciona listeners para manter sincronização
-document.addEventListener('DOMContentLoaded', function() {
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    if (todasLetra && todasNum) {
-        todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
-        todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
-    }
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     if (todasLetra && todasNum) {
+//         todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
+//         todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
+//     }
+// });
 
-function marcarOuDesmarcarLetras() {
-    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const todas = document.getElementById('tamanho-multi-todas');
-    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
-    const checks = document.querySelectorAll('.tamanho-multi-check');
+// function marcarOuDesmarcarLetras() {
+//     const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+//     const checks = document.querySelectorAll('.tamanho-multi-check');
 
-    checks.forEach(cb => {
-        if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
-    });
-    const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
-    todasLetras.checked = checksLetra.every(cb => cb.checked);
+//     checks.forEach(cb => {
+//         if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
+//     });
+//     const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
+//     todasLetras.checked = checksLetra.every(cb => cb.checked);
 
-    // Atualiza "Todos" corretamente
-    todas.checked = todasLetras.checked && todasNum.checked;
+//     // Atualiza "Todos" corretamente
+//     todas.checked = todasLetras.checked && todasNum.checked;
 
-    atualizarPlaceholderTamanhoMulti();
-    filtrar();
-}
+//     atualizarPlaceholderTamanhoMulti();
+//     filtrar();
+// }
 
-function marcarOuDesmarcarNumericos() {
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
-    const todas = document.getElementById('tamanho-multi-todas');
-    const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
-    const checks = document.querySelectorAll('.tamanho-multi-check');
-    checks.forEach(cb => {
-        if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
-    });
-    const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
-    todasNum.checked = checksNum.every(cb => cb.checked);
+// function marcarOuDesmarcarNumericos() {
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
+//     const checks = document.querySelectorAll('.tamanho-multi-check');
+//     checks.forEach(cb => {
+//         if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+//     });
+//     const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
+//     todasNum.checked = checksNum.every(cb => cb.checked);
 
-    // Atualiza "Todos" corretamente
-    todas.checked = todasLetras.checked && todasNum.checked;
+//     // Atualiza "Todos" corretamente
+//     todas.checked = todasLetras.checked && todasNum.checked;
 
-    atualizarPlaceholderTamanhoMulti();
-    filtrar();
-}
+//     atualizarPlaceholderTamanhoMulti();
+//     filtrar();
+// }
 
-function atualizarPlaceholderTamanhoMulti() {
-    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const select = document.getElementById('filter-tamanho');
-    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+// function atualizarPlaceholderTamanhoMulti() {
+//     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+//     const select = document.getElementById('filter-tamanho');
+//     const placeholderOption = document.getElementById('tamanho-multi-placeholder');
 
-    // Só conta os tamanhos individuais visíveis (não os grupos)
-    const individuaisVisiveis = checks.filter(cb =>
-        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
-    );
-    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
-        .map(cb => cb.parentNode.textContent.trim());
+//     // Só conta os tamanhos individuais visíveis (não os grupos)
+//     const individuaisVisiveis = checks.filter(cb =>
+//         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+//     );
+//     const selecionados = individuaisVisiveis.filter(cb => cb.checked)
+//         .map(cb => cb.parentNode.textContent.trim());
 
-    let texto = 'Todos';
-    let ativo = true;
-    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
-        // Se só tem letras visíveis, mostra "Todos em Letras"
-        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
-            texto = 'Todos em Letras';
-        }
-        // Se só tem números visíveis, mostra "Todos Numéricos"
-        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
-            texto = 'Todos Numéricos';
-        }
-        // Se tem ambos, mostra "Todos"
-        else {
-            texto = 'Todos';
-            ativo = false;
-        }
-    } else {
-        // Verifica se todos em letras estão marcados
-        const todosLetrasMarcados = individuaisVisiveis
-            .filter(cb => !/^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
-        // Verifica se todos numéricos estão marcados
-        const todosNumericosMarcados = individuaisVisiveis
-            .filter(cb => /^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
-        if (todosLetrasMarcados && !todosNumericosMarcados) {
-            texto = 'Todos em Letras, ' + selecionados.join(', ');
-        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
-            texto = 'Todos Numéricos, ' + selecionados.join(', ');
-        } else {
-            texto = selecionados.join(', ');
-        }
-    }
+//     let texto = 'Todos';
+//     let ativo = true;
+//     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+//         // Se só tem letras visíveis, mostra "Todos em Letras"
+//         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+//             texto = 'Todos em Letras';
+//         }
+//         // Se só tem números visíveis, mostra "Todos Numéricos"
+//         else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+//             texto = 'Todos Numéricos';
+//         }
+//         // Se tem ambos, mostra "Todos"
+//         else {
+//             texto = 'Todos';
+//             ativo = false;
+//         }
+//     } else {
+//         // Verifica se todos em letras estão marcados
+//         const todosLetrasMarcados = individuaisVisiveis
+//             .filter(cb => !/^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+//         // Verifica se todos numéricos estão marcados
+//         const todosNumericosMarcados = individuaisVisiveis
+//             .filter(cb => /^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+//         if (todosLetrasMarcados && !todosNumericosMarcados) {
+//             texto = 'Todos em Letras, ' + selecionados.join(', ');
+//         } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+//             texto = 'Todos Numéricos, ' + selecionados.join(', ');
+//         } else {
+//             texto = selecionados.join(', ');
+//         }
+//     }
 
-    if (ativo) {
-        select.style.border = '2px solid #1e94a3';
-        select.style.color = '#1e94a3';
-    } else {
-        select.style.border = '';
-        select.style.color = '';
-    }
+//     if (ativo) {
+//         select.style.border = '2px solid #1e94a3';
+//         select.style.color = '#1e94a3';
+//     } else {
+//         select.style.border = '';
+//         select.style.color = '';
+//     }
 
-    // Atualiza o texto da option placeholder
-    if (placeholderOption) placeholderOption.textContent = texto;
-    // Garante que a option placeholder está selecionada visualmente
-    select.selectedIndex = 0;
-    // Atualiza cor do select
-    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
-}
+//     // Atualiza o texto da option placeholder
+//     if (placeholderOption) placeholderOption.textContent = texto;
+//     // Garante que a option placeholder está selecionada visualmente
+//     select.selectedIndex = 0;
+//     // Atualiza cor do select
+//     // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+// }
 
 // --- MULTISELECT CÓ
     todasNum.checked = todas.checked;
@@ -1811,117 +1810,117 @@ function atualizarPlaceholderTamanhoMulti() {
 // }
 
 // Adiciona listeners para manter sincronização
-document.addEventListener('DOMContentLoaded', function() {
-    const todasLetra = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    if (todasLetra && todasNum) {
-        todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
-        todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
-    }
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     const todasLetra = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     if (todasLetra && todasNum) {
+//         todasLetra.addEventListener('change', atualizarTodosTamanhosCheck);
+//         todasNum.addEventListener('change', atualizarTodosTamanhosCheck);
+//     }
+// });
 
-function marcarOuDesmarcarLetras() {
-    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const todas = document.getElementById('tamanho-multi-todas');
-    const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
-    const checks = document.querySelectorAll('.tamanho-multi-check');
+// function marcarOuDesmarcarLetras() {
+//     const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const valoresLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+//     const checks = document.querySelectorAll('.tamanho-multi-check');
 
-    checks.forEach(cb => {
-        if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
-    });
-    const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
-    todasLetras.checked = checksLetra.every(cb => cb.checked);
+//     checks.forEach(cb => {
+//         if (valoresLetra.includes(cb.value)) cb.checked = todasLetras.checked;
+//     });
+//     const checksLetra = Array.from(checks).filter(cb => valoresLetra.includes(cb.value));
+//     todasLetras.checked = checksLetra.every(cb => cb.checked);
 
-    // Atualiza "Todos" corretamente
-    todas.checked = todasLetras.checked && todasNum.checked;
+//     // Atualiza "Todos" corretamente
+//     todas.checked = todasLetras.checked && todasNum.checked;
 
-    atualizarPlaceholderTamanhoMulti();
-    filtrar();
-}
+//     atualizarPlaceholderTamanhoMulti();
+//     filtrar();
+// }
 
-function marcarOuDesmarcarNumericos() {
-    const todasNum = document.getElementById('tamanho-multi-todas-num');
-    const todasLetras = document.getElementById('tamanho-multi-todas-letra');
-    const todas = document.getElementById('tamanho-multi-todas');
-    const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
-    const checks = document.querySelectorAll('.tamanho-multi-check');
-    checks.forEach(cb => {
-        if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
-    });
-    const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
-    todasNum.checked = checksNum.every(cb => cb.checked);
+// function marcarOuDesmarcarNumericos() {
+//     const todasNum = document.getElementById('tamanho-multi-todas-num');
+//     const todasLetras = document.getElementById('tamanho-multi-todas-letra');
+//     const todas = document.getElementById('tamanho-multi-todas');
+//     const valoresNum = ["_36","_37","_38","_39","_40","_41","_42","_43","_44","_45","_46","_47","_48","_49","_50","_51","_52","_53","_54","_55","_56"];
+//     const checks = document.querySelectorAll('.tamanho-multi-check');
+//     checks.forEach(cb => {
+//         if (valoresNum.includes(cb.value)) cb.checked = todasNum.checked;
+//     });
+//     const checksNum = Array.from(checks).filter(cb => valoresNum.includes(cb.value));
+//     todasNum.checked = checksNum.every(cb => cb.checked);
 
-    // Atualiza "Todos" corretamente
-    todas.checked = todasLetras.checked && todasNum.checked;
+//     // Atualiza "Todos" corretamente
+//     todas.checked = todasLetras.checked && todasNum.checked;
 
-    atualizarPlaceholderTamanhoMulti();
-    filtrar();
-}
+//     atualizarPlaceholderTamanhoMulti();
+//     filtrar();
+// }
 
-function atualizarPlaceholderTamanhoMulti() {
-    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const select = document.getElementById('filter-tamanho');
-    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+// function atualizarPlaceholderTamanhoMulti() {
+//     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+//     const select = document.getElementById('filter-tamanho');
+//     const placeholderOption = document.getElementById('tamanho-multi-placeholder');
 
-    // Só conta os tamanhos individuais visíveis (não os grupos)
-    const individuaisVisiveis = checks.filter(cb =>
-        !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
-    );
-    const selecionados = individuaisVisiveis.filter(cb => cb.checked)
-        .map(cb => cb.parentNode.textContent.trim());
+//     // Só conta os tamanhos individuais visíveis (não os grupos)
+//     const individuaisVisiveis = checks.filter(cb =>
+//         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
+//     );
+//     const selecionados = individuaisVisiveis.filter(cb => cb.checked)
+//         .map(cb => cb.parentNode.textContent.trim());
 
-    let texto = 'Todos';
-    let ativo = true;
-    if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
-        // Se só tem letras visíveis, mostra "Todos em Letras"
-        if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
-            texto = 'Todos em Letras';
-        }
-        // Se só tem números visíveis, mostra "Todos Numéricos"
-        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
-            texto = 'Todos Numéricos';
-        }
-        // Se tem ambos, mostra "Todos"
-        else {
-            texto = 'Todos';
-            ativo = false;
-        }
-    } else {
-        // Verifica se todos em letras estão marcados
-        const todosLetrasMarcados = individuaisVisiveis
-            .filter(cb => !/^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
-        // Verifica se todos numéricos estão marcados
-        const todosNumericosMarcados = individuaisVisiveis
-            .filter(cb => /^_\d+$/.test(cb.value))
-            .every(cb => cb.checked) &&
-            individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
-        if (todosLetrasMarcados && !todosNumericosMarcados) {
-            texto = 'Todos em Letras, ' + selecionados.join(', ');
-        } else if (todosNumericosMarcados && !todosLetrasMarcados) {
-            texto = 'Todos Numéricos, ' + selecionados.join(', ');
-        } else {
-            texto = selecionados.join(', ');
-        }
-    }
+//     let texto = 'Todos';
+//     let ativo = true;
+//     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
+//         // Se só tem letras visíveis, mostra "Todos em Letras"
+//         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
+//             texto = 'Todos em Letras';
+//         }
+//         // Se só tem números visíveis, mostra "Todos Numéricos"
+//         else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+//             texto = 'Todos Numéricos';
+//         }
+//         // Se tem ambos, mostra "Todos"
+//         else {
+//             texto = 'Todos';
+//             ativo = false;
+//         }
+//     } else {
+//         // Verifica se todos em letras estão marcados
+//         const todosLetrasMarcados = individuaisVisiveis
+//             .filter(cb => !/^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
+//         // Verifica se todos numéricos estão marcados
+//         const todosNumericosMarcados = individuaisVisiveis
+//             .filter(cb => /^_\d+$/.test(cb.value))
+//             .every(cb => cb.checked) &&
+//             individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
+//         if (todosLetrasMarcados && !todosNumericosMarcados) {
+//             texto = 'Todos em Letras, ' + selecionados.join(', ');
+//         } else if (todosNumericosMarcados && !todosLetrasMarcados) {
+//             texto = 'Todos Numéricos, ' + selecionados.join(', ');
+//         } else {
+//             texto = selecionados.join(', ');
+//         }
+//     }
 
-    if (ativo) {
-        select.style.border = '2px solid #1e94a3';
-        select.style.color = '#1e94a3';
-    } else {
-        select.style.border = '';
-        select.style.color = '';
-    }
+//     if (ativo) {
+//         select.style.border = '2px solid #1e94a3';
+//         select.style.color = '#1e94a3';
+//     } else {
+//         select.style.border = '';
+//         select.style.color = '';
+//     }
 
-    // Atualiza o texto da option placeholder
-    if (placeholderOption) placeholderOption.textContent = texto;
-    // Garante que a option placeholder está selecionada visualmente
-    select.selectedIndex = 0;
-    // Atualiza cor do select
-    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
-}
+//     // Atualiza o texto da option placeholder
+//     if (placeholderOption) placeholderOption.textContent = texto;
+//     // Garante que a option placeholder está selecionada visualmente
+//     select.selectedIndex = 0;
+//     // Atualiza cor do select
+//     // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+// }
 
 // --- MULTISELECT CÓDIGO (CHECKBOXES) ---
 // function showCheckboxesCodigoMulti() {
