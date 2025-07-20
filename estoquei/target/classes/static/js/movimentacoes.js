@@ -49,7 +49,6 @@ function exibirTamanho(tamanho) {
     return tamanho;
 }
 
-// FUNÇÃO PARA APLICAR MÁSCARA DE DINHEIRO
 function aplicarMascaraDinheiro(input) {
     input.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
@@ -95,7 +94,6 @@ function renderizarMovimentacoes(movimentacoes) {
             const valorClass = m.tipoMovimentacao === 'ENTRADA' ? 'valor-positivo' : 'valor-negativo';
             const tamanhoExibido = exibirTamanho(m.tamanho);
             
-            // Formata gênero e categoria
             const genero = m.genero ? m.genero.charAt(0).toUpperCase() + m.genero.slice(1).toLowerCase() : '';
             const categoria = m.categoria ? m.categoria.charAt(0).toUpperCase() + m.categoria.slice(1).toLowerCase() : '';
             
@@ -140,11 +138,9 @@ function abrirEdicaoMovimentacao(id) {
     const movimentacao = movimentacoes.find(m => m.id === id);
     if (!movimentacao) return;
 
-    // Busca os dados do produto para a imagem
     fetch(`/produtos/codigo/${movimentacao.codigoProduto}`)
         .then(response => response.json())
         .then(produto => {
-            // Configura labels baseado no tipo de movimentação
             if (movimentacao.tipoMovimentacao === 'ENTRADA') {
                 document.getElementById('edit-label-valor').textContent = 'Valor da Compra (R$)*';
                 document.getElementById('edit-label-parte-envolvida').textContent = 'Fornecedor*';
@@ -155,7 +151,6 @@ function abrirEdicaoMovimentacao(id) {
                 document.getElementById('edit-label-data').textContent = 'Data da Venda*';
             }
 
-            // Preenche campos editáveis
             document.getElementById('edit-data').value = movimentacao.data;
             document.getElementById('edit-codigo-movimentacao').value = movimentacao.codigoMovimentacao || '';
             document.getElementById('edit-quantidade').value = movimentacao.quantidadeMovimentada;
@@ -163,7 +158,6 @@ function abrirEdicaoMovimentacao(id) {
             document.getElementById('edit-parte-envolvida').value = movimentacao.parteEnvolvida || '';
             document.getElementById('edit-estoque-final').value = movimentacao.estoqueFinal;
 
-            // Imagem do produto
             const preview = document.getElementById('edit-image-preview');
             preview.innerHTML = '';
             if (produto.url_imagem) {
@@ -180,11 +174,9 @@ function abrirEdicaoMovimentacao(id) {
                 preview.appendChild(icon);
             }
 
-            // Aplica máscara de dinheiro
             const inputValor = document.getElementById('edit-valor');
             aplicarMascaraDinheiro(inputValor);
 
-            // Armazena o ID e mostra o modal
             document.getElementById('editar-movimentacao').dataset.movimentacaoId = id;
             document.getElementById('editar-movimentacao').style.display = 'flex';
         })
@@ -194,20 +186,16 @@ function abrirEdicaoMovimentacao(id) {
         });
 }
 
-// Função para capitalizar (adicione se não existir)
 function capitalizar(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-// FUNÇÃO PARA FECHAR EDIÇÃO
 function fecharEdicaoMovimentacao() {
     document.getElementById('editar-movimentacao').style.display = 'none';
 }
 
-// FUNÇÃO PARA SALVAR EDIÇÃO
 function salvarEdicaoMovimentacao() {
-    // Desabilita o botão para evitar cliques múltiplos
     const btnConfirmar = document.getElementById('edit-btn-confirmar');
     const textoOriginal = btnConfirmar.textContent;
     btnConfirmar.disabled = true;
@@ -263,15 +251,13 @@ function salvarEdicaoMovimentacao() {
                         cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
-                    // Restaura o botão
                     btnConfirmar.disabled = false;
                     btnConfirmar.textContent = textoOriginal;
                     
                     fecharEdicaoMovimentacao();
-                    carregarMovimentacoes(); // Recarrega a lista
+                    carregarMovimentacoes();
                     
                     if (result.isConfirmed) {
-                        // Já está na página de movimentações, apenas fecha o modal
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
                         window.location.href = "/inicio";
@@ -287,19 +273,16 @@ function salvarEdicaoMovimentacao() {
                     confirmButtonColor: '#1E94A3'
                 });
                 
-                // Restaura o botão em caso de erro
                 btnConfirmar.disabled = false;
                 btnConfirmar.textContent = textoOriginal;
             });
         } else {
-            // Se cancelar, apenas restaura o botão
             btnConfirmar.disabled = false;
             btnConfirmar.textContent = textoOriginal;
         }
     });
 }
 
-// FUNÇÃO PARA REMOVER MOVIMENTAÇÃO
 function removerMovimentacao(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -326,7 +309,7 @@ function removerMovimentacao(id) {
                     showConfirmButton: false
                 });
                 
-                carregarMovimentacoes(); // Recarrega a lista
+                carregarMovimentacoes();
             })
             .catch(error => {
                 Swal.fire({
@@ -374,7 +357,6 @@ function carregarMovimentacoes(top) {
         .then(data => {
             movimentacoes = data;
             
-            // Ordena por data (mais recente primeiro) por padrão
             movimentacoes.sort((a, b) => {
                 const dataA = new Date(a.data);
                 const dataB = new Date(b.data);
@@ -383,8 +365,7 @@ function carregarMovimentacoes(top) {
             
             renderizarMovimentacoes(movimentacoes);
             atualizarDetalhesInfo(movimentacoes);
-
-            criarGraficosMovimentacoes(movimentacoes);
+            atualizarCardsMovimentacoes(movimentacoes);
         })
         .catch(error => {
             console.error('Erro na API:', error);
@@ -393,20 +374,28 @@ function carregarMovimentacoes(top) {
         });
 }
 
-function atualizarDetalhesInfo(movimentacoes) {    
+function atualizarDetalhesInfo(movimentacoes) {
     Promise.all([
+        fetch('/produtos?_t=' + Date.now()).then(r => r.json()),
         fetch('/entradas/total-hoje?_t=' + Date.now()).then(r => r.json()),
         fetch('/saidas/total-hoje?_t=' + Date.now()).then(r => r.json())
-    ]).then(([entradasHoje, saidasHoje]) => {
-        const totalMovimentacoes = movimentacoes.length;
+    ]).then(([produtos, entradasHoje, saidasHoje]) => {
         
-        // Atualiza a interface com os dados do backend
+        const totalMovimentacoes = movimentacoes.length;
+        const estoqueAtual = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+        const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
+        const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
+        const totalProdutos = produtos.length;
+        
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
         document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
+        document.getElementById('detalhe-produtos-cadastrados').textContent = estoqueAtual;
+        document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
+        document.getElementById('detalhe-estoque-zerado').textContent = zerados;
         
     }).catch(error => {
-        console.error('Erro ao carregar totais:', error);
+        console.error('❌ Erro ao carregar detalhes:', error);
         atualizarDetalhesInfoLocal(movimentacoes);
     });
 }
@@ -422,6 +411,65 @@ function atualizarDetalhesInfoLocal(movimentacoes) {
     document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
 }
 
+const agora = new Date();
+agora.setHours(agora.getHours() - 3);
+const hoje = agora.toISOString().split('T')[0];
+
+function atualizarCardsMovimentacoes(movimentacoes) {
+    const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'SHORTS', 'SAPATO', 'MEIA'];
+    const categoriasIds = ['camisa', 'camiseta', 'bermuda', 'calca', 'shorts', 'sapato', 'meia'];
+    
+    categorias.forEach((categoria, index) => {
+        const entradasFiltradas = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'ENTRADA' &&
+            m.data === hoje
+        );
+        
+        const entradas = entradasFiltradas.reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        const saidasFiltradas = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'SAIDA' &&
+            m.data === hoje
+        );
+        
+        const saidas = saidasFiltradas.reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        const categoriaId = categoriasIds[index];
+        const elementoEntradas = document.getElementById(`${categoriaId}-entradas`);
+        const elementoSaidas = document.getElementById(`${categoriaId}-saidas`);
+        
+        if (elementoEntradas) {
+            elementoEntradas.textContent = entradas;
+        }
+        
+        if (elementoSaidas) {
+            elementoSaidas.textContent = saidas;
+        }
+    });
+    
+    fetch('/produtos?_t=' + Date.now())
+        .then(response => response.json())
+        .then(produtos => {
+            categorias.forEach((categoria, index) => {
+                const estoqueAtual = produtos
+                    .filter(p => p.categoria && p.categoria.toUpperCase() === categoria)
+                    .reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+                
+                const categoriaId = categoriasIds[index];
+                const elementoEstoque = document.getElementById(`${categoriaId}-estoque`);
+                
+                if (elementoEstoque) {
+                    elementoEstoque.textContent = estoqueAtual;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('❌ Erro ao buscar produtos para estoque:', error);
+        });
+}
+
 window.onload = function() {
     const select = document.getElementById('registros-select');
     carregarMovimentacoes(select.value);
@@ -432,7 +480,6 @@ window.onload = function() {
         renderizarMovimentacoes(movimentacoes);
     });
 
-    // Ordenação - SEM AÇÕES NA ORDENAÇÃO
     const campos = [
         'data', 'codigoProduto', 'nome', 'categoria', 'tamanho', 
         'genero', 'tipoMovimentacao', 'codigoMovimentacao', 
@@ -489,7 +536,6 @@ window.onload = function() {
         });
     });
 
-    // Botão detalhes
     const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
     const detalhesDiv = document.getElementById('detalhes-estoque');
 
@@ -504,6 +550,7 @@ window.onload = function() {
         } else {
             detalhesDiv.style.display = 'flex';
             atualizarDetalhesInfo(movimentacoes);
+            atualizarCardsMovimentacoes(movimentacoes);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
             btnExibirDetalhes.style.border = '';
             btnExibirDetalhes.style.background = '';
@@ -511,8 +558,3 @@ window.onload = function() {
         }
     });
 };
-
-// Atualiza sempre que volta para a página
-window.addEventListener('pageshow', function() {
-    carregarMovimentacoes();
-});
