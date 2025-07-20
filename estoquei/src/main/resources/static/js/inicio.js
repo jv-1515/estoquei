@@ -211,10 +211,13 @@ window.addEventListener('DOMContentLoaded', function () {
             p.innerHTML = cardInfo.original + "<br>";
             span.style.display = "none";
             p.appendChild(span);
-            // if (idx === 0 && icon) {
-            //     icon.classList.remove('fa-solid');
-            //     icon.classList.add('fa-regular');
-            // }
+            if (idx === 0 && icon) {
+                // ✅ DELAY para sincronizar com a animação do card (1.2s)
+                setTimeout(() => {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                }, 1300); // Mesmo tempo da animação do card
+            }
         });
     });
 });

@@ -406,6 +406,40 @@ function filtrarRelatorios() {
 
 
 //estoque
+document.addEventListener('DOMContentLoaded', function() {
+                    const periodoInput = document.getElementById('filter-periodo');
+                    const popup = document.getElementById('periodo-popup');
+                    const dataInicio = document.getElementById('periodo-data-inicio');
+                    const dataFim = document.getElementById('periodo-data-fim');
+                    const aplicarBtn = document.getElementById('periodo-aplicar-btn');
+
+                    periodoInput.addEventListener('click', function(e) {
+                        popup.style.display = 'block';
+                        const rect = periodoInput.getBoundingClientRect();
+
+                    });
+
+                    document.addEventListener('mousedown', function(e) {
+                        function formatarDataBR(data) {
+                            if (!data) return '';
+                            const [ano, mes, dia] = data.split('-');
+                            return `${dia}/${mes}/${ano}`;
+                        }
+                        if (dataInicio.value && dataFim.value) {
+                            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+                        } else if (dataInicio.value) {
+                            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
+                        } else if (dataFim.value) {
+                            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
+                        } else {
+                            periodoInput.value = '';
+                        }
+                        // popup.style.display = 'none';
+                        if (!popup.contains(e.target) && e.target !== periodoInput) {
+                            popup.style.display = 'none';
+                        }
+                    });
+                });
 
 
 // Fecha dropdown de gêneros ao clicar fora
@@ -1452,23 +1486,23 @@ btnLimparFiltros.addEventListener('click', function(e) {
 });
 
 // Botão "Exibir Detalhes"
-let detalhesVisiveis = true; // começa visível
+// let detalhesVisiveis = true; // começa visível
 
-btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+// btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
 
-btnExibirDetalhes.addEventListener('click', function() {
-    const detalhesDiv = document.getElementById('detalhes-estoque');
-    const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
-    if (estaVisivel) {
-        detalhesDiv.style.display = 'none';
-        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
-    } else {
-        detalhesDiv.style.display = 'flex';
-        window.atualizarDetalhesEstoque(produtos);
-        btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
-        detalhesDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-});
+// btnExibirDetalhes.addEventListener('click', function() {
+//     const detalhesDiv = document.getElementById('detalhes-estoque');
+//     const estaVisivel = window.getComputedStyle(detalhesDiv).display !== 'none';
+//     if (estaVisivel) {
+//         detalhesDiv.style.display = 'none';
+//         btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Exibir Detalhes';
+//     } else {
+//         detalhesDiv.style.display = 'flex';
+//         window.atualizarDetalhesEstoque(produtos);
+//         btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
+//         detalhesDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+//     }
+// });
 
 function visualizarImagem(url, nome, descricao, codigo) {
     Swal.fire({
