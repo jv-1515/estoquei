@@ -207,8 +207,10 @@ div i:hover:not(.fa-gear) {
     color: #1E94A3;
 }
 
-
-
 .swal2-container {
     backdrop-filter: blur(2px) !important;
+}
+
+.card:not(:hover):not(.card-animating) i {
+    transition: all 2.6s ease-out !important;
 }
