@@ -70,7 +70,7 @@
                 </div>
                 <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
                     <a href="/estoque" style="flex:1; text-decoration: none;">
-                        <button id="estoque-atual" class="detalhe-card" style="background: #e0f2f1; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                        <button id="estoque-atual" class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
                             <div style="color: #00695c; font-size: 12px; font-weight: bold;">Estoque<br>Atual</div>
                             <div id="detalhe-produtos-cadastrados" style="font-size: 22px; font-weight: bold; color: #00695c;">0</div>
                         </button>
@@ -90,305 +90,148 @@
                 </div>
             </div>
         </div>
-                   
-                        <div style="flex: 1; display: flex; flex-direction: column;">
-                            <!-- <div style="display: flex; align-items: flex-end; height: 28px;">
-                                <h2 style="margin: 0; font-size: 20px;">Movimentações Hoje por Categoria</h2>
-                            </div> -->
-                            <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin:18px 0 4px 0;">
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Camisa</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Camiseta</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Bermuda</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Calça</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Shorts</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Sapato</div>
-                                <div style="flex: 1; color: #333; text-align: center; font-weight: bold;">Meia</div>
-                            </div>
-                            
-                            <!-- Container dos cards das categorias -->
-                            <div style="display: flex; flex-wrap: wrap; gap: 15px; height: 130px;">
-                                
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; height: 165px; justify-content: flex-end;">
+
+                            <!-- Linha de categorias (7 em cima) -->
+                            <div style="display: flex; flex-direction: row; gap: 10px; height: 72px;">
                                 <!-- Camisa -->
-                                <div id="card-camisa" style="
-                                    border: 2px solid #1e94a3; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="camisa-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="camisa-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #1e94a3; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="camisa-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Camisa</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #1e94a3;">
+                                        <span style="color: #1e94a3; font-weight: bold;">Estoque</span>
+                                        <div id="camisa-estoque" style="font-size: 22px; font-weight: bold; color: #1e94a3;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Camiseta -->
-                                <div id="card-camiseta" style="
-                                    border: 2px solid #277580; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="camiseta-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="camiseta-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #277580; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="camiseta-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Camiseta</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #277580;">
+                                        <span style="color: #277580; font-weight: bold;">Estoque</span>
+                                        <div id="camiseta-estoque" style="font-size: 22px; font-weight: bold; color: #277580;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Bermuda -->
-                                <div id="card-bermuda" style="
-                                    border: 2px solid #bfa100; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="bermuda-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="bermuda-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #bfa100; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="bermuda-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Bermuda</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #bfa100;">
+                                        <span style="color: #bfa100; font-weight: bold;">Estoque</span>
+                                        <div id="bermuda-estoque" style="font-size: 22px; font-weight: bold; color: #bfa100;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Calça -->
-                                <div id="card-calca" style="
-                                    border: 2px solid #c0392b; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="calca-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="calca-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #c0392b; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="calca-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Calça</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #c0392b;">
+                                        <span style="color: #c0392b; font-weight: bold;">Estoque</span>
+                                        <div id="calca-estoque" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Shorts -->
-                                <div id="card-shorts" style="
-                                    border: 2px solid #e67e22; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="shorts-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="shorts-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #e67e22; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="shorts-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Shorts</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #e67e22;">
+                                        <span style="color: #e67e22; font-weight: bold;">Estoque</span>
+                                        <div id="shorts-estoque" style="font-size: 22px; font-weight: bold; color: #e67e22;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Sapato -->
-                                <div id="card-sapato" style="
-                                    border: 2px solid #8e44ad; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="sapato-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="sapato-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #8e44ad; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="sapato-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Sapato</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #8e44ad;">
+                                        <span style="color: #8e44ad; font-weight: bold;">Estoque</span>
+                                        <div id="sapato-estoque" style="font-size: 22px; font-weight: bold; color: #8e44ad;">0</div>
                                     </div>
                                 </div>
-                
                                 <!-- Meia -->
-                                <div id="card-meia" style="
-                                    border: 2px solid #16a085; 
-                                    border-radius: 8px; 
-                                    padding: 12px 8px; 
-                                    flex-direction: column;
-                                    flex: 1;
-                                ">
-
-                                    <div style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: flex-end;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #4CAF50; 
-                                                color: white; 
-                                                padding: 6px 6px; 
-                                                border-radius: 3px; 
-                                            ">Entradas</span>
-                                            <span id="meia-entradas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #FF5722; 
-                                                color: white; 
-                                                padding: 6px 11px; 
-                                                border-radius: 3px; 
-                                            ">Saídas</span>
-                                            <span id="meia-saidas">0</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="
-                                                background: #16a085; 
-                                                color: white; 
-                                                padding: 6px 8px; 
-                                                border-radius: 3px; 
-                                            ">Estoque</span>
-                                            <span id="meia-estoque">0</span>
-                                        </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Meia</span>
+                                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #16a085;">
+                                        <span style="color: #16a085; font-weight: bold;">Estoque</span>
+                                        <div id="meia-estoque" style="font-size: 22px; font-weight: bold; color: #16a085;">0</div>
                                     </div>
                                 </div>
-                                
                             </div>
-                        </div>    
+                            <!-- Linha de entradas/saídas (cards maiores embaixo) -->
+                            <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                                <!-- Camisa -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="camisa-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="camisa-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Camiseta -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="camiseta-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="camiseta-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Bermuda -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="bermuda-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="bermuda-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Calça -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="calca-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="calca-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Shorts -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="shorts-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="shorts-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Sapato -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="sapato-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="sapato-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                                <!-- Meia -->
+                                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                                        <span id="meia-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                                    </div>
+                                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                                        <span id="meia-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
     <!-- Controles da tabela -->
