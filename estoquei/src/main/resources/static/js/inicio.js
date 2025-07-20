@@ -211,10 +211,10 @@ window.addEventListener('DOMContentLoaded', function () {
             p.innerHTML = cardInfo.original + "<br>";
             span.style.display = "none";
             p.appendChild(span);
-            if (idx === 0 && icon) {
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-regular');
-            }
+            // if (idx === 0 && icon) {
+            //     icon.classList.remove('fa-solid');
+            //     icon.classList.add('fa-regular');
+            // }
         });
     });
 });
