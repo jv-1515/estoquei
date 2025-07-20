@@ -515,4 +515,89 @@ window.onload = function() {
 // Atualiza sempre que volta para a página
 window.addEventListener('pageshow', function() {
     carregarMovimentacoes();
+    atualizarCardsMovimentacoes(movimentacoes);
 });
+
+// 🎯 FUNÇÃO PARA ATUALIZAR CARDS DAS CATEGORIAS
+function atualizarCardsMovimentacoes(movimentacoes) {
+    console.log('🔍 Atualizando cards das categorias:', movimentacoes);
+    
+    const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'SHORTS', 'SAPATO', 'MEIA'];
+    const categoriasIds = ['camisa', 'camiseta', 'bermuda', 'calca', 'shorts', 'sapato', 'meia'];
+    
+    const hoje = new Date().toISOString().split('T')[0]; // YYYY-MM-DD formato
+    console.log('📅 Data de hoje:', hoje);
+    
+    // 🎯 ATUALIZA MOVIMENTAÇÕES DE HOJE
+    categorias.forEach((categoria, index) => {
+        const entradasHoje = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'ENTRADA' &&
+            m.data === hoje
+        ).reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        const saidasHoje = movimentacoes.filter(m => 
+            m.categoria === categoria && 
+            m.tipoMovimentacao === 'SAIDA' &&
+            m.data === hoje  
+        ).reduce((sum, m) => sum + m.quantidadeMovimentada, 0);
+        
+        const categoriaId = categoriasIds[index];
+        
+        // 🎯 ATUALIZA ENTRADAS E SAÍDAS
+        const elementoEntradas = document.getElementById(`${categoriaId}-entradas`);
+        const elementoSaidas = document.getElementById(`${categoriaId}-saidas`);
+        
+        if (elementoEntradas) {
+            elementoEntradas.textContent = entradasHoje;
+        }
+        
+        if (elementoSaidas) {
+            elementoSaidas.textContent = saidasHoje;
+        }
+        
+        console.log(`📊 ${categoria}: ${entradasHoje} entradas, ${saidasHoje} saídas`);
+    });
+    
+    // 🎯 BUSCA ESTOQUE ATUAL DO BACKEND
+    buscarEstoqueAtualPorCategoria(categorias, categoriasIds);
+}
+
+// 🎯 FUNÇÃO PARA BUSCAR ESTOQUE ATUAL POR CATEGORIA
+function buscarEstoqueAtualPorCategoria(categorias, categoriasIds) {
+    fetch('/produtos?_t=' + Date.now())
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar produtos');
+            return response.json();
+        })
+        .then(produtos => {
+            console.log('📦 Produtos carregados para estoque atual:', produtos.length);
+            
+            categorias.forEach((categoria, index) => {
+                // 🎯 SOMA QUANTIDADE EM ESTOQUE DA CATEGORIA
+                const estoqueAtual = produtos
+                    .filter(p => p.categoria && p.categoria.toUpperCase() === categoria)
+                    .reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+                
+                const categoriaId = categoriasIds[index];
+                const elementoEstoque = document.getElementById(`${categoriaId}-estoque`);
+                
+                if (elementoEstoque) {
+                    elementoEstoque.textContent = estoqueAtual;
+                }
+                
+                console.log(`📋 ${categoria}: ${estoqueAtual} unidades em estoque`);
+            });
+        })
+        .catch(error => {
+            console.error('❌ Erro ao buscar estoque atual:', error);
+            
+            // 🎯 FALLBACK: ZERA ESTOQUE EM CASO DE ERRO
+            categoriasIds.forEach(categoriaId => {
+                const elementoEstoque = document.getElementById(`${categoriaId}-estoque`);
+                if (elementoEstoque) {
+                    elementoEstoque.textContent = '0';
+                }
+            });
+        });
+}
