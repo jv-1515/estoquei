@@ -208,8 +208,8 @@ select#registros-select option {
 }
 
 .tipo-saida {
-    background-color: #1e94a3;
-    padding: 4px 12px;
+    background-color: #ff5722;;
+    padding: 4px 13px;
 }
 
 .actions a, .actions button {
