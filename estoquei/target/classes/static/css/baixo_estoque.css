@@ -186,24 +186,26 @@ th.ordenar.sorted .sort-icon {
 #paginacao button {
     margin: 0 3px 9px 3px;
     padding: 5px 8px;
-    border: 1px solid #1E94A3;
+    border: 2px solid #1E94A3;
     background: #fff;
     color: #1E94A3;
     border-radius: 4px;
     cursor: pointer;
     font-size: 10px;
+    height: 24px;
+    width: 24px;
     transition: background 0.2s, color 0.2s;
 }
 #paginacao button.pagina-ativa {
     background: #1E94A3;
     color: #fff;
     font-weight: bold;
-    border: 1px solid #1E94A3;
+    border: 2px solid #1E94A3;
 }
 
 #paginacao button.pagina-ativa:hover {
     background: #277580;
-    border: 1px solid #277580;
+    border: 2px solid #277580;
 }
 #paginacao button:hover:not(.pagina-ativa) {
     background: #1E94A3;
