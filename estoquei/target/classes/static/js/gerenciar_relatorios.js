@@ -28,6 +28,13 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+        cb.addEventListener('change', updateOptions);
+        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+    });
+});
+
 //botão voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -1758,13 +1765,6 @@ function atualizarPlaceholderCategoriaMulti() {
 
 
 
-    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', updateOptions);
-    });
-    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
-    });
-
 function atualizarPlaceholderQuantidade() {
     const chkTodos = document.getElementById('quantidade-todas-popup');
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
@@ -1817,3 +1817,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+    cb.addEventListener('change', updateOptions);
+});
+document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+});
