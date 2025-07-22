@@ -168,7 +168,6 @@
                             <span style="min-width: 28px;">até:</span>
                             <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -188,7 +187,7 @@
                     </div>
                 </div>
             </div>
-                <div class="input-group" style="position: relative; max-width: 130px; min-width: 130px;">
+                <div class="input-group" style="position: relative; max-width: 150px; min-width: 150px;">
                     <label for="filter-periodo">Período*</label>
                     <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" />
                     <div id="periodo-popup" class="faixa-popup" style="display:none; position:absolute; z-index:100;">
@@ -204,49 +203,13 @@
                         </div>
                     </div>
                 </div>
-                <script>
-                // document.addEventListener('DOMContentLoaded', function() {
-                //     const periodoInput = document.getElementById('filter-periodo');
-                //     const popup = document.getElementById('periodo-popup');
-                //     const dataInicio = document.getElementById('periodo-data-inicio');
-                //     const dataFim = document.getElementById('periodo-data-fim');
-                //     const aplicarBtn = document.getElementById('periodo-aplicar-btn');
-
-                //     periodoInput.addEventListener('click', function(e) {
-                //         popup.style.display = 'block';
-                //         const rect = periodoInput.getBoundingClientRect();
-
-                //     });
-
-                //     document.addEventListener('mousedown', function(e) {
-                //         function formatarDataBR(data) {
-                //             if (!data) return '';
-                //             const [ano, mes, dia] = data.split('-');
-                //             return `${dia}/${mes}/${ano}`;
-                //         }
-                //         if (dataInicio.value && dataFim.value) {
-                //             periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
-                //         } else if (dataInicio.value) {
-                //             periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
-                //         } else if (dataFim.value) {
-                //             periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
-                //         } else {
-                //             periodoInput.value = '';
-                //         }
-                //         // popup.style.display = 'none';
-                //         if (!popup.contains(e.target) && e.target !== periodoInput) {
-                //             popup.style.display = 'none';
-                //         }
-                        
-                //     });
-                // });
-                </script>
                 <button id="btn-cancelar-gerar" class="btn cancelar" style="max-width: 80px;">
                     <i class="fa-solid fa-eraser" style="margin-right: 4px;"></i>Limpar
                 </button>
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
                     <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
                 </button>
+
             </div>
         </div>
     </div>
