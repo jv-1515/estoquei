@@ -593,6 +593,13 @@ function atualizarPlaceholderGeneroMulti() {
         select.style.color = '';
     }
 }
+
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
 // Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
 document.querySelectorAll('.genero-multi-check').forEach(cb => {
     if (cb.id !== 'genero-multi-todos') {
@@ -1091,9 +1098,11 @@ function atualizarPlaceholderCodigoMulti() {
     const placeholderOption = document.getElementById('codigo-multi-placeholder');
     const selecionados = checks.filter(cb => cb.checked).map(cb => cb.getAttribute('data-label'));
     let texto = 'Todos';
+    let ativo = true;
     // Se o primeiro checkbox ("Todos") estiver marcado, sempre mostra "Todos"
     if (checks[0] && checks[0].checked) {
         texto = 'Todos';
+        ativo = false;
     } else if (selecionados.length === 1) {
         texto = selecionados[0];
     } else if (selecionados.length > 1) {
@@ -1101,9 +1110,16 @@ function atualizarPlaceholderCodigoMulti() {
         texto = `${selecionados.length} produtos selecionados`;
     }
     if (placeholderOption) placeholderOption.textContent = texto;
-    if (select) {
-        select.selectedIndex = 0;
-        // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    // if (select) {
+    //     select.selectedIndex = 0;
+    //     // ativo = false;
+    // }
+    if (ativo && texto !== 'Todos') {
+        select.style.border = '2px solid #1e94a3';
+        select.style.color = '#1e94a3';
+    } else {
+        select.style.border = '';
+        select.style.color = '';
     }
 }
 
@@ -1771,7 +1787,7 @@ function atualizarPlaceholderQuantidade() {
     const chkZerados = document.getElementById('quantidade-zerados-popup');
     const input = document.getElementById('filter-quantidade');
     
-    if (!input || !chkTodos || !chkBaixo || !chkZerados) return;
+    // if (!input || !chkTodos || !chkBaixo || !chkZerados) return;
     
     let texto = 'Todas';
     let ativo = true;
@@ -1795,7 +1811,7 @@ function atualizarPlaceholderQuantidade() {
         ativo = false;
     }
     
-    input.placeholder = texto;
+    if (input) input.placeholder = texto;
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
@@ -1806,16 +1822,11 @@ function atualizarPlaceholderQuantidade() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
-    });
-    
-    // Inicializa o placeholder
-    atualizarPlaceholderQuantidade();
-});
-
+// ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+//     const el = document.getElementById(id);
+//     if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+// });
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 
 document.querySelectorAll('.categoria-multi-check').forEach(cb => {
     cb.addEventListener('change', updateOptions);
