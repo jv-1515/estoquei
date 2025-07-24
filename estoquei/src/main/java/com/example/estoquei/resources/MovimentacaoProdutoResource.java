@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.estoquei.model.MovimentacaoProduto;
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.repository.ProdutoRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/movimentacoes")
@@ -95,7 +98,7 @@ public class MovimentacaoProdutoResource {
     }
 
     @PostMapping("/entrada")
-    public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada) {
+    public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada, HttpSession session) {
         try {
             System.out.println("🔍 Dados recebidos: " + dadosEntrada);
             
@@ -136,6 +139,10 @@ public class MovimentacaoProdutoResource {
             movimentacao.setValorMovimentacao(BigDecimal.valueOf(valorCompra));
             movimentacao.setParteEnvolvida(fornecedor);
 
+            Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+            String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+            movimentacao.setResponsavel(codigoUsuario);
+
             MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
             return ResponseEntity.ok(salva);
 
@@ -147,7 +154,7 @@ public class MovimentacaoProdutoResource {
     }
 
     @PostMapping("/saida") 
-    public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida) {
+    public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida, HttpSession session) {
         try {
             System.out.println("🔍 Dados recebidos: " + dadosSaida);
             
@@ -191,6 +198,10 @@ public class MovimentacaoProdutoResource {
             movimentacao.setEstoqueFinal(produto.getQuantidade());
             movimentacao.setValorMovimentacao(BigDecimal.valueOf(valorVenda));
             movimentacao.setParteEnvolvida(comprador);
+
+            Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+            String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+            movimentacao.setResponsavel(codigoUsuario);
 
             MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
             return ResponseEntity.ok(salva);

@@ -65,7 +65,7 @@ function renderizarMovimentacoes(movimentacoes) {
     const tbody = document.getElementById('movimentacao-table-body');
     
     tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
                 <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
             </span>
@@ -82,7 +82,7 @@ function renderizarMovimentacoes(movimentacoes) {
     const movimentacoesPagina = movimentacoes.slice(inicio, fim);
 
     if (movimentacoesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -117,6 +117,7 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.estoqueFinal}</td>
                     <td class="${valorClass}">${valorFormatado}</td>
                     <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
+                    <td>${m.responsavel || '-'}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
                             <i class="fa-solid fa-pen"></i>
@@ -370,7 +371,7 @@ function carregarMovimentacoes(top) {
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('movimentacao-table-body');
-            tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
         });
 }
 
@@ -381,11 +382,12 @@ function atualizarDetalhesInfo(movimentacoes) {
         fetch('/saidas/total-hoje?_t=' + Date.now()).then(r => r.json())
     ]).then(([produtos, entradasHoje, saidasHoje]) => {
         
-        const totalMovimentacoes = movimentacoes.length;
+        const hoje = new Date().toISOString().split('T')[0];
+        const totalMovimentacoes = movimentacoes.filter(m => m.data === hoje).length;
         const estoqueAtual = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
         const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
         const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
-        const totalProdutos = produtos.length;
+        // const totalProdutos = produtos.length;
         
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
@@ -395,14 +397,14 @@ function atualizarDetalhesInfo(movimentacoes) {
         document.getElementById('detalhe-estoque-zerado').textContent = zerados;
         
     }).catch(error => {
-        console.error('❌ Erro ao carregar detalhes:', error);
+        console.error('Erro ao carregar detalhes:', error);
         atualizarDetalhesInfoLocal(movimentacoes);
     });
 }
 
 function atualizarDetalhesInfoLocal(movimentacoes) {
     const hoje = new Date().toISOString().split('T')[0];
-    const totalMovimentacoes = movimentacoes.length;
+    const totalMovimentacoes = movimentacoes.filter(m => m.data === hoje).length;
     const entradasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'ENTRADA').length;
     const saidasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'SAIDA').length;
     
@@ -466,7 +468,7 @@ function atualizarCardsMovimentacoes(movimentacoes) {
             });
         })
         .catch(error => {
-            console.error('❌ Erro ao buscar produtos para estoque:', error);
+            console.error('Erro ao buscar produtos para estoque:', error);
         });
 }
 
