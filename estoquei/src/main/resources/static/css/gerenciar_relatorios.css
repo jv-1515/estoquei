@@ -493,6 +493,15 @@ tbody tr:nth-child(odd) {
     transition: color 0.2s;
 }
 
+select#registros-select {
+    color: #1E94A3;
+    border: #1e94a3 2px solid;
+}
+
+select#registros-select option {
+    color: #757575;
+}
+
 th.ordenar {
     position: relative;
     cursor: pointer;

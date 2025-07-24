@@ -23,7 +23,7 @@ body {
     max-width: 700px;
     min-height: 300px;
     background: #fff;
-    border-radius: 16px;
+    border-radius: 10px;
     box-shadow: 0 0 18px rgba(0,0,0,0.13);
     margin: 60px auto;
     align-items: center;
@@ -74,11 +74,11 @@ button {
     background-color: #1E94A3;
     color: white;
     border: none;
-    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.2s;
-    height: 35px;
+    font-size: 12px;
+    height: 30px;
     width: 100%;
 ;
 }
@@ -108,9 +108,10 @@ input:focus {
 
 }
 .login-divider {
-    width: 1px;
-    height: 187px;
-    background: #277580;
+    width: 0px;
+    height: 190px;
+    border: 1px solid;
+    border-image: linear-gradient(to bottom, #ffffff 0px, #1E94A3 10px, #1E94A3 calc(100% - 10px), #ffffff 100%) 1 100%;
     border-radius: 1px;
     align-self: center;
 }
