@@ -385,9 +385,9 @@ document.querySelectorAll('.categoria-multi-check').forEach(cb => {
 });
 
 // Atualiza ao carregar a página
-window.addEventListener('DOMContentLoaded', function() {
-    updateOptions();
-});
+// window.addEventListener('DOMContentLoaded', function() {
+//     updateOptions();
+// });
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
