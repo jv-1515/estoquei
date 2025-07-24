@@ -502,40 +502,49 @@ function filtrarRelatorios() {
 
 //estoque
 document.addEventListener('DOMContentLoaded', function() {
-                    const periodoInput = document.getElementById('filter-periodo');
-                    const popup = document.getElementById('periodo-popup');
-                    const dataInicio = document.getElementById('periodo-data-inicio');
-                    const dataFim = document.getElementById('periodo-data-fim');
-                    const aplicarBtn = document.getElementById('periodo-aplicar-btn');
+    const periodoInput = document.getElementById('filter-periodo');
+    const popup = document.getElementById('periodo-popup');
+    const dataInicio = document.getElementById('periodo-data-inicio');
+    const dataFim = document.getElementById('periodo-data-fim');
 
-                    periodoInput.addEventListener('click', function(e) {
-                        popup.style.display = 'block';
-                        const rect = periodoInput.getBoundingClientRect();
+    periodoInput.addEventListener('click', function(e) {
+        popup.style.display = 'block';
+        // const rect = periodoInput.getBoundingClientRect();
 
-                    });
+    });
 
-                    document.addEventListener('mousedown', function(e) {
-                        function formatarDataBR(data) {
-                            if (!data) return '';
-                            const [ano, mes, dia] = data.split('-');
-                            return `${dia}/${mes}/${ano}`;
-                        }
-                        if (dataInicio.value && dataFim.value) {
-                            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
-                        } else if (dataInicio.value) {
-                            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
-                        } else if (dataFim.value) {
-                            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
-                        } else {
-                            periodoInput.value = '';
-                        }
-                        // popup.style.display = 'none';
-                        if (!popup.contains(e.target) && e.target !== periodoInput) {
-                            popup.style.display = 'none';
-                        }
-                    });
-                });
+    document.addEventListener('mousedown', function(e) {
+        function formatarDataBR(data) {
+            if (!data) return '';
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+        let ativo = true;
+        if (dataInicio.value && dataFim.value) {
+            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        } else if (dataInicio.value) {
+            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
+        } else if (dataFim.value) {
+            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
+        } else {
+            periodoInput.value = '';
+            ativo = false;
+        }
+        // popup.style.display = 'none';
+        if (!popup.contains(e.target) && e.target !== periodoInput) {
+            popup.style.display = 'none';
+            ativo = false;
+        }
 
+        if (ativo) {
+            periodoInput.style.border = '2px solid #1e94a3';
+            periodoInput.style.color = '#1e94a3';
+        } else {
+            periodoInput.style.border = '';
+            periodoInput.style.color = '';
+        }
+    });
+});
 
 // Fecha dropdown de gêneros ao clicar fora
 document.addEventListener('mousedown', function(e) {

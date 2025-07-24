@@ -262,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gearIcon.className = 'fa-solid fa-gear';
         gearIcon.style.transition = 'transform 0.4s';
         gearIcon.style.display = 'none';
+        gearIcon.style.fontSize = '15px';
 
         avatarCircle.appendChild(gearIcon);
 
