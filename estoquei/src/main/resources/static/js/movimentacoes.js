@@ -402,7 +402,7 @@ function atualizarDetalhesInfo(movimentacoes) {
 
 function atualizarDetalhesInfoLocal(movimentacoes) {
     const hoje = new Date().toISOString().split('T')[0];
-    const totalMovimentacoes = movimentacoes.length;
+    const totalMovimentacoes = movimentacoes.filter(m => m.data === hoje).length;
     const entradasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'ENTRADA').length;
     const saidasHoje = movimentacoes.filter(m => m.data === hoje && m.tipoMovimentacao === 'SAIDA').length;
     
