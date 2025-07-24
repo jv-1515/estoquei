@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.estoquei.model.MovimentacaoProduto;
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class MovimentacaoService {
@@ -17,7 +20,10 @@ public class MovimentacaoService {
     private MovimentacaoProdutoRepository movimentacaoRepo;
     
     // MÉTODO UNIFICADO PARA ENTRADAS
-    public void registrarEntrada(String codigoCompra, int quantidade, BigDecimal valorCompra, String fornecedor, Produto produto) {
+    public void registrarEntrada(String codigoCompra, int quantidade, BigDecimal valorCompra, String fornecedor, Produto produto, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+
         MovimentacaoProduto movimentacao = new MovimentacaoProduto(
             LocalDate.now(),
             produto.getCodigo(),
@@ -25,18 +31,22 @@ public class MovimentacaoService {
             produto.getCategoria(),
             produto.getTamanho(),
             produto.getGenero(),
-            "ENTRADA",
             codigoCompra,
             quantidade,
             produto.getQuantidade(),
             valorCompra,
-            fornecedor
+            fornecedor,
+            codigoUsuario
         );
+
         movimentacaoRepo.save(movimentacao);
     }
     
     // MÉTODO UNIFICADO PARA SAÍDAS
-    public void registrarSaida(String codigoVenda, int quantidade, BigDecimal valorVenda, String comprador, Produto produto) {
+    public void registrarSaida(String codigoVenda, int quantidade, BigDecimal valorVenda, String comprador, Produto produto, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+
         MovimentacaoProduto movimentacao = new MovimentacaoProduto(
             LocalDate.now(),
             produto.getCodigo(),
@@ -44,13 +54,14 @@ public class MovimentacaoService {
             produto.getCategoria(),
             produto.getTamanho(),
             produto.getGenero(),
-            "SAIDA",
             codigoVenda,
             quantidade,
             produto.getQuantidade(),
             valorVenda,
-            comprador
+            comprador,
+            codigoUsuario
         );
+        
         movimentacaoRepo.save(movimentacao);
     }
 }

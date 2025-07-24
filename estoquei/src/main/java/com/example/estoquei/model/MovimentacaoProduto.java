@@ -37,7 +37,7 @@ public class MovimentacaoProduto {
     private Genero genero;
 
     @Column(name = "tipo_movimentacao")
-    private String tipoMovimentacao; // "ENTRADA" ou "SAIDA"
+    private String tipoMovimentacao;
 
     @Column(name = "codigo_movimentacao")
     private String codigoMovimentacao;
@@ -51,30 +51,41 @@ public class MovimentacaoProduto {
     @Column(name = "valor_movimentacao")
     private BigDecimal valorMovimentacao;
 
-    // 🎯 NOVO CAMPO - Parte Envolvida (fornecedor ou cliente)
     @Column(name = "parte_envolvida")
     private String parteEnvolvida;
+
+    @Column(name = "responsavel")
+    private String responsavel;
 
     // Construtores
     public MovimentacaoProduto() {}
 
-    // 🎯 CONSTRUTOR ATUALIZADO com parteEnvolvida
-    public MovimentacaoProduto(LocalDate data, String codigoProduto, String nome, Categoria categoria, 
-                              Tamanho tamanho, Genero genero, String tipoMovimentacao, 
-                              String codigoMovimentacao, int quantidadeMovimentada, 
-                              int estoqueFinal, BigDecimal valorMovimentacao, String parteEnvolvida) {
+    public MovimentacaoProduto(
+        LocalDate data,
+        String codigoProduto,
+        String nome,
+        Categoria categoria,
+        Tamanho tamanho,
+        Genero genero,
+        String codigoMovimentacao,
+        int quantidadeMovimentada,
+        int estoqueFinal,
+        BigDecimal valorMovimentacao,
+        String parteEnvolvida,
+        String responsavel
+    ) {
         this.data = data;
         this.codigoProduto = codigoProduto;
         this.nome = nome;
         this.categoria = categoria;
         this.tamanho = tamanho;
         this.genero = genero;
-        this.tipoMovimentacao = tipoMovimentacao;
         this.codigoMovimentacao = codigoMovimentacao;
         this.quantidadeMovimentada = quantidadeMovimentada;
         this.estoqueFinal = estoqueFinal;
         this.valorMovimentacao = valorMovimentacao;
         this.parteEnvolvida = parteEnvolvida;
+        this.responsavel = responsavel;
     }
 
     // Getters e Setters
@@ -115,4 +126,7 @@ public class MovimentacaoProduto {
 
     public String getParteEnvolvida() { return parteEnvolvida; }
     public void setParteEnvolvida(String parteEnvolvida) { this.parteEnvolvida = parteEnvolvida; }
+
+    public String getResponsavel() { return responsavel; }
+    public void setResponsavel(String responsavel) { this.responsavel = responsavel; }
 }
