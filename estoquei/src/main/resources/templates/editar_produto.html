@@ -25,11 +25,11 @@
             <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" th:readonly="${tipo == 'FUNCIONARIO'}" maxlength="9" minlength="9" pattern="\d{9}">
 
             <label for="nome" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Nome*</label>
-            <input type="text" id="nome" name="nome" required placeholder="Nome" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
+            <input type="text" id="nome" name="nome" required placeholder="Nome do produto" maxlength="40" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
 
             <label for="categoria" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Categoria*</label>
             <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3" th:disabled="${tipo == 'FUNCIONARIO'}">
-                <option value="" disabled selected hidden>Categoria</option>
+                <option value="" disabled selected hidden>Selecionar</option>
                 <option value="CAMISA">Camisa</option>
                 <option value="CAMISETA">Camiseta</option>
                 <option value="BERMUDA">Bermuda</option>
@@ -41,12 +41,12 @@
 
             <label for="tamanho" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Tamanho*</label>
             <select id="tamanho" name="tamanho" required tabindex="4" th:disabled="${tipo == 'FUNCIONARIO'}">
-                <option value="" disabled selected hidden>Tamanho</option>
+                <option value="" disabled selected hidden>Selecionar</option>
             </select>
 
             <label for="genero" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Gênero*</label>
             <select id="genero" name="genero" required tabindex="5" th:disabled="${tipo == 'FUNCIONARIO'}">
-                <option value="" disabled selected hidden>Gênero</option>
+                <option value="" disabled selected hidden>Selecionar</option>
                 <option value="MASCULINO">Masculino</option>
                 <option value="FEMININO">Feminino</option>
                 <option value="UNISSEX">Unissex</option>
@@ -64,19 +64,19 @@
             </div>
             <div class="right-column">
                 <div style="display: flex; justify-content: space-between;">
-                    <label for="foto" style="display: block; color: #757575;">Foto (Opcional)</label>
+                    <label for="foto">Foto (Opcional)</label>
                     <div style="display: flex; justify-content: flex-end; align-items: center;">
                         <i class="fa-solid fa-pen-to-square edit-icon" style="cursor: pointer; display: block; padding: 0 5px 0;"></i>
                         <i class="fa-solid fa-trash trash-icon" onclick="removerProduto()"></i>
                     </div>
                 </div>
-                <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center; position: relative;">
-                    <i class="fa-regular fa-image" style="font-size: 30px"></i>
+                <div onclick="upload()" id="image-preview" class="image-box" tabindex="9" style="cursor:pointer; background-color: #f1f1f1; overflow: hidden; justify-content: center; align-items: center; position: relative;">
+                    <i class="fa-regular fa-image" style="font-size: 32px"></i>
                     <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImage(event)" style="display:none">
                 </div>
-                <label for="descricao" style="color: #757575;">Descrição (Opcional)</label>
-                <div style="position: relative; display: inline-block;">
-                    <textarea id="descricao" name="descricao" maxlength="200"></textarea>
+                <label for="descricao" style="margin-top:1px">Descrição (Opcional)</label>
+                <div style="position: relative; display: inline-block; max-height: 175px;">
+                    <textarea id="descricao" name="descricao" placeholder="Ex: Camiseta branca em algodão, manga curta, etc" maxlength="200"></textarea>
                     <span id="contador-descricao">0/200</span>
                 </div>
             </div>

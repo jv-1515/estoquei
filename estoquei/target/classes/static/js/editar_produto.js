@@ -46,7 +46,7 @@ function previewImage(event) {
 function updateOptions(selectedCategory = null, selectedSize = null) {
     const categoriaSelect = document.getElementById('categoria');
     const tamanhoSelect = document.getElementById('tamanho');
-    let options = '<option value="" disabled selected hidden>Tamanho</option>';
+    let options = '<option value="" disabled selected hidden>Selecionar</option>';
 
     const tamLetra = [
         { value: 'ÚNICO', label: 'Único' },
@@ -272,7 +272,7 @@ function removerProduto() {
     }
 
     Swal.fire({
-        title: 'Tem certeza?',
+        title: 'Remover produto?',
         text: 'Esta ação não poderá ser desfeita.',
         icon: 'warning',
         showCancelButton: true,
@@ -414,10 +414,23 @@ window.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const codigoInput = document.getElementById('codigo');
+    let codigoOriginal = null;
+
+    // Descobre o código original do produto carregado
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if (id) {
+        fetch(`/produtos/${id}`)
+            .then(response => response.json())
+            .then(product => {
+                codigoOriginal = product.codigo;
+            });
+    }
+
     if (codigoInput) {
-        codigoInput.addEventListener('blur', function() {
+        codigoInput.addEventListener('mouseleave', function(e) {
             const codigo = this.value.trim();
-            if (!codigo) return;
+            if (!codigo || codigo === codigoOriginal) return;
 
             fetch(`/produtos/codigo-existe?codigo=${encodeURIComponent(codigo)}`)
                 .then(response => response.json())
@@ -430,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             timer: 1500,
                             showConfirmButton: false
                         });
-                        this.value = '';
+                        this.value = codigoOriginal !== null ? codigoOriginal : '';
                         this.focus();
                     }
                 });

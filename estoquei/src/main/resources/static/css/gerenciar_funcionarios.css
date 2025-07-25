@@ -109,8 +109,7 @@ h2 {
     padding: 5px;
 }
 .senha-provisoria:hover {
-    background-color: #277580;
-    border: solid 2px #277580;
+    background-color: #1E94A3;
     color: white;
     border: none;
     transition: background-color 0.2s, color 0.2s;
@@ -260,7 +259,8 @@ input:focus[readonly] {
     box-shadow: none !important;
 }
 
-#editar-funcionario input:valid {
+#editar-funcionario input:valid,
+#editar-funcionario select:valid{
     background-color: #f1f1f1;
 }
 .botao-fechar {
