@@ -14,11 +14,11 @@ body {
 #contador-descricao {
     position: absolute;
     right: 8px;
-    bottom: 8px;
+    bottom: 2px;
     font-size: 12px;
     color: #888;
     background: white;
-    padding: 2px 2px;
+    padding: 0 2px;
     border-radius: 8px;
     pointer-events: none;
 }
@@ -37,15 +37,14 @@ h1 {
     padding: 20px;
     display: flex;
     gap: 20px;
-    max-width: 900px;
-    margin-top: 20px;
 }
 
 .form-column {
     flex: 1;
     display: flex;
     flex-direction: column;
-    width: 230px;
+    width: 242px;
+    justify-self: flex-end;
 }
 
 .form-column input,
@@ -56,17 +55,12 @@ h1 {
     max-height: 30px;
     box-sizing: border-box;
     padding: 2px 8px;    
-    font-size: 10px;
     border: 1px solid #aaa;
     border-radius: 4px;
 }
 
-.trash-icon, .edit-icon {
+.edit-icon {
     color:#555;
-}
-.trash-icon:hover {
-    transition: color 0.2s;
-    color: red;
 }
 
 .edit-icon:hover {
@@ -81,14 +75,12 @@ h1 {
     justify-content: center;
     align-items: center;
     color: #777;
-    font-size: 12px;
     border: dashed 2px #aaa;
     cursor:pointer; 
     overflow: hidden;
 }
 
 .image-box:hover {
-    background-color: #f1f1f1;
     border: 2px solid #000000;
 }
 
@@ -98,7 +90,6 @@ h1 {
     border: none;
     padding: 8px;
     border-radius: 4px;
-    font-size: 12px;
     cursor: pointer;
     margin-top: 10px;
 }
@@ -116,13 +107,12 @@ button:hover {
 
 textarea {
     width: 222px;
-    height: 100px;
+    height: 114px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
-    padding: 10px;
+    padding: 5px 10px;
     font-family: Arial, sans-serif;
-    font-size: 12px;
 }
 
 label {
@@ -134,7 +124,7 @@ label {
 select#categoria,
 select#tamanho,
 select#genero {
-    padding-left: 1px;
+    padding-left: 4px;
 }
 
 .swal2-confirm-custom {
