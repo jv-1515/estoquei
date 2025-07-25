@@ -116,7 +116,7 @@ textarea {
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 5px 8px;
     font-family: Arial, sans-serif;
 }
 
@@ -124,12 +124,6 @@ label {
     padding: 5px 5px 5px 0;
     color: #333;
     font-weight: bold;
-}
-
-select#categoria,
-select#tamanho,
-select#genero {
-    padding-left: 4px;
 }
 
 input:valid,
