@@ -63,7 +63,7 @@
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <label for="registros-select">Mostrando</label>
-            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; border: 1px solid #aaa; font-size: 12px; width: 43px;">
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px;font-size: 12px; width: 43px;">
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -94,10 +94,9 @@
                         <option value="ESTOQUISTA">Estoquista</option>
                     </select>
                 </div>
-                <!-- Direita: Avatar com iniciais -->
                 <div style="display: flex; align-items: flex-end; height: 100%;"></div>
-                    <div id="cad-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #555; position: relative;">
-                        <i class="fa-solid fa-user" style="font-size: 44px; color: #bdbdbd; z-index: 0;"></i>
+                    <div id="cad-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+                        <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
                         <span id="cad-avatar-iniciais" style="z-index: 1; position: relative;"></span>
                     </div>
                 </div>
@@ -112,7 +111,7 @@
 
             <label for="cad-senha">Senha Provisória*</label>
             <div style="display: flex; gap: 8px; height: 30px;">
-                <input type="text" id="cad-senha" name="senha" readonly style="width:60%" tabindex="5" />
+                <input type="text" id="cad-senha" name="senha" readonly style="width:60%;" tabindex="5" />
                 <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
             </div>
 
@@ -123,7 +122,7 @@
             <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
 
             <label for="cad-contato">Número de Contato*</label>
-            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00)00000-0000" tabindex="9" />
+            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" tabindex="9" />
             <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
         </form>
         </span>
@@ -133,18 +132,16 @@
             
             <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
             <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar">&times;</button>
-            <h2 style="margin-bottom:20px;padding-top:10px">Editar Funcionário</h2>
+            <h2 style="margin-bottom:10px;">Editar Funcionário</h2>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
                 <div style="display: flex; flex-direction: column; flex: 1;">
                 <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">
                     <div style="flex:1;">
-                        <label for="edit-codigo" style="color: #757575;">Código*</label>
-                        <input type="text" id="edit-codigo" name="codigo" maxlength="9" required
-                        th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}"
-                        style="color: #757575; width:100%; margin-top:5px" />                
+                        <label for="edit-codigo">Código*</label>
+                        <input type="text" id="edit-codigo" name="codigo" maxlength="9" required/>                
                 </div>
                     <div style="display:flex; flex-direction:column; align-items:flex-start; margin-top:18px;">
-                        <span id="label-ativo" style="font-weight:bold;color:#43b04a;">Ativo</span>
+                        <span id="label-ativo" style="font-weight:bold;color:#43b04a;padding: 0px 0px 2px 7px;">Ativo</span>
                         <div class="switch-container">
                             <label class="switch">
                                 <input type="checkbox" id="edit-ativo" name="ativo">
@@ -163,37 +160,36 @@
                         <option value="ESTOQUISTA">Estoquista</option>
                     </select>
                 </div>
-                <!-- Direita: Avatar com iniciais -->
                 <div style="display: flex; align-items: flex-end; height: 100%;">
-                    <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #555; position: relative;">
-                        <i class="fa-solid fa-user" style="font-size: 44px; color: #bdbdbd; z-index: 0;"></i>
+                    <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+                        <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
                         <span id="edit-avatar-iniciais" style="z-index: 1; position: relative;"></span>
                     </div>
                 </div>
             </div>
 
             <label for="edit-nome">Nome*</label>
-            <input type="text" id="edit-nome" name="nome" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <input type="text" id="edit-nome" name="nome" required placeholder="Nome completo" />
 
             <label for="edit-email">Email*</label>
-            <input type="email" id="edit-email" name="email" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <input type="email" id="edit-email" name="email" required placeholder="Email da empresa" />
 
-            <label for="edit-senha" style="color: #757575;">Senha*</label>
+            <label for="edit-senha">Senha*</label>
             <div style="position: relative; display: flex; align-items: center;">
-                <input type="password" id="edit-senha" name="senha" th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" style="padding-right: 36px; flex: 1;" autocomplete="current-password" minlength="8" placeholder="Digite sua senha atual" />
+                <input type="password" id="edit-senha" name="senha" style="padding-right: 36px; flex: 1;" autocomplete="current-password" minlength="8" placeholder="Nova senha" />
                 <span class="lock-open" onclick="togglePassword('edit-senha')" style="position: absolute; right: 10px; cursor: pointer;">
                     <i class="fa-solid fa-eye-slash" id="icon-edit-senha"></i>
                 </span>
             </div>
 
-            <label for="edit-cpf" style="color: #757575;">CPF*</label>
-            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <label for="edit-cpf">CPF*</label>
+            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" />
 
-            <label for="edit-nascimento" style="color: #757575;">Data de Nascimento*</label>
-            <input type="date" id="edit-nascimento" name="nascimento" required th:readonly="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}" />
+            <label for="edit-nascimento">Data de Nascimento*</label>
+            <input type="date" id="edit-nascimento" name="nascimento" required placeholder="Data de Nascimento" />
 
             <label for="edit-contato">Número de Contato*</label>
-            <input type="text" id="edit-contato" name="contato" maxlength="15" required />
+            <input type="text" id="edit-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
             </form>
