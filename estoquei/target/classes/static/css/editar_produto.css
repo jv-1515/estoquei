@@ -3,33 +3,26 @@ body {
     background-color: #ccc;
     margin: 0;
     padding: 20px;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-}
-
-html body.swal2-height-auto {
-    height: 100vh !important;
-}
-
-textarea {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
+    scrollbar-gutter: stable;
+    background-attachment: fixed;
 }
 
 #contador-descricao {
     position: absolute;
     right: 8px;
-    bottom: 8px;
+    bottom: 2px;
     font-size: 12px;
     color: #888;
     background: white;
-    padding: 2px 2px;
+    padding: 0 2px;
     border-radius: 8px;
     pointer-events: none;
 }
+
 
 h1 {
     font-size: 40px;
@@ -44,88 +37,26 @@ h1 {
     padding: 20px;
     display: flex;
     gap: 20px;
-    max-width: 900px;
-    margin-top: 20px;
 }
 
 .form-column {
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: 242px;
+    justify-self: flex-end;
 }
 
 .form-column input,
 .form-column select,
 .form-column textarea {
-    padding: 7px;
-    font-size: 10px;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    box-sizing: border-box;
+    padding: 2px 8px;    
     border: 1px solid #aaa;
     border-radius: 4px;
-}
-
-.image-box {
-    width: 230px;
-    height: 230px;
-    width: 230px;
-    height: 230px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #777;
-    font-size: 12px;
-    border: dashed 2px #aaa;
-}
-
-.image-box:hover {
-    background-color: #f0f0f0;
-    border: 2px solid #000000;
-}
-
-.form-container button {
-    background-color: #1E94A3;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-button:hover {
-    background-color: #277580;
-}
-
-.right-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.right-column textarea {
-    width: 212px;
-    height: 145px;
-    resize: none;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    padding: 10px;
-    resize: none;
-}
-
-label {
-    padding: 5px 5px 5px 0;
-    color: #333;
-    font-weight: bold;
-}
-
-input{
-    width: 200px;
-}
-
-select#categoria,
-select#tamanho,
-select#genero {
-    padding-left: 1px;
 }
 
 .trash-icon, .edit-icon {
@@ -141,26 +72,72 @@ select#genero {
     color: #1E94A3;
 }
 
-.trash-icon {
-    color:#555;
-}
-.trash-icon:hover {
-    color: red;
+.image-box {
+    width: 240px;
+    height: 240px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    border: dashed 2px #aaa;
+    cursor:pointer; 
+    overflow: hidden;
 }
 
-input[readonly] {
-    cursor: default !important;
-    color: #999 !important;
+.image-box:hover {
+    background-color: #f1f1f1;
+    border: 2px solid #000000;
 }
-input:focus[readonly] {
-    outline: none !important;
-    box-shadow: none !important;
+
+.form-container button {
+    background-color: #1E94A3;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
 }
-button:hover,
-.fa-trash:hover,
-.edit-icon:hover{
-    transition: background 0.2s, color 0.2s;
+
+button:hover {
+    background-color: #277580;
 }
+
+.right-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 244px;
+}
+
+textarea {
+    width: 222px;
+    height: 169px;
+    resize: none;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+}
+
+label {
+    padding: 5px 5px 5px 0;
+    color: #333;
+    font-weight: bold;
+}
+
+select#categoria,
+select#tamanho,
+select#genero {
+    padding-left: 4px;
+}
+
+input:valid,
+select:valid,
+textarea:valid {
+    background-color: #f1f1f1;
+}
+
 .swal2-confirm-custom {
     background-color: #1E94A3 !important;
     color: #fff !important;
@@ -179,10 +156,39 @@ button:hover,
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
 }
+
+#genero option[disabled][hidden],
+#categoria option[disabled][hidden],
+#tamanho option[disabled][hidden] {
+  display: none;
+}
+
+#genero,
+#categoria,
+#tamanho {
+  color: #757575;
+}
+
+#genero:valid,
+#categoria:valid,
+#tamanho:valid {
+  color: #000;
+}
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
 .fa-arrow-left:hover {
     color: #1E94A3;
     transition: color 0.2s;
+}
+
+.form-column select,
+.right-column select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding-right: 28px; /* espaço para a seta */
+    background-size: 16px 10px;
 }

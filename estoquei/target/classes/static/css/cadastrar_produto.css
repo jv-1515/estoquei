@@ -3,7 +3,6 @@ body {
     background-color: #ccc;
     margin: 0;
     padding: 20px;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,23 +11,14 @@ body {
     background-attachment: fixed;
 }
 
-html body.swal2-height-auto {
-    height: 100vh !important;
-}
-
-textarea {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-}
-
 #contador-descricao {
     position: absolute;
     right: 8px;
-    bottom: 8px;
+    bottom: 2px;
     font-size: 12px;
     color: #888;
     background: white;
-    padding: 2px 2px;
+    padding: 0 2px;
     border-radius: 8px;
     pointer-events: none;
 }
@@ -47,32 +37,30 @@ h1 {
     padding: 20px;
     display: flex;
     gap: 20px;
-    max-width: 900px;
-    margin-top: 20px;
 }
 
 .form-column {
     flex: 1;
     display: flex;
     flex-direction: column;
-    width: 230px;
+    width: 242px;
+    justify-self: flex-end;
 }
 
 .form-column input,
 .form-column select,
 .form-column textarea {
-    padding: 7px;
-    font-size: 10px;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    box-sizing: border-box;
+    padding: 2px 8px;    
     border: 1px solid #aaa;
     border-radius: 4px;
 }
 
-.trash-icon, .edit-icon {
+.edit-icon {
     color:#555;
-}
-.trash-icon:hover {
-    transition: color 0.2s;
-    color: red;
 }
 
 .edit-icon:hover {
@@ -81,19 +69,18 @@ h1 {
 }
 
 .image-box {
-    width: 228px;
-    height: 228px;
+    width: 240px;
+    height: 240px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #777;
-    font-size: 12px;
     border: dashed 2px #aaa;
+    cursor:pointer; 
+    overflow: hidden;
 }
 
-
 .image-box:hover {
-    background-color: #f0f0f0;
     border: 2px solid #000000;
 }
 
@@ -103,7 +90,6 @@ h1 {
     border: none;
     padding: 8px;
     border-radius: 4px;
-    font-size: 12px;
     cursor: pointer;
     margin-top: 10px;
 }
@@ -116,17 +102,17 @@ button:hover {
     flex: 1;
     display: flex;
     flex-direction: column;
-    width: 230px;
+    width: 244px;
 }
 
-.right-column textarea {
-    width: 209px;
-    height: 94px;
+textarea {
+    width: 222px;
+    height: 114px;
     resize: none;
     border: 1px solid #aaa;
     border-radius: 4px;
-    padding: 10px;
-    resize: none;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
 }
 
 label {
@@ -138,7 +124,7 @@ label {
 select#categoria,
 select#tamanho,
 select#genero {
-    padding-left: 1px;
+    padding-left: 4px;
 }
 
 .swal2-confirm-custom {
