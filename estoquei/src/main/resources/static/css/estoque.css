@@ -569,7 +569,8 @@ select#registros-select option {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px 12px;
 }
-.detalhes-grid-4x2 label,
+.detalhes-grid-2x2 label,
+.detalhes-grid-2x2-direita label,
 .detalhes-grid-2x3 label,
 .detalhes-descricao-box label {
     font-size: 12px;
@@ -578,12 +579,13 @@ select#registros-select option {
     margin-bottom: 2px;
     display: block;
 }
-.detalhes-grid-4x2 input,
+.detalhes-grid-2x2 input,
+.detalhes-grid-2x2-direita input,
 .detalhes-grid-2x3 input {
     font-size: 12px;
     border: 1px solid #aaa;
     border-radius: 4px;
-    background: #f9f9f9;
+    background: #f1f1f1;
     color: #666;
     padding: 7px;
     margin-bottom: 4px;
@@ -643,7 +645,7 @@ select#registros-select option {
     font-size: 12px;
     border: 1px solid #aaa;
     border-radius: 4px;
-    background: #f9f9f9;
+    background: #f1f1f1;
     color: #666;
     padding: 7px;
     resize: none;
@@ -694,7 +696,7 @@ select#registros-select option {
     align-items: center;
     justify-content: center;
     border: solid 2px #aaa;
-    background-color: #f9f9f9;
+    background-color: #f1f1f1;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -709,4 +711,58 @@ select#registros-select option {
     .detalhes-modal { width: 98vw; }
     .detalhes-modal-row { flex-direction: column; }
     .detalhes-modal-imgbox { width: 100%; min-width: 0; height: 220px; }
+}
+
+.detalhes-grid-2x2-direita {
+    display: grid;
+    grid-template-columns: 120px 120px;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px 10px;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.detalhes-modal-imgbox {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+}
+.detalhes-img-preview {
+    width: 100%;
+    height: 250px;
+    min-height: 250px;
+    max-height: 250px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px #aaa;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.detalhes-grid-2x2-direita input {
+    font-size: 12px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #f1f1f1;
+    color: #666;
+    padding: 7px;
+    margin-bottom: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 120px !important;
+    min-width: 120px;
+    max-width: 120px;
+    box-sizing: border-box;
+}
+.detalhes-grid-2x2-direita label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2px;
+    display: block;
 }
