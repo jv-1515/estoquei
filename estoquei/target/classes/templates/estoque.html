@@ -318,115 +318,102 @@
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
-        <div id="detalhes-produto-popup" class="detalhes-modal-bg">
-            <div class="detalhes-modal">
-                <button type="button" onclick="fecharDetalhesProduto()" class="detalhes-fechar">&times;</button>
-                <div class="detalhes-modal-header">
-                    <h2>Detalhes do Produto</h2>
-                </div>
-                <!-- Cabeçalho: 8 campos do produto ocupando toda largura -->
-                <!-- Cabeçalho dos inputs do produto -->
-                <div class="detalhes-produto-cabecalho" style="display: flex; gap: 20px;">
-                    <!-- Primeira linha: flexível -->
-                    <div class="detalhes-grid-2x2" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
-                        <div style="display: flex; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label for="detalhe-codigo">Código</label>
-                                <input type="text" id="detalhe-codigo" readonly>
-                            </div>
-                            <div style="flex: 1;">
-                                <label for="detalhe-nome">Nome</label>
-                                <input type="text" id="detalhe-nome" readonly>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label for="detalhe-genero">Gênero</label>
-                                <input type="text" id="detalhe-genero" readonly>
-                            </div>
-                            <div style="flex: 1;">
-                                <label for="detalhe-quantidade">Quantidade Atual</label>
-                                <input type="text" id="detalhe-quantidade" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Segunda linha: largura total 250px -->
-                    <div class="detalhes-grid-2x2-direita">
-                        <div>
-                            <label for="detalhe-categoria">Categoria</label>
-                            <input type="text" id="detalhe-categoria" readonly>
-                        </div>
-                        <div>
-                            <label for="detalhe-tamanho">Tamanho</label>
-                            <input type="text" id="detalhe-tamanho" readonly>
-                        </div>
-                        <div>
-                            <label for="detalhe-limite">Limite Mínimo</label>
-                            <input type="text" id="detalhe-limite" readonly>
-                        </div>
-                        <div>
-                            <label for="detalhe-preco">Preço (R$)</label>
-                            <input type="text" id="detalhe-preco" readonly>
-                        </div>
+        <div id="detalhes-produto-popup" class="detalhes-modal-bg" style="display:none;">
+          <div class="detalhes-modal">
+
+            <form class="detalhes-form-container">
+              <div class="detalhes-left-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start;">
+                    <div style="max-width: 240px; width: 100%; display: flex; flex-direction: column;">
+                        <h2 style="font-size: 20px; color: #277580; margin: 0;">Detalhes do Produto</h2>
+                        <div style="height: 10px;"></div>
                     </div>
                 </div>
-                <!-- Abaixo do cabeçalho, duas colunas -->
-                <div class="detalhes-modal-row">
-                    <!-- Esquerda: movimentações + textarea abaixo de tudo -->
-                    <div class="detalhes-modal-info">
-                        <div class="detalhes-movimentacoes">
-                            <h2>Detalhes Movimentações</h2>
-                            <div class="detalhes-grid-2x3">
-                                <!-- ENTRADA -->
-                                <div>
-                                    <label for="detalhe-ultima-entrada">Última Entrada</label>
-                                    <input type="text" id="detalhe-ultima-entrada" readonly>
-                                    <label for="detalhe-qtd-entrada">Quantidade</label>
-                                    <input type="text" id="detalhe-qtd-entrada" readonly>
-                                    <label for="detalhe-valor-compra">Valor Compra (R$)</label>
-                                    <input type="text" id="detalhe-valor-compra" readonly>
-                                    <label for="detalhe-fornecedor">Fornecedor</label>
-                                    <input type="text" id="detalhe-fornecedor" readonly>
-                                    <label for="detalhe-resp-entrada">Responsável</label>
-                                    <input type="text" id="detalhe-resp-entrada" readonly>
-                                </div>
-                                <!-- SAÍDA -->
-                                <div>
-                                    <label for="detalhe-ultima-saida">Última Saída</label>
-                                    <input type="text" id="detalhe-ultima-saida" readonly>
-                                    <label for="detalhe-qtd-saida">Quantidade</label>
-                                    <input type="text" id="detalhe-qtd-saida" readonly>
-                                    <label for="detalhe-valor-venda">Valor Venda (R$)</label>
-                                    <input type="text" id="detalhe-valor-venda" readonly>
-                                    <label for="detalhe-cliente">Cliente</label>
-                                    <input type="text" id="detalhe-cliente" readonly>
-                                    <label for="detalhe-resp-saida">Responsável</label>
-                                    <input type="text" id="detalhe-resp-saida" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Textarea abaixo de tudo na coluna esquerda -->
-                        <div class="detalhes-descricao-box">
-                            <label for="detalhe-descricao">Descrição</label>
-                            <textarea id="detalhe-descricao" readonly></textarea>
-                        </div>
-                    </div>
-                    <!-- Direita: imagem quadrada, título, ícones -->
-                    <div class="detalhes-modal-imgbox">
-                        <div class="detalhes-img-header">
-                            <span>Foto</span>
-                            <span style="display:flex; gap:8px;">
-                                <i class="fa-solid fa-clock-rotate-left historico-icon" title="Acessar histórico" onclick="acessarHistoricoProduto()"></i>
-                                <i class="fa-solid fa-pen-to-square edit-icon" title="Editar" onclick="editarProdutoDetalhes()"></i>
-                                <i class="fa-solid fa-trash trash-icon" title="Remover" onclick="removerProdutoDetalhes()"></i>
-                            </span>
-                        </div>
-                        <div class="detalhes-img-preview">
-                            <img id="detalhe-imagem" src="" alt="Imagem do produto">
-                        </div>
-                    </div>
+                <div class="detalhes-img-preview">
+                  <img id="detalhe-imagem" src="" alt="Imagem do produto" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-            </div>
+                <div style="height: 8px;"></div>
+                <a class="detalhes-historico-link" href="#" onclick="acessarHistoricoProduto()" title="Acessar histórico completo">
+                  <i class="fa-solid fa-clock-rotate-left"></i> Acessar histórico completo
+                </a>                
+                <div style="display: flex; flex-direction: column; gap: 0;">
+                  <label for="detalhe-ultima-entrada">Última Entrada</label>
+                  <input type="text" id="detalhe-ultima-entrada" readonly>
+                  <label for="detalhe-qtd-entrada">Quantidade</label>
+                  <input type="text" id="detalhe-qtd-entrada" readonly>
+                  <label for="detalhe-valor-compra">Valor Compra (R$)</label>
+                  <input type="text" id="detalhe-valor-compra" readonly>
+                  <label for="detalhe-fornecedor">Fornecedor</label>
+                  <input type="text" id="detalhe-fornecedor" readonly>
+                </div>
+              </div>
+              <!-- Coluna direita -->
+              <div class="detalhes-right-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
+                <div style="max-width: 240px; width: 100%; display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-end; gap: 10px;">
+                    <i class="fa-solid fa-xmark close-icon" title="Fechar" onclick="fecharDetalhesProdutoPopup()"></i>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-codigo">Código</label>
+                    <input type="text" id="detalhe-codigo" style="width: 73px; max-width: 73px; padding: 2px 4px 2px 8px;" readonly>
+                  </div>
+                  <div style="flex: 2; display: flex; flex-direction: column;">
+                    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                      <label for="detalhe-nome">Nome</label>
+                      <div>
+                        <i class="fa-solid fa-pen-to-square edit-icon" title="Editar" onclick="editarProdutoDetalhes()"></i>
+                        <i class="fa-solid fa-trash trash-icon" title="Remover" onclick="removerProdutoDetalhes()"></i>
+                      </div>
+                    </div>
+                    <input type="text" id="detalhe-nome" style="width: 156px; max-width: 156px" readonly>
+                  </div>
+
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-categoria">Categoria</label>
+                    <input type="text" id="detalhe-categoria" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-tamanho">Tamanho</label>
+                    <input type="text" id="detalhe-tamanho" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-genero">Gênero</label>
+                    <input type="text" id="detalhe-genero" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-quantidade">Quantidade</label>
+                    <input type="text" id="detalhe-quantidade" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-limite">Limite</label>
+                    <input type="text" id="detalhe-limite" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="detalhe-preco">Preço (R$)</label>
+                    <input type="text" id="detalhe-preco" style="width: 73px; max-width: 73px" readonly>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                  <label for="detalhe-descricao">Descrição</label>
+                  <textarea id="detalhe-descricao" readonly></textarea>
+                </div>
+                <div class="detalhes-saida-box" style="display: flex; flex-direction: column; gap: 0;">
+                  <label for="detalhe-ultima-saida" style="margin-top: 23px;">Última Saída</label>
+                  <input type="text" id="detalhe-ultima-saida" readonly>
+                  <label for="detalhe-qtd-saida">Quantidade</label>
+                  <input type="text" id="detalhe-qtd-saida" readonly>
+                  <label for="detalhe-valor-venda">Valor Venda (R$)</label>
+                  <input type="text" id="detalhe-valor-venda" readonly>
+                  <label for="detalhe-cliente">Cliente</label>
+                  <input type="text" id="detalhe-cliente" readonly>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
 </body>
 </html>
