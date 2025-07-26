@@ -523,10 +523,11 @@ select#registros-select option {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.18);
-    z-index: 9999;
+    z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(2px);
 }
 .detalhes-modal {
     background: #fff;
@@ -603,8 +604,8 @@ select#registros-select option {
     font-family: Arial, sans-serif;
     background: #f1f1f1;
     color: #757575;
-    min-height: 80px;
-    height: 80px;
+    min-height: 82px;
+    height: 82px;
 }
 
 .detalhes-historico-link {
@@ -636,4 +637,16 @@ select#registros-select option {
 }
 .trash-icon:hover {
     color: #c0392b;
+}
+
+.close-icon {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.2s;
+}
+.close-icon:hover {
+    color: #f27474;
 }

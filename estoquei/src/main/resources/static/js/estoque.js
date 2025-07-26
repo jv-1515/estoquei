@@ -687,6 +687,7 @@ function renderizarProdutos(produtos) {
             let saidasHoje = p.saidasHoje !== undefined ? p.saidasHoje : 0;
 
             const produtoObj = {
+                id: p.id,
                 codigo: p.codigo,
                 nome: p.nome,
                 categoria: p.categoria,
@@ -1359,7 +1360,7 @@ btnExibirDetalhes.addEventListener('click', function() {
 //     }
 // }
 
-function abrirDetalhesProduto(produto) {
+function abrirDetalhesProduto(produto, movimentacao) {
     document.getElementById('detalhe-codigo').value = produto.codigo || '-';
     document.getElementById('detalhe-nome').value = produto.nome || '-';
     document.getElementById('detalhe-categoria').value = produto.categoria || '-';
@@ -1406,41 +1407,25 @@ function abrirDetalhesProduto(produto) {
     }
 
     document.getElementById('detalhes-produto-popup').style.display = 'flex';
-}
 
-function fecharDetalhesProduto() {
-    document.getElementById('detalhes-produto-popup').style.display = 'none';
+    // Editar
+    const editLink = document.getElementById('detalhes-edit-link');
+    if (editLink) {
+        editLink.href = `/editar-produto?id=${produto.id || produto.codigo}`;
+    }
+
+    // Remover
+    const removeBtn = document.getElementById('detalhes-remove-btn');
+    if (removeBtn) {
+        removeBtn.onclick = function() {
+            removerProduto(produto.id);
+        };
+    }
 }
 
 function editarProdutoDetalhes() {
     const codigo = document.getElementById('detalhe-codigo').value;
     window.location.href = `/editar-produto?id=${codigo}`;
-}
-
-function removerProdutoDetalhes() {
-    const codigo = document.getElementById('detalhe-codigo').value;
-    Swal.fire({
-        title: 'Remover produto?',
-        text: 'Esta ação não poderá ser desfeita.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#c0392b',
-        cancelButtonColor: '#1E94A3',
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/produtos/${codigo}`, { method: 'DELETE' })
-                .then(response => {
-                    if (!response.ok) throw new Error('Erro ao remover produto');
-                    Swal.fire('Removido!', 'Produto removido com sucesso.', 'success');
-                    fecharDetalhesProduto();
-                })
-                .catch(error => {
-                    Swal.fire('Erro!', 'Erro ao remover produto: ' + error.message, 'error');
-                });
-        }
-    });
 }
 
 function verHistoricoEntrada() {
@@ -1449,49 +1434,16 @@ function verHistoricoEntrada() {
     window.location.href = `/movimentacoes?tipo=entrada&codigo=${codigo}`;
 }
 
-function verHistoricoSaida() {
-    // Implemente a navegação para histórico de saídas do produto
-    const codigo = document.getElementById('detalhe-codigo').value;
-    window.location.href = `/movimentacoes?tipo=saida&codigo=${codigo}`;
-}
-
-function fecharDetalhesProduto() {
-    document.getElementById('detalhes-produto-popup').style.display = 'none';
-}
-
-function editarProdutoDetalhes() {
-    // Redireciona para tela de edição do produto
-    const codigo = document.getElementById('detalhe-codigo').value;
-    window.location.href = `/editar-produto?id=${codigo}`;
-}
-
-function removerProdutoDetalhes() {
-    // Chama função de remover produto (pode usar SweetAlert2 para confirmação)
-    const codigo = document.getElementById('detalhe-codigo').value;
-    Swal.fire({
-        title: 'Remover produto?',
-        text: 'Esta ação não poderá ser desfeita.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#c0392b',
-        cancelButtonColor: '#1E94A3',
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/produtos/${codigo}`, { method: 'DELETE' })
-                .then(response => {
-                    if (!response.ok) throw new Error('Erro ao remover produto');
-                    Swal.fire('Removido!', 'Produto removido com sucesso.', 'success');
-                    fecharDetalhesProduto();
-                    // Atualize a lista de produtos se necessário
-                })
-                .catch(error => {
-                    Swal.fire('Erro!', 'Erro ao remover produto: ' + error.message, 'error');
-                });
+document.addEventListener('mousedown', function(e) {
+    const modalBg = document.getElementById('detalhes-produto-popup');
+    const modal = modalBg && modalBg.querySelector('.detalhes-modal');
+    if (modalBg && modalBg.style.display !== 'none') {
+        if (e.target === modalBg) {
+            fecharDetalhesProdutoPopup();
         }
-    });
-}
+    }
+});
+
 function fecharDetalhesProduto() {
     document.getElementById('detalhes-produto-popup').style.display = 'none';
 }
