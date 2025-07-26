@@ -318,65 +318,78 @@
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
-
-    <!-- Adicione esta div no seu estoque.html ou onde quiser mostrar os detalhes -->
-<div id="detalhes-produto-popup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
-    <div style="background:white; border-radius:10px; width:700px; min-width:400px; max-width:95vw; margin:auto; position:relative; overflow:hidden; display:flex; flex-direction:column;">
-        <!-- Botão Fechar -->
-        <button type="button" onclick="fecharDetalhesProduto()" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:24px; cursor:pointer; z-index:10; color:#999;">&times;</button>
-        
-        <div style="padding:20px 20px 0 20px;">
-            <h2 style="margin:0; color:#277580; font-size:24px;">Detalhes do Produto</h2>
+        <div id="detalhes-produto-popup" class="detalhes-modal-bg">
+            <div class="detalhes-modal">
+                <button type="button" onclick="fecharDetalhesProduto()" class="detalhes-fechar">&times;</button>
+                <div class="detalhes-modal-header">
+                    <h2>Detalhes do Produto</h2>
+                </div>
+                <!-- Cabeçalho: 8 campos do produto ocupando toda largura -->
+                <div class="detalhes-produto-cabecalho">
+                    <div class="detalhes-grid-4x2">
+                        <!-- 8 campos do produto -->
+                        <div><label for="detalhe-codigo">Código</label><input type="text" id="detalhe-codigo" readonly></div>
+                        <div><label for="detalhe-nome">Nome</label><input type="text" id="detalhe-nome" readonly></div>
+                        <div><label for="detalhe-categoria">Categoria</label><input type="text" id="detalhe-categoria" readonly></div>
+                        <div><label for="detalhe-tamanho">Tamanho</label><input type="text" id="detalhe-tamanho" readonly></div>
+                        <div><label for="detalhe-genero">Gênero</label><input type="text" id="detalhe-genero" readonly></div>
+                        <div><label for="detalhe-quantidade">Quantidade Atual</label><input type="text" id="detalhe-quantidade" readonly></div>
+                        <div><label for="detalhe-limite">Limite Mínimo</label><input type="text" id="detalhe-limite" readonly></div>
+                        <div><label for="detalhe-preco">Preço (R$)</label><input type="text" id="detalhe-preco" readonly></div>
+                    </div>
+                </div>
+                <!-- Abaixo do cabeçalho, duas colunas -->
+                <div class="detalhes-modal-row">
+                    <!-- Esquerda: movimentações + textarea abaixo de tudo -->
+                    <div class="detalhes-modal-info">
+                        <div class="detalhes-movimentacoes">
+                            <h2>Detalhes Movimentações</h2>
+                            <div class="detalhes-grid-2x3">
+                                <div>
+                                    <label>Última Entrada</label>
+                                    <input type="text" id="detalhe-ultima-entrada" readonly>
+                                    <label>Quantidade</label>
+                                    <input type="text" id="detalhe-qtd-entrada" readonly>
+                                    <label>Responsável</label>
+                                    <input type="text" id="detalhe-resp-entrada" readonly>
+                                    <a class="detalhes-historico-link" onclick="verHistoricoEntrada()" title="Ver histórico de entradas">
+                                        <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
+                                    </a>
+                                </div>
+                                <div>
+                                    <label>Última Saída</label>
+                                    <input type="text" id="detalhe-ultima-saida" readonly>
+                                    <label>Quantidade</label>
+                                    <input type="text" id="detalhe-qtd-saida" readonly>
+                                    <label>Responsável</label>
+                                    <input type="text" id="detalhe-resp-saida" readonly>
+                                    <a class="detalhes-historico-link" onclick="verHistoricoSaida()" title="Ver histórico de saídas">
+                                        <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Textarea abaixo de tudo na coluna esquerda -->
+                        <div class="detalhes-descricao-box">
+                            <label for="detalhe-descricao">Descrição</label>
+                            <textarea id="detalhe-descricao" readonly></textarea>
+                        </div>
+                    </div>
+                    <!-- Direita: imagem quadrada, título, ícones -->
+                    <div class="detalhes-modal-imgbox">
+                        <div class="detalhes-img-header">
+                            <span>Foto</span>
+                            <span style="display:flex; gap:8px;">
+                                <i class="fa-solid fa-pen-to-square edit-icon" title="Editar" onclick="editarProdutoDetalhes()"></i>
+                                <i class="fa-solid fa-trash trash-icon" title="Remover" onclick="removerProdutoDetalhes()"></i>
+                            </span>
+                        </div>
+                        <div class="detalhes-img-preview">
+                            <img id="detalhe-imagem" src="" alt="Imagem do produto">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <form style="display:flex; padding:20px; gap:10px;">
-            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Código</label>
-                        <input type="text" id="detalhe-codigo" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Nome</label>
-                        <input type="text" id="detalhe-nome" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Categoria</label>
-                        <input type="text" id="detalhe-categoria" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Tamanho</label>
-                        <input type="text" id="detalhe-tamanho" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Última Entrada</label>
-                        <input type="text" id="detalhe-ultima-entrada" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                        <label style="font-size:12px; color:#333;">Quantidade</label>
-                        <input type="text" id="detalhe-qtd-entrada" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                        <label style="font-size:12px; color:#333;">Responsável</label>
-                        <input type="text" id="detalhe-resp-entrada" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                    <div>
-                        <label style="font-size:12px; font-weight:bold; color:#333;">Última Saída</label>
-                        <input type="text" id="detalhe-ultima-saida" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                        <label style="font-size:12px; color:#333;">Quantidade</label>
-                        <input type="text" id="detalhe-qtd-saida" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                        <label style="font-size:12px; color:#333;">Responsável</label>
-                        <input type="text" id="detalhe-resp-saida" readonly style="padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666;" />
-                    </div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:12px; font-weight:bold; color:#333;">Descrição</label>
-                    <textarea id="detalhe-descricao" readonly style="width:100%; min-height:60px; max-height:120px; padding:7px; font-size:12px; border:1px solid #aaa; border-radius:4px; background:#f9f9f9; color:#666; resize:none;"></textarea>
-                </div>
-            </div>
-            <!-- Coluna Direita - Imagem -->
-            <div style="width:285px; min-width:220px; height:285px; display:flex; align-items:center; justify-content:center; border:solid 2px #aaa; background-color:#f9f9f9; border-radius:10px; overflow:hidden;">
-                <img id="detalhe-imagem" src="" alt="Imagem do produto" style="width:100%; height:100%; object-fit:cover; border-radius:10px; background:#f1f1f1;"/>
-            </div>
-        </form>
-    </div>
-</div>
 </body>
 </html>

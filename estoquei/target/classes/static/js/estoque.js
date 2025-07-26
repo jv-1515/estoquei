@@ -1353,6 +1353,11 @@ function abrirDetalhesProduto(produto, movimentacao) {
     document.getElementById('detalhe-nome').value = produto.nome || '-';
     document.getElementById('detalhe-categoria').value = produto.categoria || '-';
     document.getElementById('detalhe-tamanho').value = produto.tamanho || '-';
+    document.getElementById('detalhe-genero').value = produto.genero || '-';
+    document.getElementById('detalhe-quantidade').value = produto.quantidade || '-';
+    document.getElementById('detalhe-limite').value = produto.limiteMinimo || '-';
+    document.getElementById('detalhe-preco').value = produto.preco || '-';
+    document.getElementById('detalhe-descricao').value = produto.descricao || '';
 
     document.getElementById('detalhe-ultima-entrada').value = movimentacao.ultimaEntrada || '-';
     document.getElementById('detalhe-qtd-entrada').value = movimentacao.qtdEntrada || '-';
@@ -1361,8 +1366,6 @@ function abrirDetalhesProduto(produto, movimentacao) {
     document.getElementById('detalhe-ultima-saida').value = movimentacao.ultimaSaida || '-';
     document.getElementById('detalhe-qtd-saida').value = movimentacao.qtdSaida || '-';
     document.getElementById('detalhe-resp-saida').value = movimentacao.responsavelSaida || '-';
-
-    document.getElementById('detalhe-descricao').value = produto.descricao || '';
 
     const img = document.getElementById('detalhe-imagem');
     if (produto.url_imagem) {
@@ -1376,6 +1379,90 @@ function abrirDetalhesProduto(produto, movimentacao) {
     document.getElementById('detalhes-produto-popup').style.display = 'flex';
 }
 
+function fecharDetalhesProduto() {
+    document.getElementById('detalhes-produto-popup').style.display = 'none';
+}
+
+function editarProdutoDetalhes() {
+    const codigo = document.getElementById('detalhe-codigo').value;
+    window.location.href = `/editar-produto?id=${codigo}`;
+}
+
+function removerProdutoDetalhes() {
+    const codigo = document.getElementById('detalhe-codigo').value;
+    Swal.fire({
+        title: 'Remover produto?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#c0392b',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/produtos/${codigo}`, { method: 'DELETE' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erro ao remover produto');
+                    Swal.fire('Removido!', 'Produto removido com sucesso.', 'success');
+                    fecharDetalhesProduto();
+                })
+                .catch(error => {
+                    Swal.fire('Erro!', 'Erro ao remover produto: ' + error.message, 'error');
+                });
+        }
+    });
+}
+
+function verHistoricoEntrada() {
+    // Implemente a navegação para histórico de entradas do produto
+    const codigo = document.getElementById('detalhe-codigo').value;
+    window.location.href = `/movimentacoes?tipo=entrada&codigo=${codigo}`;
+}
+
+function verHistoricoSaida() {
+    // Implemente a navegação para histórico de saídas do produto
+    const codigo = document.getElementById('detalhe-codigo').value;
+    window.location.href = `/movimentacoes?tipo=saida&codigo=${codigo}`;
+}
+
+function fecharDetalhesProduto() {
+    document.getElementById('detalhes-produto-popup').style.display = 'none';
+}
+
+function editarProdutoDetalhes() {
+    // Redireciona para tela de edição do produto
+    const codigo = document.getElementById('detalhe-codigo').value;
+    window.location.href = `/editar-produto?id=${codigo}`;
+}
+
+function removerProdutoDetalhes() {
+    // Chama função de remover produto (pode usar SweetAlert2 para confirmação)
+    const codigo = document.getElementById('detalhe-codigo').value;
+    Swal.fire({
+        title: 'Remover produto?',
+        text: 'Esta ação não poderá ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#c0392b',
+        cancelButtonColor: '#1E94A3',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/produtos/${codigo}`, { method: 'DELETE' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erro ao remover produto');
+                    Swal.fire('Removido!', 'Produto removido com sucesso.', 'success');
+                    fecharDetalhesProduto();
+                    // Atualize a lista de produtos se necessário
+                })
+                .catch(error => {
+                    Swal.fire('Erro!', 'Erro ao remover produto: ' + error.message, 'error');
+                });
+        }
+    });
+}
 function fecharDetalhesProduto() {
     document.getElementById('detalhes-produto-popup').style.display = 'none';
 }
@@ -1837,7 +1924,6 @@ window.addEventListener('DOMContentLoaded', function() {
     atualizarPlaceholderGeneroMulti();
 });
 
-// Função para atualizar detalhes do estoque
 function formatarData(data) {
     if (!data) return '-';
     const dataObj = new Date(data + 'T00:00:00');
