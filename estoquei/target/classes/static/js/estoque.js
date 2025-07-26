@@ -691,16 +691,28 @@ function renderizarProdutos(produtos) {
                 nome: p.nome,
                 categoria: p.categoria,
                 tamanho: p.tamanho,
+                genero: p.genero,
+                preco: p.preco,
+                quantidade: p.quantidade,
+                limiteMinimo: p.limiteMinimo,
                 descricao: p.descricao,
                 url_imagem: imageUrl
             };
             const movimentacaoObj = {
-                ultimaEntrada: formatarData(p.dtUltimaEntrada),
-                qtdEntrada: p.ultimaQtdEntrada,
-                responsavelEntrada: p.responsavelUltimaEntrada,
-                ultimaSaida: formatarData(p.dtUltimaSaida),
-                qtdSaida: p.ultimaQtdSaida,
-                responsavelSaida: p.responsavelUltimaSaida
+                entrada: ultimaEntrada ? {
+                    data: ultimaEntrada.data,
+                    quantidadeMovimentada: ultimaEntrada.quantidadeMovimentada,
+                    valorMovimentacao: ultimaEntrada.valorMovimentacao,
+                    parteEnvolvida: ultimaEntrada.parteEnvolvida,
+                    responsavel: ultimaEntrada.responsavel
+                } : {},
+                saida: ultimaSaida ? {
+                    data: ultimaSaida.data,
+                    quantidadeMovimentada: ultimaSaida.quantidadeMovimentada,
+                    valorMovimentacao: ultimaSaida.valorMovimentacao,
+                    parteEnvolvida: ultimaSaida.parteEnvolvida,
+                    responsavel: ultimaSaida.responsavel
+                } : {}
             };
 
             const rowHtml = `
@@ -838,21 +850,20 @@ window.onload = function() {
         renderizarProdutos(produtos);
     });
 
-        //campos para ordenação
     const campos = [
         null,               
-        'codigo',          // 1 - Código
-        'nome',            // 2 - Nome
-        'categoria',       // 3 - Categoria
-        'tamanho',         // 4 - Tamanho
-        'genero',          // 5 - Gênero
-        'preco',           // 6 - Preço
-        'quantidade',      // 7 - Quantidade
-        'limiteMinimo',    // 8 - Limite Mínimo
-        'entradasHoje',    // 9 - Entradas Hoje
-        'saidasHoje',      // 10 - Saídas Hoje
-        'dtUltimaEntrada', // 11 - Última Entrada
-        'dtUltimaSaida',   // 12 - Última Saída
+        'codigo',          
+        'nome',            
+        'categoria',       
+        'tamanho',         
+        'genero',          
+        'preco',           
+        'quantidade',      
+        'limiteMinimo',    
+        'entradasHoje',    
+        'saidasHoje',      
+        'dtUltimaEntrada', 
+        'dtUltimaSaida',   
         null               
     ];
     
@@ -1302,53 +1313,53 @@ btnExibirDetalhes.addEventListener('click', function() {
     }
 });
 
-function visualizarImagem(url, nome, descricao, codigo, produto = {}) {
-    // produto = { ultimaEntrada, qtdEntrada, responsavelEntrada, ultimaSaida, qtdSaida, responsavelSaida, estoqueAtual }
-    Swal.fire({
-        title: `
-            <div style="font-size: 22px; font-weight: bold; color: #277580; margin-bottom: 2px;">${nome || '-'}</div>
-            <div style="font-size: 13px; color: #888; margin-bottom: 0;">Código: <b>${codigo || '-'}</b></div>
-        `,
-        html: `
-            <div style="display: flex; flex-direction: row; gap: 20px; align-items: flex-start; padding: 0; min-width: 350px;">
-                <div style="flex-shrink: 0; width: 220px; height: 220px; background: #f1f1f1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    ${url ? `<img src="${url}" alt="Imagem do Produto" style="width: 220px; height: 220px; object-fit: contain; background: #f1f1f1; border-radius: 10px;" />`
-                        : `<i class="fa-regular fa-image" style="font-size: 60px; color: #bbb;"></i>`}
-                </div>
-                <div style="flex:1; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #333;">
-                    ${descricao ? `<div style="margin-bottom: 8px;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
-                    <div style="margin-bottom: 4px;">
-                        <strong>Última Entrada:</strong> ${produto.ultimaEntrada || '-'}<br>
-                        <strong>Qtd. Entrada:</strong> ${produto.qtdEntrada || '-'}<br>
-                        <strong>Responsável:</strong> ${produto.responsavelEntrada || '-'}
-                    </div>
-                    <div style="margin-bottom: 4px;">
-                        <strong>Última Saída:</strong> ${produto.ultimaSaida || '-'}<br>
-                        <strong>Qtd. Saída:</strong> ${produto.qtdSaida || '-'}<br>
-                        <strong>Responsável:</strong> ${produto.responsavelSaida || '-'}
-                    </div>
-                    <div style="margin-bottom: 4px;">
-                        <strong>Estoque Atual:</strong> ${produto.estoqueAtual !== undefined ? produto.estoqueAtual : '-'}
-                    </div>
-                </div>
-            </div>
-        `,
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'swal-popup'
-        },
-        padding: '20px'
-    });
+// function visualizarImagem(url, nome, descricao, codigo, produto = {}) {
+//     // produto = { ultimaEntrada, qtdEntrada, responsavelEntrada, ultimaSaida, qtdSaida, responsavelSaida, estoqueAtual }
+//     Swal.fire({
+//         title: `
+//             <div style="font-size: 22px; font-weight: bold; color: #277580; margin-bottom: 2px;">${nome || '-'}</div>
+//             <div style="font-size: 13px; color: #888; margin-bottom: 0;">Código: <b>${codigo || '-'}</b></div>
+//         `,
+//         html: `
+//             <div style="display: flex; flex-direction: row; gap: 20px; align-items: flex-start; padding: 0; min-width: 350px;">
+//                 <div style="flex-shrink: 0; width: 220px; height: 220px; background: #f1f1f1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+//                     ${url ? `<img src="${url}" alt="Imagem do Produto" style="width: 220px; height: 220px; object-fit: contain; background: #f1f1f1; border-radius: 10px;" />`
+//                         : `<i class="fa-regular fa-image" style="font-size: 60px; color: #bbb;"></i>`}
+//                 </div>
+//                 <div style="flex:1; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #333;">
+//                     ${descricao ? `<div style="margin-bottom: 8px;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
+//                     <div style="margin-bottom: 4px;">
+//                         <strong>Última Entrada:</strong> ${produto.ultimaEntrada || '-'}<br>
+//                         <strong>Qtd. Entrada:</strong> ${produto.qtdEntrada || '-'}<br>
+//                         <strong>Responsável:</strong> ${produto.responsavelEntrada || '-'}
+//                     </div>
+//                     <div style="margin-bottom: 4px;">
+//                         <strong>Última Saída:</strong> ${produto.ultimaSaida || '-'}<br>
+//                         <strong>Qtd. Saída:</strong> ${produto.qtdSaida || '-'}<br>
+//                         <strong>Responsável:</strong> ${produto.responsavelSaida || '-'}
+//                     </div>
+//                     <div style="margin-bottom: 4px;">
+//                         <strong>Estoque Atual:</strong> ${produto.estoqueAtual !== undefined ? produto.estoqueAtual : '-'}
+//                     </div>
+//                 </div>
+//             </div>
+//         `,
+//         showCloseButton: true,
+//         showConfirmButton: false,
+//         customClass: {
+//             popup: 'swal-popup'
+//         },
+//         padding: '20px'
+//     });
 
-    // Remove sombra do botão fechar
-    const closeBtn = document.querySelector('.swal2-close');
-    if (closeBtn) {
-        closeBtn.style.boxShadow = 'none';
-    }
-}
+//     // Remove sombra do botão fechar
+//     const closeBtn = document.querySelector('.swal2-close');
+//     if (closeBtn) {
+//         closeBtn.style.boxShadow = 'none';
+//     }
+// }
 
-function abrirDetalhesProduto(produto, movimentacao) {
+function abrirDetalhesProduto(produto) {
     document.getElementById('detalhe-codigo').value = produto.codigo || '-';
     document.getElementById('detalhe-nome').value = produto.nome || '-';
     document.getElementById('detalhe-categoria').value = produto.categoria || '-';
@@ -1359,14 +1370,32 @@ function abrirDetalhesProduto(produto, movimentacao) {
     document.getElementById('detalhe-preco').value = produto.preco || '-';
     document.getElementById('detalhe-descricao').value = produto.descricao || '';
 
-    document.getElementById('detalhe-ultima-entrada').value = movimentacao.ultimaEntrada || '-';
-    document.getElementById('detalhe-qtd-entrada').value = movimentacao.qtdEntrada || '-';
-    document.getElementById('detalhe-resp-entrada').value = movimentacao.responsavelEntrada || '-';
+    // Busca movimentações do produto
+    fetch(`/api/movimentacoes?codigoProduto=${produto.codigo}`)
+        .then(response => response.json())
+        .then(movs => {
+            // Filtra e pega a última entrada e saída
+            const entrada = movs.filter(m => m.tipoMovimentacao === 'ENTRADA')
+                .sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+            const saida = movs.filter(m => m.tipoMovimentacao === 'SAIDA')
+                .sort((a, b) => new Date(b.data) - new Date(a.data))[0];
 
-    document.getElementById('detalhe-ultima-saida').value = movimentacao.ultimaSaida || '-';
-    document.getElementById('detalhe-qtd-saida').value = movimentacao.qtdSaida || '-';
-    document.getElementById('detalhe-resp-saida').value = movimentacao.responsavelSaida || '-';
+            // ENTRADA
+            document.getElementById('detalhe-ultima-entrada').value = entrada ? formatarData(entrada.data) : '-';
+            document.getElementById('detalhe-qtd-entrada').value = entrada ? entrada.quantidadeMovimentada : '-';
+            document.getElementById('detalhe-valor-compra').value = entrada ? entrada.valorMovimentacao : '-';
+            document.getElementById('detalhe-fornecedor').value = entrada ? entrada.parteEnvolvida : '-';
+            document.getElementById('detalhe-resp-entrada').value = entrada ? entrada.responsavel : '-';
 
+            // SAÍDA
+            document.getElementById('detalhe-ultima-saida').value = saida ? formatarData(saida.data) : '-';
+            document.getElementById('detalhe-qtd-saida').value = saida ? saida.quantidadeMovimentada : '-';
+            document.getElementById('detalhe-valor-venda').value = saida ? saida.valorMovimentacao : '-';
+            document.getElementById('detalhe-cliente').value = saida ? saida.parteEnvolvida : '-';
+            document.getElementById('detalhe-resp-saida').value = saida ? saida.responsavel : '-';
+        });
+
+    // Imagem
     const img = document.getElementById('detalhe-imagem');
     if (produto.url_imagem) {
         img.src = produto.url_imagem;
@@ -1622,7 +1651,7 @@ function atualizarPlaceholderCategoriaMulti() {
         ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
-    }
+       }
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';

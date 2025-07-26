@@ -377,27 +377,31 @@
                         <div class="detalhes-movimentacoes">
                             <h2>Detalhes Movimentações</h2>
                             <div class="detalhes-grid-2x3">
+                                <!-- ENTRADA -->
                                 <div>
-                                    <label>Última Entrada</label>
+                                    <label for="detalhe-ultima-entrada">Última Entrada</label>
                                     <input type="text" id="detalhe-ultima-entrada" readonly>
-                                    <label>Quantidade</label>
+                                    <label for="detalhe-qtd-entrada">Quantidade</label>
                                     <input type="text" id="detalhe-qtd-entrada" readonly>
-                                    <label>Responsável</label>
+                                    <label for="detalhe-valor-compra">Valor Compra (R$)</label>
+                                    <input type="text" id="detalhe-valor-compra" readonly>
+                                    <label for="detalhe-fornecedor">Fornecedor</label>
+                                    <input type="text" id="detalhe-fornecedor" readonly>
+                                    <label for="detalhe-resp-entrada">Responsável</label>
                                     <input type="text" id="detalhe-resp-entrada" readonly>
-                                    <a class="detalhes-historico-link" onclick="verHistoricoEntrada()" title="Ver histórico de entradas">
-                                        <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
-                                    </a>
                                 </div>
+                                <!-- SAÍDA -->
                                 <div>
-                                    <label>Última Saída</label>
+                                    <label for="detalhe-ultima-saida">Última Saída</label>
                                     <input type="text" id="detalhe-ultima-saida" readonly>
-                                    <label>Quantidade</label>
+                                    <label for="detalhe-qtd-saida">Quantidade</label>
                                     <input type="text" id="detalhe-qtd-saida" readonly>
-                                    <label>Responsável</label>
+                                    <label for="detalhe-valor-venda">Valor Venda (R$)</label>
+                                    <input type="text" id="detalhe-valor-venda" readonly>
+                                    <label for="detalhe-cliente">Cliente</label>
+                                    <input type="text" id="detalhe-cliente" readonly>
+                                    <label for="detalhe-resp-saida">Responsável</label>
                                     <input type="text" id="detalhe-resp-saida" readonly>
-                                    <a class="detalhes-historico-link" onclick="verHistoricoSaida()" title="Ver histórico de saídas">
-                                        <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -412,6 +416,7 @@
                         <div class="detalhes-img-header">
                             <span>Foto</span>
                             <span style="display:flex; gap:8px;">
+                                <i class="fa-solid fa-clock-rotate-left historico-icon" title="Acessar histórico" onclick="acessarHistoricoProduto()"></i>
                                 <i class="fa-solid fa-pen-to-square edit-icon" title="Editar" onclick="editarProdutoDetalhes()"></i>
                                 <i class="fa-solid fa-trash trash-icon" title="Remover" onclick="removerProdutoDetalhes()"></i>
                             </span>
