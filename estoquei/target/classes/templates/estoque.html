@@ -325,17 +325,49 @@
                     <h2>Detalhes do Produto</h2>
                 </div>
                 <!-- Cabeçalho: 8 campos do produto ocupando toda largura -->
-                <div class="detalhes-produto-cabecalho">
-                    <div class="detalhes-grid-4x2">
-                        <!-- 8 campos do produto -->
-                        <div><label for="detalhe-codigo">Código</label><input type="text" id="detalhe-codigo" readonly></div>
-                        <div><label for="detalhe-nome">Nome</label><input type="text" id="detalhe-nome" readonly></div>
-                        <div><label for="detalhe-categoria">Categoria</label><input type="text" id="detalhe-categoria" readonly></div>
-                        <div><label for="detalhe-tamanho">Tamanho</label><input type="text" id="detalhe-tamanho" readonly></div>
-                        <div><label for="detalhe-genero">Gênero</label><input type="text" id="detalhe-genero" readonly></div>
-                        <div><label for="detalhe-quantidade">Quantidade Atual</label><input type="text" id="detalhe-quantidade" readonly></div>
-                        <div><label for="detalhe-limite">Limite Mínimo</label><input type="text" id="detalhe-limite" readonly></div>
-                        <div><label for="detalhe-preco">Preço (R$)</label><input type="text" id="detalhe-preco" readonly></div>
+                <!-- Cabeçalho dos inputs do produto -->
+                <div class="detalhes-produto-cabecalho" style="display: flex; gap: 20px;">
+                    <!-- Primeira linha: flexível -->
+                    <div class="detalhes-grid-2x2" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label for="detalhe-codigo">Código</label>
+                                <input type="text" id="detalhe-codigo" readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="detalhe-nome">Nome</label>
+                                <input type="text" id="detalhe-nome" readonly>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label for="detalhe-genero">Gênero</label>
+                                <input type="text" id="detalhe-genero" readonly>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="detalhe-quantidade">Quantidade Atual</label>
+                                <input type="text" id="detalhe-quantidade" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Segunda linha: largura total 250px -->
+                    <div class="detalhes-grid-2x2-direita">
+                        <div>
+                            <label for="detalhe-categoria">Categoria</label>
+                            <input type="text" id="detalhe-categoria" readonly>
+                        </div>
+                        <div>
+                            <label for="detalhe-tamanho">Tamanho</label>
+                            <input type="text" id="detalhe-tamanho" readonly>
+                        </div>
+                        <div>
+                            <label for="detalhe-limite">Limite Mínimo</label>
+                            <input type="text" id="detalhe-limite" readonly>
+                        </div>
+                        <div>
+                            <label for="detalhe-preco">Preço (R$)</label>
+                            <input type="text" id="detalhe-preco" readonly>
+                        </div>
                     </div>
                 </div>
                 <!-- Abaixo do cabeçalho, duas colunas -->
