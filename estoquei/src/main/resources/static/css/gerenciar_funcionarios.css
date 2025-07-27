@@ -66,7 +66,7 @@ h2 {
 .input-group label {
     font-size: 12px;
     color: #333;
-    padding: 2px 0 0 2px;
+    padding: 5px 5px 5px 0px;
     font-weight: bold;
     letter-spacing: 0.2px;
     pointer-events: none;
@@ -319,7 +319,7 @@ input:focus[readonly] {
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
+  width: 70px;
   height: 22px;
 }
 
@@ -355,8 +355,23 @@ input:focus[readonly] {
   background-color: #43b04a;
 }
 
+#label-ativo {
+    color: white;
+    position: absolute;
+    top: 73px;
+    z-index: 999;
+}
+
+.ativo {
+    left: 155px;
+}
+
+.inativo {
+    left: 172px
+}
+
 .switch input:checked + .slider:before {
-  transform: translateX(36px);
+  transform: translateX(45px);
 }
 
 #codigo-sugestoes {
