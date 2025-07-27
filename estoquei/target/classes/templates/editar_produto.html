@@ -18,7 +18,7 @@
     </a>
     
     <div style="padding-bottom: 20px;">
-        <h1>Detalhes do Produto</h1>
+        <h1>Editar Produto</h1>
         <form class="form-container" action="/produtos/" method="POST" enctype="multipart/form-data">
             <div class="form-column">
             <label for="codigo" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Código*</label>
@@ -58,7 +58,7 @@
             <label for="limiteMinimo">Limite Mínimo*</label>
             <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">
             
-            <label for="preco">Preço (R$)*</label>
+            <label for="preco">Preço*</label>
             <input type="text" id="preco" name="preco" required placeholder="R$10,00" tabindex="8" min="1" max="999">
             <button type="submit" id="save" tabindex="11">Salvar alterações</button>
             </div>

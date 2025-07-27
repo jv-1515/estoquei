@@ -73,23 +73,18 @@ window.addEventListener('DOMContentLoaded', function() {
             maxQuantidade = qtdAtual;
         }
         mainContainerPlaceholder.innerHTML = `
-            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
-            <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
-            ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
-            </h2>
-            </div>
             <form id="movimentacao-form">
             <div class="main-container">
             <div class="form-column">
             <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra">Valor da Compra (R$)*</label>
+            <label for="valor-compra">Valor da Compra*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
-            <label for="valor-venda">Valor da Venda (R$)*</label>
+            <label for="valor-venda">Valor da Venda*</label>
             <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
@@ -100,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
-            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
+            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final</label>
             <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f9f9f9" readonly>
             </div>
             </div>
@@ -110,8 +105,8 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="right-column">
             <label for="foto">Produto</label>
-            <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
-            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 30px"></i>`}
+            <div id="image-preview" class="image-box">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
             <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
             </div>
             </div>
@@ -171,7 +166,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         codigo: produtoSelecionado.codigo,
                         nome: produtoSelecionado.nome,
                         codigoCompra: document.getElementById('codigo-compra').value,
-                        dataEntrada: document.getElementById('data-compra').value, // "YYYY-MM-DD"
+                        dataEntrada: document.getElementById('data-compra').value,
                         fornecedor: document.getElementById('fornecedor').value,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
@@ -275,7 +270,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // Função para preencher os campos do produto (robusta)
     function preencherCampos(produto) {
         const precoFormatado = produto.preco !== undefined
-            ? 'R$' + Number(produto.preco).toFixed(2).replace('.', ',')
+            ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',')
             : '';
         const tamanhoExibido = exibirTamanho(produto.tamanho);
         const generoFormatado = produto.genero
@@ -313,7 +308,7 @@ window.addEventListener('DOMContentLoaded', function() {
             } else {
                 const icon = document.createElement('i');
                 icon.className = 'fa-regular fa-image';
-                icon.style.fontSize = '30px';
+                icon.style.fontSize = '32px';
                 preview.appendChild(icon);
             }
         }
