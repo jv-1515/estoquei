@@ -403,7 +403,6 @@ window.addEventListener('DOMContentLoaded', function() {
         if (estaVisivel) {
             detalhesDiv.style.display = 'none';
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
-            // Ajuste visual quando desativado
             btnExibirDetalhes.style.border = '1px solid #1e94a3';
             btnExibirDetalhes.style.background = '#fff';
             btnExibirDetalhes.style.color = '#1e94a3';
@@ -411,7 +410,6 @@ window.addEventListener('DOMContentLoaded', function() {
             detalhesDiv.style.display = 'flex';
             window.atualizarDetalhesEstoque(produtos);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-            // Volta ao visual padrão (ajuste conforme seu tema)
             btnExibirDetalhes.style.border = '';
             btnExibirDetalhes.style.background = '';
             btnExibirDetalhes.style.color = '';
@@ -686,12 +684,42 @@ function renderizarProdutos(produtos) {
             let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
             let saidasHoje = p.saidasHoje !== undefined ? p.saidasHoje : 0;
 
+            const produtoObj = {
+                id: p.id,
+                codigo: p.codigo,
+                nome: p.nome,
+                categoria: p.categoria,
+                tamanho: p.tamanho,
+                genero: p.genero,
+                preco: p.preco,
+                quantidade: p.quantidade,
+                limiteMinimo: p.limiteMinimo,
+                descricao: p.descricao,
+                url_imagem: imageUrl
+            };
+            const movimentacaoObj = {
+                entrada: ultimaEntrada ? {
+                    data: ultimaEntrada.data,
+                    quantidadeMovimentada: ultimaEntrada.quantidadeMovimentada,
+                    valorMovimentacao: ultimaEntrada.valorMovimentacao,
+                    parteEnvolvida: ultimaEntrada.parteEnvolvida,
+                    responsavel: ultimaEntrada.responsavel
+                } : {},
+                saida: ultimaSaida ? {
+                    data: ultimaSaida.data,
+                    quantidadeMovimentada: ultimaSaida.quantidadeMovimentada,
+                    valorMovimentacao: ultimaSaida.valorMovimentacao,
+                    parteEnvolvida: ultimaSaida.parteEnvolvida,
+                    responsavel: ultimaSaida.responsavel
+                } : {}
+            };
+
             const rowHtml = `
                 <tr>
                     <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${imageUrl 
-                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" style="cursor:pointer;" onclick="visualizarImagem('${imageUrl}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')" />` 
-                            : `<span class="produto-img icon" style="cursor:pointer;" onclick="visualizarImagem('', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.codigo}')"><i class="fa-regular fa-image"></i></span>`
+                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})' />`
+                            : `<span class="produto-img icon" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})'><i class="fa-regular fa-image"></i></span>`
                         }
                     </td>
                     <td>${p.codigo}</td>
@@ -821,21 +849,20 @@ window.onload = function() {
         renderizarProdutos(produtos);
     });
 
-        //campos para ordenação
     const campos = [
         null,               
-        'codigo',          // 1 - Código
-        'nome',            // 2 - Nome
-        'categoria',       // 3 - Categoria
-        'tamanho',         // 4 - Tamanho
-        'genero',          // 5 - Gênero
-        'preco',           // 6 - Preço
-        'quantidade',      // 7 - Quantidade
-        'limiteMinimo',    // 8 - Limite Mínimo
-        'entradasHoje',    // 9 - Entradas Hoje
-        'saidasHoje',      // 10 - Saídas Hoje
-        'dtUltimaEntrada', // 11 - Última Entrada
-        'dtUltimaSaida',   // 12 - Última Saída
+        'codigo',          
+        'nome',            
+        'categoria',       
+        'tamanho',         
+        'genero',          
+        'preco',           
+        'quantidade',      
+        'limiteMinimo',    
+        'entradasHoje',    
+        'saidasHoje',      
+        'dtUltimaEntrada', 
+        'dtUltimaSaida',   
         null               
     ];
     
@@ -1285,26 +1312,106 @@ btnExibirDetalhes.addEventListener('click', function() {
     }
 });
 
-function visualizarImagem(url, nome, descricao, codigo) {
-    Swal.fire({
-        title: nome + (codigo ? `<br><small style='font-weight:normal;'>Código: ${codigo}</small>` : ''),
-        html: `
-            ${url ? `<img src="${url}" alt="Imagem do Produto" style="max-width: 100%; max-height: 80vh;"/>` : ''}
-            ${descricao ? `<div style="margin-top:10px; text-align:left;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
-        `,
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'swal-popup'
-        }
-    });
+function abrirDetalhesProduto(produto) {
+    document.body.style.overflow = 'hidden';
 
-    const closeBtn = document.querySelector('.swal2-close');
-    if (closeBtn) {
-        closeBtn.style.boxShadow = 'none';
+    document.getElementById('detalhe-codigo').value = produto.codigo || '-';
+    document.getElementById('detalhe-nome').value = produto.nome || '-';
+    document.getElementById('detalhe-categoria').value = produto.categoria || '-';
+    const tamanhoExibido = exibirTamanho(produto.tamanho);
+    document.getElementById('detalhe-tamanho').value = tamanhoExibido;
+    document.getElementById('detalhe-genero').value = produto.genero || '-';
+    document.getElementById('detalhe-quantidade').value = (produto.quantidade === 0 ? '0' : (produto.quantidade || '-'));
+    document.getElementById('detalhe-limite').value = produto.limiteMinimo || '-';
+    const precoFormatado = produto.preco ? produto.preco.toFixed(2).replace('.', ',') : '-';
+    document.getElementById('detalhe-preco').value = precoFormatado ? `R$ ${precoFormatado}` : '-';
+    document.getElementById('detalhe-descricao').value = produto.descricao || '';
+
+    // Busca todas as movimentações e filtra pelo código do produto
+    fetch('/api/movimentacoes')
+        .then(response => response.json())
+        .then(movs => {
+            // Filtra movimentações do produto correto
+            const movsProduto = movs.filter(m => m.codigoProduto === produto.codigo);
+
+            const entradas = movsProduto.filter(m => m.tipoMovimentacao === 'ENTRADA');
+            const saidas = movsProduto.filter(m => m.tipoMovimentacao === 'SAIDA');
+
+            const entrada = entradas.sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+            const saida = saidas.sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+
+            // ENTRADA
+            document.getElementById('detalhe-ultima-entrada').value = entrada ? formatarData(entrada.data) : '-';
+            document.getElementById('detalhe-qtd-entrada').value = entrada ? entrada.quantidadeMovimentada : '-';
+            const valorEntrada = entrada && entrada.valorMovimentacao != null
+                ? Number(String(entrada.valorMovimentacao).replace(/\./g, '').replace(',', '.'))
+                : null;
+            document.getElementById('detalhe-valor-compra').value = valorEntrada != null
+                ? valorEntrada.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : '-';
+            
+            const valorSaida = saida && saida.valorMovimentacao != null
+                ? Number(String(saida.valorMovimentacao).replace(/\./g, '').replace(',', '.'))
+                : null;
+            document.getElementById('detalhe-valor-venda').value = valorSaida != null
+                ? valorSaida.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : '-';            
+                document.getElementById('detalhe-fornecedor').value = entrada ? entrada.parteEnvolvida : '-';
+            if (document.getElementById('detalhe-resp-entrada'))
+                document.getElementById('detalhe-resp-entrada').value = entrada ? entrada.responsavel : '-';
+
+            // SAÍDA
+            document.getElementById('detalhe-ultima-saida').value = saida ? formatarData(saida.data) : '-';
+            document.getElementById('detalhe-qtd-saida').value = saida ? saida.quantidadeMovimentada : '-';
+            document.getElementById('detalhe-valor-venda').value = saida ? saida.valorMovimentacao : '-';
+            document.getElementById('detalhe-cliente').value = saida ? saida.parteEnvolvida : '-';
+            if (document.getElementById('detalhe-resp-saida'))
+                document.getElementById('detalhe-resp-saida').value = saida ? saida.responsavel : '-';
+        });
+
+    // Imagem
+    const img = document.getElementById('detalhe-imagem');
+    if (produto.url_imagem) {
+        img.src = produto.url_imagem;
+        img.style.display = 'block';
+    } else {
+        img.src = '';
+        img.style.display = 'none';
+        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 32px; color:#777"><i class="fa-regular fa-image"></i></span>`;
+    }
+
+    document.getElementById('detalhes-produto-popup').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Editar
+    const editLink = document.getElementById('detalhes-edit-link');
+    if (editLink) {
+        editLink.href = `/editar-produto?id=${produto.id}`;
+    }
+
+    // Remover
+    const removeBtn = document.getElementById('detalhes-remove-btn');
+    if (removeBtn) {
+        removeBtn.onclick = function() {
+            removerProduto(produto.id);
+        };
     }
 }
 
+document.addEventListener('mousedown', function(e) {
+    const modalBg = document.getElementById('detalhes-produto-popup');
+    const modal = modalBg && modalBg.querySelector('.detalhes-modal');
+    if (modalBg && modalBg.style.display !== 'none') {
+        if (e.target === modalBg) {
+            fecharDetalhesProdutoPopup();
+        }
+    }
+});
+
+function fecharDetalhesProduto() {
+    document.getElementById('detalhes-produto-popup').style.display = 'none';
+    document.body.style.overflow = '';
+}
 
 function atualizarDetalhesInfo(produtos) {
     // Soma a coluna quantidade dos produtos recebidos (filtrados)
@@ -1461,7 +1568,7 @@ function atualizarPlaceholderCategoriaMulti() {
         ativo = false;
     } else {
         placeholder.textContent = selecionados.join(', ');
-    }
+       }
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
@@ -1763,7 +1870,6 @@ window.addEventListener('DOMContentLoaded', function() {
     atualizarPlaceholderGeneroMulti();
 });
 
-// Função para atualizar detalhes do estoque
 function formatarData(data) {
     if (!data) return '-';
     const dataObj = new Date(data + 'T00:00:00');

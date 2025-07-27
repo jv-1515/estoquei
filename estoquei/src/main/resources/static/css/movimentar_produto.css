@@ -4,6 +4,9 @@ body {
     margin: 0;
     padding: 20px;
     font-size: 12px;
+    scrollbar-gutter: stable;
+    background-attachment: fixed;
+    overflow: hidden;
 }
 
 h1 {
@@ -33,20 +36,11 @@ h2 {
 
 .filters {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
     background: none;
     padding: 0;
     margin: 0;
-}
-
-.filters input,
-.filters select {
-    padding: 7px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-size: 12px;
 }
 
 .produto-img {
@@ -94,13 +88,6 @@ h2 {
     font-size: 12px;
 }
 
-.form-column input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-}
-
 label{
     padding: 5px 5px 5px 0;
     color: #333;
@@ -117,8 +104,8 @@ input:focus[readonly] {
 }
 
 .image-box {
-    width: 268px;
-    height: 268px;
+    width: 280px;
+    height: 280px;
     display: flex;
     justify-content: center;
     color: #777;
@@ -126,10 +113,6 @@ input:focus[readonly] {
     border: solid 2px #aaa;
     background-color: #f9f9f9;
     overflow: hidden;
-}
-
-.image-box:hover {
-    background-color: #f0f0f0;
 }
 
 .image-box img {
@@ -158,18 +141,34 @@ button:hover {
 .filters .filter-input,
 .filters .filter-select {
     width: 145px;
-    padding: 7px;
+}
+
+input, select {
+    padding: 2px 8px;
     border: 1px solid #aaa;
     border-radius: 4px;
-    font-size: 10px;
     box-sizing: border-box;
-    min-height: 26px;
-    height: 26px;
-    max-height: 26px;
+    min-height: 30px;
+    height: 30px;
+    max-height: 30px;
+    font-family: Arial, sans-serif;
+}
+
+input[type=radio] {
+    margin: 0;
+    accent-color: #1e94a3;
+}
+.tipo-movimentacao {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 15px;
+    padding: 0 5px 0 0;
 }
 
 #select-produtos {
-    padding-left: 1px;
+    padding-left: 3px;
+    padding-right: 1px;
 }
 
 #select-produtos option[disabled][hidden] {
@@ -183,14 +182,6 @@ button:hover {
     max-width: 620px;
 }
 
-.form-column input,
-.form-column select,
-.form-column textarea {
-    padding: 7px;
-    font-size: 10px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-}
 .right-column {
 display: flex;
 flex-direction: column;
@@ -214,11 +205,13 @@ flex-direction: column;
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
 }
-#data-compra {
+#data-compra,
+#data-venda {
     color: #757575;
 }
 
-#data-compra:valid {
+#data-compra:valid,
+#data-venda:valid {
     color: #000;
 }
 #filter-genero,
@@ -240,6 +233,8 @@ input:focus[readonly] {
 }
 #movimentacao-tipo-container label {
     font-weight: normal;
+    color: black;
+    margin: 5px 0px 0 5px;
 }
 
 .fa-arrow-left:hover,
