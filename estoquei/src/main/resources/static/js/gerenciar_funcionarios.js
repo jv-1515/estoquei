@@ -311,8 +311,11 @@ function abrirEdicaoFuncionario(codigo) {
             : '';
         document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
         document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
-        document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
+        const label = document.getElementById('label-ativo');
+        label.classList.toggle('ativo', funcionario.ativo);
+        label.classList.toggle('inativo', !funcionario.ativo);
+        
         // Atualiza o avatar de edição imediatamente com o nome já preenchido
         if (window.atualizarAvatarEdicao) {
             window.atualizarAvatarEdicao();
@@ -405,7 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('edit-ativo').addEventListener('change', function() {
     document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
-    document.getElementById('label-ativo').style.color = this.checked ? '#43b04a' : '#888';
+    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
+    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
 });
 
 // Sugestão de códigos igual ao estoque
