@@ -4,6 +4,9 @@ body {
     margin: 0;
     padding: 20px;
     font-size: 12px;
+    scrollbar-gutter: stable;
+    background-attachment: fixed;
+    overflow: hidden;
 }
 
 h1 {
@@ -165,6 +168,7 @@ input[type=radio] {
 
 #select-produtos {
     padding-left: 3px;
+    padding-right: 1px;
 }
 
 #select-produtos option[disabled][hidden] {
@@ -230,6 +234,7 @@ input:focus[readonly] {
 #movimentacao-tipo-container label {
     font-weight: normal;
     color: black;
+    margin: 5px 0px 0 5px;
 }
 
 .fa-arrow-left:hover,
