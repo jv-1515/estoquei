@@ -73,11 +73,6 @@ window.addEventListener('DOMContentLoaded', function() {
             maxQuantidade = qtdAtual;
         }
         mainContainerPlaceholder.innerHTML = `
-            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 0 20px;">
-            <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
-            ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
-            </h2>
-            </div>
             <form id="movimentacao-form">
             <div class="main-container">
             <div class="form-column">
@@ -100,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
-            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final:</label>
+            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final</label>
             <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f9f9f9" readonly>
             </div>
             </div>
