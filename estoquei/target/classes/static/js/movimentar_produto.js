@@ -84,12 +84,12 @@ window.addEventListener('DOMContentLoaded', function() {
             <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra">Valor da Compra (R$)*</label>
+            <label for="valor-compra">Valor da Compra*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
-            <label for="valor-venda">Valor da Venda (R$)*</label>
+            <label for="valor-venda">Valor da Venda*</label>
             <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
@@ -171,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         codigo: produtoSelecionado.codigo,
                         nome: produtoSelecionado.nome,
                         codigoCompra: document.getElementById('codigo-compra').value,
-                        dataEntrada: document.getElementById('data-compra').value, // "YYYY-MM-DD"
+                        dataEntrada: document.getElementById('data-compra').value,
                         fornecedor: document.getElementById('fornecedor').value,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
@@ -275,7 +275,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // Função para preencher os campos do produto (robusta)
     function preencherCampos(produto) {
         const precoFormatado = produto.preco !== undefined
-            ? 'R$' + Number(produto.preco).toFixed(2).replace('.', ',')
+            ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',')
             : '';
         const tamanhoExibido = exibirTamanho(produto.tamanho);
         const generoFormatado = produto.genero

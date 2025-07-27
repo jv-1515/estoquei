@@ -239,11 +239,13 @@ for (let i = 0; i < 8; i++) {
 document.getElementById('cad-senha').value = senha;
 }
 function abrirCadastroFuncionario() {
-document.getElementById('cadastro-funcionario').style.display = 'flex';
+    document.getElementById('cadastro-funcionario').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 gerarSenhaProvisoria();
 }
 function fecharCadastroFuncionario() {
-document.getElementById('cadastro-funcionario').style.display = 'none';
+    document.getElementById('cadastro-funcionario').style.display = 'none';
+    document.body.style.overflow = '';
 }
 function cadastrarFuncionario() {
     const funcionario = {
@@ -287,6 +289,8 @@ function abrirEdicaoFuncionario(codigo) {
     const funcionario = funcionarios.find(f => f.codigo === codigo);
     const id = funcionario.id;
 
+    document.body.style.overflow = 'hidden';
+
     fetch(`/usuarios/${id}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -320,6 +324,7 @@ function abrirEdicaoFuncionario(codigo) {
 
 function fecharEdicaoFuncionario() {
     document.getElementById('editar-funcionario').style.display = 'none';
+    document.body.style.overflow = '';
 }
 function salvarEdicaoFuncionario() {
     const codigo = document.getElementById('edit-codigo').value;

@@ -265,7 +265,7 @@
     </div>
 </div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 5px;">
             <label for="registros-select">Mostrando</label>
             <select id="registros-select" style="padding: 5px 0; border-radius: 4px; font-size: 12px; height:30px; width: 55px;">
                 <option value=""> Todos</option>
@@ -333,32 +333,35 @@
                   <img id="detalhe-imagem" src="" alt="Imagem do produto" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="height: 8px;"></div>
-                <a class="detalhes-historico-link" href="#" onclick="acessarHistoricoProduto()" title="Acessar histórico completo">
-                  <i class="fa-solid fa-clock-rotate-left"></i> Acessar histórico completo
-                </a>                
+                <h3 style="font-size: 16px; color: #277580; margin: 0;">Últimas movimentações</h3>
                 <div style="display: flex; flex-direction: column; gap: 0;">
                   <label for="detalhe-ultima-entrada">Última Entrada</label>
                   <input type="text" id="detalhe-ultima-entrada" readonly>
                   <label for="detalhe-qtd-entrada">Quantidade</label>
                   <input type="text" id="detalhe-qtd-entrada" readonly>
-                  <label for="detalhe-valor-compra">Valor Compra (R$)</label>
+                  <label for="detalhe-valor-compra">Valor Compra</label>
                   <input type="text" id="detalhe-valor-compra" readonly>
                   <label for="detalhe-fornecedor">Fornecedor</label>
                   <input type="text" id="detalhe-fornecedor" readonly>
                 </div>
+                <div style="display: inline-flex; align-items: center; margin-top: 5px;">
+                    <i class="fa-solid fa-clock-rotate-left" style="color: #1e94a3; margin-right: 6px; vertical-align: middle;"></i>
+                    <a class="detalhes-historico-link" href="/movimentacoes" title="Acessar histórico completo">
+                        Acessar histórico completo
+                    </a>
+                </div>
               </div>
-              <!-- Coluna direita -->
               <div class="detalhes-right-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
                     <label for="detalhe-codigo">Código</label>
-                    <input type="text" id="detalhe-codigo" style="width: 73px; max-width: 73px; padding: 2px 4px 2px 8px;" readonly>
+                    <input type="text" id="detalhe-codigo" style="width: 74px; max-width: 74px; padding: 2px 4px 2px 8px;" readonly>
                   </div>
                   <div style="flex: 2; display: flex; flex-direction: column;">
-                    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between;">
                       <label for="detalhe-nome">Nome</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <div style="display: flex; gap: 10px;">
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                            <div style="display: flex; gap: 5px;">
                                 <a id="detalhes-edit-link" href="#" title="Editar" class="edit-icon">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
@@ -378,7 +381,7 @@
                 <div style="display: flex; gap: 10px;">
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-categoria">Categoria</label>
-                    <input type="text" id="detalhe-categoria" style="width: 73px; max-width: 73px" readonly>
+                    <input type="text" id="detalhe-categoria" style="width: 74px; max-width: 74px" readonly>
                   </div>
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-tamanho">Tamanho</label>
@@ -392,14 +395,14 @@
                 <div style="display: flex; gap: 10px;">
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-quantidade">Quantidade</label>
-                    <input type="text" id="detalhe-quantidade" style="width: 73px; max-width: 73px" readonly>
+                    <input type="text" id="detalhe-quantidade" style="width: 74px; max-width: 74px" readonly>
                   </div>
                   <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-limite">Limite</label>
                     <input type="text" id="detalhe-limite" style="width: 73px; max-width: 73px" readonly>
                   </div>
                   <div style="flex: 1; display: flex; flex-direction: column;">
-                    <label for="detalhe-preco">Preço (R$)</label>
+                    <label for="detalhe-preco">Preço</label>
                     <input type="text" id="detalhe-preco" style="width: 73px; max-width: 73px" readonly>
                   </div>
                 </div>
@@ -408,11 +411,11 @@
                   <textarea id="detalhe-descricao" readonly></textarea>
                 </div>
                 <div class="detalhes-saida-box" style="display: flex; flex-direction: column; gap: 0;">
-                  <label for="detalhe-ultima-saida" style="margin-top: 23px;">Última Saída</label>
+                  <label for="detalhe-ultima-saida" style="margin-top: 26px;">Última Saída</label>
                   <input type="text" id="detalhe-ultima-saida" readonly>
                   <label for="detalhe-qtd-saida">Quantidade</label>
                   <input type="text" id="detalhe-qtd-saida" readonly>
-                  <label for="detalhe-valor-venda">Valor Venda (R$)</label>
+                  <label for="detalhe-valor-venda">Valor Venda</label>
                   <input type="text" id="detalhe-valor-venda" readonly>
                   <label for="detalhe-cliente">Cliente</label>
                   <input type="text" id="detalhe-cliente" readonly>
