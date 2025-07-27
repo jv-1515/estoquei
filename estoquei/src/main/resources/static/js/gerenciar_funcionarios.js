@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (icon) icon.style.display = 'none';
         } else {
             if (iniciaisSpan) iniciaisSpan.textContent = '';
-            if (avatarDiv) avatarDiv.style.background = '#e0e0e0';
+            if (avatarDiv) avatarDiv.style.background = '#f1f1f1';
             if (icon) icon.style.display = '';
         }
     }
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editIcon) editIcon.style.display = 'none';
         } else {
             if (editIniciaisSpan) editIniciaisSpan.textContent = '';
-            if (editAvatarDiv) editAvatarDiv.style.background = '#e0e0e0';
+            if (editAvatarDiv) editAvatarDiv.style.background = '#f1f1f1';
             if (editIcon) editIcon.style.display = '';
         }
     }
@@ -290,6 +290,7 @@ function abrirEdicaoFuncionario(codigo) {
     const id = funcionario.id;
 
     document.body.style.overflow = 'hidden';
+    aplicarEstiloInputs();
 
     fetch(`/usuarios/${id}`, {
         method: 'GET',
@@ -486,4 +487,31 @@ function togglePassword(inputId) {
         eyeIcon.classList.remove("fa-eye");
         eyeIcon.classList.add("fa-eye-slash");
     }
+}
+
+function aplicarEstiloInputs() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', () => {
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+        });
+    });
+
+    const selects = document.querySelectorAll('select, input[type="date"]');
+    selects.forEach(select => {
+        select.addEventListener('focus', () => {
+            select.style.backgroundColor = 'white';
+        });
+        select.addEventListener('blur', () => {
+            if (select.value.trim() === '') {
+                select.style.backgroundColor = 'white';
+            } else {
+                select.style.backgroundColor = '#f1f1f1';
+            }
+        });
+    });
 }
