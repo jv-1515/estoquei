@@ -110,8 +110,8 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="right-column">
             <label for="foto">Produto</label>
-            <div id="image-preview" class="image-box" style="background-color: #f9f9f9; overflow: hidden; justify-content: center; align-items: center;">
-            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 30px"></i>`}
+            <div id="image-preview" class="image-box">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
             <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
             </div>
             </div>
@@ -313,7 +313,7 @@ window.addEventListener('DOMContentLoaded', function() {
             } else {
                 const icon = document.createElement('i');
                 icon.className = 'fa-regular fa-image';
-                icon.style.fontSize = '30px';
+                icon.style.fontSize = '32px';
                 preview.appendChild(icon);
             }
         }

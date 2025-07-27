@@ -1312,52 +1312,6 @@ btnExibirDetalhes.addEventListener('click', function() {
     }
 });
 
-// function visualizarImagem(url, nome, descricao, codigo, produto = {}) {
-//     // produto = { ultimaEntrada, qtdEntrada, responsavelEntrada, ultimaSaida, qtdSaida, responsavelSaida, estoqueAtual }
-//     Swal.fire({
-//         title: `
-//             <div style="font-size: 22px; font-weight: bold; color: #277580; margin-bottom: 2px;">${nome || '-'}</div>
-//             <div style="font-size: 13px; color: #888; margin-bottom: 0;">Código: <b>${codigo || '-'}</b></div>
-//         `,
-//         html: `
-//             <div style="display: flex; flex-direction: row; gap: 20px; align-items: flex-start; padding: 0; min-width: 350px;">
-//                 <div style="flex-shrink: 0; width: 220px; height: 220px; background: #f1f1f1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-//                     ${url ? `<img src="${url}" alt="Imagem do Produto" style="width: 220px; height: 220px; object-fit: contain; background: #f1f1f1; border-radius: 10px;" />`
-//                         : `<i class="fa-regular fa-image" style="font-size: 60px; color: #bbb;"></i>`}
-//                 </div>
-//                 <div style="flex:1; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #333;">
-//                     ${descricao ? `<div style="margin-bottom: 8px;"><strong>Descrição:</strong> ${descricao}</div>` : ''}
-//                     <div style="margin-bottom: 4px;">
-//                         <strong>Última Entrada:</strong> ${produto.ultimaEntrada || '-'}<br>
-//                         <strong>Qtd. Entrada:</strong> ${produto.qtdEntrada || '-'}<br>
-//                         <strong>Responsável:</strong> ${produto.responsavelEntrada || '-'}
-//                     </div>
-//                     <div style="margin-bottom: 4px;">
-//                         <strong>Última Saída:</strong> ${produto.ultimaSaida || '-'}<br>
-//                         <strong>Qtd. Saída:</strong> ${produto.qtdSaida || '-'}<br>
-//                         <strong>Responsável:</strong> ${produto.responsavelSaida || '-'}
-//                     </div>
-//                     <div style="margin-bottom: 4px;">
-//                         <strong>Estoque Atual:</strong> ${produto.estoqueAtual !== undefined ? produto.estoqueAtual : '-'}
-//                     </div>
-//                 </div>
-//             </div>
-//         `,
-//         showCloseButton: true,
-//         showConfirmButton: false,
-//         customClass: {
-//             popup: 'swal-popup'
-//         },
-//         padding: '20px'
-//     });
-
-//     // Remove sombra do botão fechar
-//     const closeBtn = document.querySelector('.swal2-close');
-//     if (closeBtn) {
-//         closeBtn.style.boxShadow = 'none';
-//     }
-// }
-
 function abrirDetalhesProduto(produto) {
     document.body.style.overflow = 'hidden';
 
@@ -1423,7 +1377,7 @@ function abrirDetalhesProduto(produto) {
     } else {
         img.src = '';
         img.style.display = 'none';
-        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 30px; color:#777"><i class="fa-regular fa-image"></i></span>`;
+        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 32px; color:#777"><i class="fa-regular fa-image"></i></span>`;
     }
 
     document.getElementById('detalhes-produto-popup').style.display = 'flex';
