@@ -38,21 +38,20 @@ body {
 
 .input-group {
     position: relative;
-    margin-bottom: 10px;
 }
 .input-group input {
     height: 30px;
     width: 100%;
-    padding: 10px;
+    padding: 2px 8px;
     font-size: 12px;
     border: 1px solid #aaa;
-    border-radius: 5px;
+    border-radius: 4px;
     outline: none;
     box-sizing: border-box;
 }
 .input-group .lock-open {
     position: absolute;
-    right: 14px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
@@ -61,13 +60,13 @@ body {
 h1 {
     font-size: 40px;
     color: #277580;
-    margin: 0 0 10px 0;
+    margin: 0;
     text-align: center;
 }
 label {
     color: #333;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin: 5px 0;
     display: block;
 }
 
@@ -75,13 +74,13 @@ button {
     background-color: #1E94A3;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
     transition: background 0.2s;
     font-size: 12px;
     height: 30px;
     width: 100%;
-;
+    margin-top: 10px;
 }
 button:hover {
     background-color: #277580;

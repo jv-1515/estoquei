@@ -18,14 +18,14 @@ html body.swal2-height-auto {
 
 
 h1 {
-    font-size: 40px;
+    font-size: 30px;
     color: #277580;
     text-align: center;
     margin: 40px 0 20px 0;
 }
 
 h2 {
-    font-size: 18px;
+    font-size: 20px;
     color: #277580;
     text-align: left;
     margin: 10px 0 5px 0;
@@ -57,7 +57,7 @@ h2 {
     border-radius: 10px;
     padding: 20px;
     gap: 20px;
-    max-width: 900px;
+    max-width: 600px;
 }
 
 .form-column {
@@ -129,10 +129,9 @@ label {
 .register-link {
     font-weight: bold;
     margin-top: 10px;
-}
-.register-link {
     color: #1E94A3;
     text-decoration: none;
+    text-align: center;
 }
 .register-link:hover {
     text-decoration: underline;
@@ -146,4 +145,19 @@ label {
 .fa-eye,
 .fa-eye-slash {
     color: #757575;
+}
+
+#avatar-user-info {
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #e0e7ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 28px;
+    color: #333;
+    user-select: none;
 }

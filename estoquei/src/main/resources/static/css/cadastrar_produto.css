@@ -127,7 +127,7 @@ select#genero {
     padding-left: 4px;
 }
 
-.swal2-confirm-custom {
+/* .swal2-confirm-custom {
     background-color: #1E94A3 !important;
     color: #fff !important;
     border-radius: 4px !important;
@@ -144,7 +144,7 @@ select#genero {
 }
 .swal2-cancel-custom:hover {
     background-color: #aaa !important;
-}
+} */
 
 #genero option[disabled][hidden],
 #categoria option[disabled][hidden],
@@ -163,10 +163,105 @@ select#genero {
 #tamanho:valid {
   color: #000;
 }
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
-}
+
 .fa-arrow-left:hover {
     color: #1E94A3;
     transition: color 0.2s;
+}
+
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+/* sweetAlert */
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de confirmação */
+.swal2-confirm,
+.swal2-styled.swal2-confirm {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover {
+    background-color: #277580;
+    color: #fff;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de deletar/cancelar (vermelho padrão SweetAlert2) */
+.swal2-deny,
+.swal2-styled.swal2-deny {
+    background-color: #f27474;
+    color: #fff;
+}
+.swal2-deny:hover,
+.swal2-styled.swal2-deny:hover {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
 }
