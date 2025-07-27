@@ -73,7 +73,7 @@ window.addEventListener('DOMContentLoaded', function() {
             maxQuantidade = qtdAtual;
         }
         mainContainerPlaceholder.innerHTML = `
-            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 10px 20px;">
+            <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 10px 25px 0 20px;">
             <h2 style="text-align: left; margin: 0; padding:10px 25px 0px 0px;">
             ${tipo === 'ENTRADA' ? 'Detalhes da Compra' : 'Detalhes da Venda'}
             </h2>
