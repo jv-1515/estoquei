@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Código já cadastrado!',
-                            text: 'Informe outro código.',
+                            text: 'Informe outro código',
                             timer: 1500,
                             showConfirmButton: false
                         });
