@@ -403,7 +403,6 @@ window.addEventListener('DOMContentLoaded', function() {
         if (estaVisivel) {
             detalhesDiv.style.display = 'none';
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye-slash" style="margin-right:4px;"></i>Detalhes';
-            // Ajuste visual quando desativado
             btnExibirDetalhes.style.border = '1px solid #1e94a3';
             btnExibirDetalhes.style.background = '#fff';
             btnExibirDetalhes.style.color = '#1e94a3';
@@ -411,7 +410,6 @@ window.addEventListener('DOMContentLoaded', function() {
             detalhesDiv.style.display = 'flex';
             window.atualizarDetalhesEstoque(produtos);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
-            // Volta ao visual padrão (ajuste conforme seu tema)
             btnExibirDetalhes.style.border = '';
             btnExibirDetalhes.style.background = '';
             btnExibirDetalhes.style.color = '';
@@ -1360,40 +1358,61 @@ btnExibirDetalhes.addEventListener('click', function() {
 //     }
 // }
 
-function abrirDetalhesProduto(produto, movimentacao) {
+function abrirDetalhesProduto(produto) {
+    document.body.style.overflow = 'hidden';
+
     document.getElementById('detalhe-codigo').value = produto.codigo || '-';
     document.getElementById('detalhe-nome').value = produto.nome || '-';
     document.getElementById('detalhe-categoria').value = produto.categoria || '-';
-    document.getElementById('detalhe-tamanho').value = produto.tamanho || '-';
+    const tamanhoExibido = exibirTamanho(produto.tamanho);
+    document.getElementById('detalhe-tamanho').value = tamanhoExibido;
     document.getElementById('detalhe-genero').value = produto.genero || '-';
-    document.getElementById('detalhe-quantidade').value = produto.quantidade || '-';
+    document.getElementById('detalhe-quantidade').value = (produto.quantidade === 0 ? '0' : (produto.quantidade || '-'));
     document.getElementById('detalhe-limite').value = produto.limiteMinimo || '-';
-    document.getElementById('detalhe-preco').value = produto.preco || '-';
+    const precoFormatado = produto.preco ? produto.preco.toFixed(2).replace('.', ',') : '-';
+    document.getElementById('detalhe-preco').value = precoFormatado ? `R$ ${precoFormatado}` : '-';
     document.getElementById('detalhe-descricao').value = produto.descricao || '';
 
-    // Busca movimentações do produto
-    fetch(`/api/movimentacoes?codigoProduto=${produto.codigo}`)
+    // Busca todas as movimentações e filtra pelo código do produto
+    fetch('/api/movimentacoes')
         .then(response => response.json())
         .then(movs => {
-            // Filtra e pega a última entrada e saída
-            const entrada = movs.filter(m => m.tipoMovimentacao === 'ENTRADA')
-                .sort((a, b) => new Date(b.data) - new Date(a.data))[0];
-            const saida = movs.filter(m => m.tipoMovimentacao === 'SAIDA')
-                .sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+            // Filtra movimentações do produto correto
+            const movsProduto = movs.filter(m => m.codigoProduto === produto.codigo);
+
+            const entradas = movsProduto.filter(m => m.tipoMovimentacao === 'ENTRADA');
+            const saidas = movsProduto.filter(m => m.tipoMovimentacao === 'SAIDA');
+
+            const entrada = entradas.sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+            const saida = saidas.sort((a, b) => new Date(b.data) - new Date(a.data))[0];
 
             // ENTRADA
             document.getElementById('detalhe-ultima-entrada').value = entrada ? formatarData(entrada.data) : '-';
             document.getElementById('detalhe-qtd-entrada').value = entrada ? entrada.quantidadeMovimentada : '-';
-            document.getElementById('detalhe-valor-compra').value = entrada ? entrada.valorMovimentacao : '-';
-            document.getElementById('detalhe-fornecedor').value = entrada ? entrada.parteEnvolvida : '-';
-            document.getElementById('detalhe-resp-entrada').value = entrada ? entrada.responsavel : '-';
+            const valorEntrada = entrada && entrada.valorMovimentacao != null
+                ? Number(String(entrada.valorMovimentacao).replace(/\./g, '').replace(',', '.'))
+                : null;
+            document.getElementById('detalhe-valor-compra').value = valorEntrada != null
+                ? valorEntrada.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : '-';
+            
+            const valorSaida = saida && saida.valorMovimentacao != null
+                ? Number(String(saida.valorMovimentacao).replace(/\./g, '').replace(',', '.'))
+                : null;
+            document.getElementById('detalhe-valor-venda').value = valorSaida != null
+                ? valorSaida.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : '-';            
+                document.getElementById('detalhe-fornecedor').value = entrada ? entrada.parteEnvolvida : '-';
+            if (document.getElementById('detalhe-resp-entrada'))
+                document.getElementById('detalhe-resp-entrada').value = entrada ? entrada.responsavel : '-';
 
             // SAÍDA
             document.getElementById('detalhe-ultima-saida').value = saida ? formatarData(saida.data) : '-';
             document.getElementById('detalhe-qtd-saida').value = saida ? saida.quantidadeMovimentada : '-';
             document.getElementById('detalhe-valor-venda').value = saida ? saida.valorMovimentacao : '-';
             document.getElementById('detalhe-cliente').value = saida ? saida.parteEnvolvida : '-';
-            document.getElementById('detalhe-resp-saida').value = saida ? saida.responsavel : '-';
+            if (document.getElementById('detalhe-resp-saida'))
+                document.getElementById('detalhe-resp-saida').value = saida ? saida.responsavel : '-';
         });
 
     // Imagem
@@ -1404,14 +1423,16 @@ function abrirDetalhesProduto(produto, movimentacao) {
     } else {
         img.src = '';
         img.style.display = 'none';
+        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 30px; color:#777"><i class="fa-regular fa-image"></i></span>`;
     }
 
     document.getElementById('detalhes-produto-popup').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 
     // Editar
     const editLink = document.getElementById('detalhes-edit-link');
     if (editLink) {
-        editLink.href = `/editar-produto?id=${produto.id || produto.codigo}`;
+        editLink.href = `/editar-produto?id=${produto.id}`;
     }
 
     // Remover
@@ -1421,17 +1442,6 @@ function abrirDetalhesProduto(produto, movimentacao) {
             removerProduto(produto.id);
         };
     }
-}
-
-function editarProdutoDetalhes() {
-    const codigo = document.getElementById('detalhe-codigo').value;
-    window.location.href = `/editar-produto?id=${codigo}`;
-}
-
-function verHistoricoEntrada() {
-    // Implemente a navegação para histórico de entradas do produto
-    const codigo = document.getElementById('detalhe-codigo').value;
-    window.location.href = `/movimentacoes?tipo=entrada&codigo=${codigo}`;
 }
 
 document.addEventListener('mousedown', function(e) {
@@ -1446,6 +1456,7 @@ document.addEventListener('mousedown', function(e) {
 
 function fecharDetalhesProduto() {
     document.getElementById('detalhes-produto-popup').style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 function atualizarDetalhesInfo(produtos) {

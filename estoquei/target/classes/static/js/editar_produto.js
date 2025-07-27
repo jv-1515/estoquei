@@ -5,7 +5,7 @@ precoInput.addEventListener('input', function(e) {
     if (value.length > 5) value = value.slice(0, 5);
     if (value.length > 0) {
         value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-        e.target.value = 'R$' + value;
+        e.target.value = 'R$ ' + value;
     } else {
         e.target.value = '';
     }
