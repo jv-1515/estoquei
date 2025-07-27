@@ -5,7 +5,7 @@ precoInput.addEventListener('input', function(e) {
     if (value.length > 5) value = value.slice(0, 5);
     if (value.length > 0) {
         value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-        e.target.value = 'R$' + value;
+        e.target.value = 'R$ ' + value;
     } else {
         e.target.value = '';
     }
@@ -450,3 +450,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+function aplicarEstiloInputs() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', () => {
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+        });
+    });
+
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.addEventListener('focus', () => {
+            select.style.backgroundColor = 'white';
+        });
+        select.addEventListener('blur', () => {
+            select.style.backgroundColor = '';
+        });
+    });
+
+    const textarea = document.getElementById('descricao');
+    const contador = document.getElementById('contador-descricao');
+    if (textarea && contador) {
+        function updateContadorStyle() {
+            if (textarea.value.trim() === '') {
+                textarea.style.backgroundColor = 'white';
+                contador.style.backgroundColor = 'white';
+            } else {
+                textarea.style.backgroundColor = '#f1f1f1';
+                contador.style.backgroundColor = '#f1f1f1';
+            }
+        }
+        textarea.addEventListener('blur', updateContadorStyle);
+    }
+}
+document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);

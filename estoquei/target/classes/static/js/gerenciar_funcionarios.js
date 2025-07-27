@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (icon) icon.style.display = 'none';
         } else {
             if (iniciaisSpan) iniciaisSpan.textContent = '';
-            if (avatarDiv) avatarDiv.style.background = '#e0e0e0';
+            if (avatarDiv) avatarDiv.style.background = '#f1f1f1';
             if (icon) icon.style.display = '';
         }
     }
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editIcon) editIcon.style.display = 'none';
         } else {
             if (editIniciaisSpan) editIniciaisSpan.textContent = '';
-            if (editAvatarDiv) editAvatarDiv.style.background = '#e0e0e0';
+            if (editAvatarDiv) editAvatarDiv.style.background = '#f1f1f1';
             if (editIcon) editIcon.style.display = '';
         }
     }
@@ -239,11 +239,13 @@ for (let i = 0; i < 8; i++) {
 document.getElementById('cad-senha').value = senha;
 }
 function abrirCadastroFuncionario() {
-document.getElementById('cadastro-funcionario').style.display = 'flex';
+    document.getElementById('cadastro-funcionario').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 gerarSenhaProvisoria();
 }
 function fecharCadastroFuncionario() {
-document.getElementById('cadastro-funcionario').style.display = 'none';
+    document.getElementById('cadastro-funcionario').style.display = 'none';
+    document.body.style.overflow = '';
 }
 function cadastrarFuncionario() {
     const funcionario = {
@@ -287,6 +289,9 @@ function abrirEdicaoFuncionario(codigo) {
     const funcionario = funcionarios.find(f => f.codigo === codigo);
     const id = funcionario.id;
 
+    document.body.style.overflow = 'hidden';
+    aplicarEstiloInputs();
+
     fetch(`/usuarios/${id}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -306,8 +311,11 @@ function abrirEdicaoFuncionario(codigo) {
             : '';
         document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
         document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
-        document.getElementById('label-ativo').style.color = funcionario.ativo ? '#43b04a' : '#888';
 
+        const label = document.getElementById('label-ativo');
+        label.classList.toggle('ativo', funcionario.ativo);
+        label.classList.toggle('inativo', !funcionario.ativo);
+        
         // Atualiza o avatar de edição imediatamente com o nome já preenchido
         if (window.atualizarAvatarEdicao) {
             window.atualizarAvatarEdicao();
@@ -320,6 +328,7 @@ function abrirEdicaoFuncionario(codigo) {
 
 function fecharEdicaoFuncionario() {
     document.getElementById('editar-funcionario').style.display = 'none';
+    document.body.style.overflow = '';
 }
 function salvarEdicaoFuncionario() {
     const codigo = document.getElementById('edit-codigo').value;
@@ -399,7 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('edit-ativo').addEventListener('change', function() {
     document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
-    document.getElementById('label-ativo').style.color = this.checked ? '#43b04a' : '#888';
+    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
+    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
 });
 
 // Sugestão de códigos igual ao estoque
@@ -481,4 +491,31 @@ function togglePassword(inputId) {
         eyeIcon.classList.remove("fa-eye");
         eyeIcon.classList.add("fa-eye-slash");
     }
+}
+
+function aplicarEstiloInputs() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('blur', () => {
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+        });
+    });
+
+    const selects = document.querySelectorAll('select, input[type="date"]');
+    selects.forEach(select => {
+        select.addEventListener('focus', () => {
+            select.style.backgroundColor = 'white';
+        });
+        select.addEventListener('blur', () => {
+            if (select.value.trim() === '') {
+                select.style.backgroundColor = 'white';
+            } else {
+                select.style.backgroundColor = '#f1f1f1';
+            }
+        });
+    });
 }
