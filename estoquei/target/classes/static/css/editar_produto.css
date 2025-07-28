@@ -133,25 +133,6 @@ textarea {
     background-color: #f1f1f1;
 }
 
-.swal2-confirm-custom {
-    background-color: #1E94A3 !important;
-    color: #fff !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-confirm-custom:hover {
-    background-color: #277580 !important;
-}
-.swal2-cancel-custom {
-    background-color: #ccc !important;
-    color: #000 !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-cancel-custom:hover {
-    background-color: #aaa !important;
-}
-
 #genero option[disabled][hidden],
 #categoria option[disabled][hidden],
 #tamanho option[disabled][hidden] {
@@ -169,9 +150,7 @@ textarea {
 #tamanho:valid {
   color: #000;
 }
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
-}
+
 .fa-arrow-left:hover {
     color: #1E94A3;
     transition: color 0.2s;
@@ -186,4 +165,104 @@ textarea {
     border-radius: 4px;
     padding-right: 28px;
     background-size: 16px 10px;
+}
+
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de confirmação */
+.swal2-confirm,
+.swal2-styled.swal2-confirm {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover {
+    background-color: #277580;
+    color: #fff;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de deletar/cancelar (vermelho padrão SweetAlert2) */
+.swal2-deny,
+.swal2-styled.swal2-deny {
+    background-color: #d33;
+    color: #fff;
+}
+.swal2-deny:hover,
+.swal2-styled.swal2-deny:hover {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+    font-size: 20px;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
+    font-size: 16px;
 }
