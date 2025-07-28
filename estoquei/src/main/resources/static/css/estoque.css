@@ -312,10 +312,6 @@ button:hover,
     flex-wrap: wrap;
 }
 
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
-}
-
 .faixa-popup {
     display: none;
     position: absolute;
@@ -404,7 +400,6 @@ select#registros-select option {
     font-size: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-/* Multi-select categoria novo */
 .multiselect {
   width: 200px;
   position: relative;
@@ -444,7 +439,7 @@ select#registros-select option {
 #checkboxes-tamanho-multi label,
 #checkboxes-genero-multi label {
     display: flex;
-    flex-direction: row-reverse; /* Inverte a ordem: checkbox à direita */
+    flex-direction: row-reverse;
     align-items: center;
     justify-content: space-between;
     font-size: 12px !important;
@@ -631,4 +626,106 @@ select#registros-select option {
 }
 .close-icon:hover {
     color: #f27474;
+}
+
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de confirmação/cancelar custom */
+.swal2-confirm,
+.swal2-styled.swal2-confirm,
+.swal2-cancel-custom,
+.swal2-styled.swal2-cancel-custom {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-cancel-custom:hover,
+.swal2-styled.swal2-cancel-custom:hover {
+    background-color: #277580;
+}
+
+/* Botão de deletar (vermelho padrão SweetAlert2) */
+.swal2-remove-custom,
+.swal2-styled.swal2-remove-custom {
+    background-color: #d33;
+    color: #fff;
+}
+.swal2-remove-custom:hover,
+.swal2-styled.swal2-remove-custom:hover {
+    background-color: #a52a2a;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+    font-size: 20px;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
+    font-size: 16px;
 }
