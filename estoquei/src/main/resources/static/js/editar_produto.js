@@ -271,8 +271,9 @@ function removerProduto() {
         return;
     }
 
+    const nomeProduto = document.getElementById('nome').value || 'produto';
     Swal.fire({
-        title: 'Remover produto?',
+        title: `Remover "${nomeProduto}"?`,
         text: 'Esta ação não poderá ser desfeita',
         icon: 'warning',
         showCancelButton: true,
@@ -280,7 +281,7 @@ function removerProduto() {
         cancelButtonText: 'Cancelar',
         allowOutsideClick: false,
         customClass: {
-            confirmButton: 'swal2-deny',
+            confirmButton: 'swal2-remove-custom',
             cancelButton: 'swal2-cancel-custom'
         }
     }).then((result) => {
@@ -290,7 +291,7 @@ function removerProduto() {
             }).then(response => {
                 if (response.ok) {
                     Swal.fire({
-                        title: 'Removendo produto',
+                        title: `Removendo "${nomeProduto}"`,
                         text: 'Aguarde...',
                         icon: 'info',
                         showConfirmButton: false,
@@ -302,16 +303,22 @@ function removerProduto() {
                 } else {
                     Swal.fire({
                         title: 'Erro!',
-                        text: 'Não foi possível remover o produto. Verifique se ele não está associado a outras operações.',
+                        text: `Não foi possível remover "${nomeProduto}". Verifique se ele não está associado a outras operações.`,
                         icon: 'error',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        timer: 1500,
                     });
                 }
             }).catch(error => {
                 console.error('Erro ao remover produto:', error);
                 Swal.fire({
                     title: 'Erro de Conexão!',
-                    text: 'Não foi possível se conectar ao servidor para remover o produto',
+                    text: `Não foi possível se conectar ao servidor para remover "${nomeProduto}"`,
                     icon: 'error',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    timer: 1500
                 });
             });
         }
