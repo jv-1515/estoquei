@@ -537,29 +537,27 @@ function filtrar() {
     window.atualizarDetalhesEstoque(produtosFiltrados);
 }
 
-function removerProduto(id) {
+function removerProduto(id, nome) {
+    nomeProduto = nome || 'produto';
     Swal.fire({
-        title: 'Tem certeza?',
+        title: `Remover "${nomeProduto}"?`,
         text: 'Esta ação não poderá ser desfeita.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#1E94A3',
+        allowOutsideClick: false,
         confirmButtonText: 'Remover',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-
             fetch('/produtos/' + id, {
                 method: 'DELETE'
             }).then(response => {
                 if (response.ok) {
                     Swal.fire({
-                        title: 'Removendo...',
+                        title: `Removendo ${nomeProduto}...`,
                         text: 'Aguarde enquanto o produto é removido.',
                         icon: 'info',
-                        showConfirmButton: true,
-                        confirmButtonColor: '#1E94A3',
+                        showConfirmButton: false,
                         allowOutsideClick: false,
                         timer: 1500,
                     }).then(() => {
@@ -568,11 +566,23 @@ function removerProduto(id) {
                 } else {
                     Swal.fire({
                         title: 'Erro!',
-                        text: 'Não foi possível remover.',
+                        text: `Não foi possível remover ${nomeProduto}. Tente novamente.`,
                         icon: 'error',
-                        confirmButtonColor: '#1E94A3'
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        timer: 1500,
                     });
                 }
+            }).catch(error => {
+                console.error('Erro ao remover produto:', error);
+                Swal.fire({
+                    title: 'Erro de Conexão!',
+                    text: `Não foi possível se conectar ao servidor para remover "${nomeProduto}"`,
+                    icon: 'error',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    timer: 1500
+                });
             });
         }
     });
@@ -737,11 +747,14 @@ function renderizarProdutos(produtos) {
                     <td>${saidasHoje}</td>
                     <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
-                    <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
+                    <td style="padding-right:20px" class="actions">
+                        <button type="button" title="Detalhes" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})'>
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                         <a href="/editar-produto?id=${p.id}" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        <button type="button" onclick="removerProduto('${p.id}')" title="Excluir">
+                        <button type="button" onclick="removerProduto('${p.id}', '${p.nome.replace(/'/g, "\\'")}')" title="Excluir">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>

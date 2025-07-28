@@ -183,7 +183,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
 
     Swal.fire({
         title: 'Tem certeza?',
-        text: 'As alterações não poderão ser desfeitas.',
+        text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
         confirmButtonText: 'Sim',
@@ -271,15 +271,19 @@ function removerProduto() {
         return;
     }
 
+    const nomeProduto = document.getElementById('nome').value || 'produto';
     Swal.fire({
-        title: 'Remover produto?',
-        text: 'Esta ação não poderá ser desfeita.',
+        title: `Remover "${nomeProduto}"?`,
+        text: 'Esta ação não poderá ser desfeita',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#1E94A3',
         confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch('/produtos/' + id, {
@@ -287,8 +291,8 @@ function removerProduto() {
             }).then(response => {
                 if (response.ok) {
                     Swal.fire({
-                        title: 'Removendo...',
-                        text: 'Aguarde enquanto o produto é removido.',
+                        title: `Removendo "${nomeProduto}"`,
+                        text: 'Aguarde...',
                         icon: 'info',
                         showConfirmButton: false,
                         allowOutsideClick: false,
@@ -299,18 +303,22 @@ function removerProduto() {
                 } else {
                     Swal.fire({
                         title: 'Erro!',
-                        text: 'Não foi possível remover o produto. Verifique se ele não está associado a outras operações.',
+                        text: `Não foi possível remover "${nomeProduto}". Verifique se ele não está associado a outras operações.`,
                         icon: 'error',
-                        confirmButtonColor: '#1E94A3'
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        timer: 1500,
                     });
                 }
             }).catch(error => {
                 console.error('Erro ao remover produto:', error);
                 Swal.fire({
                     title: 'Erro de Conexão!',
-                    text: 'Não foi possível se conectar ao servidor para remover o produto.',
+                    text: `Não foi possível se conectar ao servidor para remover "${nomeProduto}"`,
                     icon: 'error',
-                    confirmButtonColor: '#1E94A3'
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    timer: 1500
                 });
             });
         }
