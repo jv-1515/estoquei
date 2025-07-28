@@ -169,6 +169,8 @@ select#genero {
     transition: color 0.2s;
 }
 
+
+/* sweetAlert */
 .swal2-popup {
     width: 400px;
     min-width: 400px;
@@ -176,7 +178,6 @@ select#genero {
     border-radius: 10px;
 }
 
-/* sweetAlert */
 .swal2-container {
     backdrop-filter: blur(2px);
 }
@@ -234,7 +235,7 @@ select#genero {
 /* Botão de deletar/cancelar (vermelho padrão SweetAlert2) */
 .swal2-deny,
 .swal2-styled.swal2-deny {
-    background-color: #f27474;
+    background-color: #d33;
     color: #fff;
 }
 .swal2-deny:hover,
@@ -259,9 +260,11 @@ select#genero {
 /* Título */
 .swal2-title {
     padding-top: 0;
+    font-size: 20px;
 }
 
 /* Conteúdo HTML */
 .swal2-html-container {
     padding: 10px;
+    font-size: 16px;
 }
