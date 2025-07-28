@@ -76,32 +76,53 @@ function updateOptions() {
 document.querySelector('form').addEventListener('submit', function(event) {
     const saveBtn = document.getElementById('save');
     saveBtn.disabled = true;
-    saveBtn.innerHTML = 'Cadastrando <i class="fa-solid fa-spinner fa-spin"></i>';
+    Swal.fire({
+        title: '<span style="margin-top:20px;padding-top: 20px;display:block;">Cadastrando produto</span>',
+        text: 'Aguarde...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
     event.preventDefault();
 
     const precoInput = document.getElementById('preco');
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
-    formData.set('preco', precoLimpo); // sobrescreve só no envio!
+    formData.set('preco', precoLimpo);
 
     fetch(this.action, {
         method: this.method,
         body: formData
-    }).then(data => {  
+    }).then(async data => {  
         if (!data.ok) {
             throw new Error('Falha de conexão');
-        }   
-        document.querySelector('form').reset();
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = 'Cadastrar produto';
+        }
+        const produto = await data.json();
+        const idProduto = produto.id;
+
+        form.reset();
+        const preview = document.getElementById('image-preview');
+        if (preview) {
+            Array.from(preview.querySelectorAll('img')).forEach(img => preview.removeChild(img));
+            Array.from(preview.querySelectorAll('.fa-image')).forEach(icon => preview.removeChild(icon));
+            const icon = document.createElement('i');
+            icon.className = 'fa-regular fa-image';
+            icon.style.fontSize = '30px';
+            preview.appendChild(icon);
+        }
+        const descricaoInput = document.getElementById('descricao');
+        if (descricaoInput) descricaoInput.value = '';
+
         Swal.fire({
             title: "Sucesso!",
             text: "Produto cadastrado no estoque!",
             icon: "success",
             showCloseButton: true,
             showCancelButton: true,
-            confirmButtonText: 'Visualizar Estoque',
-            cancelButtonText: 'Voltar para Início',
+            confirmButtonText: 'Acessar Estoque',
+            cancelButtonText: 'Abastecer Produto',
             allowOutsideClick: false,
             customClass: {
                 confirmButton: 'swal2-confirm-custom',
@@ -111,7 +132,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             if (result.isConfirmed) {
                 window.location.href = "/estoque";
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                window.location.href = "/inicio";
+                window.location.href = `/movimentar-produto?id=${idProduto}`;
             }
         });
     }).catch(error => {
@@ -221,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Código já cadastrado!',
-                            text: 'Informe outro código.',
+                            text: 'Informe outro código',
                             timer: 1500,
                             showConfirmButton: false
                         });
