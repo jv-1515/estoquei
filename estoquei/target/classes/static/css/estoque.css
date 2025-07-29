@@ -48,7 +48,6 @@ h2 {
 .filters {
     display: flex;
     flex-direction: column;
-    gap: 10px;
     width: 100%;
     background: none;
     padding: 0;
