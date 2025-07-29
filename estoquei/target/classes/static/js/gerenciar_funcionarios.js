@@ -81,7 +81,7 @@ function renderizarFuncionarios(lista) {
         <th>Cargo</th>
         <th>Email</th>
         <th>Status</th>
-        <th>Ações</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -121,10 +121,10 @@ function renderizarFuncionarios(lista) {
                 </span>
             </td>
             <td class="actions">
-                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.codigo}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${lista.length + idx + 1}">
                     <i class="fa-solid fa-pen"></i>
                 </a>
-                <button type="button" onclick="removerFuncionario('${f.codigo}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
             </td>
         </tr>
         `
@@ -175,47 +175,52 @@ function filtrar() {
     document.querySelector('.main-container').style.borderTopRightRadius = "0";
 }
 
-function removerFuncionario(codigo) {
+function removerFuncionario(id) {
+    const funcionario = funcionarios.find(f => f.id == id);
+    if (!funcionario) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: 'Funcionário não encontrado',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
     Swal.fire({
         title: 'Tem certeza?',
-        text: 'Esta ação não poderá ser desfeita.',
+        text: 'Esta ação não poderá ser desfeita',
         icon: "question",
         showCancelButton: true,
         confirmButtonText: 'Sim',
         cancelButtonText: 'Não',
         allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-confirm-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch(`/usuarios/${codigo}`, { method: 'DELETE' })
+            fetch(`/usuarios/${id}`, { method: 'DELETE' })
                 .then(res => {
                     if (res.ok) {
                         carregarFuncionarios();
                         Swal.fire({
-                            title: "Funcionário removido!",
+                            title: `Funcionário ${funcionario.nome} removido!`,
                             icon: "success",
-                            showCloseButton: true,
-                            showCancelButton: true,
-                            showConfirmButton: true,
-                            confirmButtonText: 'Visualizar Funcionários',
-                            cancelButtonText: 'Voltar para Início',
-                            allowOutsideClick: false,
-                            customClass: {
-                                confirmButton: 'swal2-confirm-custom',
-                                cancelButton: 'swal2-cancel-custom'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Apenas fecha o alerta, já está na tela de funcionários
-                            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                window.location.href = "/inicio";
-                            }
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            allowOutsideClick: false
                         });
                     } else {
-                        Swal.fire('Erro!', 'Não foi possível remover o funcionário.', 'error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: 'Não foi possível remover o funcionário',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            allowOutsideClick: false
+                        });
                     }
                 });
         }
@@ -268,7 +273,7 @@ function cadastrarFuncionario() {
     .then(res => {
         if (res.ok) {
             Swal.fire({
-                title: 'Funcionário cadastrado!',
+                title: `Funcionário ${funcionario.nome} cadastrado!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -278,16 +283,24 @@ function cadastrarFuncionario() {
             fecharCadastroFuncionario();
             carregarFuncionarios();
         } else {
-            Swal.fire('Erro!', 'Não foi possível cadastrar o funcionário.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro!',
+                text: 'Não foi possível cadastrar o funcionário',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
         }
     });
 }
 
 
 //editar funcionario
-function abrirEdicaoFuncionario(codigo) {
-    const funcionario = funcionarios.find(f => f.codigo === codigo);
-    const id = funcionario.id;
+function abrirEdicaoFuncionario(id) {
+    const funcionario = funcionarios.find(f => f.id == id);
+    document.getElementById('edit-id').value = funcionario.id;
 
     document.body.style.overflow = 'hidden';
     aplicarEstiloInputs();
@@ -331,16 +344,15 @@ function fecharEdicaoFuncionario() {
     document.body.style.overflow = '';
 }
 function salvarEdicaoFuncionario() {
-    const codigo = document.getElementById('edit-codigo').value;
-    const funcionario = funcionarios.find(f => f.codigo === codigo);
-    const id = funcionario.id;
+    const id = document.getElementById('edit-id').value;
+    // const funcionario = funcionarios.find(f => f.id == id);
 
     const funcionarioObj = {
-        codigo: codigo, // adicione se o backend espera
+        codigo: document.getElementById('edit-codigo').value,
         nome: document.getElementById('edit-nome').value,
         cargo: document.getElementById('edit-cargo').value,
         email: document.getElementById('edit-email').value,
-        senha: document.getElementById('edit-senha').value, // adicione a senha
+        senha: document.getElementById('edit-senha').value,
         cpf: document.getElementById('edit-cpf').value,
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value,
@@ -349,16 +361,12 @@ function salvarEdicaoFuncionario() {
 
     Swal.fire({
         title: 'Tem certeza?',
-        text: 'As alterações não poderão ser desfeitas.',
+        text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
         confirmButtonText: 'Sim',
         cancelButtonText: 'Não',
         allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-confirm-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/usuarios/${id}`, {
@@ -379,7 +387,15 @@ function salvarEdicaoFuncionario() {
                     carregarFuncionarios();
                     fecharEdicaoFuncionario();
                 } else {
-                    Swal.fire('Erro!', 'Não foi possível salvar as alterações.', 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Não foi possível salvar as alterações.',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
                 }
             });
         }

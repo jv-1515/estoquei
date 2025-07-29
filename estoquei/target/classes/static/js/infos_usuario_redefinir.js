@@ -43,10 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire('Atenção', 'A confirmação da nova senha não confere.', 'warning');
                     return;
                 }
-                // Aqui você pode adicionar lógica extra, como enviar via AJAX se desejar
-                // Exemplo de alerta de sucesso (pode ser movido para resposta do backend)
-                // e.preventDefault();
-                // Swal.fire('Sucesso', 'Senha atualizada com sucesso!', 'success');
             }
         });
     }
