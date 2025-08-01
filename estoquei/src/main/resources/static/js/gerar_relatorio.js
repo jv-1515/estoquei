@@ -349,12 +349,14 @@ function getFiltrosSelecionados() {
     const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
     const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
     const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
-    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
-    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
-    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
-    const dataInicio = document.getElementById('data-inicio').value || null;
-    const dataFim = document.getElementById('data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+    const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
+    const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
+    const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
+    const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
+    const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
+    const dataInicio = document.getElementById('periodo-data-inicio').value || null;
+    const dataFim = document.getElementById('periodo-data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
 }
 
 function atualizarLista() {
@@ -364,12 +366,23 @@ function atualizarLista() {
         if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
         if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
         if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
-        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
-        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
-        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
-        // Período: filtra por data de entrada/saída
-        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
-        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        if (!filtros.quantidadeTodos) {
+            if (filtros.quantidadeBaixo && !filtros.quantidadeZerados) {
+                if (!(p.quantidade > 0 && p.quantidade < p.limiteMinimo)) return false;
+            } else if (!filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (p.quantidade !== 0) return false;
+            } else if (filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (!(p.quantidade < p.limiteMinimo || p.quantidade === 0)) return false;
+            } else {
+                // Nenhum marcado: não mostra nada
+                return false;
+            }
+        }
+        // Faixa sempre é aplicada, exceto se só zerados está marcado (já filtrou acima)
+        if (!(filtros.quantidadeBaixo === false && filtros.quantidadeTodos === false && filtros.quantidadeZerados === true)) {
+            if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+            if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        }
         return true;
     });
 
@@ -389,12 +402,23 @@ function gerarRelatorio() {
         if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
         if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
         if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
-        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
-        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
-        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
-        // Período: filtra por data de entrada/saída
-        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
-        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        if (!filtros.quantidadeTodos) {
+            if (filtros.quantidadeBaixo && !filtros.quantidadeZerados) {
+                if (!(p.quantidade > 0 && p.quantidade < p.limiteMinimo)) return false;
+            } else if (!filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (p.quantidade !== 0) return false;
+            } else if (filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (!(p.quantidade < p.limiteMinimo || p.quantidade === 0)) return false;
+            } else {
+                // Nenhum marcado: não mostra nada
+                return false;
+            }
+        }
+        // Faixa sempre é aplicada, exceto se só zerados está marcado (já filtrou acima)
+        if (!(filtros.quantidadeBaixo === false && filtros.quantidadeTodos === false && filtros.quantidadeZerados === true)) {
+            if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+            if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        }
         return true;
     });
 
@@ -633,7 +657,6 @@ document.addEventListener('DOMContentLoaded', function() {
             montarCheckboxesGenero(produtos);
             atualizarLista();
         });
-    // ...restante do código...
 });
 
 // Use os selecionados no filtro
@@ -642,10 +665,171 @@ function getFiltrosSelecionados() {
     const categorias = getCategoriasSelecionadas();
     const tamanhos = getTamanhosSelecionados();
     const generos = getGenerosSelecionados();
-    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
-    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
-    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
-    const dataInicio = document.getElementById('data-inicio').value || null;
-    const dataFim = document.getElementById('data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+    const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
+    const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
+    const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
+    const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
+    const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
+    const dataInicio = document.getElementById('periodo-data-inicio').value || null;
+    const dataFim = document.getElementById('periodo-data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
 }
+
+// --- QUANTIDADE POPUP ---
+const qtdInput = document.getElementById('filter-quantidade');
+const qtdPopup = document.getElementById('quantidade-faixa-popup');
+if (qtdInput && qtdPopup) {
+    qtdInput.addEventListener('click', function(e) {
+        qtdPopup.style.display = 'block';
+        e.stopPropagation();
+    });
+    document.addEventListener('mousedown', function(e) {
+        if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+            qtdPopup.style.display = 'none';
+        }
+    });
+}
+
+// --- PERÍODO POPUP ---
+const periodoInput = document.getElementById('filter-periodo');
+const periodoPopup = document.getElementById('periodo-popup');
+if (periodoInput && periodoPopup) {
+    periodoInput.addEventListener('click', function(e) {
+        periodoPopup.style.display = 'block';
+        e.stopPropagation();
+    });
+    document.addEventListener('mousedown', function(e) {
+        if (periodoPopup.style.display === 'block' && !periodoPopup.contains(e.target) && e.target !== periodoInput) {
+            periodoPopup.style.display = 'none';
+        }
+    });
+}
+
+// --- PLACEHOLDER QUANTIDADE ---
+function atualizarPlaceholderQuantidade() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const min = document.getElementById('quantidade-min').value;
+    const max = document.getElementById('quantidade-max').value;
+    const input = document.getElementById('filter-quantidade');
+    let texto = 'Todas';
+
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) texto = 'Todas';
+    else if (chkBaixo.checked && !chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque';
+    else if (!chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Zerados';
+    else if (chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque + Zerados';
+    else if (min || max) texto = `De ${min || 0} até ${max || 999}`;
+    else texto = 'Personalizado';
+
+    input.value = texto;
+}
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup','quantidade-min','quantidade-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
+// --- PLACEHOLDER PERÍODO ---
+function atualizarPlaceholderPeriodo() {
+    const dataInicio = document.getElementById('periodo-data-inicio').value;
+    const dataFim = document.getElementById('periodo-data-fim').value;
+    const input = document.getElementById('filter-periodo');
+    if (dataInicio && dataFim) {
+        input.value = `De ${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}`;
+    } else if (dataInicio) {
+        input.value = `A partir de ${dataInicio.split('-').reverse().join('/')}`;
+    } else if (dataFim) {
+        input.value = `Até ${dataFim.split('-').reverse().join('/')}`;
+    } else {
+        input.value = '';
+    }
+}
+['periodo-data-inicio','periodo-data-fim'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderPeriodo);
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderPeriodo);
+
+// --- LÓGICA DOS CHECKBOXES QUANTIDADE ---
+if (document.getElementById('quantidade-todas-popup')) {
+    document.getElementById('quantidade-todas-popup').addEventListener('change', function() {
+        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const zerados = document.getElementById('quantidade-zerados-popup');
+        if (this.checked) {
+            baixo.checked = true;
+            zerados.checked = true;
+        }
+        atualizarPlaceholderQuantidade();
+    });
+}
+['quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', function() {
+        const todos = document.getElementById('quantidade-todas-popup');
+        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const zerados = document.getElementById('quantidade-zerados-popup');
+        if (!baixo.checked || !zerados.checked) todos.checked = false;
+        if (baixo.checked && zerados.checked) todos.checked = true;
+        atualizarPlaceholderQuantidade();
+    });
+});
+
+function syncQuantidadeChecksAndInputs() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const minInput = document.getElementById('quantidade-min');
+    const maxInput = document.getElementById('quantidade-max');
+
+    // Se só zerados está marcado
+    if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        minInput.value = 0;
+        maxInput.value = 0;
+        minInput.disabled = true;
+        maxInput.disabled = true;
+    } else {
+        minInput.disabled = false;
+        maxInput.disabled = false;
+        // Se min/max estão ambos 0 e só zerados está marcado, ok
+        // Se min/max estão 0 mas outros checks estão marcados, limpe min/max
+        if ((chkTodos.checked || chkBaixo.checked) && minInput.value == 0 && maxInput.value == 0) {
+            minInput.value = '';
+            maxInput.value = '';
+        }
+    }
+}
+
+// Sempre que mudar os checkboxes de quantidade
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', function() {
+        syncQuantidadeChecksAndInputs();
+        atualizarPlaceholderQuantidade();
+        atualizarLista && atualizarLista();
+    });
+});
+
+// Sempre que mudar min/max manualmente
+['quantidade-min','quantidade-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() {
+        const chkTodos = document.getElementById('quantidade-todas-popup');
+        const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const chkZerados = document.getElementById('quantidade-zerados-popup');
+        // Se min/max for alterado para 0 e só zerados está marcado, mantenha
+        if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
+            // ok
+        } else {
+            // Se mexeu nos inputs, desmarque "Todos" e "Zerados"
+            chkTodos.checked = false;
+            if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
+        }
+        atualizarPlaceholderQuantidade();
+        atualizarLista && atualizarLista();
+    });
+});
+
+// Chame no início para garantir estado correto
+document.addEventListener('DOMContentLoaded', syncQuantidadeChecksAndInputs);
+

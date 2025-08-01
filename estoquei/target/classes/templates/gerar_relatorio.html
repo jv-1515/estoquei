@@ -55,19 +55,46 @@
             <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Quantidade -->
-          <div class="input-group" style="max-width: 120px;">
-            <label>Quantidade</label>
-            <input type="number" id="quantidade-min" placeholder="Mínimo" min="0" style="width: 48%; display:inline-block;">
-            <input type="number" id="quantidade-max" placeholder="Máximo" min="0" style="width: 48%; display:inline-block;">
-            <label style="font-weight:normal; font-size:11px;">
-              <input type="checkbox" id="baixo-estoque-checkbox" /> Baixo estoque
-            </label>
+          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+            <label for="filter-quantidade">Quantidades</label>
+            <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
+            <div id="quantidade-faixa-popup" class="faixa-popup">
+              <label class="quantidade-check-label">
+                <input type="checkbox" id="quantidade-todas-popup" checked />Todos
+              </label>
+              <label class="quantidade-check-label">
+                <input type="checkbox" id="quantidade-baixo-estoque-popup" checked />Baixo estoque
+              </label>
+              <label class="quantidade-check-label">
+                <input type="checkbox" id="quantidade-zerados-popup" checked />Produtos zerados
+              </label>
+              <div style="display: flex; align-items: center; gap: 8px; margin:8px 0;">
+                <span style="min-width: 28px;">de:</span>
+                <input type="number" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                <span style="min-width: 28px;">até:</span>
+                <input type="number" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+              </div>
+            </div>
           </div>
+
           <!-- Período -->
-          <div class="input-group" style="max-width: 160px;">
-            <label>Período</label>
-            <input type="date" id="data-inicio" style="width:48%; display:inline-block;">
-            <input type="date" id="data-fim" style="width:48%; display:inline-block;">
+          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+            <label for="filter-periodo">Período</label>
+            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" />
+            <div id="periodo-popup" class="faixa-popup" style="display:none;">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <span>Data Início:</span>
+                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
+                </div>
+                <div>
+                  <span>Data Fim:</span>
+                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
+                </div>
+              </div>
+            </div>
           </div>
           <div class="input-group" style="min-width: 120px; align-self: flex-end;">
             <button type="button" id="btn-gerar-relatorio" class="btn">Gerar Relatório</button>
