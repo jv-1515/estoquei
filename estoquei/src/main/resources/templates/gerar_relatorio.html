@@ -15,68 +15,70 @@
         <a href="/inicio"><button>Home</button></a>
     </nav>
     <h1>Gerar Relatório de Produtos</h1>
-    <section id="filtros-relatorio">
-        <div>
-            <label for="produtos-select">Produtos:</label>
-            <div class="multiselect">
-                <div class="overSelect" onclick="showCheckboxesProdutoMulti()">
-                    <span id="produto-multi-placeholder">Todos</span>
-                </div>
-                <div id="checkboxes-produto-multi" style="display:none;">
-                    <!-- Checkboxes serão montados pelo JS -->
-                </div>
+    <div class="filters-container">
+      <div class="filters">
+        <div class="filters-row">
+          <!-- Produtos -->
+          <div class="multiselect input-group">
+            <label for="produtos-select">Produtos</label>
+            <div class="overSelect" onclick="toggleCheckboxes('produto')">
+              <span id="produto-multi-placeholder">Todos</span>
+              <span style="margin-left:auto;">&#9660;</span>
             </div>
-        </div>
-        <div>
-            <label for="categorias-select">Categorias:</label>
-            <div class="multiselect">
-                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()">
-                    <span id="categoria-multi-placeholder">Todas</span>
-                </div>
-                <div id="checkboxes-categoria-multi" style="display:none;">
-                    <!-- Checkboxes serão montados pelo JS -->
-                </div>
+            <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
+          </div>
+          <!-- Categorias -->
+          <div class="multiselect input-group">
+            <label for="categorias-select">Categorias</label>
+            <div class="overSelect" onclick="toggleCheckboxes('categoria')">
+              <span id="categoria-multi-placeholder">Todas</span>
+              <span style="margin-left:auto;">&#9660;</span>
             </div>
-        </div>
-        <div>
-            <label for="tamanhos-select">Tamanhos:</label>
-            <div class="multiselect">
-                <div class="overSelect" onclick="showCheckboxesTamanhoMulti()">
-                    <span id="tamanho-multi-placeholder">Todos</span>
-                </div>
-                <div id="checkboxes-tamanho-multi" style="display:none;">
-                    <!-- Checkboxes serão montados pelo JS -->
-                </div>
+            <div id="checkboxes-categoria-multi" class="checkboxes-popup"></div>
+          </div>
+          <!-- Tamanhos -->
+          <div class="multiselect input-group">
+            <label for="tamanhos-select">Tamanhos</label>
+            <div class="overSelect" onclick="toggleCheckboxes('tamanho')">
+              <span id="tamanho-multi-placeholder">Todos</span>
+              <span style="margin-left:auto;">&#9660;</span>
             </div>
-        </div>
-        <div>
-            <label for="generos-select">Gêneros:</label>
-            <div class="multiselect">
-                <div class="overSelect" onclick="showCheckboxesGeneroMulti()">
-                    <span id="genero-multi-placeholder">Todos</span>
-                </div>
-                <div id="checkboxes-genero-multi" style="display:none;">
-                    <!-- Checkboxes serão montados pelo JS -->
-                </div>
+            <div id="checkboxes-tamanho-multi" class="checkboxes-popup"></div>
+          </div>
+          <!-- Gêneros -->
+          <div class="multiselect input-group">
+            <label for="generos-select">Gêneros</label>
+            <div class="overSelect" onclick="toggleCheckboxes('genero')">
+              <span id="genero-multi-placeholder">Todos</span>
+              <span style="margin-left:auto;">&#9660;</span>
             </div>
+            <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
+          </div>
+          <!-- Quantidade -->
+          <div class="input-group" style="max-width: 120px;">
+            <label>Quantidade</label>
+            <input type="number" id="quantidade-min" placeholder="Mínimo" min="0" style="width: 48%; display:inline-block;">
+            <input type="number" id="quantidade-max" placeholder="Máximo" min="0" style="width: 48%; display:inline-block;">
+            <label style="font-weight:normal; font-size:11px;">
+              <input type="checkbox" id="baixo-estoque-checkbox" /> Baixo estoque
+            </label>
+          </div>
+          <!-- Período -->
+          <div class="input-group" style="max-width: 160px;">
+            <label>Período</label>
+            <input type="date" id="data-inicio" style="width:48%; display:inline-block;">
+            <input type="date" id="data-fim" style="width:48%; display:inline-block;">
+          </div>
+          <div class="input-group" style="min-width: 120px; align-self: flex-end;">
+            <button type="button" id="btn-gerar-relatorio" class="btn">Gerar Relatório</button>
+          </div>
         </div>
-        <div>
-            <label>Quantidade:</label>
-            <input type="number" id="quantidade-min" placeholder="Mínimo" min="0" />
-            <input type="number" id="quantidade-max" placeholder="Máximo" min="0" />
-            <label><input type="checkbox" id="baixo-estoque-checkbox" /> Baixo estoque</label>
-        </div>
-        <div>
-            <label>Período:</label>
-            <input type="date" id="data-inicio" />
-            <input type="date" id="data-fim" />
-        </div>
-    </section>
+      </div>
+    </div>
     <section>
         <h2>Prévia dos Produtos Selecionados</h2>
         <ul id="lista-produtos"></ul>
     </section>
-    <button id="btn-gerar-relatorio">Gerar Relatório</button>
     <div id="preview-relatorio"></div>
 </body>
 </html>
