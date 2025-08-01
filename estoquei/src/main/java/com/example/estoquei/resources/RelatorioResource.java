@@ -1,5 +1,8 @@
 package com.example.estoquei.resources;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.estoquei.dto.FiltroRelatorioDTO;
+import com.example.estoquei.model.Produto;
 import com.example.estoquei.service.RelatorioService;
 
 @RestController
@@ -20,8 +23,9 @@ public class RelatorioResource {
     private RelatorioService relatorioService;
 
     @PostMapping("/gerar")
-    public ResponseEntity<byte[]> gerarRelatorio(@RequestBody FiltroRelatorioDTO filtro) {
-        byte[] pdf = relatorioService.gerarPDFProdutos(filtro);
+    public ResponseEntity<byte[]> gerarRelatorio(@RequestBody Map<String, List<Produto>> payload) {
+        List<Produto> produtos = payload.get("produtos");
+        byte[] pdf = relatorioService.gerarPDFProdutosDireto(produtos);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "RelatorioProdutos.pdf");
