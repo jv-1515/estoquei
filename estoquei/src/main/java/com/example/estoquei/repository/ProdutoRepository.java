@@ -239,4 +239,12 @@ public class ProdutoRepository {
             return Optional.empty();
         }
     }
+
+        public List<Produto> findAllById(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return new ArrayList<>();
+        String jpql = "SELECT p FROM Produto p WHERE p.id IN :ids";
+        return entityManager.createQuery(jpql, Produto.class)
+            .setParameter("ids", ids)
+            .getResultList();
+    }
 }
