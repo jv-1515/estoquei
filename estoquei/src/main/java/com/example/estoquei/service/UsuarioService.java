@@ -54,6 +54,7 @@ public class UsuarioService {
     public Usuario atualizar(Long id, Usuario usuarioAtualizado) {
         Usuario usuario = buscarPorId(id);
         if (usuario == null) return null;
+        usuario.setCodigo(usuarioAtualizado.getCodigo());
         usuario.setNome(usuarioAtualizado.getNome());
         usuario.setEmail(usuarioAtualizado.getEmail());
         usuario.setCargo(usuarioAtualizado.getCargo());
@@ -68,7 +69,6 @@ public class UsuarioService {
         usuario.setCpf(usuarioAtualizado.getCpf());
         usuario.setDataNascimento(usuarioAtualizado.getDataNascimento());
         usuario.setAtivo(usuarioAtualizado.getAtivo());
-        // ... outros campos que quiser atualizar
         return usuarioRepository.save(usuario);
     }
 

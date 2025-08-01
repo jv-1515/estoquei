@@ -294,8 +294,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => {
                     if (res.ok) {
                         Swal.fire({
-                            title: 'Sucesso',
-                            text: 'Senha atualizada com sucesso!',
+                            title: 'Sucesso!',
+                            text: 'Sua senha foi atualizada',
                             icon: 'success',
                             showConfirmButton: false,
                             timer: 1000,
