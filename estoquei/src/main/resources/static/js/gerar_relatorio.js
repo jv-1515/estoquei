@@ -382,16 +382,26 @@ function atualizarLista() {
 }
 
 function gerarRelatorio() {
-    const filtros = getFiltrosSelecionados(); // <-- Adicione esta linha!
+    const filtros = getFiltrosSelecionados();
+    // Filtra os produtos igual à prévia
+    const produtosFiltrados = todosProdutos.filter(p => {
+        if (filtros.idsSelecionados.length && !filtros.idsSelecionados.includes(p.id)) return false;
+        if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
+        if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
+        if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
+        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
+        // Período: filtra por data de entrada/saída
+        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
+        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        return true;
+    });
+
     fetch('/relatorio/gerar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ids: filtros.idsSelecionados,
-            quantidadeMin: filtros.quantidadeMin,
-            quantidadeMax: filtros.quantidadeMax,
-            baixoEstoque: filtros.baixoEstoque
-        })
+        body: JSON.stringify({ produtos: produtosFiltrados })
     })
     .then(res => res.blob())
     .then(blob => {
