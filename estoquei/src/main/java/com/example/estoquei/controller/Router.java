@@ -216,4 +216,9 @@ public class Router {
         LocalDate hoje = LocalDate.now();
         return movimentacaoRepo.countByDataAndTipoMovimentacao(hoje, "SAIDA");
     }
+
+    @GetMapping("/gerar-relatorio")
+    public String gerarRelatorioPage() {
+        return "gerar_relatorio"; // nome do arquivo HTML sem extensão
+    }
 }

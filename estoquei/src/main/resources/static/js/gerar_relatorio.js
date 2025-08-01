@@ -1,284 +1,554 @@
-function getFiltros() {
-    return {
-        categoria: document.getElementById('filter-categoria') ? document.getElementById('filter-categoria').value : '',
-        tamanho: document.getElementById('filter-tamanho') ? document.getElementById('filter-tamanho').value : '',
-        genero: document.getElementById('filter-genero') ? document.getElementById('filter-genero').value : '',
-        preco: document.getElementById('filter-preco') ? document.getElementById('filter-preco').value : '',
-        dataInicio: document.getElementById('periodo-data-inicio') ? document.getElementById('periodo-data-inicio').value : '',
-        dataFim: document.getElementById('periodo-data-fim') ? document.getElementById('periodo-data-fim').value : ''
-    };
-}
+// function getFiltros() {
+//     return {
+//         categoria: document.getElementById('filter-categoria') ? document.getElementById('filter-categoria').value : '',
+//         tamanho: document.getElementById('filter-tamanho') ? document.getElementById('filter-tamanho').value : '',
+//         genero: document.getElementById('filter-genero') ? document.getElementById('filter-genero').value : '',
+//         preco: document.getElementById('filter-preco') ? document.getElementById('filter-preco').value : '',
+//         dataInicio: document.getElementById('periodo-data-inicio') ? document.getElementById('periodo-data-inicio').value : '',
+//         dataFim: document.getElementById('periodo-data-fim') ? document.getElementById('periodo-data-fim').value : ''
+//     };
+// }
 
-function formatarDataBR(data) {
-    if (!data) return '';
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
-}
+// function formatarDataBR(data) {
+//     if (!data) return '';
+//     const [ano, mes, dia] = data.split('-');
+//     return `${dia}/${mes}/${ano}`;
+// }
 
-function gerar() {
-    const areaGerar = document.querySelector('.filters-container + .filters-container');
-    areaGerar.style.display = 'none';
-
-
-    const filtros = getFiltros();
-    const hoje = new Date();
-    const hojeStr = hoje.toISOString().slice(0, 10);
-
-    if (filtros.dataInicio && filtros.dataInicio > hojeStr) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Data inválida',
-            text: 'A Data Início não pode ser posterior à frente de hoje.',
-            timer: 1500,
-            showConfirmButton: false
-        });
-        areaGerar.style.display = 'flex';
-        return;
-    }
-    if (filtros.dataFim && filtros.dataFim > hojeStr) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Data inválida',
-            text: 'A Data Fim não pode ser posterior à data de hoje.',
-            timer: 1500,
-            showConfirmButton: false
-        });
-        areaGerar.style.display = 'flex';
-        return;
-    }
+// function gerar() {
+//     const areaGerar = document.querySelector('.filters-container + .filters-container');
+//     areaGerar.style.display = 'none';
 
 
-    // Impede gerar se qualquer um dos campos de período estiver vazio
-    if (!filtros.dataInicio) {
-        const popup = document.getElementById('periodo-popup');
-        if (popup) {
-            popup.style.display = 'block';
-            const input = popup.querySelector('#periodo-data-inicio');
-            if (input) input.focus();
-        }
-        areaGerar.style.display = 'flex';
-        Swal.fire({
-            icon: 'warning',
-            title: 'Atenção',
-            text: 'Selecione a Data Início.',
-            timer: 1200,
-            showConfirmButton: false,
-            timerProgressBar: true
+//     const filtros = getFiltros();
+//     const hoje = new Date();
+//     const hojeStr = hoje.toISOString().slice(0, 10);
 
-        });
-        return;
-    }
-    if (!filtros.dataFim) {
-        const popup = document.getElementById('periodo-popup');
-        if (popup) {
-            popup.style.display = 'block';
-            const input = popup.querySelector('#periodo-data-fim');
-            if (input) input.focus();
-        }
-        areaGerar.style.display = 'flex';
-        Swal.fire({
-            icon: 'warning',
-            title: 'Atenção',
-            text: 'Selecione a Data Fim.',
-            timer: 1200,
-            showConfirmButton: false,
-            timerProgressBar: true
+//     if (filtros.dataInicio && filtros.dataInicio > hojeStr) {
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Data inválida',
+//             text: 'A Data Início não pode ser posterior à frente de hoje.',
+//             timer: 1500,
+//             showConfirmButton: false
+//         });
+//         areaGerar.style.display = 'flex';
+//         return;
+//     }
+//     if (filtros.dataFim && filtros.dataFim > hojeStr) {
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Data inválida',
+//             text: 'A Data Fim não pode ser posterior à data de hoje.',
+//             timer: 1500,
+//             showConfirmButton: false
+//         });
+//         areaGerar.style.display = 'flex';
+//         return;
+//     }
 
-        });
-        return;
-    }
 
-    limparFiltros();
+//     // Impede gerar se qualquer um dos campos de período estiver vazio
+//     if (!filtros.dataInicio) {
+//         const popup = document.getElementById('periodo-popup');
+//         if (popup) {
+//             popup.style.display = 'block';
+//             const input = popup.querySelector('#periodo-data-inicio');
+//             if (input) input.focus();
+//         }
+//         areaGerar.style.display = 'flex';
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Atenção',
+//             text: 'Selecione a Data Início.',
+//             timer: 1200,
+//             showConfirmButton: false,
+//             timerProgressBar: true
 
-    Object.keys(filtros).forEach(key => {
-        if (filtros[key] === "") filtros[key] = null;
-    });
-    const todosVazios = Object.values(filtros).every(v => !v || v === '');
+//         });
+//         return;
+//     }
+//     if (!filtros.dataFim) {
+//         const popup = document.getElementById('periodo-popup');
+//         if (popup) {
+//             popup.style.display = 'block';
+//             const input = popup.querySelector('#periodo-data-fim');
+//             if (input) input.focus();
+//         }
+//         areaGerar.style.display = 'flex';
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Atenção',
+//             text: 'Selecione a Data Fim.',
+//             timer: 1200,
+//             showConfirmButton: false,
+//             timerProgressBar: true
 
-    // Função para ordenar e agrupar produtos por categoria e tamanho
-    function agruparOrdenar(produtos) {
-        return produtos
-            .slice()
-            .sort((a, b) => {
-                // Ordena por categoria, depois por tamanho (alfanumérico)
-                if (a.categoria.toLowerCase() < b.categoria.toLowerCase()) return -1;
-                if (a.categoria.toLowerCase() > b.categoria.toLowerCase()) return 1;
-                // Tamanho pode ser número ou string, então compara como string
-                return a.tamanho.toString().localeCompare(b.tamanho.toString(), undefined, { numeric: true });
-            });
-    }
+//         });
+//         return;
+//     }
 
-    // Função para gerar o PDF (recebe a lista de produtos)
-    function gerarPDF(produtos, filtros) {
-        if (!produtos || produtos.length === 0) {
-            Swal.fire('Atenção', 'Nenhum produto encontrado para os filtros selecionados.', 'info');
-            return;
-        }
+//     limparFiltros();
 
-        // ORDENA E AGRUPA
-        produtos = agruparOrdenar(produtos);
+//     Object.keys(filtros).forEach(key => {
+//         if (filtros[key] === "") filtros[key] = null;
+//     });
+//     const todosVazios = Object.values(filtros).every(v => !v || v === '');
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+//     // Função para ordenar e agrupar produtos por categoria e tamanho
+//     function agruparOrdenar(produtos) {
+//         return produtos
+//             .slice()
+//             .sort((a, b) => {
+//                 // Ordena por categoria, depois por tamanho (alfanumérico)
+//                 if (a.categoria.toLowerCase() < b.categoria.toLowerCase()) return -1;
+//                 if (a.categoria.toLowerCase() > b.categoria.toLowerCase()) return 1;
+//                 // Tamanho pode ser número ou string, então compara como string
+//                 return a.tamanho.toString().localeCompare(b.tamanho.toString(), undefined, { numeric: true });
+//             });
+//     }
 
-        // CORES DO PROJETO (ajuste conforme seu padrão)
-        const corCabecalho = "#1E94A3";
-        const corLinha = "#F5F5F5";
+//     // Função para gerar o PDF (recebe a lista de produtos)
+//     function gerarPDF(produtos, filtros) {
+//         if (!produtos || produtos.length === 0) {
+//             Swal.fire('Atenção', 'Nenhum produto encontrado para os filtros selecionados.', 'info');
+//             return;
+//         }
 
-        // LOGO (ajuste o caminho se necessário)
-        const logoImg = new Image();
-        logoImg.src = './images/logo_icon.png'; // ajuste o caminho conforme seu projeto
+//         // ORDENA E AGRUPA
+//         produtos = agruparOrdenar(produtos);
 
-        // Cabeçalho com logo (carrega o logo antes de gerar o resto)
-        logoImg.onload = function () {
-            doc.addImage(logoImg, 'PNG', 14, 8, 10, 10);
-            doc.setFontSize(12);
-            doc.setTextColor(corCabecalho);
-            doc.text('Relatório de Produtos', 26, 15);
-            doc.setFontSize(8);
-            doc.setTextColor('#333');
-            doc.text('Data de emissão: ' + new Date().toLocaleDateString('pt-BR'), 14, 22);
+//         const { jsPDF } = window.jspdf;
+//         const doc = new jsPDF();
 
-            // Tabela principal
-            const columns = [
-                { header: 'Código', dataKey: 'codigo' },
-                { header: 'Nome', dataKey: 'nome' },
-                { header: 'Categoria', dataKey: 'categoria' },
-                { header: 'Tamanho', dataKey: 'tamanho' },
-                { header: 'Gênero', dataKey: 'genero' },
-                { header: 'Entradas', dataKey: 'entradas' },
-                { header: 'Saídas', dataKey: 'saidas' },
-                { header: 'Estoque Atual', dataKey: 'quantidade' },
-                { header: 'Limite Mínimo', dataKey: 'limiteMinimo' },
-                { header: 'Preço Unitário', dataKey: 'preco' },
-                { header: 'Preço Total', dataKey: 'precoTotal' }
-            ];
+//         // CORES DO PROJETO (ajuste conforme seu padrão)
+//         const corCabecalho = "#1E94A3";
+//         const corLinha = "#F5F5F5";
 
-            const rows = produtos.map(p => ({
-                codigo: p.codigo,
-                nome: p.nome,
-                categoria: p.categoria,
-                tamanho: p.tamanho,
-                genero: p.genero,
-                entradas: p.quantidade,
-                saidas: p.quantidade,
-                quantidade: p.quantidade,
-                limiteMinimo: p.limiteMinimo,
-                preco: p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '',
-                precoTotal: p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''
-            }));
+//         // LOGO (ajuste o caminho se necessário)
+//         const logoImg = new Image();
+//         logoImg.src = './images/logo_icon.png'; // ajuste o caminho conforme seu projeto
 
-            doc.autoTable({
-                columns: columns,
-                body: rows,
-                startY: 26,
-                styles: { fontSize: 8, cellPadding: 2 },
-                headStyles: { fillColor: corCabecalho, textColor: '#fff', fontStyle: 'bold' },
-                alternateRowStyles: { fillColor: corLinha }
-            });
+//         // Cabeçalho com logo (carrega o logo antes de gerar o resto)
+//         logoImg.onload = function () {
+//             doc.addImage(logoImg, 'PNG', 14, 8, 10, 10);
+//             doc.setFontSize(12);
+//             doc.setTextColor(corCabecalho);
+//             doc.text('Relatório de Produtos', 26, 15);
+//             doc.setFontSize(8);
+//             doc.setTextColor('#333');
+//             doc.text('Data de emissão: ' + new Date().toLocaleDateString('pt-BR'), 14, 22);
 
-            // Detalhamento por produto (opcional)
-            let y = doc.lastAutoTable.finalY + 8;
-            produtos.forEach((p, idx) => {
-                doc.setFontSize(10);
-                doc.setTextColor(corCabecalho);
-                doc.text(`Detalhes do produto: ${p.nome}`, 14, y);
+//             // Tabela principal
+//             const columns = [
+//                 { header: 'Código', dataKey: 'codigo' },
+//                 { header: 'Nome', dataKey: 'nome' },
+//                 { header: 'Categoria', dataKey: 'categoria' },
+//                 { header: 'Tamanho', dataKey: 'tamanho' },
+//                 { header: 'Gênero', dataKey: 'genero' },
+//                 { header: 'Entradas', dataKey: 'entradas' },
+//                 { header: 'Saídas', dataKey: 'saidas' },
+//                 { header: 'Estoque Atual', dataKey: 'quantidade' },
+//                 { header: 'Limite Mínimo', dataKey: 'limiteMinimo' },
+//                 { header: 'Preço Unitário', dataKey: 'preco' },
+//                 { header: 'Preço Total', dataKey: 'precoTotal' }
+//             ];
 
-                doc.setFontSize(8);
-                doc.setTextColor('#333');
-                y += 5;
-                doc.text(`Código: ${p.codigo}`, 14, y);
-                doc.text(`Categoria: ${p.categoria}`, 50, y);
-                doc.text(`Tamanho: ${p.tamanho}`, 100, y);
-                doc.text(`Gênero: ${p.genero}`, 140, y);
+//             const rows = produtos.map(p => ({
+//                 codigo: p.codigo,
+//                 nome: p.nome,
+//                 categoria: p.categoria,
+//                 tamanho: p.tamanho,
+//                 genero: p.genero,
+//                 entradas: p.quantidade,
+//                 saidas: p.quantidade,
+//                 quantidade: p.quantidade,
+//                 limiteMinimo: p.limiteMinimo,
+//                 preco: p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '',
+//                 precoTotal: p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''
+//             }));
 
-                y += 5;
-                doc.text(`Estoque Atual: ${p.quantidade}`, 14, y);
-                doc.text(`Limite Mínimo: ${p.limiteMinimo}`, 50, y);
-                doc.text(`Preço Unitário: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : ''}`, 100, y);
-                doc.text(`Preço Total: ${p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''}`, 140, y);
+//             doc.autoTable({
+//                 columns: columns,
+//                 body: rows,
+//                 startY: 26,
+//                 styles: { fontSize: 8, cellPadding: 2 },
+//                 headStyles: { fillColor: corCabecalho, textColor: '#fff', fontStyle: 'bold' },
+//                 alternateRowStyles: { fillColor: corLinha }
+//             });
 
-                y += 5;
-                doc.text(`Entradas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 14, y);
-                doc.text(`Saídas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 60, y);
+//             // Detalhamento por produto (opcional)
+//             let y = doc.lastAutoTable.finalY + 8;
+//             produtos.forEach((p, idx) => {
+//                 doc.setFontSize(10);
+//                 doc.setTextColor(corCabecalho);
+//                 doc.text(`Detalhes do produto: ${p.nome}`, 14, y);
 
-                y += 5;
-                doc.text(`Data de criação: ${p.dataCriacao ? formatarDataBR(p.dataCriacao) : new Date().toLocaleDateString('pt-BR')} (TEMPORÁRIO: usar data real depois)`, 14, y);
+//                 doc.setFontSize(8);
+//                 doc.setTextColor('#333');
+//                 y += 5;
+//                 doc.text(`Código: ${p.codigo}`, 14, y);
+//                 doc.text(`Categoria: ${p.categoria}`, 50, y);
+//                 doc.text(`Tamanho: ${p.tamanho}`, 100, y);
+//                 doc.text(`Gênero: ${p.genero}`, 140, y);
 
-                y += 10;
-                // Quebra de página se necessário
-                if (y > 270 && idx < produtos.length - 1) {
-                    doc.addPage();
-                    y = 20;
-                }
-            });
+//                 y += 5;
+//                 doc.text(`Estoque Atual: ${p.quantidade}`, 14, y);
+//                 doc.text(`Limite Mínimo: ${p.limiteMinimo}`, 50, y);
+//                 doc.text(`Preço Unitário: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : ''}`, 100, y);
+//                 doc.text(`Preço Total: ${p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''}`, 140, y);
 
-            // Nome do arquivo: RelatorioDeDesempenho_DDMMAAAA.pdf
-            const hoje = new Date();
-            const baseNomeArquivo = `RelatorioDeDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
-            let nomeArquivo = `${baseNomeArquivo}.pdf`;
+//                 y += 5;
+//                 doc.text(`Entradas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 14, y);
+//                 doc.text(`Saídas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 60, y);
 
-            // Garante nome único adicionando _1, _2, etc.
-            if (window.relatoriosGerados) {
-                let contador = 1;
-                while (window.relatoriosGerados.some(r => r.nome === nomeArquivo)) {
-                    nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
-                    contador++;
-                }
-            }
+//                 y += 5;
+//                 doc.text(`Data de criação: ${p.dataCriacao ? formatarDataBR(p.dataCriacao) : new Date().toLocaleDateString('pt-BR')} (TEMPORÁRIO: usar data real depois)`, 14, y);
 
-            doc.save(nomeArquivo); // (mantém para baixar na hora)
+//                 y += 10;
+//                 // Quebra de página se necessário
+//                 if (y > 270 && idx < produtos.length - 1) {
+//                     doc.addPage();
+//                     y = 20;
+//                 }
+//             });
 
-            var blob = doc.output('blob');
-            var blobUrl = URL.createObjectURL(blob);
-            if (window.adicionarRelatorio) {
-                window.adicionarRelatorio({
-                    id: Date.now(),
-                    nome: nomeArquivo,
-                    dataCriacao: new Date(),
-                    periodo: (filtros.dataInicio && filtros.dataFim)
-                        ? (filtros.dataInicio === filtros.dataFim
-                            ? formatarDataBR(filtros.dataInicio)
-                            : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
-                        : formatarDataBR(new Date().toISOString().slice(0, 10)),
-                    blobUrl
-                });
-            }
-        };
-    }
+//             // Nome do arquivo: RelatorioDeDesempenho_DDMMAAAA.pdf
+//             const hoje = new Date();
+//             const baseNomeArquivo = `RelatorioDeDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
+//             let nomeArquivo = `${baseNomeArquivo}.pdf`;
 
-    if (todosVazios) {
-        fetch('/produtos')
-            .then(res => res.json())
-            .then(produtos => gerarPDF(produtos, filtros))
-            .catch(() => {
-                Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
-            });
-    } else {
-        fetch('/produtos/filtrar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(filtros)
-        })
+//             // Garante nome único adicionando _1, _2, etc.
+//             if (window.relatoriosGerados) {
+//                 let contador = 1;
+//                 while (window.relatoriosGerados.some(r => r.nome === nomeArquivo)) {
+//                     nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
+//                     contador++;
+//                 }
+//             }
+
+//             doc.save(nomeArquivo); // (mantém para baixar na hora)
+
+//             var blob = doc.output('blob');
+//             var blobUrl = URL.createObjectURL(blob);
+//             if (window.adicionarRelatorio) {
+//                 window.adicionarRelatorio({
+//                     id: Date.now(),
+//                     nome: nomeArquivo,
+//                     dataCriacao: new Date(),
+//                     periodo: (filtros.dataInicio && filtros.dataFim)
+//                         ? (filtros.dataInicio === filtros.dataFim
+//                             ? formatarDataBR(filtros.dataInicio)
+//                             : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
+//                         : formatarDataBR(new Date().toISOString().slice(0, 10)),
+//                     blobUrl
+//                 });
+//             }
+//         };
+//     }
+
+//     if (todosVazios) {
+//         fetch('/produtos')
+//             .then(res => res.json())
+//             .then(produtos => gerarPDF(produtos, filtros))
+//             .catch(() => {
+//                 Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
+//             });
+//     } else {
+//         fetch('/produtos/filtrar', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(filtros)
+//         })
+//         .then(res => res.json())
+//         .then(produtos => gerarPDF(produtos, filtros))
+//         .catch(() => {
+//             Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
+//         });
+//     }
+// }
+
+// function limparFiltros() {
+//     document.querySelectorAll(
+//         '#filter-categoria, #filter-tamanho, #filter-genero, #filter-preco, #filter-data-inicio, #filter-data-fim'
+//     ).forEach(el => el.value = '');
+// }
+
+// document.getElementById('filter-data-fim').addEventListener('input', function() {
+//     const dataInicio = document.getElementById('filter-data-inicio');
+//     if (this.value) {
+//         dataInicio.required = true;
+//     } else {
+//         dataInicio.required = false;
+//     }
+// });
+
+
+
+
+
+
+//novo
+
+let todosProdutos = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/produtos')
         .then(res => res.json())
-        .then(produtos => gerarPDF(produtos, filtros))
-        .catch(() => {
-            Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
+        .then(produtos => {
+            todosProdutos = produtos;
+            montarSelects(produtos);
+            atualizarLista();
         });
-    }
-}
 
-function limparFiltros() {
-    document.querySelectorAll(
-        '#filter-categoria, #filter-tamanho, #filter-genero, #filter-preco, #filter-data-inicio, #filter-data-fim'
-    ).forEach(el => el.value = '');
-}
+    ['produtos-select','categorias-select','tamanhos-select','generos-select',
+     'quantidade-min','quantidade-max','data-inicio','data-fim','baixo-estoque-checkbox']
+     .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', atualizarLista);
+    });
 
-document.getElementById('filter-data-fim').addEventListener('input', function() {
-    const dataInicio = document.getElementById('filter-data-inicio');
-    if (this.value) {
-        dataInicio.required = true;
-    } else {
-        dataInicio.required = false;
-    }
+    document.getElementById('btn-gerar-relatorio').addEventListener('click', gerarRelatorio);
 });
+
+function montarSelects(produtos) {
+    // Produtos
+    const selProd = document.getElementById('produtos-select');
+    selProd.innerHTML = '';
+    produtos.forEach(p => {
+        selProd.innerHTML += `<option value="${p.id}" selected>${p.nome} (${p.codigo})</option>`;
+    });
+
+    // Categorias
+    const categorias = [...new Set(produtos.map(p => p.categoria))];
+    const selCat = document.getElementById('categorias-select');
+    selCat.innerHTML = '';
+    categorias.forEach(cat => {
+        selCat.innerHTML += `<option value="${cat}" selected>${cat}</option>`;
+    });
+
+    // Tamanhos
+    const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
+    const selTam = document.getElementById('tamanhos-select');
+    selTam.innerHTML = '';
+    tamanhos.forEach(tam => {
+        selTam.innerHTML += `<option value="${tam}" selected>${tam}</option>`;
+    });
+
+    // Gêneros
+    const generos = [...new Set(produtos.map(p => p.genero))];
+    const selGen = document.getElementById('generos-select');
+    selGen.innerHTML = '';
+    generos.forEach(gen => {
+        selGen.innerHTML += `<option value="${gen}" selected>${gen}</option>`;
+    });
+}
+
+function getFiltrosSelecionados() {
+    const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
+    const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
+    const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
+    const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
+    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
+    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
+    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
+    const dataInicio = document.getElementById('data-inicio').value || null;
+    const dataFim = document.getElementById('data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+}
+
+function atualizarLista() {
+    const filtros = getFiltrosSelecionados();
+    let filtrados = todosProdutos.filter(p => {
+        if (filtros.idsSelecionados.length && !filtros.idsSelecionados.includes(p.id)) return false;
+        if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
+        if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
+        if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
+        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
+        // Período: filtra por data de entrada/saída
+        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
+        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        return true;
+    });
+
+    // Monta lista prévia
+    const ul = document.getElementById('lista-produtos');
+    ul.innerHTML = '';
+    filtrados.forEach(p => {
+        ul.innerHTML += `<li>${p.nome} (${p.codigo}) - ${p.categoria} - ${p.tamanho} - ${p.genero} - Qtd: ${p.quantidade}</li>`;
+    });
+}
+
+function gerarRelatorio() {
+    const filtros = getFiltrosSelecionados(); // <-- Adicione esta linha!
+    fetch('/relatorio/gerar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            ids: filtros.idsSelecionados,
+            quantidadeMin: filtros.quantidadeMin,
+            quantidadeMax: filtros.quantidadeMax,
+            baixoEstoque: filtros.baixoEstoque
+        })
+    })
+    .then(res => res.blob())
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'RelatorioProdutos.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        document.getElementById('preview-relatorio').innerHTML = `<iframe src="${url}" width="100%" height="600px"></iframe>`;
+    })
+    .catch(() => {
+        Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
+    });
+}
+
+function montarCheckboxesProduto(produtos) {
+    const divProd = document.getElementById('checkboxes-produto-multi');
+    divProd.innerHTML = `<label><input type="checkbox" id="produto-multi-todos" class="produto-multi-check" value="" checked> Todos</label>`;
+    produtos.forEach(p => {
+        divProd.innerHTML += `<label><input type="checkbox" class="produto-multi-check" value="${p.id}" checked> ${p.nome} (${p.codigo})</label>`;
+    });
+    document.querySelectorAll('.produto-multi-check').forEach(cb => {
+        cb.addEventListener('change', atualizarPlaceholderProdutoMulti);
+        cb.addEventListener('change', atualizarLista);
+    });
+}
+function montarCheckboxesCategoria(produtos) {
+    const categorias = [...new Set(produtos.map(p => p.categoria))];
+    const divCat = document.getElementById('checkboxes-categoria-multi');
+    divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
+    categorias.forEach(cat => {
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${cat}</label>`;
+    });
+    document.querySelectorAll('.categoria-multi-check').forEach(cb => {
+        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+        cb.addEventListener('change', atualizarLista);
+    });
+}
+function montarCheckboxesTamanho(produtos) {
+    const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
+    const divTam = document.getElementById('checkboxes-tamanho-multi');
+    divTam.innerHTML = `<label><input type="checkbox" id="tamanho-multi-todos" class="tamanho-multi-check" value="" checked> Todos</label>`;
+    tamanhos.forEach(tam => {
+        divTam.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${tam}" checked> ${tam}</label>`;
+    });
+    document.querySelectorAll('.tamanho-multi-check').forEach(cb => {
+        cb.addEventListener('change', atualizarPlaceholderTamanhoMulti);
+        cb.addEventListener('change', atualizarLista);
+    });
+}
+function montarCheckboxesGenero(produtos) {
+    const generos = [...new Set(produtos.map(p => p.genero))];
+    const divGen = document.getElementById('checkboxes-genero-multi');
+    divGen.innerHTML = `<label><input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked> Todos</label>`;
+    generos.forEach(gen => {
+        divGen.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="${gen}" checked> ${gen}</label>`;
+    });
+    document.querySelectorAll('.genero-multi-check').forEach(cb => {
+        cb.addEventListener('change', atualizarPlaceholderGeneroMulti);
+        cb.addEventListener('change', atualizarLista);
+    });
+}
+
+// Funções para mostrar/ocultar dropdowns
+function showCheckboxesProdutoMulti() {
+    var checkboxes = document.getElementById("checkboxes-produto-multi");
+    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+}
+function showCheckboxesCategoriaMulti() {
+    var checkboxes = document.getElementById("checkboxes-categoria-multi");
+    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+}
+function showCheckboxesTamanhoMulti() {
+    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+}
+function showCheckboxesGeneroMulti() {
+    var checkboxes = document.getElementById("checkboxes-genero-multi");
+    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
+}
+
+// Funções para pegar selecionados
+function getProdutosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    if (checks[0].checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => Number(cb.value));
+}
+function getCategoriasSelecionadas() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    if (checks[0].checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+function getTamanhosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    if (checks[0].checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+function getGenerosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    if (checks[0].checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+// Atualizar placeholders (opcional, para mostrar "Todos" ou "X selecionados")
+function atualizarPlaceholderProdutoMulti() {
+    const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    const span = document.getElementById('produto-multi-placeholder');
+    if (checks[0].checked) span.textContent = "Todos";
+    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+}
+function atualizarPlaceholderCategoriaMulti() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const span = document.getElementById('categoria-multi-placeholder');
+    if (checks[0].checked) span.textContent = "Todas";
+    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionadas`;
+}
+function atualizarPlaceholderTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const span = document.getElementById('tamanho-multi-placeholder');
+    if (checks[0].checked) span.textContent = "Todos";
+    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+}
+function atualizarPlaceholderGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const span = document.getElementById('genero-multi-placeholder');
+    if (checks[0].checked) span.textContent = "Todos";
+    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+}
+
+// Chame as funções de montagem no início
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/produtos')
+        .then(res => res.json())
+        .then(produtos => {
+            todosProdutos = produtos;
+            montarCheckboxesProduto(produtos);
+            montarCheckboxesCategoria(produtos);
+            montarCheckboxesTamanho(produtos);
+            montarCheckboxesGenero(produtos);
+            atualizarLista();
+        });
+    // ...restante do código...
+});
+
+// Use os selecionados no filtro
+function getFiltrosSelecionados() {
+    const idsSelecionados = getProdutosSelecionados();
+    const categorias = getCategoriasSelecionadas();
+    const tamanhos = getTamanhosSelecionados();
+    const generos = getGenerosSelecionados();
+    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
+    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
+    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
+    const dataInicio = document.getElementById('data-inicio').value || null;
+    const dataFim = document.getElementById('data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+}
