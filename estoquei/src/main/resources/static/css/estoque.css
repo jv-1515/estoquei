@@ -323,7 +323,8 @@ button:hover,
     gap: 2px;
     padding: 10px;
     z-index: 10;
-    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     color: #757575;
 }
@@ -476,7 +477,6 @@ select#registros-select option {
 .quantidade-check-label {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     font-size: 12px !important;
     color: #757575 !important;
     font-weight: normal !important;
