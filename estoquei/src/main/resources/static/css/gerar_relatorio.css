@@ -1,0 +1,46 @@
+.multiselect {
+    position: relative;
+    width: 260px;
+    margin-bottom: 12px;
+}
+.overSelect {
+    background: #fff;
+    border: 1px solid #1e94a3;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+    font-size: 15px;
+    color: #1e94a3;
+}
+.checkboxes-popup {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #1e94a3;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(30,148,163,0.08);
+    z-index: 10;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 2px;
+    padding: 8px 0;
+}
+.checkboxes-popup label {
+    display: block;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+}
+.checkboxes-popup label:hover {
+    background: #f2f8fa;
+}
+.checkboxes-popup input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #1e94a3;
+}

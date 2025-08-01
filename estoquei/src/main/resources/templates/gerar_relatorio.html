@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gerar Relatório</title>
+    <link rel="stylesheet" href="/css/gerar_relatorio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="/js/gerar_relatorio.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="/gerenciar-relatorios"><button>Voltar</button></a>
+        <a href="/inicio"><button>Home</button></a>
+    </nav>
+    <h1>Gerar Relatório de Produtos</h1>
+    <section id="filtros-relatorio">
+        <div>
+            <label for="produtos-select">Produtos:</label>
+            <div class="multiselect">
+                <div class="overSelect" onclick="showCheckboxesProdutoMulti()">
+                    <span id="produto-multi-placeholder">Todos</span>
+                </div>
+                <div id="checkboxes-produto-multi" style="display:none;">
+                    <!-- Checkboxes serão montados pelo JS -->
+                </div>
+            </div>
+        </div>
+        <div>
+            <label for="categorias-select">Categorias:</label>
+            <div class="multiselect">
+                <div class="overSelect" onclick="showCheckboxesCategoriaMulti()">
+                    <span id="categoria-multi-placeholder">Todas</span>
+                </div>
+                <div id="checkboxes-categoria-multi" style="display:none;">
+                    <!-- Checkboxes serão montados pelo JS -->
+                </div>
+            </div>
+        </div>
+        <div>
+            <label for="tamanhos-select">Tamanhos:</label>
+            <div class="multiselect">
+                <div class="overSelect" onclick="showCheckboxesTamanhoMulti()">
+                    <span id="tamanho-multi-placeholder">Todos</span>
+                </div>
+                <div id="checkboxes-tamanho-multi" style="display:none;">
+                    <!-- Checkboxes serão montados pelo JS -->
+                </div>
+            </div>
+        </div>
+        <div>
+            <label for="generos-select">Gêneros:</label>
+            <div class="multiselect">
+                <div class="overSelect" onclick="showCheckboxesGeneroMulti()">
+                    <span id="genero-multi-placeholder">Todos</span>
+                </div>
+                <div id="checkboxes-genero-multi" style="display:none;">
+                    <!-- Checkboxes serão montados pelo JS -->
+                </div>
+            </div>
+        </div>
+        <div>
+            <label>Quantidade:</label>
+            <input type="number" id="quantidade-min" placeholder="Mínimo" min="0" />
+            <input type="number" id="quantidade-max" placeholder="Máximo" min="0" />
+            <label><input type="checkbox" id="baixo-estoque-checkbox" /> Baixo estoque</label>
+        </div>
+        <div>
+            <label>Período:</label>
+            <input type="date" id="data-inicio" />
+            <input type="date" id="data-fim" />
+        </div>
+    </section>
+    <section>
+        <h2>Prévia dos Produtos Selecionados</h2>
+        <ul id="lista-produtos"></ul>
+    </section>
+    <button id="btn-gerar-relatorio">Gerar Relatório</button>
+    <div id="preview-relatorio"></div>
+</body>
+</html>
