@@ -9,18 +9,28 @@ import org.springframework.stereotype.Service;
 import com.example.estoquei.dto.FiltroRelatorioDTO;
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.repository.ProdutoRepository;
+import com.example.estoquei.repository.MovimentacaoProdutoRepository;
+import com.example.estoquei.repository.MovimentacaoProdutoRepositoryCustomImpl;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 
 @Service
 public class RelatorioService {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private MovimentacaoProdutoRepository movimentacaoProdutoRepository;
+
+    @Autowired
+    private MovimentacaoProdutoRepositoryCustomImpl movimentacaoProdutoRepositoryCustom;
 
     public byte[] gerarPDFProdutos(FiltroRelatorioDTO filtro) {
         List<Produto> produtos;
@@ -104,28 +114,47 @@ public class RelatorioService {
     public byte[] gerarPDFProdutosDireto(List<Produto> produtos) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Document doc = new Document();
+            Document doc = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
             PdfWriter.getInstance(doc, baos);
             doc.open();
 
             doc.add(new Paragraph("Relatório de Produtos"));
             doc.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(6); // 6 colunas
+            // Cabeçalho com todos os campos pedidos
+            PdfPTable table = new PdfPTable(12); // 12 colunas
             table.addCell("Código");
             table.addCell("Nome");
             table.addCell("Categoria");
             table.addCell("Tamanho");
             table.addCell("Gênero");
-            table.addCell("Quantidade");
+            table.addCell("Preço (R$)");
+            table.addCell("Estoque");
+            table.addCell("Limite");
+            table.addCell("Última Entrada");
+            table.addCell("Entradas");
+            table.addCell("Última Saída");
+            table.addCell("Saídas");
 
             for (Produto p : produtos) {
-                table.addCell(p.getCodigo());
-                table.addCell(p.getNome());
-                table.addCell(p.getCategoria() != null ? p.getCategoria().toString() : "");
-                table.addCell(p.getTamanho() != null ? p.getTamanho().toString() : "");
-                table.addCell(p.getGenero() != null ? p.getGenero().toString() : "");
+                table.addCell(p.getCodigo() != null ? p.getCodigo() : "");
+                table.addCell(capitalize(p.getNome()));
+                table.addCell(capitalize(p.getCategoria() != null ? p.getCategoria().toString() : ""));
+                table.addCell(p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "");
+                table.addCell(capitalize(p.getGenero() != null ? p.getGenero().toString() : ""));
+                table.addCell(formatarPreco(p.getPreco()));
                 table.addCell(String.valueOf(p.getQuantidade()));
+                table.addCell(String.valueOf(p.getLimiteMinimo()));
+
+                LocalDate ultimaEntrada = movimentacaoProdutoRepositoryCustom.buscarUltimaEntrada(p.getCodigo());
+                table.addCell(formatarData(ultimaEntrada)); 
+                int entradas = movimentacaoProdutoRepositoryCustom.totalEntradas(p.getCodigo());
+                table.addCell(String.valueOf(entradas));
+
+                LocalDate ultimaSaida = movimentacaoProdutoRepositoryCustom.buscarUltimaSaida(p.getCodigo());
+                table.addCell(formatarData(ultimaSaida));
+                int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
+                table.addCell(String.valueOf(saidas));
             }
 
             doc.add(table);
@@ -135,5 +164,31 @@ public class RelatorioService {
             e.printStackTrace();
             return new byte[0];
         }
+    }
+
+    // Função para capitalizar
+    private String capitalize(String s) {
+        if (s == null || s.isEmpty()) return "";
+        return s.substring(0,1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
+    // Função para formatar preço
+    private String formatarPreco(java.math.BigDecimal preco) {
+        if (preco == null) return "";
+        return preco.setScale(2, java.math.RoundingMode.HALF_UP).toString().replace('.', ',');
+    }
+
+    // Função para formatar tamanho (igual estoque)
+    private String formatarTamanho(String tamanho) {
+        if (tamanho == null) return "";
+        if (tamanho.equals("ÚNICO")) return "Único";
+        if (tamanho.startsWith("_")) return tamanho.substring(1);
+        return tamanho;
+    }
+
+    // Função para formatar data
+    private String formatarData(java.time.LocalDate data) {
+        if (data == null) return "";
+        return String.format("%02d/%02d/%04d", data.getDayOfMonth(), data.getMonthValue(), data.getYear());
     }
 }
