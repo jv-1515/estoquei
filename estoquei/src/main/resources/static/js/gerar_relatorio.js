@@ -511,28 +511,115 @@ function getGenerosSelecionados() {
 // Atualizar placeholders (opcional, para mostrar "Todos" ou "X selecionados")
 function atualizarPlaceholderProdutoMulti() {
     const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('produto-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todas) {
+        if (todas.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todas.checked = false;
+        if (individuais.every(cb => cb.checked)) todas.checked = true;
+    }
+
     const span = document.getElementById('categoria-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todas";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionadas`;
+    if (todas.checked) span.textContent = "Todas";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionadas`;
 }
+
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('tamanho-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('genero-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
+function atualizarPlaceholder(tipo) {
+  const checkboxes = document.querySelectorAll(`#checkboxes-${tipo}-multi input[type="checkbox"]:checked`);
+  const placeholder = document.getElementById(`${tipo}-multi-placeholder`);
+  if (checkboxes.length === 0) {
+    placeholder.textContent = tipo === 'categoria' ? 'Todas' : 'Todos';
+  } else if (checkboxes.length === 1) {
+    placeholder.textContent = checkboxes[0].parentElement.textContent.trim();
+  } else {
+    placeholder.textContent = `${checkboxes.length} selecionados`;
+  }
+}
+
+// Controle de dropdowns abertos
+const expanded = {
+  produto: false,
+  categoria: false,
+  tamanho: false,
+  genero: false
+};
+
+function toggleCheckboxes(tipo) {
+  // Fecha todos antes de abrir o clicado
+  Object.keys(expanded).forEach(key => {
+    if (key !== tipo) {
+      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
+      expanded[key] = false;
+    }
+  });
+  const el = document.getElementById(`checkboxes-${tipo}-multi`);
+  expanded[tipo] = !expanded[tipo];
+  el.style.display = expanded[tipo] ? "block" : "none";
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click', function(e) {
+  const classes = e.target.classList || [];
+  if (!e.target.closest('.multiselect')) {
+    Object.keys(expanded).forEach(key => {
+      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
+      expanded[key] = false;
+    });
+  }
+});
 
 // Chame as funções de montagem no início
 document.addEventListener('DOMContentLoaded', function() {
