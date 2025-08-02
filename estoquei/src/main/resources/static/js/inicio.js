@@ -2,7 +2,7 @@ function confirmarSaida(event) {
     event.preventDefault();
     Swal.fire({
         title: 'Deseja realmente sair?',
-        text: "Você será redirecionado para a página de login.",
+        text: "Você será redirecionado para a página de login",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -12,10 +12,14 @@ function confirmarSaida(event) {
     }).then((result) => {
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Desconectando sua conta...',
-                text: 'Aguarde',
+                title: '<span style="padding-top:20px; display:inline-block;">Desconectando sua conta</span>',
+                text: 'Aguarde...',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                titleText: undefined,
                 didOpen: () => {
                     Swal.showLoading();
                 }

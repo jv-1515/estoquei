@@ -184,21 +184,17 @@ window.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire({
-                            title: "Sucesso!",
-                            text: "Entrada registrada com sucesso!",
+                            title: "Entrada registrada!",
+                            text: "Selecione uma opção",
                             icon: "success",
                             showCloseButton: true,
                             showCancelButton: true,
-                            confirmButtonText: 'Visualizar Estoque',
-                            cancelButtonText: 'Visualizar Movimentações',
+                            confirmButtonText: 'Acessar Baixo Estoque',
+                            cancelButtonText: 'Acessar Movimentações',
                             allowOutsideClick: false,
-                            customClass: {
-                                confirmButton: 'swal2-confirm-custom',
-                                cancelButton: 'swal2-cancel-custom'
-                            }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = "/estoque";
+                                window.location.href = "/baixo-estoque";
                             } else if (result.dismiss === Swal.DismissReason.cancel) {
                                 window.location.href = "/movimentacoes";
                             } else if (result.dismiss === Swal.DismissReason.close) {
@@ -235,18 +231,14 @@ window.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire({
-                        title: "Sucesso!",
-                        text: "Saída registrada com sucesso!",
+                        title: "Saída registrada!",
+                        text: "Selecione uma opção",
                         icon: "success",
                         showCloseButton: true,
                         showCancelButton: true,
-                        confirmButtonText: 'Visualizar Estoque',
-                        cancelButtonText: 'Visualizar Movimentações',
+                        confirmButtonText: 'Acessar Estoque',
+                        cancelButtonText: 'Acessar Movimentações',
                         allowOutsideClick: false,
-                        customClass: {
-                            confirmButton: 'swal2-confirm-custom',
-                            cancelButton: 'swal2-cancel-custom'
-                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             window.location.href = "/estoque";

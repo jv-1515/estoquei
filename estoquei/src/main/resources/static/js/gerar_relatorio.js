@@ -75,7 +75,7 @@
 //             const input = popup.querySelector('#periodo-data-fim');
 //             if (input) input.focus();
 //         }
-//         areaGerar.style.display = 'flex';
+//
 //         Swal.fire({
 //             icon: 'warning',
 //             title: 'Atenção',
@@ -833,3 +833,73 @@ function syncQuantidadeChecksAndInputs() {
 // Chame no início para garantir estado correto
 document.addEventListener('DOMContentLoaded', syncQuantidadeChecksAndInputs);
 
+async function gerarPDFHistoricoProdutos(produtos) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape" });
+
+    for (let i = 0; i < produtos.length; i++) {
+        const p = produtos[i];
+
+        // Título do produto
+        doc.setFontSize(14);
+        doc.setTextColor("#1E94A3");
+        doc.text(`Produto: ${p.nome} (${p.codigo})`, 14, 18);
+        doc.setFontSize(10);
+        doc.setTextColor("#333");
+        doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}`, 14, 26);
+
+        // Busca histórico do produto
+        let historico = [];
+        try {
+            const resp = await fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`);
+            historico = await resp.json();
+        } catch (e) {
+            historico = [];
+        }
+
+        // Ordena do mais recente para o mais antigo
+        historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+        // Monta linhas da tabela
+        const rows = historico.map(m => {
+            // Extrai primeiro e último nome do responsável
+            let resp = m.responsavel || '';
+            if (resp.includes('-')) {
+                let [codigo, nome] = resp.split('-').map(s => s.trim());
+                let nomes = nome.split(/\s+/);
+                nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
+                resp = `${codigo} - ${nome}`;
+            }
+            return [
+                m.data ? m.data.split('-').reverse().join('/') : '',
+                m.tipoMovimentacao,
+                m.codigoMovimentacao,
+                m.quantidadeMovimentada,
+                m.estoqueFinal,
+                m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
+                m.parteEnvolvida || '',
+                resp
+            ];
+        });
+
+        // Cabeçalho da tabela
+        const columns = [
+            "Data", "Tipo Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
+        ];
+
+        // Adiciona tabela
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            startY: i === 0 ? 32 : doc.lastAutoTable.finalY + 16,
+            styles: { fontSize: 9, cellPadding: 2 },
+            headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: "#F5F5F5" }
+        });
+
+        // Quebra de página se não for o último produto
+        if (i < produtos.length - 1) doc.addPage("landscape");
+    }
+
+    doc.save("HistoricoProdutos.pdf");
+}
