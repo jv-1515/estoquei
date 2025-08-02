@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(produtos => {
             todosProdutos = produtos;
-            montarSelects(produtos);
+            // montarSelects(produtos);
             atualizarLista();
         });
 
@@ -311,38 +311,38 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-gerar-relatorio').addEventListener('click', gerarRelatorio);
 });
 
-function montarSelects(produtos) {
-    // Produtos
-    const selProd = document.getElementById('produtos-select');
-    selProd.innerHTML = '';
-    produtos.forEach(p => {
-        selProd.innerHTML += `<option value="${p.id}" selected>${p.nome} (${p.codigo})</option>`;
-    });
+// function montarSelects(produtos) {
+//     // Produtos
+//     const selProd = document.getElementById('produtos-select');
+//     selProd.innerHTML = '';
+//     produtos.forEach(p => {
+//         selProd.innerHTML += `<option value="${p.id}" selected>${p.nome} (${p.codigo})</option>`;
+//     });
 
-    // Categorias
-    const categorias = [...new Set(produtos.map(p => p.categoria))];
-    const selCat = document.getElementById('categorias-select');
-    selCat.innerHTML = '';
-    categorias.forEach(cat => {
-        selCat.innerHTML += `<option value="${cat}" selected>${cat}</option>`;
-    });
+//     // Categorias
+//     const categorias = [...new Set(produtos.map(p => p.categoria))];
+//     const selCat = document.getElementById('categorias-select');
+//     selCat.innerHTML = '';
+//     categorias.forEach(cat => {
+//         selCat.innerHTML += `<option value="${cat}" selected>${cat}</option>`;
+//     });
 
-    // Tamanhos
-    const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
-    const selTam = document.getElementById('tamanhos-select');
-    selTam.innerHTML = '';
-    tamanhos.forEach(tam => {
-        selTam.innerHTML += `<option value="${tam}" selected>${tam}</option>`;
-    });
+//     // Tamanhos
+//     const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
+//     const selTam = document.getElementById('tamanhos-select');
+//     selTam.innerHTML = '';
+//     tamanhos.forEach(tam => {
+//         selTam.innerHTML += `<option value="${tam}" selected>${tam}</option>`;
+//     });
 
-    // Gêneros
-    const generos = [...new Set(produtos.map(p => p.genero))];
-    const selGen = document.getElementById('generos-select');
-    selGen.innerHTML = '';
-    generos.forEach(gen => {
-        selGen.innerHTML += `<option value="${gen}" selected>${gen}</option>`;
-    });
-}
+//     // Gêneros
+//     const generos = [...new Set(produtos.map(p => p.genero))];
+//     const selGen = document.getElementById('generos-select');
+//     selGen.innerHTML = '';
+//     generos.forEach(gen => {
+//         selGen.innerHTML += `<option value="${gen}" selected>${gen}</option>`;
+//     });
+// }
 
 // function getFiltrosSelecionados() {
 //     const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
@@ -482,7 +482,9 @@ function montarCheckboxesProduto(produtos) {
         cb.addEventListener('change', atualizarPlaceholderProdutoMulti);
         cb.addEventListener('change', atualizarLista);
     });
+    atualizarPlaceholderProdutoMulti.call(document.querySelector('.produto-multi-check'));
 }
+
 function montarCheckboxesCategoria(produtos) {
     const categorias = [...new Set(produtos.map(p => p.categoria))];
     const divCat = document.getElementById('checkboxes-categoria-multi');
@@ -494,7 +496,9 @@ function montarCheckboxesCategoria(produtos) {
         cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
         cb.addEventListener('change', atualizarLista);
     });
+    atualizarPlaceholderCategoriaMulti.call(document.querySelector('.categoria-multi-check'));
 }
+
 function montarCheckboxesTamanho(produtos) {
     const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
     const divTam = document.getElementById('checkboxes-tamanho-multi');
@@ -506,7 +510,9 @@ function montarCheckboxesTamanho(produtos) {
         cb.addEventListener('change', atualizarPlaceholderTamanhoMulti);
         cb.addEventListener('change', atualizarLista);
     });
+    atualizarPlaceholderTamanhoMulti.call(document.querySelector('.tamanho-multi-check'));
 }
+
 function montarCheckboxesGenero(produtos) {
     const generos = [...new Set(produtos.map(p => p.genero))];
     const divGen = document.getElementById('checkboxes-genero-multi');
@@ -518,159 +524,89 @@ function montarCheckboxesGenero(produtos) {
         cb.addEventListener('change', atualizarPlaceholderGeneroMulti);
         cb.addEventListener('change', atualizarLista);
     });
+    atualizarPlaceholderGeneroMulti.call(document.querySelector('.genero-multi-check'));
 }
 
-// Funções para mostrar/ocultar dropdowns
-function showCheckboxesProdutoMulti() {
-    var checkboxes = document.getElementById("checkboxes-produto-multi");
-    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
-}
-function showCheckboxesCategoriaMulti() {
-    var checkboxes = document.getElementById("checkboxes-categoria-multi");
-    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
-}
-function showCheckboxesTamanhoMulti() {
-    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
-}
-function showCheckboxesGeneroMulti() {
-    var checkboxes = document.getElementById("checkboxes-genero-multi");
-    checkboxes.style.display = checkboxes.style.display === "block" ? "none" : "block";
-}
-
-// Funções para pegar selecionados
-function getProdutosSelecionados() {
-    const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
-    if (checks[0].checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => Number(cb.value));
-}
-function getCategoriasSelecionadas() {
-    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    if (checks[0].checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-}
-function getTamanhosSelecionados() {
-    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    if (checks[0].checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-}
-function getGenerosSelecionados() {
-    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    if (checks[0].checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-}
-
-// Atualizar placeholders (opcional, para mostrar "Todos" ou "X selecionados")
+// Atualizar placeholders
 function atualizarPlaceholderProdutoMulti() {
     const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
     const todos = checks[0];
     const individuais = checks.slice(1);
-
+    const input = document.getElementById('filter-produto');
     if (this === todos) {
         if (todos.checked) individuais.forEach(cb => cb.checked = true);
     } else {
         if (!this.checked) todos.checked = false;
         if (individuais.every(cb => cb.checked)) todos.checked = true;
     }
-
-    const span = document.getElementById('produto-multi-placeholder');
-    if (todos.checked) span.textContent = "Todos";
-    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) input.value = "Todos";
+    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
-
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
     const individuais = checks.slice(1);
-
+    const input = document.getElementById('filter-categoria');
     if (this === todas) {
         if (todas.checked) individuais.forEach(cb => cb.checked = true);
     } else {
         if (!this.checked) todas.checked = false;
         if (individuais.every(cb => cb.checked)) todas.checked = true;
     }
-
-    const span = document.getElementById('categoria-multi-placeholder');
-    if (todas.checked) span.textContent = "Todas";
-    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionadas`;
+    if (todas.checked) input.value = "Todas";
+    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
-
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
     const todos = checks[0];
     const individuais = checks.slice(1);
-
+    const input = document.getElementById('filter-tamanho');
     if (this === todos) {
         if (todos.checked) individuais.forEach(cb => cb.checked = true);
     } else {
         if (!this.checked) todos.checked = false;
         if (individuais.every(cb => cb.checked)) todos.checked = true;
     }
-
-    const span = document.getElementById('tamanho-multi-placeholder');
-    if (todos.checked) span.textContent = "Todos";
-    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) input.value = "Todos";
+    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
-
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todos = checks[0];
     const individuais = checks.slice(1);
-
+    const input = document.getElementById('filter-genero');
     if (this === todos) {
         if (todos.checked) individuais.forEach(cb => cb.checked = true);
     } else {
         if (!this.checked) todos.checked = false;
         if (individuais.every(cb => cb.checked)) todos.checked = true;
     }
-
-    const span = document.getElementById('genero-multi-placeholder');
-    if (todos.checked) span.textContent = "Todos";
-    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) input.value = "Todos";
+    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
 
-function atualizarPlaceholder(tipo) {
-  const checkboxes = document.querySelectorAll(`#checkboxes-${tipo}-multi input[type="checkbox"]:checked`);
-  const placeholder = document.getElementById(`${tipo}-multi-placeholder`);
-  if (checkboxes.length === 0) {
-    placeholder.textContent = tipo === 'categoria' ? 'Todas' : 'Todos';
-  } else if (checkboxes.length === 1) {
-    placeholder.textContent = checkboxes[0].parentElement.textContent.trim();
-  } else {
-    placeholder.textContent = `${checkboxes.length} selecionados`;
-  }
-}
-
-// Controle de dropdowns abertos
-const expanded = {
-  produto: false,
-  categoria: false,
-  tamanho: false,
-  genero: false
-};
-
-function toggleCheckboxes(tipo) {
-  // Fecha todos antes de abrir o clicado
-  Object.keys(expanded).forEach(key => {
-    if (key !== tipo) {
-      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
-      expanded[key] = false;
+// Mostrar/ocultar popups ao clicar no input
+['produto','categoria','tamanho','genero'].forEach(tipo => {
+    const input = document.getElementById(`filter-${tipo}`);
+    const popup = document.getElementById(`checkboxes-${tipo}-multi`);
+    if (input && popup) {
+        input.addEventListener('click', function(e) {
+            // Fecha outros popups
+            ['produto','categoria','tamanho','genero'].forEach(t => {
+                if (t !== tipo) {
+                    const p = document.getElementById(`checkboxes-${t}-multi`);
+                    if (p) p.style.display = 'none';
+                }
+            });
+            popup.style.display = 'block';
+            e.stopPropagation();
+        });
+        document.addEventListener('mousedown', function(e) {
+            if (popup.style.display === 'block' && !popup.contains(e.target) && e.target !== input) {
+                popup.style.display = 'none';
+            }
+        });
     }
-  });
-  const el = document.getElementById(`checkboxes-${tipo}-multi`);
-  expanded[tipo] = !expanded[tipo];
-  el.style.display = expanded[tipo] ? "block" : "none";
-}
-
-// Fecha dropdown ao clicar fora
-document.addEventListener('click', function(e) {
-  const classes = e.target.classList || [];
-  if (!e.target.closest('.multiselect')) {
-    Object.keys(expanded).forEach(key => {
-      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
-      expanded[key] = false;
-    });
-  }
 });
 
 // Chame as funções de montagem no início
@@ -686,6 +622,28 @@ document.addEventListener('DOMContentLoaded', function() {
             atualizarLista();
         });
 });
+
+
+function getProdutosSelecionados() {
+    return Array.from(document.querySelectorAll('.produto-multi-check'))
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => Number(cb.value));
+}
+function getCategoriasSelecionadas() {
+    return Array.from(document.querySelectorAll('.categoria-multi-check'))
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+}
+function getTamanhosSelecionados() {
+    return Array.from(document.querySelectorAll('.tamanho-multi-check'))
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+}
+function getGenerosSelecionados() {
+    return Array.from(document.querySelectorAll('.genero-multi-check'))
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+}
 
 // Use os selecionados no filtro
 function getFiltrosSelecionados() {
@@ -1096,3 +1054,49 @@ function aplicarFiltroPrecoFaixa() {
 
     atualizarLista();
 }
+
+['produto','categoria','tamanho','genero'].forEach(tipo => {
+    const input = document.getElementById(`filter-${tipo}`);
+    const popup = document.getElementById(`checkboxes-${tipo}-multi`);
+    if (input && popup) {
+        input.addEventListener('click', function(e) {
+            // Fecha outros popups
+            ['produto','categoria','tamanho','genero'].forEach(t => {
+                if (t !== tipo) {
+                    const p = document.getElementById(`checkboxes-${t}-multi`);
+                    if (p) p.style.display = 'none';
+                }
+            });
+            popup.style.display = 'block';
+            e.stopPropagation();
+        });
+        document.addEventListener('mousedown', function(e) {
+            if (popup.style.display === 'block' && !popup.contains(e.target) && e.target !== input) {
+                popup.style.display = 'none';
+            }
+        });
+    }
+});
+
+['produto','categoria','tamanho','genero'].forEach(tipo => {
+    const input = document.getElementById(`filter-${tipo}`);
+    const popup = document.getElementById(`checkboxes-${tipo}-multi`);
+    if (input && popup) {
+        input.addEventListener('click', function(e) {
+            // Fecha outros popups
+            ['produto','categoria','tamanho','genero'].forEach(t => {
+                if (t !== tipo) {
+                    const p = document.getElementById(`checkboxes-${t}-multi`);
+                    if (p) p.style.display = 'none';
+                }
+            });
+            popup.style.display = 'block';
+            e.stopPropagation();
+        });
+        document.addEventListener('mousedown', function(e) {
+            if (popup.style.display === 'block' && !popup.contains(e.target) && e.target !== input) {
+                popup.style.display = 'none';
+            }
+        });
+    }
+});
