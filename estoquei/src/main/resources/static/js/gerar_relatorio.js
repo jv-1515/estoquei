@@ -902,4 +902,81 @@ async function gerarPDFHistoricoProdutos(produtos) {
     }
 
     doc.save("HistoricoProdutos.pdf");
+
+    
+    async function adicionarHistoricoProdutosAoPDF(doc, produtos, filtros) {
+        // Busca todos os históricos em paralelo
+        const historicos = await Promise.all(produtos.map(p =>
+            fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`)
+                .then(res => res.json())
+                .catch(() => [])
+        ));
+    
+        let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 16 : 30;
+    
+        for (let i = 0; i < produtos.length; i++) {
+            const p = produtos[i];
+            let historico = (historicos[i] || []);
+            // Filtra histórico pelo período, se marcado
+            if (filtros && filtros.dataInicio && filtros.dataFim) {
+                const dtIni = new Date(filtros.dataInicio);
+                const dtFim = new Date(filtros.dataFim);
+                historico = historico.filter(mov => {
+                    const dt = new Date(mov.data);
+                    return dt >= dtIni && dt <= dtFim;
+                });
+            }
+            // Ordena do mais recente para o mais antigo
+            historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+    
+            // Título do produto
+            doc.addPage("landscape");
+            y = 20;
+            doc.setFontSize(13);
+            doc.setTextColor("#1E94A3");
+            doc.text(`${p.codigo} - ${p.nome}`, 14, y);
+            doc.setFontSize(10);
+            doc.setTextColor("#333");
+            y += 7;
+            doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}   Preço: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '-'}   Estoque Atual: ${p.quantidade}`, 14, y);
+    
+            // Cabeçalho da tabela
+            const columns = [
+                "Data", "Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
+            ];
+    
+            // Monta linhas da tabela
+            const rows = historico.map(m => {
+                // Extrai primeiro e último nome do responsável
+                let resp = m.responsavel || '';
+                if (resp.includes('-')) {
+                    let [codigo, nome] = resp.split('-').map(s => s.trim());
+                    let nomes = nome.split(/\s+/);
+                    nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
+                    resp = `${codigo} - ${nome}`;
+                }
+                return [
+                    m.data ? m.data.split('-').reverse().join('/') : '',
+                    m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída',
+                    m.codigoMovimentacao || '-',
+                    m.quantidadeMovimentada,
+                    m.estoqueFinal,
+                    m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
+                    m.parteEnvolvida || '',
+                    resp
+                ];
+            });
+    
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: y + 10,
+                styles: { fontSize: 9, cellPadding: 2 },
+                headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: "#F5F5F5" }
+            });
+        }
+    }
+
+    
 }
