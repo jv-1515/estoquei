@@ -141,7 +141,10 @@ public class MovimentacaoProdutoResource {
 
             Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
             String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
-            movimentacao.setResponsavel(codigoUsuario);
+            String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+            String[] nomes = nomeUsuario.trim().split("\\s+");
+            String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+            movimentacao.setResponsavel(codigoUsuario + " - " + nomeFormatado);
 
             MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
             return ResponseEntity.ok(salva);
@@ -201,7 +204,10 @@ public class MovimentacaoProdutoResource {
 
             Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
             String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
-            movimentacao.setResponsavel(codigoUsuario);
+            String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+            String[] nomes = nomeUsuario.trim().split("\\s+");
+            String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+            movimentacao.setResponsavel(codigoUsuario + " - " + nomeFormatado);
 
             MovimentacaoProduto salva = movimentacaoRepo.save(movimentacao);
             return ResponseEntity.ok(salva);
