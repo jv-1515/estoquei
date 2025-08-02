@@ -344,20 +344,36 @@ function montarSelects(produtos) {
     });
 }
 
-function getFiltrosSelecionados() {
-    const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
-    const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
-    const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
-    const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
-    const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
-    const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
-    const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
-    const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
-    const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
-    const dataInicio = document.getElementById('periodo-data-inicio').value || null;
-    const dataFim = document.getElementById('periodo-data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
-}
+// function getFiltrosSelecionados() {
+//     const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
+//     const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
+//     const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
+//     const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
+//     const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
+//     const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
+//     const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
+//     const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
+//     const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
+//     const dataInicio = document.getElementById('periodo-data-inicio').value || null;
+//     const dataFim = document.getElementById('periodo-data-fim').value || null;
+//     const precoMin = document.getElementById('preco-min').value ? Number(document.getElementById('preco-min').value.replace(',', '.')) : null;
+//     const precoMax = document.getElementById('preco-max').value ? Number(document.getElementById('preco-max').value.replace(',', '.')) : null;
+//     return {
+//         idsSelecionados,
+//         categorias,
+//         tamanhos,
+//         generos,
+//         quantidadeTodos,
+//         quantidadeBaixo,
+//         quantidadeZerados,
+//         quantidadeMin,
+//         quantidadeMax,
+//         dataInicio,
+//         dataFim,
+//         precoMin: precoMin,
+//         precoMax: precoMax
+//     };
+// }
 
 function atualizarLista() {
     const filtros = getFiltrosSelecionados();
@@ -383,6 +399,8 @@ function atualizarLista() {
             if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
             if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
         }
+        if (filtros.precoMin !== null && p.preco < filtros.precoMin) return false;
+        if (filtros.precoMax !== null && p.preco > filtros.precoMax) return false;
         return true;
     });
 
@@ -390,7 +408,15 @@ function atualizarLista() {
     const ul = document.getElementById('lista-produtos');
     ul.innerHTML = '';
     filtrados.forEach(p => {
-        ul.innerHTML += `<li>${p.nome} (${p.codigo}) - ${p.categoria} - ${p.tamanho} - ${p.genero} - Qtd: ${p.quantidade}</li>`;
+        const precoFormatado = p.preco ? `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}` : '-';
+        ul.innerHTML += `<li>
+            <b>${p.nome}</b> (${p.codigo}) 
+            - Categoria: ${p.categoria || '-'}
+            - Tamanho: ${p.tamanho || '-'}
+            - Gênero: ${p.genero || '-'}
+            - Preço: ${precoFormatado}
+            - Estoque: ${p.quantidade}
+        </li>`;
     });
 }
 
@@ -419,6 +445,8 @@ function gerarRelatorio() {
             if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
             if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
         }
+        if (filtros.precoMin !== null && p.preco < filtros.precoMin) return false;
+        if (filtros.precoMax !== null && p.preco > filtros.precoMax) return false;
         return true;
     });
 
@@ -672,7 +700,23 @@ function getFiltrosSelecionados() {
     const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
     const dataInicio = document.getElementById('periodo-data-inicio').value || null;
     const dataFim = document.getElementById('periodo-data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
+    const precoMin = document.getElementById('preco-min').value ? Number(document.getElementById('preco-min').value.replace(',', '.')) : null;
+    const precoMax = document.getElementById('preco-max').value ? Number(document.getElementById('preco-max').value.replace(',', '.')) : null;
+    return {
+        idsSelecionados,
+        categorias,
+        tamanhos,
+        generos,
+        quantidadeTodos,
+        quantidadeBaixo,
+        quantidadeZerados,
+        quantidadeMin,
+        quantidadeMax,
+        dataInicio,
+        dataFim,
+        precoMin: precoMin,
+        precoMax: precoMax
+    };
 }
 
 // --- QUANTIDADE POPUP ---
@@ -903,7 +947,7 @@ async function gerarPDFHistoricoProdutos(produtos) {
 
     doc.save("HistoricoProdutos.pdf");
 
-    
+
     async function adicionarHistoricoProdutosAoPDF(doc, produtos, filtros) {
         // Busca todos os históricos em paralelo
         const historicos = await Promise.all(produtos.map(p =>
@@ -911,9 +955,9 @@ async function gerarPDFHistoricoProdutos(produtos) {
                 .then(res => res.json())
                 .catch(() => [])
         ));
-    
+
         let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 16 : 30;
-    
+
         for (let i = 0; i < produtos.length; i++) {
             const p = produtos[i];
             let historico = (historicos[i] || []);
@@ -928,7 +972,7 @@ async function gerarPDFHistoricoProdutos(produtos) {
             }
             // Ordena do mais recente para o mais antigo
             historico.sort((a, b) => new Date(b.data) - new Date(a.data));
-    
+
             // Título do produto
             doc.addPage("landscape");
             y = 20;
@@ -939,12 +983,12 @@ async function gerarPDFHistoricoProdutos(produtos) {
             doc.setTextColor("#333");
             y += 7;
             doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}   Preço: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '-'}   Estoque Atual: ${p.quantidade}`, 14, y);
-    
+
             // Cabeçalho da tabela
             const columns = [
                 "Data", "Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
             ];
-    
+
             // Monta linhas da tabela
             const rows = historico.map(m => {
                 // Extrai primeiro e último nome do responsável
@@ -966,7 +1010,7 @@ async function gerarPDFHistoricoProdutos(produtos) {
                     resp
                 ];
             });
-    
+
             doc.autoTable({
                 head: [columns],
                 body: rows,
@@ -979,4 +1023,76 @@ async function gerarPDFHistoricoProdutos(produtos) {
     }
 
     
+}
+
+// --- PREÇO POPUP ---
+const precoInput = document.getElementById('filter-preco');
+const precoPopup = document.getElementById('preco-faixa-popup');
+const precoMin = document.getElementById('preco-min');
+const precoMax = document.getElementById('preco-max');
+
+function mascaraPrecoFaixa(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 5) value = value.slice(0, 5);
+    if (value.length > 0) {
+        value = (parseInt(value) / 100).toFixed(2);
+        input.value = value.replace('.', ',');
+    } else {
+        input.value = '';
+    }
+}
+
+if (precoMin) precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+if (precoMax) precoMax.addEventListener('input', function() { mascaraPrecoFaixa(this); });
+
+if (precoInput && precoPopup) {
+    precoInput.addEventListener('click', function(e) {
+        precoPopup.style.display = 'block';
+        precoMin.focus();
+        e.stopPropagation();
+    });
+    document.addEventListener('mousedown', function(e) {
+        if (precoPopup.style.display === 'block' && !precoPopup.contains(e.target) && e.target !== precoInput) {
+            precoPopup.style.display = 'none';
+            aplicarFiltroPrecoFaixa();
+        }
+    });
+}
+
+function aplicarFiltroPrecoFaixa() {
+    let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
+    let ativo = true;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        precoInput.value = '';
+        return;
+    }
+
+    // Se só "de" preenchido, assume até 999,99
+    if (min && !max) max = '999.99';
+    // Se só "até" preenchido, assume de 0,00
+    if (!min && max) min = '0.00';
+
+    // Converte para número para comparar
+    let minNum = parseFloat(min) || 0;
+    let maxNum = parseFloat(max) || 999.99;
+
+    // Inverte se min > max
+    if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
+
+    // Formata de volta para string
+    min = minNum.toFixed(2).replace('.', ',');
+    max = maxNum.toFixed(2).replace('.', ',');
+
+    precoInput.value = `R$ ${min} - R$ ${max}`;
+    if (precoInput.value === "R$ 0,00 - R$ 999,99") precoInput.value = '';
+
+    const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
+    const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
+    // const precoMinVal = precoMinStr ? Number(precoMinStr) : null;
+    // const precoMaxVal = precoMaxStr ? Number(precoMaxStr) : null;
+
+    atualizarLista();
 }

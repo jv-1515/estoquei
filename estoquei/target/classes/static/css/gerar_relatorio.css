@@ -70,6 +70,9 @@
     margin-bottom: 0;
     gap: 2px;
 }
+.input-group:has(#filter-preco) {
+    min-width: 137px;
+}
 .input-group label {
     font-size: 12px;
     color: #333;
@@ -95,4 +98,24 @@
 .input-group button.btn {
     margin-top: 12px;
     width: 100%;
+}
+.faixa-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-top: none;
+    border-radius:4px;
+    gap: 2px;
+    padding: 10px;
+    z-index: 10;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #757575;
+}
+.faixa-popup input {
+    height: 25px;
 }
