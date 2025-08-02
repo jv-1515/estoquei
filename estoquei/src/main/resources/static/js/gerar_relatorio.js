@@ -75,7 +75,7 @@
 //             const input = popup.querySelector('#periodo-data-fim');
 //             if (input) input.focus();
 //         }
-//         areaGerar.style.display = 'flex';
+//
 //         Swal.fire({
 //             icon: 'warning',
 //             title: 'Atenção',
@@ -349,12 +349,14 @@ function getFiltrosSelecionados() {
     const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
     const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
     const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
-    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
-    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
-    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
-    const dataInicio = document.getElementById('data-inicio').value || null;
-    const dataFim = document.getElementById('data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+    const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
+    const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
+    const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
+    const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
+    const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
+    const dataInicio = document.getElementById('periodo-data-inicio').value || null;
+    const dataFim = document.getElementById('periodo-data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
 }
 
 function atualizarLista() {
@@ -364,12 +366,23 @@ function atualizarLista() {
         if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
         if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
         if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
-        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
-        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
-        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
-        // Período: filtra por data de entrada/saída
-        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
-        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        if (!filtros.quantidadeTodos) {
+            if (filtros.quantidadeBaixo && !filtros.quantidadeZerados) {
+                if (!(p.quantidade > 0 && p.quantidade < p.limiteMinimo)) return false;
+            } else if (!filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (p.quantidade !== 0) return false;
+            } else if (filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (!(p.quantidade < p.limiteMinimo || p.quantidade === 0)) return false;
+            } else {
+                // Nenhum marcado: não mostra nada
+                return false;
+            }
+        }
+        // Faixa sempre é aplicada, exceto se só zerados está marcado (já filtrou acima)
+        if (!(filtros.quantidadeBaixo === false && filtros.quantidadeTodos === false && filtros.quantidadeZerados === true)) {
+            if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+            if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        }
         return true;
     });
 
@@ -389,12 +402,23 @@ function gerarRelatorio() {
         if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
         if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
         if (filtros.generos.length && !filtros.generos.includes(p.genero)) return false;
-        if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
-        if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
-        if (filtros.baixoEstoque && p.quantidade > p.limiteMinimo) return false;
-        // Período: filtra por data de entrada/saída
-        if (filtros.dataInicio && p.dtUltimaEntrada && p.dtUltimaEntrada < filtros.dataInicio) return false;
-        if (filtros.dataFim && p.dtUltimaSaida && p.dtUltimaSaida > filtros.dataFim) return false;
+        if (!filtros.quantidadeTodos) {
+            if (filtros.quantidadeBaixo && !filtros.quantidadeZerados) {
+                if (!(p.quantidade > 0 && p.quantidade < p.limiteMinimo)) return false;
+            } else if (!filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (p.quantidade !== 0) return false;
+            } else if (filtros.quantidadeBaixo && filtros.quantidadeZerados) {
+                if (!(p.quantidade < p.limiteMinimo || p.quantidade === 0)) return false;
+            } else {
+                // Nenhum marcado: não mostra nada
+                return false;
+            }
+        }
+        // Faixa sempre é aplicada, exceto se só zerados está marcado (já filtrou acima)
+        if (!(filtros.quantidadeBaixo === false && filtros.quantidadeTodos === false && filtros.quantidadeZerados === true)) {
+            if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
+            if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
+        }
         return true;
     });
 
@@ -511,28 +535,115 @@ function getGenerosSelecionados() {
 // Atualizar placeholders (opcional, para mostrar "Todos" ou "X selecionados")
 function atualizarPlaceholderProdutoMulti() {
     const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('produto-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todas) {
+        if (todas.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todas.checked = false;
+        if (individuais.every(cb => cb.checked)) todas.checked = true;
+    }
+
     const span = document.getElementById('categoria-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todas";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionadas`;
+    if (todas.checked) span.textContent = "Todas";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionadas`;
 }
+
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('tamanho-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+
+    if (this === todos) {
+        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    } else {
+        if (!this.checked) todos.checked = false;
+        if (individuais.every(cb => cb.checked)) todos.checked = true;
+    }
+
     const span = document.getElementById('genero-multi-placeholder');
-    if (checks[0].checked) span.textContent = "Todos";
-    else span.textContent = `${checks.slice(1).filter(cb => cb.checked).length} selecionados`;
+    if (todos.checked) span.textContent = "Todos";
+    else span.textContent = `${individuais.filter(cb => cb.checked).length} selecionados`;
 }
+
+function atualizarPlaceholder(tipo) {
+  const checkboxes = document.querySelectorAll(`#checkboxes-${tipo}-multi input[type="checkbox"]:checked`);
+  const placeholder = document.getElementById(`${tipo}-multi-placeholder`);
+  if (checkboxes.length === 0) {
+    placeholder.textContent = tipo === 'categoria' ? 'Todas' : 'Todos';
+  } else if (checkboxes.length === 1) {
+    placeholder.textContent = checkboxes[0].parentElement.textContent.trim();
+  } else {
+    placeholder.textContent = `${checkboxes.length} selecionados`;
+  }
+}
+
+// Controle de dropdowns abertos
+const expanded = {
+  produto: false,
+  categoria: false,
+  tamanho: false,
+  genero: false
+};
+
+function toggleCheckboxes(tipo) {
+  // Fecha todos antes de abrir o clicado
+  Object.keys(expanded).forEach(key => {
+    if (key !== tipo) {
+      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
+      expanded[key] = false;
+    }
+  });
+  const el = document.getElementById(`checkboxes-${tipo}-multi`);
+  expanded[tipo] = !expanded[tipo];
+  el.style.display = expanded[tipo] ? "block" : "none";
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click', function(e) {
+  const classes = e.target.classList || [];
+  if (!e.target.closest('.multiselect')) {
+    Object.keys(expanded).forEach(key => {
+      document.getElementById(`checkboxes-${key}-multi`).style.display = "none";
+      expanded[key] = false;
+    });
+  }
+});
 
 // Chame as funções de montagem no início
 document.addEventListener('DOMContentLoaded', function() {
@@ -546,7 +657,6 @@ document.addEventListener('DOMContentLoaded', function() {
             montarCheckboxesGenero(produtos);
             atualizarLista();
         });
-    // ...restante do código...
 });
 
 // Use os selecionados no filtro
@@ -555,10 +665,318 @@ function getFiltrosSelecionados() {
     const categorias = getCategoriasSelecionadas();
     const tamanhos = getTamanhosSelecionados();
     const generos = getGenerosSelecionados();
-    const quantidadeMin = Number(document.getElementById('quantidade-min').value) || null;
-    const quantidadeMax = Number(document.getElementById('quantidade-max').value) || null;
-    const baixoEstoque = document.getElementById('baixo-estoque-checkbox').checked;
-    const dataInicio = document.getElementById('data-inicio').value || null;
-    const dataFim = document.getElementById('data-fim').value || null;
-    return { idsSelecionados, categorias, tamanhos, generos, quantidadeMin, quantidadeMax, baixoEstoque, dataInicio, dataFim };
+    const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
+    const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
+    const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
+    const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
+    const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
+    const dataInicio = document.getElementById('periodo-data-inicio').value || null;
+    const dataFim = document.getElementById('periodo-data-fim').value || null;
+    return { idsSelecionados, categorias, tamanhos, generos, quantidadeTodos, quantidadeBaixo, quantidadeZerados, quantidadeMin, quantidadeMax, dataInicio, dataFim };
+}
+
+// --- QUANTIDADE POPUP ---
+const qtdInput = document.getElementById('filter-quantidade');
+const qtdPopup = document.getElementById('quantidade-faixa-popup');
+if (qtdInput && qtdPopup) {
+    qtdInput.addEventListener('click', function(e) {
+        qtdPopup.style.display = 'block';
+        e.stopPropagation();
+    });
+    document.addEventListener('mousedown', function(e) {
+        if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+            qtdPopup.style.display = 'none';
+        }
+    });
+}
+
+// --- PERÍODO POPUP ---
+const periodoInput = document.getElementById('filter-periodo');
+const periodoPopup = document.getElementById('periodo-popup');
+if (periodoInput && periodoPopup) {
+    periodoInput.addEventListener('click', function(e) {
+        periodoPopup.style.display = 'block';
+        e.stopPropagation();
+    });
+    document.addEventListener('mousedown', function(e) {
+        if (periodoPopup.style.display === 'block' && !periodoPopup.contains(e.target) && e.target !== periodoInput) {
+            periodoPopup.style.display = 'none';
+        }
+    });
+}
+
+// --- PLACEHOLDER QUANTIDADE ---
+function atualizarPlaceholderQuantidade() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const min = document.getElementById('quantidade-min').value;
+    const max = document.getElementById('quantidade-max').value;
+    const input = document.getElementById('filter-quantidade');
+    let texto = 'Todas';
+
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) texto = 'Todas';
+    else if (chkBaixo.checked && !chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque';
+    else if (!chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Zerados';
+    else if (chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque + Zerados';
+    else if (min || max) texto = `De ${min || 0} até ${max || 999}`;
+    else texto = 'Personalizado';
+
+    input.value = texto;
+}
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup','quantidade-min','quantidade-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
+// --- PLACEHOLDER PERÍODO ---
+function atualizarPlaceholderPeriodo() {
+    const dataInicio = document.getElementById('periodo-data-inicio').value;
+    const dataFim = document.getElementById('periodo-data-fim').value;
+    const input = document.getElementById('filter-periodo');
+    if (dataInicio && dataFim) {
+        input.value = `De ${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}`;
+    } else if (dataInicio) {
+        input.value = `A partir de ${dataInicio.split('-').reverse().join('/')}`;
+    } else if (dataFim) {
+        input.value = `Até ${dataFim.split('-').reverse().join('/')}`;
+    } else {
+        input.value = '';
+    }
+}
+['periodo-data-inicio','periodo-data-fim'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarPlaceholderPeriodo);
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderPeriodo);
+
+// --- LÓGICA DOS CHECKBOXES QUANTIDADE ---
+if (document.getElementById('quantidade-todas-popup')) {
+    document.getElementById('quantidade-todas-popup').addEventListener('change', function() {
+        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const zerados = document.getElementById('quantidade-zerados-popup');
+        if (this.checked) {
+            baixo.checked = true;
+            zerados.checked = true;
+        }
+        atualizarPlaceholderQuantidade();
+    });
+}
+['quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', function() {
+        const todos = document.getElementById('quantidade-todas-popup');
+        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const zerados = document.getElementById('quantidade-zerados-popup');
+        if (!baixo.checked || !zerados.checked) todos.checked = false;
+        if (baixo.checked && zerados.checked) todos.checked = true;
+        atualizarPlaceholderQuantidade();
+    });
+});
+
+function syncQuantidadeChecksAndInputs() {
+    const chkTodos = document.getElementById('quantidade-todas-popup');
+    const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+    const chkZerados = document.getElementById('quantidade-zerados-popup');
+    const minInput = document.getElementById('quantidade-min');
+    const maxInput = document.getElementById('quantidade-max');
+
+    // Se só zerados está marcado
+    if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked) {
+        minInput.value = 0;
+        maxInput.value = 0;
+        minInput.disabled = true;
+        maxInput.disabled = true;
+    } else {
+        minInput.disabled = false;
+        maxInput.disabled = false;
+        // Se min/max estão ambos 0 e só zerados está marcado, ok
+        // Se min/max estão 0 mas outros checks estão marcados, limpe min/max
+        if ((chkTodos.checked || chkBaixo.checked) && minInput.value == 0 && maxInput.value == 0) {
+            minInput.value = '';
+            maxInput.value = '';
+        }
+    }
+}
+
+// Sempre que mudar os checkboxes de quantidade
+['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', function() {
+        syncQuantidadeChecksAndInputs();
+        atualizarPlaceholderQuantidade();
+        atualizarLista && atualizarLista();
+    });
+});
+
+// Sempre que mudar min/max manualmente
+['quantidade-min','quantidade-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() {
+        const chkTodos = document.getElementById('quantidade-todas-popup');
+        const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+        const chkZerados = document.getElementById('quantidade-zerados-popup');
+        // Se min/max for alterado para 0 e só zerados está marcado, mantenha
+        if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
+            // ok
+        } else {
+            // Se mexeu nos inputs, desmarque "Todos" e "Zerados"
+            chkTodos.checked = false;
+            if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
+        }
+        atualizarPlaceholderQuantidade();
+        atualizarLista && atualizarLista();
+    });
+});
+
+// Chame no início para garantir estado correto
+document.addEventListener('DOMContentLoaded', syncQuantidadeChecksAndInputs);
+
+async function gerarPDFHistoricoProdutos(produtos) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape" });
+
+    for (let i = 0; i < produtos.length; i++) {
+        const p = produtos[i];
+
+        // Título do produto
+        doc.setFontSize(14);
+        doc.setTextColor("#1E94A3");
+        doc.text(`Produto: ${p.nome} (${p.codigo})`, 14, 18);
+        doc.setFontSize(10);
+        doc.setTextColor("#333");
+        doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}`, 14, 26);
+
+        // Busca histórico do produto
+        let historico = [];
+        try {
+            const resp = await fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`);
+            historico = await resp.json();
+        } catch (e) {
+            historico = [];
+        }
+
+        // Ordena do mais recente para o mais antigo
+        historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+        // Monta linhas da tabela
+        const rows = historico.map(m => {
+            // Extrai primeiro e último nome do responsável
+            let resp = m.responsavel || '';
+            if (resp.includes('-')) {
+                let [codigo, nome] = resp.split('-').map(s => s.trim());
+                let nomes = nome.split(/\s+/);
+                nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
+                resp = `${codigo} - ${nome}`;
+            }
+            return [
+                m.data ? m.data.split('-').reverse().join('/') : '',
+                m.tipoMovimentacao,
+                m.codigoMovimentacao,
+                m.quantidadeMovimentada,
+                m.estoqueFinal,
+                m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
+                m.parteEnvolvida || '',
+                resp
+            ];
+        });
+
+        // Cabeçalho da tabela
+        const columns = [
+            "Data", "Tipo Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
+        ];
+
+        // Adiciona tabela
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            startY: i === 0 ? 32 : doc.lastAutoTable.finalY + 16,
+            styles: { fontSize: 9, cellPadding: 2 },
+            headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: "#F5F5F5" }
+        });
+
+        // Quebra de página se não for o último produto
+        if (i < produtos.length - 1) doc.addPage("landscape");
+    }
+
+    doc.save("HistoricoProdutos.pdf");
+
+    
+    async function adicionarHistoricoProdutosAoPDF(doc, produtos, filtros) {
+        // Busca todos os históricos em paralelo
+        const historicos = await Promise.all(produtos.map(p =>
+            fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`)
+                .then(res => res.json())
+                .catch(() => [])
+        ));
+    
+        let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 16 : 30;
+    
+        for (let i = 0; i < produtos.length; i++) {
+            const p = produtos[i];
+            let historico = (historicos[i] || []);
+            // Filtra histórico pelo período, se marcado
+            if (filtros && filtros.dataInicio && filtros.dataFim) {
+                const dtIni = new Date(filtros.dataInicio);
+                const dtFim = new Date(filtros.dataFim);
+                historico = historico.filter(mov => {
+                    const dt = new Date(mov.data);
+                    return dt >= dtIni && dt <= dtFim;
+                });
+            }
+            // Ordena do mais recente para o mais antigo
+            historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+    
+            // Título do produto
+            doc.addPage("landscape");
+            y = 20;
+            doc.setFontSize(13);
+            doc.setTextColor("#1E94A3");
+            doc.text(`${p.codigo} - ${p.nome}`, 14, y);
+            doc.setFontSize(10);
+            doc.setTextColor("#333");
+            y += 7;
+            doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}   Preço: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '-'}   Estoque Atual: ${p.quantidade}`, 14, y);
+    
+            // Cabeçalho da tabela
+            const columns = [
+                "Data", "Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
+            ];
+    
+            // Monta linhas da tabela
+            const rows = historico.map(m => {
+                // Extrai primeiro e último nome do responsável
+                let resp = m.responsavel || '';
+                if (resp.includes('-')) {
+                    let [codigo, nome] = resp.split('-').map(s => s.trim());
+                    let nomes = nome.split(/\s+/);
+                    nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
+                    resp = `${codigo} - ${nome}`;
+                }
+                return [
+                    m.data ? m.data.split('-').reverse().join('/') : '',
+                    m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída',
+                    m.codigoMovimentacao || '-',
+                    m.quantidadeMovimentada,
+                    m.estoqueFinal,
+                    m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
+                    m.parteEnvolvida || '',
+                    resp
+                ];
+            });
+    
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: y + 10,
+                styles: { fontSize: 9, cellPadding: 2 },
+                headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: "#F5F5F5" }
+            });
+        }
+    }
+
+    
 }

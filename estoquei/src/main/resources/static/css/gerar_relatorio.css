@@ -44,3 +44,55 @@
     margin-right: 8px;
     accent-color: #1e94a3;
 }
+.filters-container {
+    width: 1200px;
+    min-width: 900px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.filters-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    width: 100%;
+}
+.input-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+    margin-bottom: 0;
+    gap: 2px;
+}
+.input-group label {
+    font-size: 12px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.input-group select,
+.input-group input[type="number"],
+.input-group input[type="date"] {
+    font-size: 12px;
+    padding: 6px 8px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #fff;
+    color: #757575;
+    margin-bottom: 2px;
+}
+.input-group select {
+    min-width: 100px;
+    background: #f9f9f9;
+    cursor: pointer;
+}
+.input-group button.btn {
+    margin-top: 12px;
+    width: 100%;
+}
