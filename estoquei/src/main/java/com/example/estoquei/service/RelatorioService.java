@@ -1,5 +1,7 @@
 package com.example.estoquei.service;
 
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,17 +10,15 @@ import org.springframework.stereotype.Service;
 
 import com.example.estoquei.dto.FiltroRelatorioDTO;
 import com.example.estoquei.model.Produto;
-import com.example.estoquei.repository.ProdutoRepository;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.repository.MovimentacaoProdutoRepositoryCustomImpl;
+import com.example.estoquei.repository.ProdutoRepository;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import java.io.ByteArrayOutputStream;
-import java.time.LocalDate;
 
 @Service
 public class RelatorioService {
@@ -118,10 +118,10 @@ public class RelatorioService {
             PdfWriter.getInstance(doc, baos);
             doc.open();
 
+            // 1. Tabela geral
             doc.add(new Paragraph("Relatório de Produtos"));
             doc.add(new Paragraph(" "));
 
-            // Cabeçalho com todos os campos pedidos
             PdfPTable table = new PdfPTable(12); // 12 colunas
             table.addCell("Código");
             table.addCell("Nome");
@@ -158,6 +158,59 @@ public class RelatorioService {
             }
 
             doc.add(table);
+
+            // 2. Para cada produto, nova página com detalhamento
+            for (Produto p : produtos) {
+                doc.newPage();
+                doc.add(new Paragraph(p.getCodigo() + " - " + capitalize(p.getNome())));
+                doc.add(new Paragraph(
+                    "Categoria: " + capitalize(p.getCategoria() != null ? p.getCategoria().toString() : "-") +
+                    "   Tamanho: " + (p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "-") +
+                    "   Gênero: " + capitalize(p.getGenero() != null ? p.getGenero().toString() : "-") +
+                    "   Preço: " + formatarPreco(p.getPreco()) +
+                    "   Estoque Atual: " + p.getQuantidade()
+                ));
+                doc.add(new Paragraph(" "));
+
+                // Busca o histórico do produto (mais recente para mais antigo)
+                List<com.example.estoquei.model.MovimentacaoProduto> historico =
+                    movimentacaoProdutoRepository.findByCodigoProdutoOrderByDataDesc(p.getCodigo());
+
+                // Monta tabela do histórico
+                PdfPTable histTable = new PdfPTable(8); // 8 colunas
+                histTable.addCell("Data");
+                histTable.addCell("Movimentação");
+                histTable.addCell("Código");
+                histTable.addCell("Quantidade");
+                histTable.addCell("Estoque Final");
+                histTable.addCell("Valor (R$)");
+                histTable.addCell("Parte Envolvida");
+                histTable.addCell("Responsável");
+
+                for (com.example.estoquei.model.MovimentacaoProduto m : historico) {
+                    histTable.addCell(formatarData(m.getData()));
+                    histTable.addCell(m.getTipoMovimentacao() != null && m.getTipoMovimentacao().equals("ENTRADA") ? "Entrada" : "Saída");
+                    histTable.addCell(m.getCodigoMovimentacao() != null ? m.getCodigoMovimentacao() : "-");
+                    histTable.addCell(String.valueOf(m.getQuantidadeMovimentada()));
+                    histTable.addCell(String.valueOf(m.getEstoqueFinal()));
+                    histTable.addCell(m.getValorMovimentacao() != null ? formatarPreco(m.getValorMovimentacao()) : "");
+                    histTable.addCell(m.getParteEnvolvida() != null ? m.getParteEnvolvida() : "-");
+                    // Responsável: código - PRIMEIRONOME ULTIMONOME
+                    String resp = m.getResponsavel();
+                    if (resp != null && resp.contains("-")) {
+                        String[] partes = resp.split("-");
+                        String codigo = partes[0].trim();
+                        String nome = partes.length > 1 ? partes[1].trim() : "";
+                        String[] nomes = nome.split("\\s+");
+                        nome = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+                        resp = codigo + " - " + nome;
+                    }
+                    histTable.addCell(resp != null ? resp : "-");
+                }
+
+                doc.add(histTable);
+            }
+
             doc.close();
             return baos.toByteArray();
         } catch (DocumentException e) {
