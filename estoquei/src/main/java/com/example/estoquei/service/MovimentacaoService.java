@@ -19,10 +19,13 @@ public class MovimentacaoService {
     @Autowired
     private MovimentacaoProdutoRepository movimentacaoRepo;
     
-    // MÉTODO UNIFICADO PARA ENTRADAS
     public void registrarEntrada(String codigoCompra, int quantidade, BigDecimal valorCompra, String fornecedor, Produto produto, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
         String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+        String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+        String[] nomes = nomeUsuario.trim().split("\\s+");
+        String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+        String responsavel = codigoUsuario + " - " + nomeFormatado;
 
         MovimentacaoProduto movimentacao = new MovimentacaoProduto(
             LocalDate.now(),
@@ -36,16 +39,19 @@ public class MovimentacaoService {
             produto.getQuantidade(),
             valorCompra,
             fornecedor,
-            codigoUsuario
+            responsavel
         );
 
         movimentacaoRepo.save(movimentacao);
     }
     
-    // MÉTODO UNIFICADO PARA SAÍDAS
     public void registrarSaida(String codigoVenda, int quantidade, BigDecimal valorVenda, String comprador, Produto produto, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
         String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+        String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+        String[] nomes = nomeUsuario.trim().split("\\s+");
+        String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+        String responsavel = codigoUsuario + " - " + nomeFormatado;
 
         MovimentacaoProduto movimentacao = new MovimentacaoProduto(
             LocalDate.now(),
@@ -59,7 +65,7 @@ public class MovimentacaoService {
             produto.getQuantidade(),
             valorVenda,
             comprador,
-            codigoUsuario
+            responsavel
         );
         
         movimentacaoRepo.save(movimentacao);

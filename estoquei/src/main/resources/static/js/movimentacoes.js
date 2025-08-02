@@ -210,10 +210,6 @@ function salvarEdicaoMovimentacao() {
         confirmButtonText: 'Sim',
         cancelButtonText: 'Não',
         allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-confirm-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
     }).then((result) => {
         if (result.isConfirmed) {
             const id = document.getElementById('editar-movimentacao').dataset.movimentacaoId;
@@ -240,6 +236,7 @@ function salvarEdicaoMovimentacao() {
             .then(data => {
                 Swal.fire({
                     title: "Alterações salvas!",
+                    text: "Selecione uma opção",
                     icon: "success",
                     showCloseButton: true,
                     showCancelButton: true,
@@ -247,10 +244,6 @@ function salvarEdicaoMovimentacao() {
                     confirmButtonText: 'Visualizar Movimentações',
                     cancelButtonText: 'Voltar para Início',
                     allowOutsideClick: false,
-                    customClass: {
-                        confirmButton: 'swal2-confirm-custom',
-                        cancelButton: 'swal2-cancel-custom'
-                    }
                 }).then((result) => {
                     btnConfirmar.disabled = false;
                     btnConfirmar.textContent = textoOriginal;
