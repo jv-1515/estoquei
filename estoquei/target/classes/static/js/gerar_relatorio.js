@@ -9,12 +9,6 @@
 //     };
 // }
 
-// function formatarDataBR(data) {
-//     if (!data) return '';
-//     const [ano, mes, dia] = data.split('-');
-//     return `${dia}/${mes}/${ano}`;
-// }
-
 // function gerar() {
 //     const areaGerar = document.querySelector('.filters-container + .filters-container');
 //     areaGerar.style.display = 'none';
@@ -291,12 +285,15 @@
 //novo
 
 let todosProdutos = [];
+let totalProdutosCadastrados = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/produtos')
         .then(res => res.json())
         .then(produtos => {
             todosProdutos = produtos;
+            totalProdutosCadastrados = produtos.length;
+            document.getElementById('detalhe-total-cadastrados').textContent = totalProdutosCadastrados;
             // montarSelects(produtos);
             atualizarLista();
         });
@@ -1032,8 +1029,8 @@ function aplicarFiltroPrecoFaixa() {
     precoInput.value = `R$ ${min} - R$ ${max}`;
     if (precoInput.value === "R$ 0,00 - R$ 999,99") precoInput.value = '';
 
-    const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
-    const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
+    // const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
+    // const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
     // const precoMinVal = precoMinStr ? Number(precoMinStr) : null;
     // const precoMaxVal = precoMaxStr ? Number(precoMaxStr) : null;
 
@@ -1247,26 +1244,28 @@ function exibirNenhumProduto() {
     });
 }
 
+function formatarDataBR(data) {
+    if (!data) return '';
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
 
 function atualizarDetalhesPrevia(produtos, filtros) {
     // Selecionados
     document.getElementById('detalhe-selecionados').textContent = produtos.length;
 
     // Período
-    let periodo = '-';
+    let periodo = 'de: __/__/____ até: __/__/____';
     if (filtros.dataInicio && filtros.dataFim) {
-        periodo = filtros.dataInicio === filtros.dataFim
-            ? formatarDataBR(filtros.dataInicio)
-            : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`;
+        const inicio = formatarDataBR(filtros.dataInicio);
+        const fim = formatarDataBR(filtros.dataFim);
+        periodo = `de: ${inicio} até: ${fim}`;
     }
     document.getElementById('detalhe-periodo').textContent = periodo;
 
     // Estoque Atual
     document.getElementById('detalhe-total-produtos').textContent =
         produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
-
-    // Produtos Cadastrados
-    document.getElementById('detalhe-total-cadastrados').textContent = produtos.length;
 
     // Baixo Estoque
     document.getElementById('detalhe-total-baixo').textContent =
@@ -1275,4 +1274,5 @@ function atualizarDetalhesPrevia(produtos, filtros) {
     // Produtos Zerados
     document.getElementById('detalhe-total-zerados').textContent =
         produtos.filter(p => Number(p.quantidade) === 0).length;
+        
 }
