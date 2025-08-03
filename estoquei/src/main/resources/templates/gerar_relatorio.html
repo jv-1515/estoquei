@@ -2,7 +2,10 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gerar Relatório</title>
+    <link rel="icon" type="image/png" href="/images/logo_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <link rel="stylesheet" href="/css/gerar_relatorio.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -10,14 +13,38 @@
     <script src="/js/gerar_relatorio.js" defer></script>
 </head>
 <body>
-    <nav>
-        <a href="/gerenciar-relatorios"><button>Voltar</button></a>
-        <a href="/inicio"><button>Home</button></a>
-    </nav>
-    <h1>Gerar Relatório de Produtos</h1>
+    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+        </button>
+    </a>
+    <a href="/inicio" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+        <button tabindex="13" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-house" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    <h1>Gerar Relatório</h1>
     <div class="filters-container">
       <div class="filters">
+        <h2>Selecionar Parâmetros</h2>
         <div class="filters-row">
+          <!-- Período -->
+          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+            <label for="filter-periodo">Período*</label>
+            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" autofocus />
+            <div id="periodo-popup" class="faixa-popup" style="display:none;">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                  <span>Data Início:</span>
+                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
+                </div>
+                <div>
+                  <span>Data Fim:</span>
+                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- Produtos -->
           <div class="input-group multiselect" style="max-width: 200px; min-width: 160px; position:relative;">
             <label for="filter-produto">Produtos</label>
@@ -66,24 +93,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Período -->
-          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
-            <label for="filter-periodo">Período</label>
-            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" />
-            <div id="periodo-popup" class="faixa-popup" style="display:none;">
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div>
-                  <span>Data Início:</span>
-                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
-                </div>
-                <div>
-                  <span>Data Fim:</span>
-                  <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
-                </div>
-              </div>
-            </div>
-          </div>
           <!-- Preços -->
           <div class="input-group" style="max-width: 120px;">
               <label for="filter-preco">Preços</label>
@@ -101,9 +110,13 @@
                   </div>
               </div>
           </div>
-          <div class="input-group" style="min-width: 120px; align-self: flex-end;">
-            <button type="button" id="btn-gerar-relatorio" class="btn">Gerar Relatório</button>
-          </div>
+          <!-- Botões -->
+          <button type="button" id="btn-limpar-filtros" class="btn cancelar" style="display: flex; align-items: center;">
+              <i class="fa-solid fa-eraser" style="margin-right:4px;"></i> Limpar
+          </button>
+          <button type="button" id="btn-gerar-relatorio" class="btn" style="display: flex; align-items: center;">
+              <i class="fa-solid fa-file-lines" style="margin-right:6px;"></i> Gerar Relatório
+          </button>
         </div>
       </div>
     </div>

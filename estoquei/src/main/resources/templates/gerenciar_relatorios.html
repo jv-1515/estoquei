@@ -64,7 +64,7 @@
         </div>
     </div>
     <!-- Área de gerar relatório (mantida abaixo) -->
-    <div class="filters-container" style="display: none;">
+    <!-- <div class="filters-container" style="display: none;">
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2>Gerar Relatório</h2>
             <div class="filters-row">
@@ -209,10 +209,9 @@
                 <button class="btn" style="margin-bottom: 0;" onclick="gerar()">
                     <i class="fa-solid fa-download" style="margin-right: 6px;"></i>Gerar
                 </button>
-
             </div>
         </div>
-    </div>
+    </div> -->
     <div id="detalhes-estoque"
         style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1200px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
         <div style="display: flex; flex-direction: column; width: 240x; min-width: 240px; flex-shrink: 0;">
@@ -292,7 +291,7 @@
             </select>
         </div>
 
-        <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0">
+        <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0" onclick="window.location.href='/gerar-relatorio'">
             <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Novo Relatório
         </button>
     </div>
