@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     ['produtos-select','categorias-select','tamanhos-select','generos-select',
-     'quantidade-min','quantidade-max','data-inicio','data-fim','baixo-estoque-checkbox']
+     'quantidade-min','quantidade-max','periodo-data-inicio','periodo-data-fim','baixo-estoque-checkbox']
      .forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', atualizarLista);
@@ -311,38 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btn-gerar-relatorio').addEventListener('click', gerarRelatorio);
 });
 
-// function montarSelects(produtos) {
-//     // Produtos
-//     const selProd = document.getElementById('produtos-select');
-//     selProd.innerHTML = '';
-//     produtos.forEach(p => {
-//         selProd.innerHTML += `<option value="${p.id}" selected>${p.nome} (${p.codigo})</option>`;
-//     });
-
-//     // Categorias
-//     const categorias = [...new Set(produtos.map(p => p.categoria))];
-//     const selCat = document.getElementById('categorias-select');
-//     selCat.innerHTML = '';
-//     categorias.forEach(cat => {
-//         selCat.innerHTML += `<option value="${cat}" selected>${cat}</option>`;
-//     });
-
-//     // Tamanhos
-//     const tamanhos = [...new Set(produtos.map(p => p.tamanho))];
-//     const selTam = document.getElementById('tamanhos-select');
-//     selTam.innerHTML = '';
-//     tamanhos.forEach(tam => {
-//         selTam.innerHTML += `<option value="${tam}" selected>${tam}</option>`;
-//     });
-
-//     // Gêneros
-//     const generos = [...new Set(produtos.map(p => p.genero))];
-//     const selGen = document.getElementById('generos-select');
-//     selGen.innerHTML = '';
-//     generos.forEach(gen => {
-//         selGen.innerHTML += `<option value="${gen}" selected>${gen}</option>`;
-//     });
-// }
 
 // function getFiltrosSelecionados() {
 //     const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
@@ -375,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //     };
 // }
 
-function atualizarLista() {
+async function atualizarLista() {
     const filtros = getFiltrosSelecionados();
     let filtrados = todosProdutos.filter(p => {
         if (filtros.idsSelecionados.length && !filtros.idsSelecionados.includes(p.id)) return false;
@@ -394,7 +362,7 @@ function atualizarLista() {
                 return false;
             }
         }
-        // Faixa sempre é aplicada, exceto se só zerados está marcado (já filtrou acima)
+        // Faixa sempre é aplicada, exceto se só zerados está marcado
         if (!(filtros.quantidadeBaixo === false && filtros.quantidadeTodos === false && filtros.quantidadeZerados === true)) {
             if (filtros.quantidadeMin !== null && p.quantidade < filtros.quantidadeMin) return false;
             if (filtros.quantidadeMax !== null && p.quantidade > filtros.quantidadeMax) return false;
@@ -403,6 +371,10 @@ function atualizarLista() {
         if (filtros.precoMax !== null && p.preco > filtros.precoMax) return false;
         return true;
     });
+
+    if (filtros.dataInicio && filtros.dataFim) {
+        filtrados = await filtrarProdutosPorPeriodo(filtrados, filtros.dataInicio, filtros.dataFim);
+    }
 
     // Monta lista prévia
     const ul = document.getElementById('lista-produtos');
@@ -420,10 +392,11 @@ function atualizarLista() {
     });
 }
 
-function gerarRelatorio() {
+async function gerarRelatorio() {
     const filtros = getFiltrosSelecionados();
-    // Filtra os produtos igual à prévia
-    const produtosFiltrados = todosProdutos.filter(p => {
+
+    // Filtra os produtos igual à prévia (categoria, tamanho, etc)
+    let produtosFiltrados = todosProdutos.filter(p => {
         if (filtros.idsSelecionados.length && !filtros.idsSelecionados.includes(p.id)) return false;
         if (filtros.categorias.length && !filtros.categorias.includes(p.categoria)) return false;
         if (filtros.tamanhos.length && !filtros.tamanhos.includes(p.tamanho)) return false;
@@ -450,10 +423,19 @@ function gerarRelatorio() {
         return true;
     });
 
+    // FILTRA PELO PERÍODO (só produtos com movimentação no período)
+    if (filtros.dataInicio && filtros.dataFim) {
+        produtosFiltrados = await filtrarProdutosPorPeriodo(produtosFiltrados, filtros.dataInicio, filtros.dataFim);
+    }
+
     fetch('/relatorio/gerar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ produtos: produtosFiltrados })
+        body: JSON.stringify({
+            produtos: produtosFiltrados,
+            dataInicio: filtros.dataInicio,
+            dataFim: filtros.dataFim
+        })
     })
     .then(res => res.blob())
     .then(blob => {
@@ -1100,3 +1082,31 @@ function aplicarFiltroPrecoFaixa() {
         });
     }
 });
+
+async function filtrarProdutosPorPeriodo(produtos, dataInicio, dataFim) {
+    if (!dataInicio || !dataFim) return [];
+    const dtIni = new Date(dataInicio);
+    const dtFim = new Date(dataFim);
+
+    const produtosComHistorico = [];
+    for (const p of produtos) {
+        let historico = [];
+        try {
+            const resp = await fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`);
+            historico = await resp.json();
+        } catch (e) {
+            historico = [];
+        }
+        // Filtra o histórico pelo período
+        const historicoFiltrado = historico.filter(mov => {
+            const dt = new Date(mov.data);
+            return dt >= dtIni && dt <= dtFim;
+        });
+        if (historicoFiltrado.length > 0) {
+            // Só inclui produtos que têm movimentação no período
+            p.historico = historicoFiltrado;
+            produtosComHistorico.push(p);
+        }
+    }
+    return produtosComHistorico;
+}
