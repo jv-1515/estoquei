@@ -31,9 +31,9 @@
         <h2>Selecionar Filtros</h2>
         <div class="filters-row">
           <!-- Período -->
-          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+          <div class="input-group" style="max-width: 150px; position:relative;">
             <label for="filter-periodo">Período*</label>
-            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" autofocus />
+            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer; width: 150px;" autofocus />
             <div id="periodo-popup" class="faixa-popup" style="display:none;">
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div>
@@ -48,33 +48,33 @@
             </div>
           </div>
           <!-- Produtos -->
-          <div class="input-group multiselect" style="max-width: 200px; min-width: 160px; position:relative;">
+          <div class="input-group multiselect" style="min-width: 160px; position:relative;">
             <label for="filter-produto">Produtos</label>
             <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer;" />
             <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Categorias -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
             <label for="filter-categoria">Categorias</label>
-            <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer;" />
+            <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; width: 100px;" />
             <div id="checkboxes-categoria-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Tamanhos -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
             <label for="filter-tamanho">Tamanhos</label>
-            <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer;" />
+            <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; width: 100px;" />
             <div id="checkboxes-tamanho-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Gêneros -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
             <label for="filter-genero">Gêneros</label>
-            <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer;" />
+            <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; width: 100px;" />
             <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Quantidade -->
-          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+          <div class="input-group" style="max-width: 150px; position:relative;">
             <label for="filter-quantidade">Quantidades</label>
-            <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
+            <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="width: 150px;" />
             <div id="quantidade-faixa-popup" class="faixa-popup">
               <label class="quantidade-check-label">
                 <input type="checkbox" id="quantidade-todas-popup" checked />Todos
@@ -96,9 +96,9 @@
             </div>
           </div>
           <!-- Preços -->
-          <div class="input-group" style="max-width: 120px;">
+          <div class="input-group" style="max-width: 130px;">
               <label for="filter-preco">Preços</label>
-              <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+              <input type="text" id="filter-preco" placeholder="Todos" readonly style="width: 130px;" />
               <div id="preco-faixa-popup" class="faixa-popup">
                   <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                       <div style="display: flex; align-items: center;">
