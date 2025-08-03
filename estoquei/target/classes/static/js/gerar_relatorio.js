@@ -515,56 +515,125 @@ function atualizarPlaceholderProdutoMulti() {
     const todos = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-produto');
+    const selecionados = individuais.filter(cb => cb.checked);
+
+    // "Todos" marca/desmarca todos
     if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todos.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todos.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    // Placeholder e borda
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
+
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-categoria');
+    const selecionados = individuais.filter(cb => cb.checked);
+
     if (this === todas) {
-        if (todas.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todas.checked);
     } else {
-        if (!this.checked) todas.checked = false;
-        if (individuais.every(cb => cb.checked)) todas.checked = true;
+        todas.checked = individuais.every(cb => cb.checked);
     }
-    if (todas.checked) input.value = "Todas";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todas.checked || selecionados.length === 0) {
+        input.value = "Todas";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionadas`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
+
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
     const todos = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-tamanho');
+    const selecionados = individuais.filter(cb => cb.checked);
+
     if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todos.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todos.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
+
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todos = checks[0];
+    const todas = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-genero');
-    if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    const selecionados = individuais.filter(cb => cb.checked);
+
+    if (this === todas) {
+        checks.forEach(cb => cb.checked = todas.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todas.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todas.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
 
 // Mostrar/ocultar popups ao clicar no input
@@ -719,16 +788,24 @@ function atualizarPlaceholderPeriodo() {
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
     const input = document.getElementById('filter-periodo');
+    let ativo = false;
+
     if (dataInicio && dataFim) {
         input.value = `${dataInicio.split('-').reverse().join('/')} - ${dataFim.split('-').reverse().join('/')}`;
-    } else if (dataInicio) {
-        input.value = `${dataInicio.split('-').reverse().join('/')}`;
-    } else if (dataFim) {
-        input.value = `${dataFim.split('-').reverse().join('/')}`;
+        ativo = true;
     } else {
         input.value = '';
     }
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
+
 ['periodo-data-inicio','periodo-data-fim'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', atualizarPlaceholderPeriodo);
