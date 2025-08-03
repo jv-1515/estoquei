@@ -111,7 +111,7 @@ public class RelatorioService {
         }
     }
 
-    public byte[] gerarPDFProdutosDireto(List<Produto> produtos) {
+    public byte[] gerarPDFProdutosDireto(List<Produto> produtos, String dataInicio, String dataFim) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Document doc = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
@@ -175,6 +175,15 @@ public class RelatorioService {
                 // Busca o histórico do produto (mais recente para mais antigo)
                 List<com.example.estoquei.model.MovimentacaoProduto> historico =
                     movimentacaoProdutoRepository.findByCodigoProdutoOrderByDataDesc(p.getCodigo());
+
+                // Filtra por data, se os parâmetros forem fornecidos
+                if (dataInicio != null && !dataInicio.isEmpty() && dataFim != null && !dataFim.isEmpty()) {
+                    LocalDate ini = LocalDate.parse(dataInicio);
+                    LocalDate fim = LocalDate.parse(dataFim);
+                    historico = historico.stream()
+                        .filter(m -> !m.getData().isBefore(ini) && !m.getData().isAfter(fim))
+                        .collect(Collectors.toList());
+                }
 
                 // Monta tabela do histórico
                 PdfPTable histTable = new PdfPTable(8); // 8 colunas
