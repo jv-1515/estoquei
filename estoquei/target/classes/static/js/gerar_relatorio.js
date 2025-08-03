@@ -776,12 +776,14 @@ function atualizarPlaceholderQuantidade() {
     if (min && !isNaN(min) && max && !isNaN(max)) {
         faixa = `de ${min} até ${max}`;
     } else if (min && !isNaN(min)) {
-        faixa = `de ${min}`;
+        faixa = `a partir de ${min}`;
     } else if (max && !isNaN(max)) {
         faixa = `até ${max}`;
     }
 
-    // Lógica igual ao estoque: se todos marcados e min/max vazio, placeholder "Todas"
+    // Se só "Zerados" está marcado, não mostra faixa
+    const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
+
     if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
         input.value = "Todas";
         ativo = false;
@@ -789,7 +791,7 @@ function atualizarPlaceholderQuantidade() {
         let texto = '';
         if (filtros.length > 0) {
             texto = filtros.join(', ');
-            if (faixa) texto += ` (${faixa})`;
+            if (faixa && !apenasZerados) texto += ` (${faixa})`;
         } else if (faixa) {
             texto = faixa;
         } else {
@@ -955,21 +957,24 @@ function syncQuantidadeChecksAndInputs() {
 // Sempre que mudar min/max manualmente
 ['quantidade-min','quantidade-max'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', function() {
-        const chkTodos = document.getElementById('quantidade-todas-popup');
-        const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-        const chkZerados = document.getElementById('quantidade-zerados-popup');
-        // Se min/max for alterado para 0 e só zerados está marcado, mantenha
-        if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
-            // ok
-        } else {
-            // Se mexeu nos inputs, desmarque "Todos" e "Zerados"
-            chkTodos.checked = false;
-            if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
-        }
-        atualizarPlaceholderQuantidade();
-        atualizarLista && atualizarLista();
-    });
+    if (el) {
+        el.addEventListener('input', function() {
+            // Só números, máximo 3 dígitos
+            this.value = this.value.replace(/\D/g, '').slice(0, 3);
+
+            const chkTodos = document.getElementById('quantidade-todas-popup');
+            const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+            const chkZerados = document.getElementById('quantidade-zerados-popup');
+            // Se min/max for alterado para 0 e só zerados está marcado, mantenha
+            if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
+            } else {
+                chkTodos.checked = false;
+                if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
+            }
+            atualizarPlaceholderQuantidade();
+            if (typeof atualizarLista === 'function') atualizarLista();
+        });
+    }
 });
 
 // Chame no início para garantir estado correto
