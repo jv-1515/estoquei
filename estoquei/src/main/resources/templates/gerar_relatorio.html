@@ -31,9 +31,14 @@
         <h2>Selecionar Filtros</h2>
         <div class="filters-row">
           <!-- Período -->
-          <div class="input-group" style="max-width: 150px; position:relative;">
+          <div class="input-group" style="max-width: 160px; position:relative;">
             <label for="filter-periodo">Período*</label>
-            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer; width: 150px;" autofocus />
+            <div style="position:relative;">
+              <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer; width: 160px;" autofocus />
+              <span class="chevron-periodo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="periodo-popup" class="faixa-popup" style="display:none;">
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div>
@@ -50,31 +55,59 @@
           <!-- Produtos -->
           <div class="input-group multiselect" style="min-width: 160px; position:relative;">
             <label for="filter-produto">Produtos</label>
-            <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+              <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Categorias -->
-          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-categoria">Categorias</label>
-            <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; width: 100px;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-categoria-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Tamanhos -->
-          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-tamanho">Tamanhos</label>
-            <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; width: 100px;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-tamanho-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Gêneros -->
-          <div class="input-group multiselect" style="max-width: 100px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-genero">Gêneros</label>
-            <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; width: 100px;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Quantidade -->
           <div class="input-group" style="max-width: 150px; position:relative;">
             <label for="filter-quantidade">Quantidades</label>
-            <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="width: 150px;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="width: 150px; padding-right: 20px;" />
+              <span class="chevron-quantidade" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="quantidade-faixa-popup" class="faixa-popup">
               <label class="quantidade-check-label">
                 <input type="checkbox" id="quantidade-todas-popup" checked />Todos
@@ -96,9 +129,14 @@
             </div>
           </div>
           <!-- Preços -->
-          <div class="input-group" style="max-width: 140px;">
+            <div class="input-group" style="max-width: 155px;">
               <label for="filter-preco">Preços</label>
-              <input type="text" id="filter-preco" placeholder="Todos" readonly style="width: 140px;" />
+              <div style="position:relative;">
+                <input type="text" id="filter-preco" placeholder="Todos" readonly style="width: 155px; padding-right: 20px;" />
+                <span class="chevron-preco" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                  <i class="fa fa-chevron-down"></i>
+                </span>
+              </div>
               <div id="preco-faixa-popup" class="faixa-popup">
                   <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                       <div style="display: flex; align-items: center;">
@@ -117,7 +155,7 @@
               <i class="fa-solid fa-eraser" style="margin-right:4px;"></i> Limpar
           </button>
           <button type="button" id="btn-gerar-relatorio" class="btn" style="display: flex; align-items: center;">
-              <i class="fa-solid fa-file-lines" style="margin-right:6px;"></i> Gerar Relatório
+              <i class="fa-solid fa-file-lines" style="margin-right:6px;"></i> Gerar
           </button>
         </div>
       </div>
@@ -139,7 +177,7 @@
                     <!-- Período -->
                     <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
                         <div style="color: #e65100; font-size: 12px; font-weight: bold;">Período</div>
-                        <div id="detalhe-periodo" style="font-size: 12px; font-weight: bold; color: #e65100;">de __/__/__ até __/__/__</div>
+                        <div id="detalhe-periodo" style="font-size: 12px; color: #e65100;">de __/__/__ até __/__/__</div>
                     </div>
                     <!-- Estoque Atual -->
                     <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">

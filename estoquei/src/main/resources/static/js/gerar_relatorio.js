@@ -541,6 +541,11 @@ function atualizarPlaceholderProdutoMulti() {
         input.style.border = '';
         input.style.color = '';
     }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
 
 function atualizarPlaceholderCategoriaMulti() {
@@ -571,6 +576,11 @@ function atualizarPlaceholderCategoriaMulti() {
     } else {
         input.style.border = '';
         input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
     }
 }
 
@@ -603,6 +613,11 @@ function atualizarPlaceholderTamanhoMulti() {
         input.style.border = '';
         input.style.color = '';
     }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
 
 function atualizarPlaceholderGeneroMulti() {
@@ -633,6 +648,11 @@ function atualizarPlaceholderGeneroMulti() {
     } else {
         input.style.border = '';
         input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
     }
 }
 
@@ -802,13 +822,16 @@ function atualizarPlaceholderQuantidade() {
     }
 
     if (ativo) {
-        input.classList.add('quantidade-ativa');
         input.style.border = '2px solid #1e94a3';
         input.style.color = '#1e94a3';
     } else {
-        input.classList.remove('quantidade-ativa');
         input.style.border = '';
         input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
     }
 }
 
@@ -852,6 +875,11 @@ function atualizarPlaceholderPreco() {
         input.style.border = '';
         input.style.color = '';
     }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
 
 // Máscara e listeners para preço
@@ -886,6 +914,11 @@ function atualizarPlaceholderPeriodo() {
     } else {
         input.style.border = '';
         input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
     }
 }
 
