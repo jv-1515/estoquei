@@ -139,7 +139,7 @@
                     <!-- Período -->
                     <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
                         <div style="color: #e65100; font-size: 12px; font-weight: bold;">Período</div>
-                        <div id="detalhe-periodo" style="font-size: 16px; font-weight: bold; color: #e65100;">-</div>
+                        <div id="detalhe-periodo" style="font-size: 12px; font-weight: bold; color: #e65100;">de __/__/__ até __/__/__</div>
                     </div>
                     <!-- Estoque Atual -->
                     <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
@@ -170,13 +170,15 @@
         <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: row; gap: 10px;">
             <!-- Gráfico Categoria -->
             <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
-                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
-                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
-                    <canvas id="grafico-categoria" width="130" height="130"></canvas>
-                    <ul id="lista-categorias"
-                        style="list-style: none; padding: 0; margin: 0; font-size: 10px;">
-                    </ul>
-                </div>
+              <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
+              <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                <canvas id="grafico-categoria" width="130" height="130"></canvas>
+                <ul id="lista-categorias"
+                  style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                    display: flex; flex-direction: column;
+                    justify-content: space-between; height:130px;">
+                </ul>
+              </div>
             </div>
             <!-- Gráfico Tamanhos -->
             <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
