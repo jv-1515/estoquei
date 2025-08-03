@@ -766,22 +766,103 @@ function atualizarPlaceholderQuantidade() {
     const min = document.getElementById('quantidade-min').value;
     const max = document.getElementById('quantidade-max').value;
     const input = document.getElementById('filter-quantidade');
-    let texto = 'Todas';
 
-    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) texto = 'Todas';
-    else if (chkBaixo.checked && !chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque';
-    else if (!chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Zerados';
-    else if (chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque + Zerados';
-    else if (min || max) texto = `${min || 0} - ${max || 999}`;
-    else texto = 'Personalizado';
+    let filtros = [];
+    let faixa = '';
+    let ativo = false;
 
-    input.value = texto;
+    if (chkBaixo.checked) filtros.push('Baixo estoque');
+    if (chkZerados.checked) filtros.push('Zerados');
+    if (min && !isNaN(min) && max && !isNaN(max)) {
+        faixa = `de ${min} até ${max}`;
+    } else if (min && !isNaN(min)) {
+        faixa = `de ${min}`;
+    } else if (max && !isNaN(max)) {
+        faixa = `até ${max}`;
+    }
+
+    // Lógica igual ao estoque: se todos marcados e min/max vazio, placeholder "Todas"
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+        input.value = "Todas";
+        ativo = false;
+    } else {
+        let texto = '';
+        if (filtros.length > 0) {
+            texto = filtros.join(', ');
+            if (faixa) texto += ` (${faixa})`;
+        } else if (faixa) {
+            texto = faixa;
+        } else {
+            texto = "Todas";
+        }
+        input.value = texto;
+        ativo = texto !== "Todas";
+    }
+
+    if (ativo) {
+        input.classList.add('quantidade-ativa');
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.classList.remove('quantidade-ativa');
+        input.style.border = '';
+        input.style.color = '';
+    }
 }
+
+// Listeners para todos os campos de quantidade
 ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup','quantidade-min','quantidade-max'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+    if (el) el.addEventListener('input', atualizarPlaceholderQuantidade);
 });
+
 document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
+function atualizarPlaceholderPreco() {
+    const precoMinEl = document.getElementById('preco-min');
+    const precoMaxEl = document.getElementById('preco-max');
+    const input = document.getElementById('filter-preco');
+
+    let precoMin = precoMinEl.value.replace('R$','').replace(',','.').trim();
+    let precoMax = precoMaxEl.value.replace('R$','').replace(',','.').trim();
+    precoMin = precoMin && !isNaN(precoMin) ? Number(precoMin) : null;
+    precoMax = precoMax && !isNaN(precoMax) ? Number(precoMax) : null;
+
+    let texto = 'Todos';
+    let ativo = false;
+
+    if (precoMin !== null && precoMax !== null) {
+        texto = `R$ ${precoMin.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} - R$ ${precoMax.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    } else if (precoMin !== null) {
+        texto = `R$ ${precoMin.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    } else if (precoMax !== null) {
+        texto = `R$ ${precoMax.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    }
+
+    input.value = texto;
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+}
+
+// Máscara e listeners para preço
+['preco-min','preco-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', function() {
+            mascaraPrecoFaixa(this);
+            atualizarPlaceholderPreco();
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderPreco);
 
 // --- PLACEHOLDER PERÍODO ---
 function atualizarPlaceholderPeriodo() {
@@ -1051,12 +1132,13 @@ const precoMax = document.getElementById('preco-max');
 function mascaraPrecoFaixa(input) {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 5) value = value.slice(0, 5);
-    if (value.length > 0) {
-        value = (parseInt(value) / 100).toFixed(2);
-        input.value = value.replace('.', ',');
-    } else {
+    if (value.length === 0) {
         input.value = '';
+        return;
     }
+    value = (parseInt(value) / 100).toFixed(2);
+    if (parseFloat(value) > 999.99) value = '999.99';
+    input.value = 'R$ ' + value.replace('.', ',');
 }
 
 if (precoMin) precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
