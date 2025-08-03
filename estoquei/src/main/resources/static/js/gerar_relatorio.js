@@ -376,24 +376,16 @@ async function atualizarLista() {
         filtrados = await filtrarProdutosPorPeriodo(filtrados, filtros.dataInicio, filtros.dataFim);
     }
 
-    // Monta lista prévia
-    const ul = document.getElementById('lista-produtos');
-    ul.innerHTML = '';
     if (filtrados.length === 0) {
-    exibirNenhumProduto();
-    return;
+        exibirNenhumProduto();
+        // Limpe os cards e gráficos se quiser
+        atualizarDetalhesPrevia([], filtros);
+        window.atualizarDetalhesEstoque([]);
+        return;
     }
-    filtrados.forEach(p => {
-        const precoFormatado = p.preco ? `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}` : '-';
-        ul.innerHTML += `<li>
-            <b>${p.nome}</b> (${p.codigo}) 
-        - Categoria: ${capitalizar(p.categoria) || '-'}
-        - Tamanho: ${exibirTamanho(p.tamanho) || '-'}
-        - Gênero: ${capitalizar(p.genero) || '-'}
-        - Preço: ${precoFormatado}
-        - Estoque: ${p.quantidade}
-    </li>`;
-    });
+
+    atualizarDetalhesPrevia(filtrados, filtros); // Atualiza os 6 cards
+    window.atualizarDetalhesEstoque(filtrados);  // Atualiza os gráficos
 }
 
 async function gerarRelatorio() {
@@ -714,7 +706,7 @@ function atualizarPlaceholderQuantidade() {
     else if (chkBaixo.checked && !chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque';
     else if (!chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Zerados';
     else if (chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque + Zerados';
-    else if (min || max) texto = `De ${min || 0} até ${max || 999}`;
+    else if (min || max) texto = `${min || 0} - ${max || 999}`;
     else texto = 'Personalizado';
 
     input.value = texto;
@@ -731,11 +723,11 @@ function atualizarPlaceholderPeriodo() {
     const dataFim = document.getElementById('periodo-data-fim').value;
     const input = document.getElementById('filter-periodo');
     if (dataInicio && dataFim) {
-        input.value = `De ${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}`;
+        input.value = `${dataInicio.split('-').reverse().join('/')} - ${dataFim.split('-').reverse().join('/')}`;
     } else if (dataInicio) {
-        input.value = `A partir de ${dataInicio.split('-').reverse().join('/')}`;
+        input.value = `${dataInicio.split('-').reverse().join('/')}`;
     } else if (dataFim) {
-        input.value = `Até ${dataFim.split('-').reverse().join('/')}`;
+        input.value = `${dataFim.split('-').reverse().join('/')}`;
     } else {
         input.value = '';
     }
@@ -1253,4 +1245,34 @@ function exibirNenhumProduto() {
         timerProgressBar: true,
         allowOutsideClick: false
     });
+}
+
+
+function atualizarDetalhesPrevia(produtos, filtros) {
+    // Selecionados
+    document.getElementById('detalhe-selecionados').textContent = produtos.length;
+
+    // Período
+    let periodo = '-';
+    if (filtros.dataInicio && filtros.dataFim) {
+        periodo = filtros.dataInicio === filtros.dataFim
+            ? formatarDataBR(filtros.dataInicio)
+            : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`;
+    }
+    document.getElementById('detalhe-periodo').textContent = periodo;
+
+    // Estoque Atual
+    document.getElementById('detalhe-total-produtos').textContent =
+        produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+
+    // Produtos Cadastrados
+    document.getElementById('detalhe-total-cadastrados').textContent = produtos.length;
+
+    // Baixo Estoque
+    document.getElementById('detalhe-total-baixo').textContent =
+        produtos.filter(p => Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo)).length;
+
+    // Produtos Zerados
+    document.getElementById('detalhe-total-zerados').textContent =
+        produtos.filter(p => Number(p.quantidade) === 0).length;
 }
