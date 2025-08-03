@@ -379,21 +379,28 @@ async function atualizarLista() {
     // Monta lista prévia
     const ul = document.getElementById('lista-produtos');
     ul.innerHTML = '';
+    if (filtrados.length === 0) {
+    exibirNenhumProduto();
+    return;
+    }
     filtrados.forEach(p => {
         const precoFormatado = p.preco ? `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}` : '-';
         ul.innerHTML += `<li>
             <b>${p.nome}</b> (${p.codigo}) 
-            - Categoria: ${p.categoria || '-'}
-            - Tamanho: ${p.tamanho || '-'}
-            - Gênero: ${p.genero || '-'}
-            - Preço: ${precoFormatado}
-            - Estoque: ${p.quantidade}
-        </li>`;
+        - Categoria: ${capitalizar(p.categoria) || '-'}
+        - Tamanho: ${exibirTamanho(p.tamanho) || '-'}
+        - Gênero: ${capitalizar(p.genero) || '-'}
+        - Preço: ${precoFormatado}
+        - Estoque: ${p.quantidade}
+    </li>`;
     });
 }
 
 async function gerarRelatorio() {
     const filtros = getFiltrosSelecionados();
+
+    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
+    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
 
     // Filtra os produtos igual à prévia (categoria, tamanho, etc)
     let produtosFiltrados = todosProdutos.filter(p => {
@@ -423,9 +430,13 @@ async function gerarRelatorio() {
         return true;
     });
 
-    // FILTRA PELO PERÍODO (só produtos com movimentação no período)
     if (filtros.dataInicio && filtros.dataFim) {
         produtosFiltrados = await filtrarProdutosPorPeriodo(produtosFiltrados, filtros.dataInicio, filtros.dataFim);
+    }
+
+    if (produtosFiltrados.length === 0) {
+        exibirNenhumProduto();
+        return;
     }
 
     fetch('/relatorio/gerar', {
@@ -458,7 +469,7 @@ function montarCheckboxesProduto(produtos) {
     const divProd = document.getElementById('checkboxes-produto-multi');
     divProd.innerHTML = `<label><input type="checkbox" id="produto-multi-todos" class="produto-multi-check" value="" checked> Todos</label>`;
     produtos.forEach(p => {
-        divProd.innerHTML += `<label><input type="checkbox" class="produto-multi-check" value="${p.id}" checked> ${p.nome} (${p.codigo})</label>`;
+        divProd.innerHTML += `<label><input type="checkbox" class="produto-multi-check" value="${p.id}" checked> ${p.nome} - ${p.codigo}</label>`;
     });
     document.querySelectorAll('.produto-multi-check').forEach(cb => {
         cb.addEventListener('change', atualizarPlaceholderProdutoMulti);
@@ -472,7 +483,7 @@ function montarCheckboxesCategoria(produtos) {
     const divCat = document.getElementById('checkboxes-categoria-multi');
     divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
     categorias.forEach(cat => {
-        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${cat}</label>`;
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${capitalizar(cat)}</label>`;
     });
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
         cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
@@ -486,7 +497,7 @@ function montarCheckboxesTamanho(produtos) {
     const divTam = document.getElementById('checkboxes-tamanho-multi');
     divTam.innerHTML = `<label><input type="checkbox" id="tamanho-multi-todos" class="tamanho-multi-check" value="" checked> Todos</label>`;
     tamanhos.forEach(tam => {
-        divTam.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${tam}" checked> ${tam}</label>`;
+        divTam.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${tam}" checked> ${exibirTamanho(tam)}</label>`;
     });
     document.querySelectorAll('.tamanho-multi-check').forEach(cb => {
         cb.addEventListener('change', atualizarPlaceholderTamanhoMulti);
@@ -500,7 +511,7 @@ function montarCheckboxesGenero(produtos) {
     const divGen = document.getElementById('checkboxes-genero-multi');
     divGen.innerHTML = `<label><input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked> Todos</label>`;
     generos.forEach(gen => {
-        divGen.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="${gen}" checked> ${gen}</label>`;
+        divGen.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="${gen}" checked> ${capitalizar(gen)}</label>`;
     });
     document.querySelectorAll('.genero-multi-check').forEach(cb => {
         cb.addEventListener('change', atualizarPlaceholderGeneroMulti);
@@ -1139,3 +1150,107 @@ function limparFiltros() {
 }
 
 document.getElementById('btn-limpar-filtros').addEventListener('click', limparFiltros);
+
+function capitalizar(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function exibirTamanho(tamanho) {
+    if (!tamanho) return '';
+    if (tamanho === 'ÚNICO') return 'Único';
+    if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
+    return tamanho;
+}
+
+
+//controle de período
+function validarDatasPeriodo(dataInicio, dataFim) {
+    const hoje = new Date().toISOString().slice(0, 10);
+    if (dataInicio && dataInicio > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data Início não pode ser posterior a hoje.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return false;
+    }
+    if (dataFim && dataFim > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data Fim não pode ser posterior a hoje',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return false;
+    }
+    if (dataInicio && dataFim && dataInicio > dataFim) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data Início não pode ser posterior à Data Fim',
+            timer: 1500,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
+
+//periodo obrigatorio
+function validarObrigatoriedadePeriodo(dataInicio, dataFim) {
+    if (!dataInicio) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-inicio');
+            if (input) input.focus();
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção',
+            text: 'Selecione a Data Início',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!dataFim) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-fim');
+            if (input) input.focus();
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'Período incompleto!',
+            text: 'Selecione a Data Fim',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
+
+//relatorio vazio
+function exibirNenhumProduto() {
+    Swal.fire({
+        icon: 'info',
+        title: 'Nenhum produto encontrado!',
+        text: 'Altere os filtros selecionados',
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        allowOutsideClick: false
+    });
+}
