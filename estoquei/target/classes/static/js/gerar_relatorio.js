@@ -1110,3 +1110,32 @@ async function filtrarProdutosPorPeriodo(produtos, dataInicio, dataFim) {
     }
     return produtosComHistorico;
 }
+
+
+function limparFiltros() {
+    // Limpa todos os campos de filtro
+    document.querySelectorAll(
+        '#filter-produto, #filter-categoria, #filter-tamanho, #filter-genero, #filter-quantidade, #filter-preco, #periodo-data-inicio, #periodo-data-fim, #preco-min, #preco-max, #quantidade-min, #quantidade-max'
+    ).forEach(el => {
+        if (el.type === 'checkbox') el.checked = false;
+        else el.value = '';
+    });
+
+    // Marca todos os checkboxes "Todos" como checked
+    document.querySelectorAll('.produto-multi-check, .categoria-multi-check, .tamanho-multi-check, .genero-multi-check').forEach(cb => {
+        if (cb.value === '' || cb.id.endsWith('-todos')) cb.checked = true;
+    });
+
+    // Atualiza placeholders
+    if (typeof atualizarPlaceholderProdutoMulti === 'function') atualizarPlaceholderProdutoMulti();
+    if (typeof atualizarPlaceholderCategoriaMulti === 'function') atualizarPlaceholderCategoriaMulti();
+    if (typeof atualizarPlaceholderTamanhoMulti === 'function') atualizarPlaceholderTamanhoMulti();
+    if (typeof atualizarPlaceholderGeneroMulti === 'function') atualizarPlaceholderGeneroMulti();
+    if (typeof atualizarPlaceholderQuantidade === 'function') atualizarPlaceholderQuantidade();
+    if (typeof atualizarPlaceholderPeriodo === 'function') atualizarPlaceholderPeriodo();
+
+    // Atualiza lista prévia
+    if (typeof atualizarLista === 'function') atualizarLista();
+}
+
+document.getElementById('btn-limpar-filtros').addEventListener('click', limparFiltros);
