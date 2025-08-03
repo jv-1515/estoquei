@@ -379,6 +379,10 @@ async function atualizarLista() {
     // Monta lista prévia
     const ul = document.getElementById('lista-produtos');
     ul.innerHTML = '';
+    if (filtrados.length === 0) {
+    exibirNenhumProduto();
+    return;
+    }
     filtrados.forEach(p => {
         const precoFormatado = p.preco ? `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}` : '-';
         ul.innerHTML += `<li>
@@ -394,6 +398,9 @@ async function atualizarLista() {
 
 async function gerarRelatorio() {
     const filtros = getFiltrosSelecionados();
+
+    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
+    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
 
     // Filtra os produtos igual à prévia (categoria, tamanho, etc)
     let produtosFiltrados = todosProdutos.filter(p => {
@@ -423,9 +430,13 @@ async function gerarRelatorio() {
         return true;
     });
 
-    // FILTRA PELO PERÍODO (só produtos com movimentação no período)
     if (filtros.dataInicio && filtros.dataFim) {
         produtosFiltrados = await filtrarProdutosPorPeriodo(produtosFiltrados, filtros.dataInicio, filtros.dataFim);
+    }
+
+    if (produtosFiltrados.length === 0) {
+        exibirNenhumProduto();
+        return;
     }
 
     fetch('/relatorio/gerar', {
@@ -1150,4 +1161,96 @@ function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
     return tamanho;
+}
+
+
+//controle de período
+function validarDatasPeriodo(dataInicio, dataFim) {
+    const hoje = new Date().toISOString().slice(0, 10);
+    if (dataInicio && dataInicio > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data Início não pode ser posterior a hoje.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return false;
+    }
+    if (dataFim && dataFim > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data Fim não pode ser posterior a hoje',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return false;
+    }
+    if (dataInicio && dataFim && dataInicio > dataFim) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data Início não pode ser posterior à Data Fim',
+            timer: 1500,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
+
+//periodo obrigatorio
+function validarObrigatoriedadePeriodo(dataInicio, dataFim) {
+    if (!dataInicio) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-inicio');
+            if (input) input.focus();
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção',
+            text: 'Selecione a Data Início',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!dataFim) {
+        const popup = document.getElementById('periodo-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            const input = popup.querySelector('#periodo-data-fim');
+            if (input) input.focus();
+        }
+        Swal.fire({
+            icon: 'warning',
+            title: 'Período incompleto!',
+            text: 'Selecione a Data Fim',
+            timer: 1200,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
+
+//relatorio vazio
+function exibirNenhumProduto() {
+    Swal.fire({
+        icon: 'info',
+        title: 'Nenhum produto encontrado!',
+        text: 'Altere os filtros selecionados',
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        allowOutsideClick: false
+    });
 }
