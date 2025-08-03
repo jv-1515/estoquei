@@ -19,39 +19,27 @@
       <div class="filters">
         <div class="filters-row">
           <!-- Produtos -->
-          <div class="multiselect input-group">
-            <label for="produtos-select">Produtos</label>
-            <div class="overSelect" onclick="toggleCheckboxes('produto')">
-              <span id="produto-multi-placeholder">Todos</span>
-              <span style="margin-left:auto;">&#9660;</span>
-            </div>
+          <div class="input-group multiselect" style="max-width: 200px; min-width: 160px; position:relative;">
+            <label for="filter-produto">Produtos</label>
+            <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer;" />
             <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Categorias -->
-          <div class="multiselect input-group">
-            <label for="categorias-select">Categorias</label>
-            <div class="overSelect" onclick="toggleCheckboxes('categoria')">
-              <span id="categoria-multi-placeholder">Todas</span>
-              <span style="margin-left:auto;">&#9660;</span>
-            </div>
+          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+            <label for="filter-categoria">Categorias</label>
+            <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer;" />
             <div id="checkboxes-categoria-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Tamanhos -->
-          <div class="multiselect input-group">
-            <label for="tamanhos-select">Tamanhos</label>
-            <div class="overSelect" onclick="toggleCheckboxes('tamanho')">
-              <span id="tamanho-multi-placeholder">Todos</span>
-              <span style="margin-left:auto;">&#9660;</span>
-            </div>
+          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+            <label for="filter-tamanho">Tamanhos</label>
+            <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer;" />
             <div id="checkboxes-tamanho-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Gêneros -->
-          <div class="multiselect input-group">
-            <label for="generos-select">Gêneros</label>
-            <div class="overSelect" onclick="toggleCheckboxes('genero')">
-              <span id="genero-multi-placeholder">Todos</span>
-              <span style="margin-left:auto;">&#9660;</span>
-            </div>
+          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+            <label for="filter-genero">Gêneros</label>
+            <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer;" />
             <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Quantidade -->
