@@ -91,7 +91,6 @@ function renderizarMovimentacoes(movimentacoes) {
         tbody.innerHTML = '';
         movimentacoesPagina.forEach(m => {
             const tipoClass = m.tipoMovimentacao === 'ENTRADA' ? 'tipo-entrada' : 'tipo-saida';
-            const valorClass = m.tipoMovimentacao === 'ENTRADA' ? 'valor-positivo' : 'valor-negativo';
             const tamanhoExibido = exibirTamanho(m.tamanho);
             
             const genero = m.genero ? m.genero.charAt(0).toUpperCase() + m.genero.slice(1).toLowerCase() : '';
@@ -103,6 +102,10 @@ function renderizarMovimentacoes(movimentacoes) {
                 new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(m.valorMovimentacao) : 
                 '0,00';
             
+            const responsavelHtml = m.responsavel
+                ? `<td style="text-align:left;">${m.responsavel}</td>`
+                : `<td>${m.responsavel || '-'}</td>`;
+
             const rowHtml = `
                 <tr>
                     <td style="padding-left:10px;">${formatarData(m.data)}</td>
@@ -115,9 +118,9 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.codigoMovimentacao || '-'}</td>
                     <td>${m.quantidadeMovimentada}</td>
                     <td>${m.estoqueFinal}</td>
-                    <td class="${valorClass}">${valorFormatado}</td>
+                    <td>${valorFormatado}</td>
                     <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
-                    <td>${m.responsavel || '-'}</td>
+                    ${responsavelHtml}
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
                             <i class="fa-solid fa-pen"></i>
