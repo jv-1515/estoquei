@@ -325,6 +325,10 @@ function atualizarPlaceholderTamanhoMulti() {
         select.style.color = '';
     }
 
+    const input = document.getElementById('filter-tamanho'); // ou filter-genero, filter-categoria
+    const chevron = input.parentNode.querySelector('.chevron-tamanho'); // ou .chevron-genero, .chevron-categoria
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+
     // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
     // Garante que a option placeholder está selecionada visualmente
@@ -1568,7 +1572,6 @@ function getCategoriasSelecionadas() {
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
-    const placeholder = document.getElementById('categoria-multi-placeholder');
     const input = document.getElementById('filter-categoria');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
@@ -1577,11 +1580,13 @@ function atualizarPlaceholderCategoriaMulti() {
 
     let ativo = true;
     if (todas.checked || selecionados.length === 0) {
-        placeholder.textContent = 'Todas';
+        input.value = 'Todas';
         ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0];
     } else {
-        placeholder.textContent = selecionados.join(', ');
-       }
+        input.value = `${selecionados.length} selecionadas`;
+    }
 
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
@@ -1590,6 +1595,9 @@ function atualizarPlaceholderCategoriaMulti() {
         input.style.border = '';
         input.style.color = '';
     }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('.chevron-categoria');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 }
 
 function showCheckboxesTamanhoMulti() {
@@ -1694,8 +1702,7 @@ function marcarOuDesmarcarNumericos() {
 
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
-    const select = document.getElementById('filter-tamanho');
-    const placeholderOption = document.getElementById('tamanho-multi-placeholder');
+    const input = document.getElementById('filter-tamanho');
 
     // Só conta os tamanhos individuais visíveis (não os grupos)
     const individuaisVisiveis = checks.filter(cb =>
@@ -1707,26 +1714,19 @@ function atualizarPlaceholderTamanhoMulti() {
     let texto = 'Todos';
     let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
-        // Se só tem letras visíveis, mostra "Todos em Letras"
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
             texto = 'Todos em Letras';
-        }
-        // Se só tem números visíveis, mostra "Todos Numéricos"
-        else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
+        } else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
             texto = 'Todos Numéricos';
-        }
-        // Se tem ambos, mostra "Todos"
-        else {
+        } else {
             texto = 'Todos';
             ativo = false;
         }
     } else {
-        // Verifica se todos em letras estão marcados
         const todosLetrasMarcados = individuaisVisiveis
             .filter(cb => !/^_\d+$/.test(cb.value))
             .every(cb => cb.checked) &&
             individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
-        // Verifica se todos numéricos estão marcados
         const todosNumericosMarcados = individuaisVisiveis
             .filter(cb => /^_\d+$/.test(cb.value))
             .every(cb => cb.checked) &&
@@ -1740,20 +1740,18 @@ function atualizarPlaceholderTamanhoMulti() {
         }
     }
 
-    if (ativo) {
-        select.style.border = '2px solid #1e94a3';
-        select.style.color = '#1e94a3';
-    } else {
-        select.style.border = '';
-        select.style.color = '';
-    }
+    input.value = texto;
 
-    // Atualiza o texto da option placeholder
-    if (placeholderOption) placeholderOption.textContent = texto;
-    // Garante que a option placeholder está selecionada visualmente
-    select.selectedIndex = 0;
-    // Atualiza cor do select
-    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('.chevron-tamanho');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 }
 
 // Função para pegar tamanhos selecionados
@@ -1827,8 +1825,7 @@ function showCheckboxesGeneroMulti() {
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
-    const placeholder = document.getElementById('genero-multi-placeholder');
-    const select = document.getElementById('filter-genero');
+    const input = document.getElementById('filter-genero');
     const selecionados = checks.slice(1)
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
@@ -1836,21 +1833,25 @@ function atualizarPlaceholderGeneroMulti() {
 
     let ativo = true;
     if (todas.checked || selecionados.length === 0) {
-        placeholder.textContent = 'Todos';
+        input.value = 'Todos';
         ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0];
     } else {
-        placeholder.textContent = selecionados.join(', ');
+        input.value = `${selecionados.length} selecionados`;
     }
 
     if (ativo) {
-        select.style.border = '2px solid #1e94a3';
-        select.style.color = '#1e94a3';
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
     } else {
-        select.style.border = '';
-        select.style.color = '';
+        input.style.border = '';
+        input.style.color = '';
     }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('.chevron-genero');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 }
-
 function getGenerosSelecionados() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
     const todas = checks[0];
