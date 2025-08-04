@@ -39,7 +39,17 @@ public class RelatorioResource {
         byte[] pdf = relatorioService.gerarPDFProdutos(filtro);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "RelatorioProdutos.pdf");
+        
+        String dataHoje = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("ddMMyyyy"));
+        String baseNome = "RelatorioDesempenho_" + dataHoje + ".pdf";
+        String nomeArquivo = baseNome;
+        int contador = 1;
+        java.io.File pasta = new java.io.File(System.getProperty("java.io.tmpdir"));
+        while (new java.io.File(pasta, nomeArquivo).exists()) {
+            nomeArquivo = "RelatorioDesempenho_" + dataHoje + "_" + contador + ".pdf";
+            contador++;
+        }
+        headers.setContentDispositionFormData("attachment", nomeArquivo);
         return ResponseEntity.ok().headers(headers).body(pdf);
     }
 }

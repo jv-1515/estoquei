@@ -14,17 +14,20 @@ import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.repository.MovimentacaoProdutoRepositoryCustomImpl;
 import com.example.estoquei.repository.ProdutoRepository;
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPCellEvent;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
@@ -86,7 +89,8 @@ public class RelatorioService {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Document doc = new Document(PageSize.A4.rotate(), 28, 28, 28, 28); 
-            PdfWriter.getInstance(doc, baos);
+            PdfWriter writer = PdfWriter.getInstance(doc, baos);
+            writer.setPageEvent(new PaginacaoEvento());
             doc.open();
 
             // Logo
@@ -100,7 +104,7 @@ public class RelatorioService {
 
             // Título
             Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 22, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
-            Paragraph titulo = new Paragraph("Relatório de desempenho", fontTitulo);
+            Paragraph titulo = new Paragraph("Relatório de Desempenho", fontTitulo);
             titulo.setSpacingBefore(5);
             titulo.setSpacingAfter(2);
             doc.add(titulo);
@@ -158,8 +162,23 @@ public class RelatorioService {
                 }
             }
 
-            Font fontFiltros = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, new BaseColor(51,51,51));
-            Paragraph filtrosPar = new Paragraph("Filtros: " + filtrosStr.toString(), fontFiltros);
+            // Monta os filtros com negrito e separados por "|"
+            java.util.List<Chunk> filtroChunks = new java.util.ArrayList<>();
+            Font fontNegrito = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, new BaseColor(51,51,51));
+            Font fontNormal = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, new BaseColor(51,51,51));
+
+            String[] chaves = {"Período", "Produtos", "Categorias", "Tamanhos", "Gêneros", "Quantidades", "Preços"};
+            String[] campos = {"periodo", "produtos", "categorias", "tamanhos", "generos", "quantidade", "preco"};
+            for (int i = 0; i < chaves.length; i++) {
+                String valor = filtro.getFiltrosAplicados() != null ? filtro.getFiltrosAplicados().getOrDefault(campos[i], "") : "";
+                if (!valor.isEmpty()) {
+                    if (!filtroChunks.isEmpty()) filtroChunks.add(new Chunk(" | ", fontNormal));
+                    filtroChunks.add(new Chunk(chaves[i] + ": ", fontNegrito));
+                    filtroChunks.add(new Chunk(valor, fontNormal));
+                }
+            }
+            Paragraph filtrosPar = new Paragraph();
+            for (Chunk c : filtroChunks) filtrosPar.add(c);
             filtrosPar.setSpacingAfter(10);
             doc.add(filtrosPar);
 
@@ -225,14 +244,18 @@ public class RelatorioService {
 
                 // Informações do produto
                 Font fontLabel = new Font(Font.FontFamily.HELVETICA, 11, Font.NORMAL, new BaseColor(51,51,51));
-                doc.add(new Paragraph(
-                    "Categoria: " + capitalize(p.getCategoria() != null ? p.getCategoria().toString() : "-") +
-                    "   Tamanho: " + (p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "-") +
-                    "   Gênero: " + capitalize(p.getGenero() != null ? p.getGenero().toString() : "-") +
-                    "   Preço: " + formatarPreco(p.getPreco()) +
-                    "   Estoque Atual: " + p.getQuantidade(),
-                    fontLabel
-                ));
+                Paragraph detalhes = new Paragraph();
+                detalhes.add(new Chunk("Categoria: ", fontNegrito));
+                detalhes.add(new Chunk(capitalize(p.getCategoria() != null ? p.getCategoria().toString() : "-"), fontLabel));
+                detalhes.add(new Chunk(" | Tamanho: ", fontNegrito));
+                detalhes.add(new Chunk(p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "-", fontLabel));
+                detalhes.add(new Chunk(" | Gênero: ", fontNegrito));
+                detalhes.add(new Chunk(capitalize(p.getGenero() != null ? p.getGenero().toString() : "-"), fontLabel));
+                detalhes.add(new Chunk(" | Preço: ", fontNegrito));
+                detalhes.add(new Chunk(formatarPreco(p.getPreco()), fontLabel));
+                detalhes.add(new Chunk(" | Estoque Atual: ", fontNegrito));
+                detalhes.add(new Chunk(String.valueOf(p.getQuantidade()), fontLabel));
+                doc.add(detalhes);
                 doc.add(new Paragraph(" "));
 
                 // Busca o histórico do produto (mais recente para mais antigo)
@@ -277,11 +300,12 @@ public class RelatorioService {
                     String tipo = m.getTipoMovimentacao();
                     Font fontTag = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, tipo.equals("ENTRADA") ? new BaseColor(67,176,74) : new BaseColor(255,87,34));
                     PdfPCell tagCell = new PdfPCell(new Paragraph(tipo.equals("ENTRADA") ? "Entrada" : "Saída", fontTag));
-                    tagCell.setBackgroundColor(bg); // mesma cor de fundo da linha
+                    tagCell.setBackgroundColor(bg);
                     tagCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
                     tagCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
                     tagCell.setPadding(4);
-                    tagCell.setBorder(0);
+                    tagCell.setBorderWidth(1f);
+                    tagCell.setBorderColor(new BaseColor(220,220,220));
                     histTable.addCell(tagCell);
 
                     histTable.addCell(celula(m.getCodigoMovimentacao() != null ? m.getCodigoMovimentacao() : "-", bg, true));
@@ -360,5 +384,25 @@ class RoundedCellEvent implements PdfPCellEvent {
         PdfContentByte cb = canvas[PdfPTable.BACKGROUNDCANVAS];
         cb.roundRectangle(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight(), radius);
         cb.stroke();
+    }
+}
+
+// Evento para numeração de páginas
+class PaginacaoEvento extends PdfPageEventHelper {
+    private int totalPaginas = 0;
+
+    @Override
+    public void onEndPage(PdfWriter writer, Document document) {
+        int paginaAtual = writer.getPageNumber();
+        String texto = "Página " + paginaAtual;
+        Font font = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, BaseColor.DARK_GRAY);
+        float x = (document.right() + document.left()) / 2;
+        float y = document.bottom() - 10;
+        com.itextpdf.text.pdf.ColumnText.showTextAligned(
+            writer.getDirectContent(),
+            com.itextpdf.text.Element.ALIGN_CENTER,
+            new Phrase(texto, font),
+            x, y, 0
+        );
     }
 }

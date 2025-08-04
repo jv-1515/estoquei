@@ -450,18 +450,34 @@ async function gerarRelatorio() {
             filtrosAplicados
         })
     })
-    .then(res => res.blob())
+    .then(res => {
+        if (!res.ok) throw new Error('Erro ao gerar PDF');
+        return res.blob();
+    })
     .then(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'RelatorioProdutos.pdf';
+        const hoje = new Date();
+        const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
+        let nomeArquivo = `${baseNomeArquivo}.pdf`;
+
+        if (!window.relatoriosGerados) window.relatoriosGerados = [];
+        let contador = 1;
+        while (window.relatoriosGerados.some(r => r.nome === nomeArquivo)) {
+            nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
+            contador++;
+        }
+        window.relatoriosGerados.push({ nome: nomeArquivo });
+
+        a.download = nomeArquivo;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
 
-        document.getElementById('preview-relatorio').innerHTML = `<iframe src="${url}" width="100%" height="600px"></iframe>`;
-    })
+        const nomeIframe = nomeArquivo;
+        document.getElementById('preview-relatorio').innerHTML =
+          `<iframe src="${url}" name="${nomeIframe}" id="${nomeIframe}" width="100%" height="600px"></iframe>`;        })
     .catch(() => {
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
@@ -1323,7 +1339,7 @@ async function filtrarProdutosPorPeriodo(produtos, dataInicio, dataFim) {
 
 
 function limparFiltros() {
-    // Limpa todos os campos de filtro
+    // Limpa todos os campos de filtro (inputs e selects)
     document.querySelectorAll(
         '#filter-produto, #filter-categoria, #filter-tamanho, #filter-genero, #filter-quantidade, #filter-preco, #periodo-data-inicio, #periodo-data-fim, #preco-min, #preco-max, #quantidade-min, #quantidade-max'
     ).forEach(el => {
@@ -1331,18 +1347,29 @@ function limparFiltros() {
         else el.value = '';
     });
 
-    // Marca todos os checkboxes "Todos" como checked
+    // Marca todos os checkboxes "Todos" como checked e desmarca os outros
     document.querySelectorAll('.produto-multi-check, .categoria-multi-check, .tamanho-multi-check, .genero-multi-check').forEach(cb => {
         if (cb.value === '' || cb.id.endsWith('-todos')) cb.checked = true;
+        else cb.checked = false;
     });
 
-    // Atualiza placeholders
+    // Marca todos os checkboxes de quantidade "Todos" como checked e desmarca os outros
+    ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = (id === 'quantidade-todas-popup');
+    });
+
+    // Chama as funções de atualizar os placeholders e bordas
     if (typeof atualizarPlaceholderProdutoMulti === 'function') atualizarPlaceholderProdutoMulti();
     if (typeof atualizarPlaceholderCategoriaMulti === 'function') atualizarPlaceholderCategoriaMulti();
     if (typeof atualizarPlaceholderTamanhoMulti === 'function') atualizarPlaceholderTamanhoMulti();
     if (typeof atualizarPlaceholderGeneroMulti === 'function') atualizarPlaceholderGeneroMulti();
     if (typeof atualizarPlaceholderQuantidade === 'function') atualizarPlaceholderQuantidade();
+    if (typeof atualizarPlaceholderPreco === 'function') atualizarPlaceholderPreco();
     if (typeof atualizarPlaceholderPeriodo === 'function') atualizarPlaceholderPeriodo();
+
+    // Sincroniza os inputs de quantidade
+    if (typeof syncQuantidadeChecksAndInputs === 'function') syncQuantidadeChecksAndInputs();
 
     // Atualiza lista prévia
     if (typeof atualizarLista === 'function') atualizarLista();
