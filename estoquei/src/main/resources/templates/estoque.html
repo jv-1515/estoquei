@@ -47,17 +47,18 @@
     <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; width:1300px;">
         <h2>Filtrar Produtos</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
-            <div class="multiselect input-group">
+                        <div class="multiselect input-group">
               <label for="filter-categoria-multi">Categorias</label>
-              <div>
-                <select id="filter-categoria" style="padding-left: 1px;">
-                  <option id="categoria-multi-placeholder">Todas</option>
-                </select>
+              <div style="position:relative;">
+                <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; padding-right: 22px;" />
+                <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                  <i class="fa fa-chevron-down"></i>
+                </span>
                 <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
               </div>
-              <div id="checkboxes-categoria-multi">
+              <div id="checkboxes-categoria-multi" style="display:none;">
                 <label>
-                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                  <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
                 </label>
                 <label>
                   <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
@@ -84,56 +85,48 @@
             </div>
             <div class="multiselect input-group">
               <label for="filter-tamanho-multi">Tamanhos</label>
-              <div>
-                <select id="filter-tamanho" style="padding-left: 1px;">
-                  <option id="tamanho-multi-placeholder">Todos</option>
-                </select>
+              <div style="position:relative;">
+                <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; padding-right: 22px;" />
+                <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                  <i class="fa fa-chevron-down"></i>
+                </span>
                 <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
               </div>
               <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
-            <div class="multiselect input-group">
-                <label for="filter-genero-multi">Gêneros</label>
-                <div>
-                <select id="filter-genero" style="padding-left: 1px;">
-                    <option id="genero-multi-placeholder">Todos</option>
-                </select>
+                        <div class="multiselect input-group">
+              <label for="filter-genero-multi">Gêneros</label>
+              <div style="position:relative;">
+                <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 22px;" />
+                <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                  <i class="fa fa-chevron-down"></i>
+                </span>
                 <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
-                </div>
-                <div id="checkboxes-genero-multi" style="display:none;">
-                    <label>
-                        <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
-                    </label>
-                    <label>
-                        <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
-                    </label>
-                    <label>
-                        <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
-                    </label>
-                    <label>
-                        <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
-                    </label>
-                </div>
+              </div>
+              <div id="checkboxes-genero-multi" style="display:none;">
+                <!-- Seus checkboxes de gênero continuam aqui -->
+                <label>
+                  <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
+                </label>
+                <label>
+                  <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
+                </label>
+                <label>
+                  <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
+                </label>
+                <label>
+                  <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
+                </label>
+              </div>
             </div>
-            <div class="input-group">
-                <label for="filter-preco">Preços</label>
-                <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
-                <div id="preco-faixa-popup" class="faixa-popup">
-                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
-                        <div style="display: flex; align-items: center;">
-                            <span style="min-width: 28px;">de:</span>
-                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="min-width: 28px;">até:</span>
-                            <input type="text" id="preco-max" placeholder="R$ 999,99">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group">
+                <div class="input-group">
                 <label for="filter-quantidade">Quantidades</label>
-                <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
+                <div style="position:relative;">
+                    <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer; padding-right: 22px;" />
+                    <span class="chevron-quantidade" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-chevron-down"></i>
+                    </span>
+                </div>
                 <div id="quantidade-faixa-popup" class="faixa-popup">
                     <div style="display: flex; flex-direction: column; align-items: stretch;">
                         <label for="quantidade-todas-popup" class="quantidade-check-label">
@@ -157,9 +150,14 @@
                     </div>
                 </div>
             </div>
-            <div class="input-group">
+                <div class="input-group">
                 <label for="filter-limite">Limites Mínimo</label>
-                <input type="text" id="filter-limite" placeholder="Todos" readonly style="cursor:pointer;" />
+                <div style="position:relative;">
+                    <input type="text" id="filter-limite" placeholder="Todos" readonly style="cursor:pointer; padding-right: 22px;" />
+                    <span class="chevron-limite" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-chevron-down"></i>
+                    </span>
+                </div>
                 <div id="limite-faixa-popup" class="faixa-popup">
                     <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                         <div style="display: flex; align-items: center;">
@@ -169,6 +167,27 @@
                         <div style="display: flex; align-items: center;">
                             <span style="min-width: 28px;">até:</span>
                             <input type="text" id="limite-max" maxlength="3" placeholder="999" style="text-align:right;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="filter-preco">Preços</label>
+                <div style="position:relative;">
+                    <input type="text" id="filter-preco" placeholder="Todos" readonly style="padding-right: 22px;" />
+                    <span class="chevron-preco" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-chevron-down"></i>
+                    </span>
+                </div>
+                <div id="preco-faixa-popup" class="faixa-popup">
+                    <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">de:</span>
+                            <input type="text" id="preco-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="min-width: 28px;">até:</span>
+                            <input type="text" id="preco-max" placeholder="R$ 999,99">
                         </div>
                     </div>
                 </div>

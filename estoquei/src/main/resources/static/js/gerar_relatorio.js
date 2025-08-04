@@ -9,12 +9,6 @@
 //     };
 // }
 
-// function formatarDataBR(data) {
-//     if (!data) return '';
-//     const [ano, mes, dia] = data.split('-');
-//     return `${dia}/${mes}/${ano}`;
-// }
-
 // function gerar() {
 //     const areaGerar = document.querySelector('.filters-container + .filters-container');
 //     areaGerar.style.display = 'none';
@@ -291,12 +285,15 @@
 //novo
 
 let todosProdutos = [];
+let totalProdutosCadastrados = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/produtos')
         .then(res => res.json())
         .then(produtos => {
             todosProdutos = produtos;
+            totalProdutosCadastrados = produtos.length;
+            document.getElementById('detalhe-total-cadastrados').textContent = totalProdutosCadastrados;
             // montarSelects(produtos);
             atualizarLista();
         });
@@ -376,24 +373,16 @@ async function atualizarLista() {
         filtrados = await filtrarProdutosPorPeriodo(filtrados, filtros.dataInicio, filtros.dataFim);
     }
 
-    // Monta lista prévia
-    const ul = document.getElementById('lista-produtos');
-    ul.innerHTML = '';
     if (filtrados.length === 0) {
-    exibirNenhumProduto();
-    return;
+        exibirNenhumProduto();
+        // Limpe os cards e gráficos se quiser
+        atualizarDetalhesPrevia([], filtros);
+        window.atualizarDetalhesEstoque([]);
+        return;
     }
-    filtrados.forEach(p => {
-        const precoFormatado = p.preco ? `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}` : '-';
-        ul.innerHTML += `<li>
-            <b>${p.nome}</b> (${p.codigo}) 
-        - Categoria: ${capitalizar(p.categoria) || '-'}
-        - Tamanho: ${exibirTamanho(p.tamanho) || '-'}
-        - Gênero: ${capitalizar(p.genero) || '-'}
-        - Preço: ${precoFormatado}
-        - Estoque: ${p.quantidade}
-    </li>`;
-    });
+
+    atualizarDetalhesPrevia(filtrados, filtros); // Atualiza os 6 cards
+    window.atualizarDetalhesEstoque(filtrados);  // Atualiza os gráficos
 }
 
 async function gerarRelatorio() {
@@ -526,56 +515,145 @@ function atualizarPlaceholderProdutoMulti() {
     const todos = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-produto');
+    const selecionados = individuais.filter(cb => cb.checked);
+
+    // "Todos" marca/desmarca todos
     if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todos.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todos.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    // Placeholder e borda
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
+
 function atualizarPlaceholderCategoriaMulti() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-categoria');
+    const selecionados = individuais.filter(cb => cb.checked);
+
     if (this === todas) {
-        if (todas.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todas.checked);
     } else {
-        if (!this.checked) todas.checked = false;
-        if (individuais.every(cb => cb.checked)) todas.checked = true;
+        todas.checked = individuais.every(cb => cb.checked);
     }
-    if (todas.checked) input.value = "Todas";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todas.checked || selecionados.length === 0) {
+        input.value = "Todas";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionadas`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
+
 function atualizarPlaceholderTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
     const todos = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-tamanho');
+    const selecionados = individuais.filter(cb => cb.checked);
+
     if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+        checks.forEach(cb => cb.checked = todos.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todos.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
+
 function atualizarPlaceholderGeneroMulti() {
     const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
-    const todos = checks[0];
+    const todas = checks[0];
     const individuais = checks.slice(1);
     const input = document.getElementById('filter-genero');
-    if (this === todos) {
-        if (todos.checked) individuais.forEach(cb => cb.checked = true);
+    const selecionados = individuais.filter(cb => cb.checked);
+
+    if (this === todas) {
+        checks.forEach(cb => cb.checked = todas.checked);
     } else {
-        if (!this.checked) todos.checked = false;
-        if (individuais.every(cb => cb.checked)) todos.checked = true;
+        todas.checked = individuais.every(cb => cb.checked);
     }
-    if (todos.checked) input.value = "Todos";
-    else input.value = `${individuais.filter(cb => cb.checked).length} selecionados`;
+
+    let ativo = true;
+    if (todas.checked || selecionados.length === 0) {
+        input.value = "Todos";
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0].parentNode.textContent.trim();
+    } else {
+        input.value = `${selecionados.length} selecionados`;
+    }
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
 
 // Mostrar/ocultar popups ao clicar no input
@@ -708,38 +786,142 @@ function atualizarPlaceholderQuantidade() {
     const min = document.getElementById('quantidade-min').value;
     const max = document.getElementById('quantidade-max').value;
     const input = document.getElementById('filter-quantidade');
-    let texto = 'Todas';
 
-    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) texto = 'Todas';
-    else if (chkBaixo.checked && !chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque';
-    else if (!chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Zerados';
-    else if (chkBaixo.checked && chkZerados.checked && !chkTodos.checked) texto = 'Baixo estoque + Zerados';
-    else if (min || max) texto = `De ${min || 0} até ${max || 999}`;
-    else texto = 'Personalizado';
+    let filtros = [];
+    let faixa = '';
+    let ativo = false;
 
-    input.value = texto;
+    if (chkBaixo.checked) filtros.push('Baixo estoque');
+    if (chkZerados.checked) filtros.push('Zerados');
+    if (min && !isNaN(min) && max && !isNaN(max)) {
+        faixa = `de ${min} até ${max}`;
+    } else if (min && !isNaN(min)) {
+        faixa = `a partir de ${min}`;
+    } else if (max && !isNaN(max)) {
+        faixa = `até ${max}`;
+    }
+
+    // Se só "Zerados" está marcado, não mostra faixa
+    const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
+
+    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+        input.value = "Todas";
+        ativo = false;
+    } else {
+        let texto = '';
+        if (filtros.length > 0) {
+            texto = filtros.join(', ');
+            if (faixa && !apenasZerados) texto += ` (${faixa})`;
+        } else if (faixa) {
+            texto = faixa;
+        } else {
+            texto = "Todas";
+        }
+        input.value = texto;
+        ativo = texto !== "Todas";
+    }
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
+
+// Listeners para todos os campos de quantidade
 ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup','quantidade-min','quantidade-max'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', atualizarPlaceholderQuantidade);
+    if (el) el.addEventListener('input', atualizarPlaceholderQuantidade);
 });
+
 document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
+
+function atualizarPlaceholderPreco() {
+    const precoMinEl = document.getElementById('preco-min');
+    const precoMaxEl = document.getElementById('preco-max');
+    const input = document.getElementById('filter-preco');
+
+    let precoMin = precoMinEl.value.replace('R$','').replace(',','.').trim();
+    let precoMax = precoMaxEl.value.replace('R$','').replace(',','.').trim();
+    precoMin = precoMin && !isNaN(precoMin) ? Number(precoMin) : null;
+    precoMax = precoMax && !isNaN(precoMax) ? Number(precoMax) : null;
+
+    let texto = 'Todos';
+    let ativo = false;
+
+    if (precoMin !== null && precoMax !== null) {
+        texto = `R$ ${precoMin.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} - R$ ${precoMax.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    } else if (precoMin !== null) {
+        texto = `R$ ${precoMin.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    } else if (precoMax !== null) {
+        texto = `R$ ${precoMax.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        ativo = true;
+    }
+
+    input.value = texto;
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
+}
+
+// Máscara e listeners para preço
+['preco-min','preco-max'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', function() {
+            mascaraPrecoFaixa(this);
+            atualizarPlaceholderPreco();
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', atualizarPlaceholderPreco);
 
 // --- PLACEHOLDER PERÍODO ---
 function atualizarPlaceholderPeriodo() {
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
     const input = document.getElementById('filter-periodo');
+    let ativo = false;
+
     if (dataInicio && dataFim) {
-        input.value = `De ${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}`;
-    } else if (dataInicio) {
-        input.value = `A partir de ${dataInicio.split('-').reverse().join('/')}`;
-    } else if (dataFim) {
-        input.value = `Até ${dataFim.split('-').reverse().join('/')}`;
+        input.value = `${dataInicio.split('-').reverse().join('/')} - ${dataFim.split('-').reverse().join('/')}`;
+        ativo = true;
     } else {
         input.value = '';
     }
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+    }
+    // Atualiza o chevron junto
+    const chevron = input.parentNode.querySelector('span');
+    if (chevron) {
+        chevron.style.color = ativo ? '#1e94a3' : '#888';
+    }
 }
+
 ['periodo-data-inicio','periodo-data-fim'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', atualizarPlaceholderPeriodo);
@@ -808,21 +990,24 @@ function syncQuantidadeChecksAndInputs() {
 // Sempre que mudar min/max manualmente
 ['quantidade-min','quantidade-max'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', function() {
-        const chkTodos = document.getElementById('quantidade-todas-popup');
-        const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
-        const chkZerados = document.getElementById('quantidade-zerados-popup');
-        // Se min/max for alterado para 0 e só zerados está marcado, mantenha
-        if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
-            // ok
-        } else {
-            // Se mexeu nos inputs, desmarque "Todos" e "Zerados"
-            chkTodos.checked = false;
-            if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
-        }
-        atualizarPlaceholderQuantidade();
-        atualizarLista && atualizarLista();
-    });
+    if (el) {
+        el.addEventListener('input', function() {
+            // Só números, máximo 3 dígitos
+            this.value = this.value.replace(/\D/g, '').slice(0, 3);
+
+            const chkTodos = document.getElementById('quantidade-todas-popup');
+            const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
+            const chkZerados = document.getElementById('quantidade-zerados-popup');
+            // Se min/max for alterado para 0 e só zerados está marcado, mantenha
+            if (this.value == 0 && chkZerados.checked && !chkTodos.checked && !chkBaixo.checked) {
+            } else {
+                chkTodos.checked = false;
+                if (chkZerados.checked && (this.value != 0)) chkZerados.checked = false;
+            }
+            atualizarPlaceholderQuantidade();
+            if (typeof atualizarLista === 'function') atualizarLista();
+        });
+    }
 });
 
 // Chame no início para garantir estado correto
@@ -985,12 +1170,13 @@ const precoMax = document.getElementById('preco-max');
 function mascaraPrecoFaixa(input) {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 5) value = value.slice(0, 5);
-    if (value.length > 0) {
-        value = (parseInt(value) / 100).toFixed(2);
-        input.value = value.replace('.', ',');
-    } else {
+    if (value.length === 0) {
         input.value = '';
+        return;
     }
+    value = (parseInt(value) / 100).toFixed(2);
+    if (parseFloat(value) > 999.99) value = '999.99';
+    input.value = 'R$ ' + value.replace('.', ',');
 }
 
 if (precoMin) precoMin.addEventListener('input', function() { mascaraPrecoFaixa(this); });
@@ -1040,8 +1226,8 @@ function aplicarFiltroPrecoFaixa() {
     precoInput.value = `R$ ${min} - R$ ${max}`;
     if (precoInput.value === "R$ 0,00 - R$ 999,99") precoInput.value = '';
 
-    const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
-    const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
+    // const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
+    // const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
     // const precoMinVal = precoMinStr ? Number(precoMinStr) : null;
     // const precoMaxVal = precoMaxStr ? Number(precoMaxStr) : null;
 
@@ -1253,4 +1439,37 @@ function exibirNenhumProduto() {
         timerProgressBar: true,
         allowOutsideClick: false
     });
+}
+
+function formatarDataBR(data) {
+    if (!data) return '';
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
+function atualizarDetalhesPrevia(produtos, filtros) {
+    // Selecionados
+    document.getElementById('detalhe-selecionados').textContent = produtos.length;
+
+    // Período
+    let periodo = 'de: __/__/____ até: __/__/____';
+    if (filtros.dataInicio && filtros.dataFim) {
+        const inicio = formatarDataBR(filtros.dataInicio);
+        const fim = formatarDataBR(filtros.dataFim);
+        periodo = `de: ${inicio} até: ${fim}`;
+    }
+    document.getElementById('detalhe-periodo').textContent = periodo;
+
+    // Estoque Atual
+    document.getElementById('detalhe-total-produtos').textContent =
+        produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+
+    // Baixo Estoque
+    document.getElementById('detalhe-total-baixo').textContent =
+        produtos.filter(p => Number(p.quantidade) > 0 && Number(p.quantidade) <= 2 * Number(p.limiteMinimo)).length;
+
+    // Produtos Zerados
+    document.getElementById('detalhe-total-zerados').textContent =
+        produtos.filter(p => Number(p.quantidade) === 0).length;
+        
 }
