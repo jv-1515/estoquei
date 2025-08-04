@@ -10,6 +10,11 @@ public class FiltroRelatorioDTO {
     private Integer quantidadeMin;
     private Integer quantidadeMax;
     private Boolean baixoEstoque;
+    private java.math.BigDecimal precoMin;
+    private java.math.BigDecimal precoMax;
+    private String dataInicio;
+    private String dataFim;
+    private java.util.Map<String, String> filtrosAplicados;
 
     public List<Long> getIds() { return ids; }
     public void setIds(List<Long> ids) { this.ids = ids; }
@@ -31,4 +36,19 @@ public class FiltroRelatorioDTO {
 
     public Boolean getBaixoEstoque() { return baixoEstoque; }
     public void setBaixoEstoque(Boolean baixoEstoque) { this.baixoEstoque = baixoEstoque; }
+
+    public java.math.BigDecimal getPrecoMin() { return precoMin; }
+    public void setPrecoMin(java.math.BigDecimal precoMin) { this.precoMin = precoMin; }
+
+    public java.math.BigDecimal getPrecoMax() { return precoMax; }
+    public void setPrecoMax(java.math.BigDecimal precoMax) { this.precoMax = precoMax; }
+
+    public String getDataInicio() { return dataInicio; }
+    public void setDataInicio(String dataInicio) { this.dataInicio = dataInicio; }
+
+    public String getDataFim() { return dataFim; }
+    public void setDataFim(String dataFim) { this.dataFim = dataFim; }
+
+    public java.util.Map<String, String> getFiltrosAplicados() { return filtrosAplicados; }
+    public void setFiltrosAplicados(java.util.Map<String, String> filtrosAplicados) { this.filtrosAplicados = filtrosAplicados; }
 }

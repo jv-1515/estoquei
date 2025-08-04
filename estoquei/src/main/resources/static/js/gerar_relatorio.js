@@ -388,6 +388,18 @@ async function atualizarLista() {
 async function gerarRelatorio() {
     const filtros = getFiltrosSelecionados();
 
+
+    // captura os placeholders dos inputs de filtro
+    const filtrosAplicados = {
+        produtos: document.getElementById('filter-produto')?.value || '',
+        categorias: document.getElementById('filter-categoria')?.value || '',
+        tamanhos: document.getElementById('filter-tamanho')?.value || '',
+        generos: document.getElementById('filter-genero')?.value || '',
+        quantidade: document.getElementById('filter-quantidade')?.value || '',
+        preco: document.getElementById('filter-preco')?.value || '',
+        periodo: document.getElementById('filter-periodo')?.value || ''
+    };
+
     if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
     if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
 
@@ -434,7 +446,8 @@ async function gerarRelatorio() {
         body: JSON.stringify({
             produtos: produtosFiltrados,
             dataInicio: filtros.dataInicio,
-            dataFim: filtros.dataFim
+            dataFim: filtros.dataFim,
+            filtrosAplicados
         })
     })
     .then(res => res.blob())
