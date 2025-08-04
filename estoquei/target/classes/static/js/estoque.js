@@ -1476,6 +1476,11 @@ function showCheckboxesCategoriaMulti() {
     if (!window.expandedCategoriaMulti) {
         checkboxes.style.display = "block";
         window.expandedCategoriaMulti = true;
+        const overSelect = document.querySelector('.multiselect-categoria .overSelect');
+        if (overSelect) {
+            overSelect.style.position = 'unset';
+        }
+
 
         // Fecha ao clicar fora
         function handleClickOutside(e) {
@@ -1490,6 +1495,10 @@ function showCheckboxesCategoriaMulti() {
 
                 // ATUALIZA O PLACEHOLDER DOS TAMANHOS AO FECHAR O SELECT DE CATEGORIAS
                 atualizarPlaceholderTamanhoMulti();
+                const overSelect = document.querySelector('.multiselect-categoria .overSelect');
+                if (overSelect) {
+                    overSelect.style.position = 'absolute';
+                }
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
@@ -1585,7 +1594,7 @@ function atualizarPlaceholderCategoriaMulti() {
     } else if (selecionados.length === 1) {
         input.value = selecionados[0];
     } else {
-        input.value = `${selecionados.length} selecionadas`;
+        input.value = selecionados.join(', ');
     }
 
     if (ativo) {
@@ -1605,6 +1614,10 @@ function showCheckboxesTamanhoMulti() {
     if (!window.expandedTamanhoMulti) {
         checkboxes.style.display = "block";
         window.expandedTamanhoMulti = true;
+        const overSelect = document.querySelector('.multiselect-tamanho .overSelect');
+        if (overSelect) {
+            overSelect.style.position = 'unset';
+        }
 
         // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
         atualizarPlaceholderTamanhoMulti();
@@ -1618,6 +1631,10 @@ function showCheckboxesTamanhoMulti() {
             ) {
                 checkboxes.style.display = "none";
                 window.expandedTamanhoMulti = false;
+                const overSelect = document.querySelector('.multiselect-tamanho .overSelect');
+                if (overSelect) {
+                    overSelect.style.position = 'absolute';
+                }
                 document.removeEventListener('mousedown', handleClickOutside);
             }
         }
@@ -1732,9 +1749,17 @@ function atualizarPlaceholderTamanhoMulti() {
             .every(cb => cb.checked) &&
             individuaisVisiveis.some(cb => /^_\d+$/.test(cb.value));
         if (todosLetrasMarcados && !todosNumericosMarcados) {
-            texto = 'Todos em Letras, ' + selecionados.join(', ');
+            // Mostra só os numéricos selecionados
+            const selecionadosNumericos = individuaisVisiveis
+            .filter(cb => /^_\d+$/.test(cb.value) && cb.checked)
+            .map(cb => cb.parentNode.textContent.trim());
+            texto = 'Todos em Letras' + (selecionadosNumericos.length ? ', ' + selecionadosNumericos.join(', ') : '');
         } else if (todosNumericosMarcados && !todosLetrasMarcados) {
-            texto = 'Todos Numéricos, ' + selecionados.join(', ');
+            // Mostra só os de letras selecionados
+            const selecionadosLetras = individuaisVisiveis
+            .filter(cb => !/^_\d+$/.test(cb.value) && cb.checked)
+            .map(cb => cb.parentNode.textContent.trim());
+            texto = 'Todos Numéricos' + (selecionadosLetras.length ? ', ' + selecionadosLetras.join(', ') : '');
         } else {
             texto = selecionados.join(', ');
         }
@@ -1765,33 +1790,33 @@ function getTamanhosSelecionados() {
 // Controle de expansão do multiselect de tamanhos
 window.expandedTamanhoMulti = false;
 
-function showCheckboxesTamanhoMulti() {
-    var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-    if (!window.expandedTamanhoMulti) {
-        checkboxes.style.display = "block";
-        window.expandedTamanhoMulti = true;
+// function showCheckboxesTamanhoMulti() {
+//     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
+//     if (!window.expandedTamanhoMulti) {
+//         checkboxes.style.display = "block";
+//         window.expandedTamanhoMulti = true;
 
-        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
-        atualizarPlaceholderTamanhoMulti();
+//         // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
+//         atualizarPlaceholderTamanhoMulti();
 
-        // Fecha ao clicar fora
-        function handleClickOutside(e) {
-            if (
-                checkboxes &&
-                !checkboxes.contains(e.target) &&
-                !document.querySelector('.multiselect .overSelect').contains(e.target)
-            ) {
-                checkboxes.style.display = "none";
-                window.expandedTamanhoMulti = false;
-                document.removeEventListener('mousedown', handleClickOutside);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-    } else {
-        checkboxes.style.display = "none";
-        window.expandedTamanhoMulti = false;
-    }
-}
+//         // Fecha ao clicar fora
+//         function handleClickOutside(e) {
+//             if (
+//                 checkboxes &&
+//                 !checkboxes.contains(e.target) &&
+//                 !document.querySelector('.multiselect .overSelect').contains(e.target)
+//             ) {
+//                 checkboxes.style.display = "none";
+//                 window.expandedTamanhoMulti = false;
+//                 document.removeEventListener('mousedown', handleClickOutside);
+//             }
+//         }
+//         document.addEventListener('mousedown', handleClickOutside);
+//     } else {
+//         checkboxes.style.display = "none";
+//         window.expandedTamanhoMulti = false;
+//     }
+// }
 
 window.expandedGeneroMulti = false;
 
@@ -1800,6 +1825,10 @@ function showCheckboxesGeneroMulti() {
     if (!window.expandedGeneroMulti) {
         checkboxes.style.display = "block";
         window.expandedGeneroMulti = true;
+        const overSelect = document.querySelector('.multiselect .overSelect');
+        if (overSelect) {
+            overSelect.style.position = 'unset';
+        }
 
         // Fecha ao clicar fora
         function handleClickOutside(e) {
@@ -1811,6 +1840,10 @@ function showCheckboxesGeneroMulti() {
                 checkboxes.style.display = "none";
                 window.expandedGeneroMulti = false;
                 document.removeEventListener('mousedown', handleClickOutside);
+                const overSelect = document.querySelector('.multiselect .overSelect');
+                if (overSelect) {
+                    overSelect.style.position = 'absolute';
+                }
                 atualizarPlaceholderGeneroMulti();
             }
         }
@@ -1838,7 +1871,7 @@ function atualizarPlaceholderGeneroMulti() {
     } else if (selecionados.length === 1) {
         input.value = selecionados[0];
     } else {
-        input.value = `${selecionados.length} selecionados`;
+        input.value = selecionados.join(', ');
     }
 
     if (ativo) {
