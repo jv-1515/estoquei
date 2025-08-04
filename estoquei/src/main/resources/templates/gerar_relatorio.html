@@ -11,6 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="/js/gerar_relatorio.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js"></script>
 </head>
 <body>
     <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -29,9 +31,14 @@
         <h2>Selecionar Filtros</h2>
         <div class="filters-row">
           <!-- Período -->
-          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+          <div class="input-group" style="max-width: 160px; position:relative;">
             <label for="filter-periodo">Período*</label>
-            <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer;" autofocus />
+            <div style="position:relative;">
+              <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer; width: 160px;" autofocus />
+              <span class="chevron-periodo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="periodo-popup" class="faixa-popup" style="display:none;">
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div>
@@ -46,33 +53,61 @@
             </div>
           </div>
           <!-- Produtos -->
-          <div class="input-group multiselect" style="max-width: 200px; min-width: 160px; position:relative;">
+          <div class="input-group multiselect" style="min-width: 160px; position:relative;">
             <label for="filter-produto">Produtos</label>
-            <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+              <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Categorias -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-categoria">Categorias</label>
-            <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-categoria-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Tamanhos -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-tamanho">Tamanhos</label>
-            <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-tamanho-multi" class="checkboxes-popup"></div>
           </div>
+          
           <!-- Gêneros -->
-          <div class="input-group multiselect" style="max-width: 160px; min-width: 120px; position:relative;">
+          <div class="input-group multiselect" style="max-width: 110px; position:relative;">
             <label for="filter-genero">Gêneros</label>
-            <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; width: 110px; padding-right: 20px;" />
+              <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="checkboxes-genero-multi" class="checkboxes-popup"></div>
           </div>
           <!-- Quantidade -->
-          <div class="input-group" style="max-width: 160px; min-width: 160px; position:relative;">
+          <div class="input-group" style="max-width: 150px; position:relative;">
             <label for="filter-quantidade">Quantidades</label>
-            <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer;" />
+            <div style="position:relative;">
+              <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="width: 150px; padding-right: 20px;" />
+              <span class="chevron-quantidade" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                <i class="fa fa-chevron-down"></i>
+              </span>
+            </div>
             <div id="quantidade-faixa-popup" class="faixa-popup">
               <label class="quantidade-check-label">
                 <input type="checkbox" id="quantidade-todas-popup" checked />Todos
@@ -85,18 +120,23 @@
               </label>
               <div style="display: flex; align-items: center; gap: 8px; margin:8px 0;">
                 <span style="min-width: 28px;">de:</span>
-                <input type="number" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
               </div>
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
                 <span style="min-width: 28px;">até:</span>
-                <input type="number" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
               </div>
             </div>
           </div>
           <!-- Preços -->
-          <div class="input-group" style="max-width: 120px;">
+            <div class="input-group" style="max-width: 155px;">
               <label for="filter-preco">Preços</label>
-              <input type="text" id="filter-preco" placeholder="Todos" readonly style="cursor:pointer;" />
+              <div style="position:relative;">
+                <input type="text" id="filter-preco" placeholder="Todos" readonly style="width: 155px; padding-right: 20px;" />
+                <span class="chevron-preco" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                  <i class="fa fa-chevron-down"></i>
+                </span>
+              </div>
               <div id="preco-faixa-popup" class="faixa-popup">
                   <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
                       <div style="display: flex; align-items: center;">
@@ -115,15 +155,91 @@
               <i class="fa-solid fa-eraser" style="margin-right:4px;"></i> Limpar
           </button>
           <button type="button" id="btn-gerar-relatorio" class="btn" style="display: flex; align-items: center;">
-              <i class="fa-solid fa-file-lines" style="margin-right:6px;"></i> Gerar Relatório
+              <i class="fa-solid fa-file-lines" style="margin-right:6px;"></i> Gerar
           </button>
         </div>
       </div>
     </div>
-    <section>
-        <h2>Prévia dos Produtos Selecionados</h2>
-        <ul id="lista-produtos"></ul>
-    </section>
+    <div id="detalhes-estoque"
+         style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
+        <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
+            <div style="display: flex; align-items: flex-end; height: 28px;">
+                <h2 style="margin: 0; font-size: 20px;">Detalhes dos Produtos</h2>
+            </div>
+            <div style="height: 8px;"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px; height: 130px;">
+                <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
+                    <!-- Selecionados -->
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #2e7d32; font-size: 12px; font-weight: bold;">Selecionados</div>
+                        <div id="detalhe-selecionados" style="font-size: 22px; font-weight: bold; color: #2e7d32;">0</div>
+                    </div>
+                    <!-- Período -->
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #e65100; font-size: 12px; font-weight: bold;">Período</div>
+                        <div id="detalhe-periodo" style="font-size: 12px; color: #e65100;">de __/__/__ até __/__/__</div>
+                    </div>
+                    <!-- Estoque Atual -->
+                    <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="color: #18404a; font-size: 12px; font-weight: bold;">Estoque Atual</div>
+                        <div id="detalhe-total-produtos" style="font-size: 18px; font-weight: bold; color: #18404a;">0</div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                    <!-- Produtos Cadastrados -->
+                    <div class="detalhe-card" style="background: #e0f2f1; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center; border: none;">
+                        <div style="color: #00695c; font-size: 12px; font-weight: bold;">Produtos<br>Cadastrados</div>
+                        <div id="detalhe-total-cadastrados" style="font-size: 18px; font-weight: bold; color: #00695c;">0</div>
+                    </div>
+                    <!-- Baixo Estoque -->
+                    <div class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center; border: none;">
+                        <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Baixo<br>Estoque</div>
+                        <div id="detalhe-total-baixo" style="font-size: 18px; font-weight: bold; color: #bfa100;">0</div>
+                    </div>
+                    <!-- Produtos Zerados -->
+                    <div class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center; border: none;">
+                        <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos<br>Zerados</div>
+                        <div id="detalhe-total-zerados" style="font-size: 18px; font-weight: bold; color: #c0392b;">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Gráficos -->
+        <div class="detalhes-graficos" style="flex:1; display: flex; flex-direction: row; gap: 10px;">
+            <!-- Gráfico Categoria -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+              <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
+              <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                <canvas id="grafico-categoria" width="130" height="130"></canvas>
+                <ul id="lista-categorias"
+                  style="list-style: none; padding: 0; margin: 0; font-size: 10px;
+                    display: flex; flex-direction: column;
+                    justify-content: space-between; height:130px;">
+                </ul>
+              </div>
+            </div>
+            <!-- Gráfico Tamanhos -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 180px;">
+                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Tamanhos</span>
+                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                    <canvas id="grafico-tamanhos" width="130" height="130"></canvas>
+                    <ul id="lista-tamanhos"
+                        style="list-style: none; padding: 0; margin: 0; font-size: 10px;">
+                    </ul>
+                </div>
+            </div>
+            <!-- Gráfico Gênero -->
+            <div style="display: flex; flex-direction: column; align-items: stretch; min-width: 140px;">
+                <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Gêneros</span>
+                <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
+                    <canvas id="grafico-genero" width="130" height="130"></canvas>
+                    <ul id="lista-genero"
+                        style="list-style: none; padding: 0; margin: 0; font-size: 10px; display: grid; gap: 2px 10px; height:130px;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="preview-relatorio"></div>
 </body>
 </html>
