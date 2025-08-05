@@ -456,8 +456,6 @@ async function gerarRelatorio() {
     })
     .then(blob => {
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
         const hoje = new Date();
         const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
         let nomeArquivo = `${baseNomeArquivo}.pdf`;
@@ -468,16 +466,38 @@ async function gerarRelatorio() {
             nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
             contador++;
         }
-        window.relatoriosGerados.push({ nome: nomeArquivo });
 
+        // Download
+        const a = document.createElement('a');
+        a.href = url;
         a.download = nomeArquivo;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
 
-        const nomeIframe = nomeArquivo;
+        // Salvar no localStorage para aparecer em Gerenciar Relatórios
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            const base64 = reader.result;
+            const novoRelatorio = {
+                id: Date.now(),
+                nome: nomeArquivo,
+                dataCriacao: hoje.toISOString(),
+                periodo: filtros.dataInicio && filtros.dataFim
+                    ? (filtros.dataInicio === filtros.dataFim
+                        ? formatarDataBR(filtros.dataInicio)
+                        : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
+                    : formatarDataBR(hoje.toISOString().slice(0, 10)),
+                base64
+            };
+            window.relatoriosGerados.push(novoRelatorio);
+            localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+        };
+        reader.readAsDataURL(blob);
+
+        // Mostra preview na tela (iframe)
         document.getElementById('preview-relatorio').innerHTML =
-          `<iframe src="${url}" name="${nomeIframe}" id="${nomeIframe}" width="100%" height="600px"></iframe>`;        })
+          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}" width="100%" height="600px"></iframe>`;        })
     .catch(() => {
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
