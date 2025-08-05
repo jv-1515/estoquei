@@ -171,7 +171,7 @@ table {
 
 th,
 td {
-    padding: 5px;
+    padding: 10px 5px;
     text-align: center;
     vertical-align: middle;
 }
@@ -347,13 +347,6 @@ table {
     overflow: hidden;
     font-size: 12px;
     margin: 0;
-}
-
-th,
-td {
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
 }
 
 th {
