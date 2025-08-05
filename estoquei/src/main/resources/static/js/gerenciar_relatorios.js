@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+function dataBRparaISO(dataBR) {
+    if (!dataBR) return '';
+    const [dia, mes, ano] = dataBR.split('/');
+    return `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+}
 // Carrega relatórios do localStorage ao abrir a página
 window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
 
@@ -36,9 +42,11 @@ window.adicionarRelatorio = function(relatorio) {
                 delete relatorio.blobUrl;
 
                 // Atualiza lista e salva no localStorage
-                window.relatoriosGerados.push(relatorio);
-                localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
-                renderizarRelatorios(window.relatoriosGerados);
+                let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+                relatorios.push(relatorio);
+                window.relatoriosGerados = relatorios;
+                localStorage.setItem('relatoriosGerados', JSON.stringify(relatorios));
+                renderizarRelatorios(relatorios);
             };
             reader.readAsDataURL(blob);
         });
@@ -98,22 +106,26 @@ function renderizarRelatorios(relatorios) {
 
 // SweetAlert para remover relatório
 window.excluirRelatorio = function(id) {
+    const relatorio = window.relatoriosGerados.find(r => r.id == id);
+    const nomeRelatorio = relatorio ? relatorio.nome : '';
     Swal.fire({
-        title: 'Tem certeza?',
-        text: 'Esta ação não poderá ser desfeita.',
+        title: `Remover "${nomeRelatorio}"`,
+        text: 'Esta ação não poderá ser desfeita!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#1E94A3',
         confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             window.relatoriosGerados = window.relatoriosGerados.filter(r => r.id != id);
             localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
             renderizarRelatorios(window.relatoriosGerados);
             Swal.fire({
-                title: 'Removido!',
+                title: `"${nomeRelatorio}" Removido!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -130,7 +142,7 @@ window.renomearRelatorio = function(id) {
     // Mostra só o nome sem .pdf
     const nomeSemExtensao = relatorio.nome.replace(/\.pdf$/i, '');
     Swal.fire({
-        title: 'Renomear Relatório',
+        title: '<div style="padding-top:20px;">Renomear Relatório</div>',
         input: 'text',
         inputValue: nomeSemExtensao,
         showCloseButton: true,
@@ -139,7 +151,16 @@ window.renomearRelatorio = function(id) {
         confirmButtonText: 'Salvar',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#1E94A3',
-        cancelButtonColor: '#d33'
+        cancelButtonColor: '#d33',
+        // Permite HTML no título
+        titleHtml: true,
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+            }
+        }
     }).then(result => {
         if (result.isConfirmed) {
             const novoNome = (result.value || '').trim();
@@ -183,7 +204,9 @@ window.renomearRelatorio = function(id) {
             Swal.fire({
                 title: 'Renomeado!',
                 icon: 'success',
-                confirmButtonColor: '#1E94A3'
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
             });
         }
     });
@@ -268,50 +291,94 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function filtrarRelatorios() {
-    const dataCriacao = document.getElementById('filter-data-criacao-busca').value;
-    const dataInicio = document.getElementById('filter-data-inicio-busca').value;
-    const dataFim = document.getElementById('filter-data-fim-busca').value;
+    const hoje = new Date().toISOString().slice(0, 10);
+    const dataCriacao = document.getElementById('filter-data-criacao-busca').value; // yyyy-MM-dd
+    const dataInicio = document.getElementById('filter-data-inicio-busca').value;   // yyyy-MM-dd
+    const dataFim = document.getElementById('filter-data-fim-busca').value;         // yyyy-MM-dd
     const titulo = document.getElementById('busca-relatorio').value.toLowerCase();
-    // Códigos selecionados
-    let codigosSelecionados = [];
-    const checksCodigo = document.querySelectorAll('.codigo-multi-check');
-    if (checksCodigo.length > 0) {
-        codigosSelecionados = Array.from(checksCodigo)
-            .filter(cb => cb.checked && cb.value)
-            .map(cb => cb.value);
+
+
+    if (dataCriacao && dataCriacao > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data de Criação não pode ser posterior a hoje',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        document.getElementById('filter-data-criacao-busca').value = '';
+        return;
     }
+    if (dataInicio && dataInicio > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data de Início não pode ser posterior a hoje',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        document.getElementById('filter-data-inicio-busca').value = '';
+        return;
+    }
+    if (dataFim && dataFim > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A Data de Fim não pode ser posterior a hoje',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        document.getElementById('filter-data-fim-busca').value = '';
+        return;
+    }
+
     let filtrados = window.relatoriosGerados.filter(r => {
         let ok = true;
-        // Filtro por código (se algum selecionado e não "Todos")
-        if (codigosSelecionados.length > 0) {
-            if (!codigosSelecionados.includes(r.codigoProduto)) ok = false;
-        }
+
         // Filtro por título
         if (titulo && !r.nome.toLowerCase().includes(titulo)) ok = false;
+
         // Filtro por data de criação (exata)
         if (dataCriacao) {
-            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
-            // let dataFiltro = new Date(dataCriacao);
-            if (!dataRel || dataRel.toISOString().slice(0,10) !== dataCriacao) ok = false;
+            let dataRel = r.dataCriacao ? dataBRparaISO(r.dataCriacao) : '';
+            if (dataRel !== dataCriacao) ok = false;
         }
-        // Filtro por período (data início/fim)
-        if (dataInicio) {
-            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
-            let dataFiltro = new Date(dataInicio);
-            if (!dataRel || dataRel < dataFiltro) ok = false;
+
+        // Filtro por período (dataInicio/dataFim)
+        if ((dataInicio || dataFim) && r.periodo) {
+            let [ini, fim] = r.periodo.split('-').map(s => s.trim());
+            ini = ini ? dataBRparaISO(ini) : '';
+            fim = fim ? dataBRparaISO(fim) : ini;
+
+            if (dataInicio && !dataFim) {
+                if (ini !== dataInicio) ok = false;
+            } else if (!dataInicio && dataFim) {
+                if (fim !== dataFim) ok = false;
+            } else if (dataInicio && dataFim) {
+                if (!(ini === dataInicio && fim === dataFim)) ok = false;
+            }
         }
-        if (dataFim) {
-            let dataRel = r.dataCriacao ? new Date(r.dataCriacao) : null;
-            let dataFiltro = new Date(dataFim);
-            if (!dataRel || dataRel > dataFiltro) ok = false;
-        }
+
         return ok;
     });
 
     renderizarRelatorios(filtrados);
+
+    // Atualiza cor dos inputs de data início/fim
+    const dataInicioInput = document.getElementById('filter-data-inicio-busca');
+    const dataFimInput = document.getElementById('filter-data-fim-busca');
+    [dataInicioInput, dataFimInput].forEach(input => {
+        if (input) {
+            if (input.value) {
+                input.style.border = '2px solid #1e94a3';
+                input.style.color = '#1e94a3';
+            } else {
+                input.style.border = '';
+                input.style.color = '';
+            }
+        }
+    });
 }
-
-
 //periodo
 document.addEventListener('DOMContentLoaded', function() {
     const periodoInput = document.getElementById('filter-periodo');
@@ -321,7 +388,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     periodoInput.addEventListener('click', function(e) {
         popup.style.display = 'block';
-        // const rect = periodoInput.getBoundingClientRect();
 
     });
 
