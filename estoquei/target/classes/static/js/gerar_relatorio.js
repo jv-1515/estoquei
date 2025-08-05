@@ -836,28 +836,43 @@ function atualizarPlaceholderQuantidade() {
     const max = document.getElementById('quantidade-max').value;
     const input = document.getElementById('filter-quantidade');
 
-    let filtros = [];
-    let faixa = '';
+    let texto = 'Todas';
     let ativo = false;
 
-    if (chkBaixo.checked) filtros.push('Baixo estoque');
-    if (chkZerados.checked) filtros.push('Zerados');
-    if (min && !isNaN(min) && max && !isNaN(max)) {
-        faixa = `de ${min} até ${max}`;
-    } else if (min && !isNaN(min)) {
-        faixa = `a partir de ${min}`;
-    } else if (max && !isNaN(max)) {
-        faixa = `até ${max}`;
-    }
-
-    // Se só "Zerados" está marcado, não mostra faixa
-    const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
-
+    // Lógica dos checkboxes
     if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
-        input.value = "Todas";
+        texto = 'Todas';
         ativo = false;
+    } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked && !min && !max) {
+        texto = 'Todas exceto zerados';
+        ativo = true;
+    } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Todas exceto baixo estoque';
+        ativo = true;
+    } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Baixo estoque e zerados';
+        ativo = true;
+    } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked && !min && !max) {
+        texto = 'Baixo estoque';
+        ativo = true;
+    } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Zerados';
+        ativo = true;
     } else {
-        let texto = '';
+        // Combinações com faixa
+        let filtros = [];
+        if (chkBaixo.checked) filtros.push('Baixo estoque');
+        if (chkZerados.checked) filtros.push('Zerados');
+        let faixa = '';
+        if (min && max) {
+            faixa = `de ${min} até ${max}`;
+        } else if (min) {
+            faixa = `a partir de ${min}`;
+        } else if (max) {
+            faixa = `até ${max}`;
+        }
+        // Se só "Zerados" está marcado, não mostra faixa
+        const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
         if (filtros.length > 0) {
             texto = filtros.join(', ');
             if (faixa && !apenasZerados) texto += ` (${faixa})`;
@@ -865,17 +880,19 @@ function atualizarPlaceholderQuantidade() {
             texto = faixa;
         } else {
             texto = "Todas";
+            ativo = false;
         }
-        input.value = texto;
         ativo = texto !== "Todas";
     }
 
+    if (input) input.value = texto;
+
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
-        input.style.color = '#1e94a3';
+        input.classList.add('quantidade-ativa');
     } else {
         input.style.border = '';
-        input.style.color = '';
+        input.classList.remove('quantidade-ativa');
     }
     // Atualiza o chevron junto
     const chevron = input.parentNode.querySelector('span');
@@ -987,17 +1004,15 @@ if (document.getElementById('quantidade-todas-popup')) {
             zerados.checked = true;
         }
         atualizarPlaceholderQuantidade();
+        atualizarLista();
     });
 }
 ['quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', function() {
-        const todos = document.getElementById('quantidade-todas-popup');
-        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
-        const zerados = document.getElementById('quantidade-zerados-popup');
-        if (!baixo.checked || !zerados.checked) todos.checked = false;
-        if (baixo.checked && zerados.checked) todos.checked = true;
+        // Não força o "Todos" a desmarcar!
         atualizarPlaceholderQuantidade();
+        atualizarLista();
     });
 });
 
@@ -1032,7 +1047,7 @@ function syncQuantidadeChecksAndInputs() {
     if (el) el.addEventListener('change', function() {
         syncQuantidadeChecksAndInputs();
         atualizarPlaceholderQuantidade();
-        atualizarLista && atualizarLista();
+        atualizarLista();
     });
 });
 
