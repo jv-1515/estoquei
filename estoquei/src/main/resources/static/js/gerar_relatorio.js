@@ -456,8 +456,6 @@ async function gerarRelatorio() {
     })
     .then(blob => {
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
         const hoje = new Date();
         const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
         let nomeArquivo = `${baseNomeArquivo}.pdf`;
@@ -468,16 +466,38 @@ async function gerarRelatorio() {
             nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
             contador++;
         }
-        window.relatoriosGerados.push({ nome: nomeArquivo });
 
+        // Download
+        const a = document.createElement('a');
+        a.href = url;
         a.download = nomeArquivo;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
 
-        const nomeIframe = nomeArquivo;
+        // Salvar no localStorage para aparecer em Gerenciar Relatórios
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            const base64 = reader.result;
+            const novoRelatorio = {
+                id: Date.now(),
+                nome: nomeArquivo,
+                dataCriacao: hoje.toISOString(),
+                periodo: filtros.dataInicio && filtros.dataFim
+                    ? (filtros.dataInicio === filtros.dataFim
+                        ? formatarDataBR(filtros.dataInicio)
+                        : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
+                    : formatarDataBR(hoje.toISOString().slice(0, 10)),
+                base64
+            };
+            window.relatoriosGerados.push(novoRelatorio);
+            localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+        };
+        reader.readAsDataURL(blob);
+
+        // Mostra preview na tela (iframe)
         document.getElementById('preview-relatorio').innerHTML =
-          `<iframe src="${url}" name="${nomeIframe}" id="${nomeIframe}" width="100%" height="600px"></iframe>`;        })
+          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}" width="100%" height="600px"></iframe>`;        })
     .catch(() => {
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
@@ -812,32 +832,58 @@ function atualizarPlaceholderQuantidade() {
     const chkTodos = document.getElementById('quantidade-todas-popup');
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
     const chkZerados = document.getElementById('quantidade-zerados-popup');
-    const min = document.getElementById('quantidade-min').value;
-    const max = document.getElementById('quantidade-max').value;
+    const minInput = document.getElementById('quantidade-min');
+    const maxInput = document.getElementById('quantidade-max');
     const input = document.getElementById('filter-quantidade');
 
-    let filtros = [];
-    let faixa = '';
+    let min = minInput.value;
+    let max = maxInput.value;
+
+    // Normaliza min/max (troca se min > max)
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
+
+    let texto = 'Todas';
     let ativo = false;
 
-    if (chkBaixo.checked) filtros.push('Baixo estoque');
-    if (chkZerados.checked) filtros.push('Zerados');
-    if (min && !isNaN(min) && max && !isNaN(max)) {
-        faixa = `de ${min} até ${max}`;
-    } else if (min && !isNaN(min)) {
-        faixa = `a partir de ${min}`;
-    } else if (max && !isNaN(max)) {
-        faixa = `até ${max}`;
+    // Caso especial: só zerados marcado e min/max = 0
+    if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked && min == 0 && max == 0) {
+        texto = 'Zerados';
+        ativo = true;
     }
-
-    // Se só "Zerados" está marcado, não mostra faixa
-    const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
-
-    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
-        input.value = "Todas";
+    // Todas as combinações possíveis SEM faixa
+    else if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Todas';
         ativo = false;
+    } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked && !min && !max) {
+        texto = 'Todas exceto zerados';
+        ativo = true;
+    } else if (chkTodos.checked && !chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Todas exceto baixo estoque';
+        ativo = true;
+    } else if (!chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Baixo estoque e zerados';
+        ativo = true;
+    } else if (!chkTodos.checked && chkBaixo.checked && !chkZerados.checked && !min && !max) {
+        texto = 'Baixo estoque';
+        ativo = true;
+    } else if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked && !min && !max) {
+        texto = 'Zerados';
+        ativo = true;
     } else {
-        let texto = '';
+        // Combinações com faixa
+        let filtros = [];
+        if (chkBaixo.checked) filtros.push('Baixo estoque');
+        if (chkZerados.checked) filtros.push('Zerados');
+        let faixa = '';
+        if (min && max) {
+            faixa = `de ${min} até ${max}`;
+        } else if (min) {
+            faixa = `a partir de ${min}`;
+        } else if (max) {
+            faixa = `até ${max}`;
+        }
+        // Se só "Zerados" está marcado, não mostra faixa
+        const apenasZerados = !chkTodos.checked && !chkBaixo.checked && chkZerados.checked;
         if (filtros.length > 0) {
             texto = filtros.join(', ');
             if (faixa && !apenasZerados) texto += ` (${faixa})`;
@@ -845,17 +891,19 @@ function atualizarPlaceholderQuantidade() {
             texto = faixa;
         } else {
             texto = "Todas";
+            ativo = false;
         }
-        input.value = texto;
         ativo = texto !== "Todas";
     }
 
+    if (input) input.value = texto;
+
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
-        input.style.color = '#1e94a3';
+        input.classList.add('quantidade-ativa');
     } else {
         input.style.border = '';
-        input.style.color = '';
+        input.classList.remove('quantidade-ativa');
     }
     // Atualiza o chevron junto
     const chevron = input.parentNode.querySelector('span');
@@ -967,17 +1015,15 @@ if (document.getElementById('quantidade-todas-popup')) {
             zerados.checked = true;
         }
         atualizarPlaceholderQuantidade();
+        atualizarLista();
     });
 }
 ['quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', function() {
-        const todos = document.getElementById('quantidade-todas-popup');
-        const baixo = document.getElementById('quantidade-baixo-estoque-popup');
-        const zerados = document.getElementById('quantidade-zerados-popup');
-        if (!baixo.checked || !zerados.checked) todos.checked = false;
-        if (baixo.checked && zerados.checked) todos.checked = true;
+        // Não força o "Todos" a desmarcar!
         atualizarPlaceholderQuantidade();
+        atualizarLista();
     });
 });
 
@@ -1012,7 +1058,7 @@ function syncQuantidadeChecksAndInputs() {
     if (el) el.addEventListener('change', function() {
         syncQuantidadeChecksAndInputs();
         atualizarPlaceholderQuantidade();
-        atualizarLista && atualizarLista();
+        atualizarLista();
     });
 });
 
