@@ -832,15 +832,26 @@ function atualizarPlaceholderQuantidade() {
     const chkTodos = document.getElementById('quantidade-todas-popup');
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
     const chkZerados = document.getElementById('quantidade-zerados-popup');
-    const min = document.getElementById('quantidade-min').value;
-    const max = document.getElementById('quantidade-max').value;
+    const minInput = document.getElementById('quantidade-min');
+    const maxInput = document.getElementById('quantidade-max');
     const input = document.getElementById('filter-quantidade');
+
+    let min = minInput.value;
+    let max = maxInput.value;
+
+    // Normaliza min/max (troca se min > max)
+    if (min && max && Number(min) > Number(max)) [min, max] = [max, min];
 
     let texto = 'Todas';
     let ativo = false;
 
-    // Lógica dos checkboxes
-    if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
+    // Caso especial: só zerados marcado e min/max = 0
+    if (!chkTodos.checked && !chkBaixo.checked && chkZerados.checked && min == 0 && max == 0) {
+        texto = 'Zerados';
+        ativo = true;
+    }
+    // Todas as combinações possíveis SEM faixa
+    else if (chkTodos.checked && chkBaixo.checked && chkZerados.checked && !min && !max) {
         texto = 'Todas';
         ativo = false;
     } else if (chkTodos.checked && chkBaixo.checked && !chkZerados.checked && !min && !max) {
