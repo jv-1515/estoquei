@@ -292,44 +292,7 @@ th.ordenar.sorted .sort-icon {
     transition: color 0.2s;
 }
 
-
-
 /* estoque */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #ccc;
-    margin: 0;
-    padding: 20px;
-    font-size: 12px;
-}
-
-h1 {
-    font-size: 40px;
-    color: #277580;
-    text-align: center;
-    margin: 40px 0 20px 0;
-}
-
-h2 {
-    font-size: 20px;
-    color: #277580;
-    text-align: left;
-    margin: 0;
-}
-
-.filters-container {
-    width: 1200px;
-    min-width: 1200px;
-    margin: 0 auto 20px auto;
-    box-sizing: border-box;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-}
-
 #busca-produto {
     border: 1px solid #aaa;
     border-radius: 4px;
@@ -341,27 +304,6 @@ h2 {
     outline: none;
     transition: border-color 0.2s;
 }
-
-/* .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 0 10px;
-    width: 100%;
-    background: none;
-    padding: 0;
-    margin: 0;
-} */
-
-
-/* .input-group {
-    position: relative;
-    flex: 1 1 90px;
-    min-width: 90px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-    gap: 2px;
-} */
 
 .input-group label {
     font-size: 12px;
@@ -387,8 +329,6 @@ h2 {
     background: #fff;
     transition: border-color 0.2s;
 }
-
-
 
 .main-container {
     background: white;
@@ -444,7 +384,6 @@ tbody tr:nth-child(odd) {
 .actions a:hover, .actions button:hover {
     color: #1e94a3;
 }
-
 
 .produto-img {
     width: 30px;
@@ -540,31 +479,6 @@ button:hover,
     transition: background-color 0.2s, color 0.2s;
 }
 
-/* .input-group {
-    position: relative;
-    flex: 1 1 90px;
-    min-width: 90px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-    gap: 2px;
-} */
-
-.input-group input,
-.input-group select {
-    width: 100%;
-    height: 30px;
-    box-sizing: border-box;
-    margin-top: 0;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 7px;
-    color: #757575;
-    background: #fff;
-    transition: border-color 0.2s;
-}
-
 .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
@@ -612,7 +526,6 @@ select#filter-genero {
     padding-left: 1px;
 }
 
-
 select#registros-select {
     color: #1E94A3;
     border: #1e94a3 2px solid;
@@ -621,7 +534,6 @@ select#registros-select {
 select#registros-select option {
     color: #757575;
 }
-
 
 #busca-sugestoes .sugestao {
     padding: 8px 12px;
@@ -746,7 +658,6 @@ select#registros-select option {
     width: 12px !important;
     height: 12px !important;
 }
-
 
 /* sweetAlert */
 .swal2-popup {
