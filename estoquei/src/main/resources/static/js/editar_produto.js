@@ -186,12 +186,11 @@ document.querySelector('form').addEventListener('submit', function(event) {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Sim, salvar alterações',
+        cancelButtonText: 'Não, voltar',
         allowOutsideClick: false,
         customClass: {
             confirmButton: 'swal2-confirm-custom',
-            cancelButton: 'swal2-cancel-custom'
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -223,6 +222,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             .then(data => {
                 Swal.fire({
                     title: "Alterações salvas!",
+                    text: "Selecione uma opção",
                     icon: "success",
                     showCloseButton: true,
                     showCancelButton: true,
@@ -232,7 +232,6 @@ document.querySelector('form').addEventListener('submit', function(event) {
                     allowOutsideClick: false,
                     customClass: {
                         confirmButton: 'swal2-confirm-custom',
-                        cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
                     saveBtn.disabled = false;
@@ -250,7 +249,10 @@ document.querySelector('form').addEventListener('submit', function(event) {
                     title: 'Erro!',
                     text: error.message || 'Não foi possível salvar as alterações.',
                     icon: 'error',
-                    confirmButtonColor: '#1E94A3'
+                    timer: 1500,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    timerProgressBar: true,
                 });
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = 'Salvar alterações';
