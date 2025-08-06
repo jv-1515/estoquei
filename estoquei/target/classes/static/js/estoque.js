@@ -625,7 +625,11 @@ function removerProduto(id, nome) {
         showCancelButton: true,
         allowOutsideClick: false,
         confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch('/produtos/' + id, {
@@ -932,6 +936,21 @@ function carregarProdutos(top) {
         });
 }
 
+function parseDataQualquerFormato(dataStr) {
+    if (!dataStr || dataStr === '-') return null;
+    // yyyy-MM-dd
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dataStr)) {
+        return new Date(dataStr + 'T00:00:00');
+    }
+    // dd/MM/yyyy
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataStr)) {
+        const [dia, mes, ano] = dataStr.split('/');
+        return new Date(`${ano}-${mes}-${dia}T00:00:00`);
+    }
+    // fallback
+    return new Date(dataStr);
+}
+
 window.onload = function() {
     const select = document.getElementById('registros-select');
     carregarProdutos(select.value);
@@ -990,9 +1009,11 @@ window.onload = function() {
                     valorB = Number(b[campo]) || 0;
                     return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
                 } else if (campo === 'dtUltimaEntrada' || campo === 'dtUltimaSaida') {
-                    // datas - valores null ficam por último
-                    valorA = a[campo] ? new Date(a[campo]) : new Date('1900-01-01');
-                    valorB = b[campo] ? new Date(b[campo]) : new Date('1900-01-01');
+                    valorA = parseDataQualquerFormato(a[campo]);
+                    valorB = parseDataQualquerFormato(b[campo]);
+                    if (!valorA && !valorB) return 0;
+                    if (!valorA) return 1;
+                    if (!valorB) return -1;
                     return estadoOrdenacao[realIdx] ? valorB - valorA : valorA - valorB;
                 } else {
                     // alfabético
