@@ -82,14 +82,18 @@ function atualizarCardFuncionarios() {
 }
 
 function atualizarCardRelatorios() {
-    fetch('/relatorios')
-        .then(res => res.json())
-        .then(lista => {
-            document.getElementById('valor-relatorios').textContent = (Array.isArray(lista) && lista.length) ? lista.length : 0;
-        })
-        .catch(() => {
-            document.getElementById('valor-relatorios').textContent = 0;
-        });
+    // fetch('/relatorios')
+    //     .then(res => res.json())
+    //     .then(lista => {
+    //         document.getElementById('valor-relatorios').textContent = (Array.isArray(lista) && lista.length) ? lista.length : 0;
+    //     })
+    //     .catch(() => {
+    //         document.getElementById('valor-relatorios').textContent = 0;
+    //     });
+
+    // Mostrar quantidade de relatórios do localStorage
+    const relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+    document.getElementById('valor-relatorios').textContent = Array.isArray(relatorios) ? relatorios.length : 0;
 }
 
 function atualizarCardProdutos() {
