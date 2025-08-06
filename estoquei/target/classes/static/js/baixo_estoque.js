@@ -468,8 +468,9 @@ document.querySelectorAll('.categoria-multi-check').forEach(cb => {
 //     updateOptions();
 // });
 
-
-
+window.addEventListener('DOMContentLoaded', function() {
+    updateOptions();
+});
     // Atualiza tamanhos ao mudar qualquer checkbox de categoria
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
         cb.addEventListener('change', updateOptions);
@@ -526,20 +527,13 @@ function filtrar() {
     const termoBusca = buscaInput && buscaInput.value ? buscaInput.value.trim() : '';
 
     let produtosFiltrados = produtos.filter(p => {
-        let produtosFiltrados = produtos.filter(p => {
-            // Só baixo estoque (ajuste a regra conforme sua necessidade)
-            if (Number(p.quantidade) > 2 * Number(p.limiteMinimo)) return false;
-
-            // Busca por nome OU código
-            if (termoBusca) {
-                const termo = termoBusca.toLowerCase();
-                const buscaCodigo = p.codigo && p.codigo.toString().toLowerCase().includes(termo);
-                const buscaNome = p.nome && p.nome.toLowerCase().includes(termo);
-                if (!buscaCodigo && !buscaNome) return false;
-            }
-            // ...restante dos filtros...
-            return true;
-        });
+        // Busca por nome OU código
+        if (termoBusca) {
+            const termo = termoBusca.toLowerCase();
+            const buscaCodigo = p.codigo && p.codigo.toString().toLowerCase().includes(termo);
+            const buscaNome = p.nome && p.nome.toLowerCase().includes(termo);
+            if (!buscaCodigo && !buscaNome) return false;
+        }
         // Filtra pelas categorias selecionadas nos checkboxes
         if (categoriasSelecionadas.length) {
             if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
@@ -580,7 +574,6 @@ function filtrar() {
 
     paginaAtual = 1;
     renderizarProdutos(produtosFiltrados);
-    atualizarDetalhesInfo(produtosFiltrados);
 }
 
 function exibirTamanho(tamanho) {
@@ -649,7 +642,7 @@ function renderizarProdutos(produtos) {
                         style="
                             position: absolute;
                             top: 50%;
-                            right: 0;
+                            right: 20px;
                             transform: translateY(-50%);
                             width: 20px;
                             height: 20px;
@@ -700,7 +693,7 @@ function renderizarProdutos(produtos) {
                     </td>
                     <td>${p.limiteMinimo}</td>
                     <td>${precoFormatado}</td>
-                    <td style="padding-right:20px" class="actions">
+                    <td class="actions">
                         <button type="button" title="Detalhes" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})'>
                             <i class="fa-solid fa-eye"></i>
                         </button>

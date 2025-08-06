@@ -21,8 +21,8 @@ h2 {
 }
 
 .filters-container {
-    width: 1200px;
-    min-width: 1200px;
+    width: 900px;
+    min-width: 900px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -77,13 +77,6 @@ h2 {
     color: #757575;
     height: 30px;
     padding: 0 7px;
-}
-
-#filter-data-criacao-busca,
-#filter-data-inicio-busca,
-#filter-data-fim-busca {
-    width: 150px;
-    max-width: 150px;
 }
 
 .input-group {
@@ -153,8 +146,8 @@ h2 {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 1200px;
-    min-width: 1200px;
+    width: 900px;
+    min-width: 900px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -174,6 +167,10 @@ td {
     padding: 10px 5px;
     text-align: center;
     vertical-align: middle;
+}
+
+td.actions {
+    padding-right: 20px;
 }
 
 th {
@@ -237,8 +234,8 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    right: 8px;
     top: 50%;
+    padding-left: 2px;
     transform: translateY(-50%);
     display: none;
     pointer-events: none;
@@ -333,8 +330,8 @@ th.ordenar.sorted .sort-icon {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 1200px;
-    min-width: 1200px;
+    width: 900px;
+    min-width: 900px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -441,7 +438,6 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     display: none;
@@ -654,9 +650,9 @@ select#registros-select option {
 
 /* sweetAlert */
 .swal2-popup {
-    width: 400px;
-    min-width: 400px;
-    max-width: 400px;
+    width: 410px;
+    min-width: 410px;
+    max-width: 410px;
     border-radius: 10px;
 }
 
