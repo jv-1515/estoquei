@@ -10,7 +10,7 @@ function formatarPrecoInput(input) {
             let inteiro = partes[0];
             let decimal = partes[1];
             inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            e.target.value = 'R$' + inteiro + ',' + decimal;
+            e.target.value = 'R$ ' + inteiro + ',' + decimal;
         } else {
             e.target.value = '';
         }
@@ -80,12 +80,12 @@ window.addEventListener('DOMContentLoaded', function() {
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
             <label for="valor-compra">Valor da Compra*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
             <label for="valor-venda">Valor da Venda*</label>
-            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$1000,00" min="1">
+            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
             `}
@@ -308,6 +308,8 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
         atualizarQuantidadeFinal();
+
+        aplicarEstiloInputs();
     }
 
     // Função quantidade final e validar
@@ -537,3 +539,33 @@ function validarDatasMovimentacao() {
     }
     return true;
 }
+
+
+
+function aplicarEstiloInputs() {
+        // Seleciona só os inputs dentro de .filters-group
+        const inputs = document.querySelectorAll('.filters-group input');
+        inputs.forEach(input => {
+            // Aplica cor inicial ao carregar
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+            // Ao perder o foco, alterna cor
+            input.addEventListener('blur', () => {
+                if (input.value.trim() === '') {
+                    input.style.backgroundColor = 'white';
+                } else {
+                    input.style.backgroundColor = '#f1f1f1';
+                }
+            });
+            // Ao focar, sempre branco
+            input.addEventListener('focus', () => {
+                input.style.backgroundColor = 'white';
+            });
+        });
+    }
+    
+    // Chame ao carregar a página
+    document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);
