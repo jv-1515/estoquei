@@ -205,9 +205,6 @@ tbody tr:nth-child(even) .produto-img {
     color: #9d9d9d;
     transition: transform 0.2s;
 }
-.fa-trash:hover {
-    color: red;
-}
 
 #filter-genero option[disabled][hidden],
 #filter-categoria option[disabled][hidden],

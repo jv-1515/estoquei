@@ -10,7 +10,7 @@ function formatarPrecoInput(input) {
             let inteiro = partes[0];
             let decimal = partes[1];
             inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            e.target.value = 'R$' + inteiro + ',' + decimal;
+            e.target.value = 'R$ ' + inteiro + ',' + decimal;
         } else {
             e.target.value = '';
         }
@@ -80,12 +80,12 @@ window.addEventListener('DOMContentLoaded', function() {
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
             <label for="valor-compra">Valor da Compra*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$1000,00" min="1">
+            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
             <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
             ` : `
             <label for="valor-venda">Valor da Venda*</label>
-            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$1000,00" min="1">
+            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
             <label for="comprador">Comprador*</label>
             <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
             `}
@@ -157,6 +157,10 @@ window.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
+                if (!validarDatasMovimentacao()) {
+                    return;
+                }
+
                 // Descobre o tipo de movimentação
                 const tipoRadio = document.querySelector('input[name="tipo-movimentacao"]:checked');
                 const tipoMovimentacao = tipoRadio ? tipoRadio.value : "ENTRADA";
@@ -171,7 +175,6 @@ window.addEventListener('DOMContentLoaded', function() {
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
                     };
-                    console.log("Enviando entrada:", entrada); // Adicione este log para ver no navegador
 
                     fetch('/api/movimentacoes/entrada', {
                         method: 'POST',
@@ -305,9 +308,11 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
         atualizarQuantidadeFinal();
+
+        aplicarEstiloInputs();
     }
 
-    // Função robusta para atualizar quantidade final e validar
+    // Função quantidade final e validar
     function atualizarQuantidadeFinal() {
         const quantidadeInput = document.getElementById('quantidade');
         const quantidadeFinalInput = document.getElementById('quantidade-final');
@@ -357,7 +362,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     icon: 'warning',
                     title: 'Limite de estoque atingido!',
                     text: 'Este produto não pode ser abastecido.',
-                    timer: 2500,
+                    timer: 1500,
                     showConfirmButton: false
                 });
             } else {
@@ -415,10 +420,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 selectProdutos.addEventListener('change', function() {
                     const opt = this.selectedOptions[0];
                     if (!opt.value) return;
-                    // Sempre redireciona para ?id=ID ao selecionar
                     window.location.search = '?id=' + opt.value;
                 });
-                // Não adiciona blur para esconder o select enquanto não houver id
             });
     }
 
@@ -435,7 +438,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (!id) {
         mostrarSelectProdutosDefault();
         criarMainContainer("ENTRADA", {});
-        // Máscara de preço para filtros
+
         formatarPrecoInput(document.getElementById('filter-preco'));
         return;
     }
@@ -484,7 +487,7 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Busca o produto (mantém apenas a lógica correta)
+    // Busca o produto
     if (id) {
         fetch(`/produtos/${id}`)
             .then(response => {
@@ -503,3 +506,66 @@ window.addEventListener('DOMContentLoaded', function() {
     // Máscara de preço para filtros
     formatarPrecoInput(document.getElementById('filter-preco'));
 });
+
+
+function validarDatasMovimentacao() {
+    const hoje = new Date().toISOString().slice(0, 10);
+    const dataEntrada = document.getElementById('data-compra')?.value;
+    const dataSaida = document.getElementById('data-venda')?.value;
+
+    if (dataEntrada && dataEntrada > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data de Entrada não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (dataSaida && dataSaida > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data de Saída não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
+
+
+
+function aplicarEstiloInputs() {
+        // Seleciona só os inputs dentro de .filters-group
+        const inputs = document.querySelectorAll('.filters-group input');
+        inputs.forEach(input => {
+            // Aplica cor inicial ao carregar
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+            // Ao perder o foco, alterna cor
+            input.addEventListener('blur', () => {
+                if (input.value.trim() === '') {
+                    input.style.backgroundColor = 'white';
+                } else {
+                    input.style.backgroundColor = '#f1f1f1';
+                }
+            });
+            // Ao focar, sempre branco
+            input.addEventListener('focus', () => {
+                input.style.backgroundColor = 'white';
+            });
+        });
+    }
+    
+    // Chame ao carregar a página
+    document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);
