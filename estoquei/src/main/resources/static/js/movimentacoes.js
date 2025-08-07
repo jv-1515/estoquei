@@ -50,14 +50,21 @@ function exibirTamanho(tamanho) {
 }
 
 function aplicarMascaraDinheiro(input) {
+    if (!input) return;
     input.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
-        if (value.length === 0) {
+        if (value.length > 8) value = value.slice(0, 8);
+        if (value.length > 0) {
+            let floatValue = (parseInt(value) / 100).toFixed(2);
+
+            let partes = floatValue.split('.');
+            let inteiro = partes[0];
+            let decimal = partes[1];
+            inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = 'R$ ' + inteiro + ',' + decimal;
+        } else {
             e.target.value = '';
-            return;
         }
-        value = (parseInt(value) / 100).toFixed(2);
-        e.target.value = value.replace('.', ',');
     });
 }
 
@@ -181,8 +188,18 @@ function abrirEdicaoMovimentacao(id) {
             const inputValor = document.getElementById('edit-valor');
             aplicarMascaraDinheiro(inputValor);
 
+            const inputQuantidade = document.getElementById('edit-quantidade');
+            if (inputQuantidade) {
+                inputQuantidade.addEventListener('input', function() {
+                    if (this.value.length > 3) this.value = this.value.slice(0, 3);
+                    if (this.value > 999) this.value = 999;
+                });
+            }
+
+            aplicarEstiloInputsMovimentacao();
             document.getElementById('editar-movimentacao').dataset.movimentacaoId = id;
             document.getElementById('editar-movimentacao').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         })
         .catch(error => {
             console.error('Erro ao buscar produto:', error);
@@ -197,9 +214,11 @@ function capitalizar(str) {
 
 function fecharEdicaoMovimentacao() {
     document.getElementById('editar-movimentacao').style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 function salvarEdicaoMovimentacao() {
+    if (!validarDataEdicaoMovimentacao()) return;
     const btnConfirmar = document.getElementById('edit-btn-confirmar');
     const textoOriginal = btnConfirmar.textContent;
     btnConfirmar.disabled = true;
@@ -207,11 +226,11 @@ function salvarEdicaoMovimentacao() {
 
     Swal.fire({
         title: 'Tem certeza?',
-        text: 'As alterações não poderão ser desfeitas.',
+        text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Sim, salvar alterações',
+        cancelButtonText: 'Não, voltar',
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -238,14 +257,12 @@ function salvarEdicaoMovimentacao() {
             })
             .then(data => {
                 Swal.fire({
-                    title: "Alterações salvas!",
-                    text: "Selecione uma opção",
+                    title: "Sucesso",
+                    text: "Alterações salvas!",
                     icon: "success",
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    showConfirmButton: true,
-                    confirmButtonText: 'Visualizar Movimentações',
-                    cancelButtonText: 'Voltar para Início',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
                     allowOutsideClick: false,
                 }).then((result) => {
                     btnConfirmar.disabled = false;
@@ -265,9 +282,12 @@ function salvarEdicaoMovimentacao() {
                 console.error('Erro ao salvar alterações:', error);
                 Swal.fire({
                     title: 'Erro!',
-                    text: error.message || 'Não foi possível salvar as alterações.',
+                    text: error.message || 'Não foi possível salvar as alterações',
                     icon: 'error',
-                    confirmButtonColor: '#1E94A3'
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
                 });
                 
                 btnConfirmar.disabled = false;
@@ -286,10 +306,12 @@ function removerMovimentacao(id) {
         text: 'Esta ação não poderá ser desfeita.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#1E94A3',
         confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/api/movimentacoes/${id}`, {
@@ -303,16 +325,22 @@ function removerMovimentacao(id) {
                     text: 'Movimentação removida com sucesso.',
                     icon: 'success',
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
                 });
-                
                 carregarMovimentacoes();
             })
             .catch(error => {
                 Swal.fire({
                     title: 'Erro!',
                     text: 'Erro ao remover movimentação: ' + error.message,
-                    icon: 'error'
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
                 });
             });
         }
@@ -556,3 +584,44 @@ window.onload = function() {
         }
     });
 };
+
+function validarDataEdicaoMovimentacao() {
+    const hoje = new Date().toISOString().slice(0, 10);
+    const dataInput = document.getElementById('edit-data');
+    if (dataInput && dataInput.value && dataInput.value > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A data não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        dataInput.focus();
+        return false;
+    }
+    return true;
+}
+
+function aplicarEstiloInputsMovimentacao() {
+    const inputs = document.querySelectorAll('#editar-movimentacao input:not([readonly]), #editar-movimentacao select');
+    inputs.forEach(input => {
+        
+        if (input.value.trim() === '') {
+            input.style.backgroundColor = 'white';
+        } else {
+            input.style.backgroundColor = '#f1f1f1';
+        }
+        input.addEventListener('blur', () => {
+            if (input.value.trim() === '') {
+                input.style.backgroundColor = 'white';
+            } else {
+                input.style.backgroundColor = '#f1f1f1';
+            }
+        });
+        input.addEventListener('focus', () => {
+            input.style.backgroundColor = 'white';
+        });
+    });
+}
