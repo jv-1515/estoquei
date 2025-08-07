@@ -25,6 +25,7 @@ h2 {
 
 .filters-container {
     max-width: 650px;
+    min-width: 650px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -75,6 +76,7 @@ h2 {
     border-radius: 0 0 10px 10px;
     gap: 20px;
     max-width: 650px;
+    min-width: 650px;
     margin: 0 auto;
 }
 
