@@ -1443,9 +1443,11 @@ function validarDatasPeriodo(dataInicio, dataFim) {
         Swal.fire({
             icon: 'warning',
             title: 'Data inválida',
-            text: 'A Data Início não pode ser posterior a hoje.',
+            text: 'A Data Início não pode ser posterior a hoje',
             timer: 1500,
-            showConfirmButton: false
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
         });
         return false;
     }
@@ -1455,7 +1457,10 @@ function validarDatasPeriodo(dataInicio, dataFim) {
             title: 'Data inválida!',
             text: 'A Data Fim não pode ser posterior a hoje',
             timer: 1500,
-            showConfirmButton: false
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
         });
         return false;
     }
@@ -1465,6 +1470,7 @@ function validarDatasPeriodo(dataInicio, dataFim) {
             title: 'Data inválida!',
             text: 'A Data Início não pode ser posterior à Data Fim',
             timer: 1500,
+            timerProgressBar: true,
             showConfirmButton: false,
             allowOutsideClick: false
         });
