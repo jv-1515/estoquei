@@ -157,6 +157,10 @@ window.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
+                if (!validarDatasMovimentacao()) {
+                    return;
+                }
+
                 // Descobre o tipo de movimentação
                 const tipoRadio = document.querySelector('input[name="tipo-movimentacao"]:checked');
                 const tipoMovimentacao = tipoRadio ? tipoRadio.value : "ENTRADA";
@@ -171,7 +175,6 @@ window.addEventListener('DOMContentLoaded', function() {
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
                     };
-                    console.log("Enviando entrada:", entrada); // Adicione este log para ver no navegador
 
                     fetch('/api/movimentacoes/entrada', {
                         method: 'POST',
@@ -307,7 +310,7 @@ window.addEventListener('DOMContentLoaded', function() {
         atualizarQuantidadeFinal();
     }
 
-    // Função robusta para atualizar quantidade final e validar
+    // Função quantidade final e validar
     function atualizarQuantidadeFinal() {
         const quantidadeInput = document.getElementById('quantidade');
         const quantidadeFinalInput = document.getElementById('quantidade-final');
@@ -357,7 +360,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     icon: 'warning',
                     title: 'Limite de estoque atingido!',
                     text: 'Este produto não pode ser abastecido.',
-                    timer: 2500,
+                    timer: 1500,
                     showConfirmButton: false
                 });
             } else {
@@ -415,10 +418,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 selectProdutos.addEventListener('change', function() {
                     const opt = this.selectedOptions[0];
                     if (!opt.value) return;
-                    // Sempre redireciona para ?id=ID ao selecionar
                     window.location.search = '?id=' + opt.value;
                 });
-                // Não adiciona blur para esconder o select enquanto não houver id
             });
     }
 
@@ -435,7 +436,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (!id) {
         mostrarSelectProdutosDefault();
         criarMainContainer("ENTRADA", {});
-        // Máscara de preço para filtros
+
         formatarPrecoInput(document.getElementById('filter-preco'));
         return;
     }
@@ -484,7 +485,7 @@ window.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Busca o produto (mantém apenas a lógica correta)
+    // Busca o produto
     if (id) {
         fetch(`/produtos/${id}`)
             .then(response => {
@@ -503,3 +504,36 @@ window.addEventListener('DOMContentLoaded', function() {
     // Máscara de preço para filtros
     formatarPrecoInput(document.getElementById('filter-preco'));
 });
+
+
+function validarDatasMovimentacao() {
+    const hoje = new Date().toISOString().slice(0, 10);
+    const dataEntrada = document.getElementById('data-compra')?.value;
+    const dataSaida = document.getElementById('data-venda')?.value;
+
+    if (dataEntrada && dataEntrada > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data de Entrada não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (dataSaida && dataSaida > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida',
+            text: 'A Data de Saída não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    return true;
+}
