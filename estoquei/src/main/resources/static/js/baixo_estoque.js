@@ -78,7 +78,7 @@ function mascaraPreco(input) {
     if (value.length > 5) value = value.slice(0, 5);
     if (value.length > 0) {
         value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-        input.value = 'R$' + value;
+        input.value = 'R$ ' + value;
     } else {
         input.value = '';
     }
@@ -676,7 +676,7 @@ function renderizarProdutos(produtos) {
 
             const rowHtml = `
                 <tr>
-                    <td>
+                    <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${imageUrl 
                             ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})' />`
                             : `<span class="produto-img icon" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})'><i class="fa-regular fa-image"></i></span>`
@@ -701,7 +701,7 @@ function renderizarProdutos(produtos) {
                             <i class="fa-solid fa-cart-plus"></i>
                         </a>
                     </td>
-                </tr>
+                </tr> 
             `;
             tbody.innerHTML += rowHtml;
         });
