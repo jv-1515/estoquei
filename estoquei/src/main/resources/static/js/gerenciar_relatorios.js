@@ -150,9 +150,6 @@ window.renomearRelatorio = function(id) {
         showCancelButton: true,
         confirmButtonText: 'Salvar',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#1E94A3',
-        cancelButtonColor: '#d33',
-        // Permite HTML no título
         titleHtml: true,
         didOpen: () => {
             const input = Swal.getInput();

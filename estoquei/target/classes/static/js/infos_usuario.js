@@ -12,7 +12,7 @@ function confirmarSaida(event) {
     }).then((result) => {
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Desconectando sua conta...',
+                title: '<span style="padding-top:20px; display:inline-block;">Desconectando sua conta</span>',
                 text: 'Aguarde',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
