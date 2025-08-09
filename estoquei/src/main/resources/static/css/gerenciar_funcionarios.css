@@ -356,28 +356,33 @@ input:focus[readonly] {
   transform: translateX(45px);
 }
 
-#codigo-sugestoes {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 10;
+#paginacao button {
+    margin: 0 3px 9px 3px;
+    padding: 5px 8px;
+    border: 1px solid #1E94A3;
     background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 0 0 6px 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    max-height: 180px;
-    overflow-y: auto;
-    font-size: 13px;
-    display: none;
-}
-#codigo-sugestoes div {
-    padding: 6px 12px;
+    color: #1E94A3;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.15s;
+    font-size: 10px;
+    height: 24px;
+    width: 24px;
+    transition: background 0.2s, color 0.2s;
 }
-#codigo-sugestoes div:hover {
-    background: #f0f0f0;
+#paginacao button.pagina-ativa {
+    background: #1E94A3;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #1E94A3;
+}
+#paginacao button.pagina-ativa:hover {
+    background: #277580;
+    border: 1px solid #277580;
+    transition: border 0.2s, background 0.2s;
+}
+#paginacao button:hover:not(.pagina-ativa) {
+    background: #1E94A3;
+    color: #fff;
 }
 
 .fa-arrow-left:hover,
@@ -394,7 +399,6 @@ select#registros-select {
 select#registros-select option {
     color: #757575;
 }
-
 
 .multiselect {
   min-width: 120px;
@@ -436,6 +440,12 @@ select#registros-select option {
     font-weight: normal !important;
     pointer-events: auto !important;
     padding: 2px 8px;
+}
+
+#checkboxes-cargo-multi label:hover,
+#checkboxes-status-multi label:hover {
+    background-color: #f3f3f3;
+    color: black !important;
 }
 
 #checkboxes-cargo-multi input[type="checkbox"],
