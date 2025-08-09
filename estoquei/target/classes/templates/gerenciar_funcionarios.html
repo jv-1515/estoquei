@@ -20,46 +20,54 @@
     <div>
         <h1>Gerenciar Funcionários</h1>
     </div>
-    <!-- Filtro igual ao estoque -->
-    <div class="filters-container">
-    <div class="filters">
-        <h2>Filtrar Funcionários</h2>
-        <div class="filters-row">
-            <div class="input-group codigo">
-    <label for="filter-codigo">Código</label>
-    <input type="text" id="filter-codigo" placeholder="Todos" maxlength="9" autocomplete="off" />
-    <!-- NÃO coloque a div de sugestão aqui manualmente, ela será criada via JS -->
-</div>
-            <div class="input-group">
-                <label for="filter-nome">Nome</label>
-                <input type="text" id="filter-nome" placeholder="Todos" />
+<div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
+    <h2 style="margin-bottom: -10px;">Buscar Funcionários</h2>
+    <div class="filters-row">
+            <div class="input-group" style="max-width: 400px; flex: 2;">
+                <input type="text" id="busca-funcionario" placeholder="Digite o código ou nome do funcionário" style="font-size:12px; padding:8px 32px 8px 8px; background: #fff;" />
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
             </div>
-            <div class="input-group">
+            <!-- Multi-select Cargo -->
+            <div class="multiselect input-group" style="min-width: 140px;">
                 <label for="filter-cargo">Cargo</label>
-                <select id="filter-cargo">
-                    <option value="" selected>Todos</option>
-                    <option value="GERENTE">Gerente</option>
-                    <option value="VENDEDOR">Vendedor</option>
-                    <option value="CAIXA">Caixa</option>
-                    <option value="ESTOQUISTA">Estoquista</option>
-                </select>
+                <div style="position:relative;">
+                    <input type="text" id="filter-cargo" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+                    <span class="chevron-cargo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                      <i class="fa fa-chevron-down"></i>
+                    </span>
+                    <div class="overSelect" onclick="showCheckboxesCargoMulti()"></div>
+                </div>
+                <div id="checkboxes-cargo-multi" style="display:none;">
+                    <label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked /> Todos</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="GERENTE" checked /> Gerente</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="VENDEDOR" checked /> Vendedor</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="CAIXA" checked /> Caixa</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="ESTOQUISTA" checked /> Estoquista</label>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="filter-email">Email</label>
-                <input type="email" id="filter-email" placeholder="Todos" />
-            </div>
-            <div class="input-group">
+            <!-- Multi-select Status -->
+            <div class="multiselect input-group" style="min-width: 120px;">
                 <label for="filter-status">Status</label>
-                <select id="filter-status">
-                    <option value="" selected>Todos</option>
-                    <option value="ativo">Ativo</option>
-                    <option value="inativo">Inativo</option>
-                </select>
+                <div style="position:relative;">
+                    <input type="text" id="filter-status" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+                    <span class="chevron-status" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                      <i class="fa fa-chevron-down"></i>
+                    </span>
+                    <div class="overSelect" onclick="showCheckboxesStatusMulti()"></div>
+                </div>
+                <div id="checkboxes-status-multi" style="display:none;">
+                    <label><input type="checkbox" id="status-multi-todos" class="status-multi-check" value="" checked /> Todos</label>
+                    <label><input type="checkbox" class="status-multi-check" value="ATIVO" checked /> Ativo</label>
+                    <label><input type="checkbox" class="status-multi-check" value="INATIVO" checked /> Inativo</label>
+                </div>
             </div>
-            <button class="btn limpar" onclick="limpar()" style="align-self: flex-end;">Limpar Filtros</button>
+            <button class="btn limpar" onclick="limpar()" style="align-self: flex-end; min-width: 110px;">
+                <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
+            </button>
         </div>
     </div>
-</div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
         <div style="display: flex; align-items: center; gap: 5px;">
             <label for="registros-select">Mostrando</label>

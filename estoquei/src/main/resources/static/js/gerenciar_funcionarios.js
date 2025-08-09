@@ -1,20 +1,20 @@
 let funcionarios = [];
 
+window.expandedCargoMulti = false;
+window.expandedStatusMulti = false;
+
+// Utilidades de avatar
 function getIniciais(nome) {
     const partes = nome.trim().split(' ');
     if (partes.length === 1) return partes[0][0].toUpperCase();
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
-
 function corAvatar(str) {
-    // Gera uma cor pastel baseada no nome
     let hash = 0;
     for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
     const h = Math.abs(hash) % 360;
     return `hsl(${h}, 60%, 80%)`;
 }
-
-
 
 // Atualiza avatar ao digitar o nome no cadastro e na edição
 document.addEventListener('DOMContentLoaded', function() {
@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (icon) icon.style.display = '';
         }
     }
-
     if (nomeInput && avatarDiv && iniciaisSpan) {
         nomeInput.addEventListener('input', atualizarAvatarCadastro);
         atualizarAvatarCadastro();
@@ -60,16 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editIcon) editIcon.style.display = '';
         }
     }
-
     if (editNomeInput && editAvatarDiv && editIniciaisSpan) {
         editNomeInput.addEventListener('input', atualizarAvatarEdicao);
         atualizarAvatarEdicao();
     }
-
-    // Atualiza avatar ao abrir modal de edição
     window.atualizarAvatarEdicao = atualizarAvatarEdicao;
 });
 
+// Renderização da tabela
 function renderizarFuncionarios(lista) {
     const container = document.getElementById("product-list");
     container.innerHTML = `
@@ -134,47 +131,208 @@ function renderizarFuncionarios(lista) {
     `;
 }
 
-function filtrar() {
-    const codigo = document.getElementById("filter-codigo").value;
-    const nome = document.getElementById("filter-nome").value;
-    const cargo = document.getElementById("filter-cargo").value;
-    const email = document.getElementById("filter-email").value;
-    const status = document.getElementById("filter-status").value;
-
-    const filtrados = funcionarios.filter(
-        (f) =>
-            (codigo === "" || f.codigo.includes(codigo)) &&
-            (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
-            (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
-            (email === "" || f.email.toLowerCase().includes(email.toLowerCase())) &&
-            (status === "" || (status === "ativo" ? f.ativo : !f.ativo))
-    );
-
-    let msgDiv = document.getElementById("no-results-msg");
-    if (!msgDiv) {
-    msgDiv = document.createElement("div");
-    msgDiv.id = "no-results-msg";
-    msgDiv.style.textAlign = "center";
-    msgDiv.style.padding = "0 0 10px 0";
-    msgDiv.style.color = "#888";
-    msgDiv.style.fontSize = "16px";
-    document.querySelector(".main-container .table-space").appendChild(msgDiv);
-    }
-
-    if (filtrados.length === 0) {
-    document.getElementById("product-list").style.display = "none";
-    msgDiv.textContent = "Nenhum funcionário encontrado com os filtros selecionados.";
-    msgDiv.style.display = "block";
+// --- MULTISELECT CARGO ---
+function showCheckboxesCargoMulti() {
+    var checkboxes = document.getElementById("checkboxes-cargo-multi");
+    if (!window.expandedCargoMulti) {
+        checkboxes.style.display = "block";
+        window.expandedCargoMulti = true;
+        atualizarPlaceholderCargoMulti();
     } else {
-    document.getElementById("product-list").style.display = "";
-    msgDiv.style.display = "none";
-    renderizarFuncionarios(filtrados);
+        checkboxes.style.display = "none";
+        window.expandedCargoMulti = false;
+        atualizarPlaceholderCargoMulti();
     }
+}
+function atualizarPlaceholderCargoMulti() {
+    const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+    const todas = checks[0];
+    const input = document.getElementById('filter-cargo');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = false;
 
-    document.querySelector('.main-container').style.borderTopLeftRadius = "0";
-    document.querySelector('.main-container').style.borderTopRightRadius = "0";
+    if (selecionados.length === 0) {
+        todas.checked = false; // Permite desmarcar todos
+        input.value = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === individuais.length) {
+        todas.checked = true;
+        input.value = 'Todos';
+        ativo = false;
+    } else {
+        todas.checked = false;
+        input.value = selecionados.length === 1 ? selecionados[0] : selecionados.join(', ');
+        ativo = true;
+    }
+    const chevron = input.parentNode.querySelector('.chevron-cargo');
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
 }
 
+document.querySelectorAll('.cargo-multi-check').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+        const todas = checks[0];
+        const individuais = checks.slice(1);
+
+        if (cb === todas) {
+            // Se clicou em "Todos"
+            if (todas.checked) {
+                individuais.forEach(c => c.checked = true);
+            } else {
+                individuais.forEach(c => c.checked = false);
+            }
+        } else {
+            if (individuais.every(c => c.checked)) {
+                todas.checked = true;
+            } else {
+                todas.checked = false;
+            }
+        }
+        atualizarPlaceholderCargoMulti();
+        filtrarFuncionarios();
+    });
+});
+atualizarPlaceholderCargoMulti();
+
+// --- MULTISELECT STATUS ---
+function showCheckboxesStatusMulti() {
+    var checkboxes = document.getElementById("checkboxes-status-multi");
+    if (!window.expandedStatusMulti) {
+        checkboxes.style.display = "block";
+        window.expandedStatusMulti = true;
+        atualizarPlaceholderStatusMulti();
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedStatusMulti = false;
+        atualizarPlaceholderStatusMulti();
+    }
+}
+function atualizarPlaceholderStatusMulti() {
+    const checks = Array.from(document.querySelectorAll('.status-multi-check'));
+    const todas = checks[0];
+    const input = document.getElementById('filter-status');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = false;
+
+    if (selecionados.length === 0) {
+        todas.checked = false;
+        input.value = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === individuais.length) {
+        todas.checked = true;
+        input.value = 'Todos';
+        ativo = false;
+    } else {
+        todas.checked = false;
+        input.value = selecionados.length === 1 ? selecionados[0] : selecionados.join(', ');
+        ativo = true;
+    }
+    const chevron = input.parentNode.querySelector('.chevron-status');
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+
+}
+document.querySelectorAll('.status-multi-check').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checks = Array.from(document.querySelectorAll('.status-multi-check'));
+        const todas = checks[0];
+        const individuais = checks.slice(1);
+
+        if (cb === todas) {
+            // Se clicou em "Todos"
+            if (todas.checked) {
+                individuais.forEach(c => c.checked = true);
+            } else {
+                individuais.forEach(c => c.checked = false);
+            }
+        } else {
+            if (individuais.every(c => c.checked)) {
+                todas.checked = true;
+            } else {
+                todas.checked = false;
+            }
+        }
+        atualizarPlaceholderStatusMulti();
+        filtrarFuncionarios();
+    });
+});
+
+document.getElementById('edit-ativo').addEventListener('change', function() {
+    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
+    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
+});
+
+// --- BUSCA FUNCIONÁRIO (SEM SUGESTÃO) ---
+const buscaInput = document.getElementById('busca-funcionario');
+buscaInput.addEventListener('input', filtrarFuncionarios);
+
+// --- FILTRAR FUNCIONÁRIOS ---
+function filtrarFuncionarios() {
+    const termo = buscaInput.value.trim().toLowerCase();
+    const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+    const status = Array.from(document.querySelectorAll('.status-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+
+    const filtrados = funcionarios.filter(f =>
+        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
+        (cargos.length === 0 || cargos.includes(f.cargo)) &&
+        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
+    );
+    renderizarFuncionarios(filtrados);
+}
+
+// --- LIMPAR FILTROS ---
+function limpar() {
+    buscaInput.value = '';
+    document.querySelectorAll('.cargo-multi-check, .status-multi-check').forEach(cb => cb.checked = false);
+    atualizarPlaceholderCargoMulti();
+    atualizarPlaceholderStatusMulti();
+    filtrarFuncionarios();
+}
+
+// --- AO CARREGAR, MOSTRA TODOS OS FUNCIONÁRIOS ---
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFuncionarios();
+});
+
+// Carregar funcionários do backend
+function carregarFuncionarios() {
+    fetch('/usuarios')
+        .then(res => res.json())
+        .then(data => {
+            funcionarios = data;
+            filtrarFuncionarios();
+        })
+        .catch(() => {
+            funcionarios = [];
+            filtrarFuncionarios();
+        });
+}
+
+// Remover funcionário
 function removerFuncionario(id) {
     const funcionario = funcionarios.find(f => f.id == id);
     if (!funcionario) {
@@ -227,26 +385,19 @@ function removerFuncionario(id) {
     });
 }
 
-function limpar() {
-    document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
-    carregarFuncionarios();
-}
-
-renderizarFuncionarios(funcionarios);
-
-//gera senha
+// Cadastro
 function gerarSenhaProvisoria() {
-const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-let senha = '';
-for (let i = 0; i < 8; i++) {
-    senha += chars.charAt(Math.floor(Math.random() * chars.length));
-}
-document.getElementById('cad-senha').value = senha;
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let senha = '';
+    for (let i = 0; i < 8; i++) {
+        senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('cad-senha').value = senha;
 }
 function abrirCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-gerarSenhaProvisoria();
+    gerarSenhaProvisoria();
 }
 function fecharCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'none';
@@ -296,8 +447,7 @@ function cadastrarFuncionario() {
     });
 }
 
-
-//editar funcionario
+// Edição
 function abrirEdicaoFuncionario(id) {
     const funcionario = funcionarios.find(f => f.id == id);
     document.getElementById('edit-id').value = funcionario.id;
@@ -311,7 +461,6 @@ function abrirEdicaoFuncionario(id) {
     })
     .then(res => res.json())
     .then(funcionario => {
-        // Preenche os campos do form
         document.getElementById('edit-codigo').value = funcionario.codigo;
         document.getElementById('edit-nome').value = funcionario.nome;
         document.getElementById('edit-cargo').value = funcionario.cargo;
@@ -322,31 +471,25 @@ function abrirEdicaoFuncionario(id) {
         document.getElementById('edit-nascimento').value = funcionario.dataNascimento
             ? funcionario.dataNascimento.substring(0, 10)
             : '';
-        document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
+        document.getElementById('edit-ativo').checked = funcionario.ativo ?? true;
         document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
 
         const label = document.getElementById('label-ativo');
         label.classList.toggle('ativo', funcionario.ativo);
         label.classList.toggle('inativo', !funcionario.ativo);
-        
-        // Atualiza o avatar de edição imediatamente com o nome já preenchido
+
         if (window.atualizarAvatarEdicao) {
             window.atualizarAvatarEdicao();
         }
-
-        // Mostra o modal de edição
         document.getElementById('editar-funcionario').style.display = 'flex';
     });
 }
-
 function fecharEdicaoFuncionario() {
     document.getElementById('editar-funcionario').style.display = 'none';
     document.body.style.overflow = '';
 }
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
-    // const funcionario = funcionarios.find(f => f.id == id);
-
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: document.getElementById('edit-nome').value,
@@ -402,16 +545,11 @@ function salvarEdicaoFuncionario() {
     });
 }
 
-//botao voltar ao topo
+// Botão voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
-    if (window.scrollY > 100) {
-        btn.style.display = 'block';
-    } else {
-        btn.style.display = 'none';
-    }
+    if (btn) btn.style.display = window.scrollY > 100 ? 'block' : 'none';
 });
-
 document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('btn-topo');
     if (btn) {
@@ -422,93 +560,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.getElementById('edit-ativo').addEventListener('change', function() {
-    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
-    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
-    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
-});
+// Clique no input também abre
+document.getElementById('filter-cargo').addEventListener('click', showCheckboxesCargoMulti);
+document.getElementById('filter-status').addEventListener('click', showCheckboxesStatusMulti);
 
-// Sugestão de códigos igual ao estoque
-const codigoInput = document.getElementById('filter-codigo');
-const codigoGroup = codigoInput.closest('.input-group');
-let sugestaoContainer = document.createElement('div');
-sugestaoContainer.id = 'codigo-sugestoes';
-codigoGroup.appendChild(sugestaoContainer);
-
-codigoInput.addEventListener('input', function() {
-    const termo = this.value.trim().toUpperCase();
-    sugestaoContainer.innerHTML = '';
-    if (!termo) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    const encontrados = funcionarios.filter(f => f.codigo.toUpperCase().includes(termo));
-    if (encontrados.length === 0) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    encontrados.forEach(f => {
-        const div = document.createElement('div');
-        div.textContent = `${f.codigo} - ${f.nome}`;
-        div.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            codigoInput.value = f.codigo;
-            sugestaoContainer.style.display = 'none';
-            filtrar();
-        });
-        sugestaoContainer.appendChild(div);
-    });
-    sugestaoContainer.style.display = 'block';
-    filtrar();
-});
-
+// Clique fora fecha
 document.addEventListener('mousedown', function(e) {
-    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
-        sugestaoContainer.style.display = 'none';
+    // Cargo
+    var checkboxesCargo = document.getElementById("checkboxes-cargo-multi");
+    var overSelectCargo = document.querySelector('.multiselect .overSelect');
+    if (
+        window.expandedCargoMulti &&
+        checkboxesCargo &&
+        !checkboxesCargo.contains(e.target) &&
+        (!overSelectCargo || !overSelectCargo.contains(e.target))
+    ) {
+        checkboxesCargo.style.display = "none";
+        window.expandedCargoMulti = false;
+        atualizarPlaceholderCargoMulti();
+    }
+    // Status
+    var checkboxesStatus = document.getElementById("checkboxes-status-multi");
+    var overSelectStatus = document.querySelectorAll('.multiselect .overSelect')[1];
+    if (
+        window.expandedStatusMulti &&
+        checkboxesStatus &&
+        !checkboxesStatus.contains(e.target) &&
+        (!overSelectStatus || !overSelectStatus.contains(e.target))
+    ) {
+        checkboxesStatus.style.display = "none";
+        window.expandedStatusMulti = false;
+        atualizarPlaceholderStatusMulti();
     }
 });
 
-document.querySelectorAll('.filters input').forEach(el => {
-    el.addEventListener('input', filtrar);
-});
-document.querySelectorAll('.filters select').forEach(el => {
-    el.addEventListener('change', filtrar);
-});
-
-function carregarFuncionarios() {
-    fetch('/usuarios')
-        .then(res => res.json())
-        .then(data => {
-            funcionarios = data;
-            renderizarFuncionarios(funcionarios);
-        })
-        .catch(() => {
-            funcionarios = [];
-            renderizarFuncionarios([]);
-        });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    carregarFuncionarios();
-});
-
-
-function togglePassword(inputId) {
-    const senhaInput = document.getElementById(inputId);
-    const eyeIcon = document.getElementById('icon-' + inputId);
-    if (senhaInput.type === "password") {
-        senhaInput.type = "text";
-        eyeIcon.classList.remove("fa-eye-slash");
-        eyeIcon.classList.add("fa-eye");
-    } else {
-        senhaInput.type = "password";
-        eyeIcon.classList.remove("fa-eye");
-        eyeIcon.classList.add("fa-eye-slash");
-    }
-}
-
+// Estilo inputs
 function aplicarEstiloInputs() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
@@ -520,7 +606,6 @@ function aplicarEstiloInputs() {
             }
         });
     });
-
     const selects = document.querySelectorAll('select, input[type="date"]');
     selects.forEach(select => {
         select.addEventListener('focus', () => {
