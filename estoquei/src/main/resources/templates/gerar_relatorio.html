@@ -108,9 +108,9 @@
                 <i class="fa fa-chevron-down"></i>
               </span>
             </div>
-            <div id="quantidade-faixa-popup" class="faixa-popup">
+            <div id="quantidade-faixa-popup" class="faixa-popup" style="padding: 0;">
               <label class="quantidade-check-label">
-                <input type="checkbox" id="quantidade-todas-popup" checked />Todos
+                <input type="checkbox" id="quantidade-todas-popup" checked />Todas
               </label>
               <label class="quantidade-check-label">
                 <input type="checkbox" id="quantidade-baixo-estoque-popup" checked />Baixo estoque
@@ -118,14 +118,14 @@
               <label class="quantidade-check-label">
                 <input type="checkbox" id="quantidade-zerados-popup" checked />Produtos zerados
               </label>
-              <div style="display: flex; align-items: center; gap: 8px; margin:8px 0;">
-                <span style="min-width: 28px;">de:</span>
-                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
-                <span style="min-width: 28px;">até:</span>
-                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
-              </div>
+                <div style="display: flex; align-items: center; margin:10px;">
+                    <span style="min-width: 28px;">de:</span>
+                    <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+                </div>
+                <div style="display: flex; align-items: center; margin: 0 10px 10px 10px;">
+                    <span style="min-width: 28px;">até:</span>
+                    <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                </div>
             </div>
           </div>
           <!-- Preços -->

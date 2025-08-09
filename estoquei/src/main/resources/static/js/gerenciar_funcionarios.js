@@ -68,6 +68,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Renderização da tabela
 function renderizarFuncionarios(lista) {
+    const select = document.getElementById('registros-select');
+    let totalItens = lista.length;
+    let valorSelect = select.value;
+    let itensPorPagina = valorSelect === "" ? totalItens : parseInt(valorSelect);
+
+    const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
+    if (paginaAtual > totalPaginas) paginaAtual = 1;
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
+    const pagina = lista.slice(inicio, fim);
+
     const container = document.getElementById("product-list");
     container.innerHTML = `
     <thead>
@@ -82,7 +93,7 @@ function renderizarFuncionarios(lista) {
     </tr>
     </thead>
     <tbody>
-    ${lista
+    ${pagina
         .map(
             (f, idx) => `
         <tr tabindex="${idx + 1}">
@@ -118,10 +129,10 @@ function renderizarFuncionarios(lista) {
                 </span>
             </td>
             <td class="actions">
-                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${lista.length + idx + 1}">
+                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
                     <i class="fa-solid fa-pen"></i>
                 </a>
-                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
             </td>
         </tr>
         `
@@ -129,7 +140,35 @@ function renderizarFuncionarios(lista) {
         .join("")}
     </tbody>
     `;
+
+    renderizarPaginacao(totalPaginas);
 }
+let paginaAtual = 1;
+let itensPorPagina = 10;
+
+
+// Função para renderizar a paginação
+function renderizarPaginacao(totalPaginas) {
+    const paginacaoDiv = document.getElementById('paginacao');
+    if (!paginacaoDiv) return;
+    paginacaoDiv.innerHTML = '';
+    if (totalPaginas <= 1) return;
+    for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
+            paginaAtual = i;
+            filtrarFuncionarios();
+        };
+        paginacaoDiv.appendChild(btn);
+    }
+}
+
+document.getElementById('registros-select').addEventListener('change', function() {
+    paginaAtual = 1;
+    filtrarFuncionarios();
+});
 
 // --- MULTISELECT CARGO ---
 function showCheckboxesCargoMulti() {
@@ -334,6 +373,19 @@ function carregarFuncionarios() {
 
 // Remover funcionário
 function removerFuncionario(id) {
+    if (usuarioLogadoId && String(id) === String(usuarioLogadoId)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ação não permitida!',
+            text: 'Você não pode remover a si mesmo.',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
     const funcionario = funcionarios.find(f => f.id == id);
     if (!funcionario) {
         Swal.fire({
@@ -348,13 +400,17 @@ function removerFuncionario(id) {
         return;
     }
     Swal.fire({
-        title: 'Tem certeza?',
+        title: `Remover "${funcionario.nome}"?`,
         text: 'Esta ação não poderá ser desfeita',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar',
         allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/usuarios/${id}`, { method: 'DELETE' })
@@ -399,19 +455,127 @@ function abrirCadastroFuncionario() {
     document.body.style.overflow = 'hidden';
     gerarSenhaProvisoria();
 }
+
 function fecharCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'none';
     document.body.style.overflow = '';
 }
+
 function cadastrarFuncionario() {
+    const nome = document.getElementById('cad-nome').value.trim();
+    const senha = document.getElementById('cad-senha').value;
+    const dataNascimento = document.getElementById('cad-nascimento').value;
+    const cpf = document.getElementById('cad-cpf').value;
+
+    // Validação do nome
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode estar vazio',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da senha
+    if (!senha || senha.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Senha inválida!',
+            text: 'A senha deve ter pelo menos 8 caracteres',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da data de nascimento
+    if (!dataNascimento) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'Informe a data de nascimento',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (!validaCPF(cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF inválido!',
+            text: 'Digite um CPF válido',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+    if (nascimento > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A data de nascimento não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (idade < 16) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário deve ter pelo menos 16 anos',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    //monta o objeto e envia
     const funcionario = {
         codigo: document.getElementById('cad-codigo').value,
-        nome: document.getElementById('cad-nome').value,
+        nome: nome,
         cargo: document.getElementById('cad-cargo').value,
         email: document.getElementById('cad-email').value,
-        senha: document.getElementById('cad-senha').value,
-        cpf: document.getElementById('cad-cpf').value,
-        dataNascimento: document.getElementById('cad-nascimento').value,
+        senha: senha,
+        cpf: cpf,
+        dataNascimento: dataNascimento,
         telefone: document.getElementById('cad-contato').value,
         ativo: true
     };
@@ -424,7 +588,7 @@ function cadastrarFuncionario() {
     .then(res => {
         if (res.ok) {
             Swal.fire({
-                title: `Funcionário ${funcionario.nome} cadastrado!`,
+                title: `Funcionário(a) ${funcionario.nome} cadastrado(a)!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -490,14 +654,119 @@ function fecharEdicaoFuncionario() {
 }
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
+    const nome = document.getElementById('edit-nome').value.trim();
+    const senha = document.getElementById('edit-senha').value;
+    const dataNascimento = document.getElementById('edit-nascimento').value;
+    const cpf = document.getElementById('edit-cpf').value;
+
+    // Validação do nome
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode estar vazio.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da senha
+    if (senha && senha.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Senha inválida!',
+            text: 'A senha deve ter pelo menos 8 caracteres.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da data de nascimento
+    if (!dataNascimento) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'Informe a data de nascimento.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (!validaCPF(cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF inválido!',
+            text: 'Digite um CPF válido.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+    if (nascimento > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A data de nascimento não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (idade < 16) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário deve ter pelo menos 16 anos.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
-        nome: document.getElementById('edit-nome').value,
+        nome: nome,
         cargo: document.getElementById('edit-cargo').value,
         email: document.getElementById('edit-email').value,
-        senha: document.getElementById('edit-senha').value,
-        cpf: document.getElementById('edit-cpf').value,
-        dataNascimento: document.getElementById('edit-nascimento').value,
+        senha: senha,
+        cpf: cpf,
+        dataNascimento: dataNascimento,
         telefone: document.getElementById('edit-contato').value,
         ativo: document.getElementById('edit-ativo').checked
     };
@@ -507,8 +776,8 @@ function salvarEdicaoFuncionario() {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Sim, salvar alterações',
+        cancelButtonText: 'Não, voltar',
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -533,7 +802,7 @@ function salvarEdicaoFuncionario() {
                     Swal.fire({
                         icon: 'error',
                         title: 'Erro!',
-                        text: 'Não foi possível salvar as alterações.',
+                        text: 'Não foi possível salvar as alterações',
                         showConfirmButton: false,
                         timer: 1500,
                         timerProgressBar: true,
@@ -560,7 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Clique no input também abre
 document.getElementById('filter-cargo').addEventListener('click', showCheckboxesCargoMulti);
 document.getElementById('filter-status').addEventListener('click', showCheckboxesStatusMulti);
 
@@ -593,6 +861,106 @@ document.addEventListener('mousedown', function(e) {
         atualizarPlaceholderStatusMulti();
     }
 });
+
+//mascara de tel
+function aplicarMascaraTelefone(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 10) {
+            input.value = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+        } else if (v.length > 6) {
+            input.value = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+        } else if (v.length > 2) {
+            input.value = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+        } else {
+            input.value = v.replace(/^(\d*)/, '($1');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const telCad = document.getElementById('cad-contato');
+    const telEdit = document.getElementById('edit-contato');
+    if (telCad) aplicarMascaraTelefone(telCad);
+    if (telEdit) aplicarMascaraTelefone(telEdit);
+});
+
+
+//cpf
+function aplicarMascaraCPF(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 9) {
+            input.value = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2}).*/, '$1.$2.$3-$4');
+        } else if (v.length > 6) {
+            input.value = v.replace(/^(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+        } else if (v.length > 3) {
+            input.value = v.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
+        } else {
+            input.value = v;
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const cpfCad = document.getElementById('cad-cpf');
+    const cpfEdit = document.getElementById('edit-cpf');
+    if (cpfCad) aplicarMascaraCPF(cpfCad);
+    if (cpfEdit) aplicarMascaraCPF(cpfEdit);
+});
+
+
+function validaCPF(cpf) {
+    var Soma = 0
+    var Resto
+
+    var strCPF = String(cpf).replace(/[^\d]/g, '')
+
+    if (strCPF.length !== 11)
+        return false
+
+    if ([
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999',
+    ].indexOf(strCPF) !== -1)
+        return false
+
+    for (let i = 1; i <= 9; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(9, 10)))
+        return false
+
+    Soma = 0
+
+    for (let i = 1; i <= 10; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(10, 11)))
+        return false
+
+    return true
+}
 
 // Estilo inputs
 function aplicarEstiloInputs() {
