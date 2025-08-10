@@ -18,6 +18,158 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+// Filtro simples
+document.addEventListener('DOMContentLoaded', function() {
+    const buscaInput = document.getElementById('busca-movimentacao');
+    const codigoMovInput = document.getElementById('filter-codigo-mov');
+    const dataInput = document.getElementById('filter-data');
+    const tipoMovInput = document.getElementById('filter-tipo-mov');
+    const parteEnvolvidaInput = document.getElementById('filter-parte-envolvida');
+    const btnLimpar = document.getElementById('btn-limpar-filtros');
+
+    // Sugestões (igual estoque)
+    buscaInput.addEventListener('input', function() {
+        // Aqui você pode implementar sugestões se quiser, igual estoque.js
+        filtrarMovimentacoes();
+    });
+
+    codigoMovInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 9);
+        filtrarMovimentacoes();
+    });
+
+    dataInput.addEventListener('change', filtrarMovimentacoes);
+    parteEnvolvidaInput.addEventListener('input', filtrarMovimentacoes);
+
+    btnLimpar.addEventListener('click', function() {
+        buscaInput.value = '';
+        codigoMovInput.value = '';
+        dataInput.value = '';
+        tipoMovInput.value = '';
+        parteEnvolvidaInput.value = '';
+        filtrarMovimentacoes();
+    });
+});
+
+// Função filtro simples
+function filtrarMovimentacoes() {
+    const termo = document.getElementById('busca-movimentacao').value.trim().toLowerCase();
+    const codigoMov = document.getElementById('filter-codigo-mov').value.trim();
+    const data = document.getElementById('filter-data').value;
+    const tipo = document.getElementById('filter-tipo-mov').value;
+    const parte = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
+
+    let filtradas = movimentacoes.filter(m => {
+        let ok = true;
+        // Nome ou código do produto
+        if (termo && !(m.nome.toLowerCase().includes(termo) || (m.codigoProduto && m.codigoProduto.toString().includes(termo)))) ok = false;
+        // Código da movimentação
+        if (codigoMov && (!m.codigoMovimentacao || !m.codigoMovimentacao.toString().includes(codigoMov))) ok = false;
+        // Data
+        if (data && m.data !== data) ok = false;
+        // Tipo
+        const tiposSelecionados = getTiposSelecionados();
+        if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
+        // Parte envolvida
+        if (parte && (!m.parteEnvolvida || !m.parteEnvolvida.toLowerCase().includes(parte))) ok = false;
+        return ok;
+    });
+
+    paginaAtual = 1;
+    renderizarMovimentacoes(filtradas);
+}
+
+
+// Função tipo de movimentação
+window.expandedTipoMov = false;
+function showCheckboxesTipoMov() {
+    var checkboxes = document.getElementById("checkboxes-tipo-mov");
+    if (!window.expandedTipoMov) {
+        checkboxes.style.display = "block";
+        window.expandedTipoMov = true;
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedTipoMov = false;
+        atualizarPlaceholderTipoMov();
+        filtrarMovimentacoes();
+    }
+}
+
+// Lógica de seleção "Todas"
+function marcarOuDesmarcarTodosTipos() {
+    const todas = document.getElementById('tipo-mov-todas');
+    const checks = document.querySelectorAll('.tipo-mov-check');
+    checks.forEach(cb => cb.checked = todas.checked);
+    atualizarPlaceholderTipoMov();
+    filtrarMovimentacoes();
+}
+
+// Atualiza "Todas" se ambos individuais marcados
+document.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarPlaceholderTipoMov();
+            filtrarMovimentacoes();
+        });
+    });
+    atualizarPlaceholderTipoMov();
+});
+
+// Atualiza placeholder do input
+function atualizarPlaceholderTipoMov() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    const input = document.getElementById('filter-tipo-mov');
+    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
+
+    let texto = 'Todas';
+    let ativo = true;
+    if (selecionados.length === 0 || todas.checked) {
+        texto = 'Todas';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-tipo');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+// Função para pegar tipos selecionados
+function getTiposSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+document.addEventListener('mousedown', function(e) {
+    var checkboxes = document.getElementById("checkboxes-tipo-mov");
+    var overSelect = document.querySelector('.multiselect-tipo .overSelect');
+    if (
+        window.expandedTipoMov &&
+        checkboxes &&
+        !checkboxes.contains(e.target) &&
+        (!overSelect || !overSelect.contains(e.target))
+    ) {
+        checkboxes.style.display = "none";
+        window.expandedTipoMov = false;
+        atualizarPlaceholderTipoMov();
+        filtrarMovimentacoes();
+    }
+});
+
 //var global e controle de paginação
 let movimentacoes = [];
 let paginaAtual = 1;
