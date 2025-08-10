@@ -449,9 +449,10 @@ select#registros-select option {
 
 #checkboxes-categoria-multi label:hover,
 #checkboxes-tamanho-multi label:hover,
-#checkboxes-genero-multi label:hover {
+#checkboxes-genero-multi label:hover,
+.quantidade-check-label:hover {
     background-color: #f3f3f3;
-    color: #fff;
+    color: black !important;
 }
 
 #checkboxes-categoria-multi input[type="checkbox"],
@@ -480,10 +481,6 @@ select#registros-select option {
     cursor: pointer !important;
     padding: 2px 10px;
     gap: 8px;
-}
-
-.quantidade-check-label:hover {
-    background-color: #f3f3f3;
 }
 
 .quantidade-check-label input[type="checkbox"] {
