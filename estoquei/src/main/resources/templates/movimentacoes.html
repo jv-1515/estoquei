@@ -39,10 +39,29 @@
                 <label for="filter-codigo-mov">Código Movimentação</label>
                 <input type="text" id="filter-codigo-mov" placeholder="000000000" maxlength="9" autocomplete="off" />
             </div>
-            <div class="input-group" style="min-width: 120px;">
-                <label for="filter-data">Data</label>
-                <input type="date" id="filter-data" />
+            <!-- ...existing code... -->
+            <div class="input-group" style="max-width: 160px; position:relative;">
+                <label for="filter-periodo">Período</label>
+                <div style="position:relative;">
+                    <input type="text" id="filter-periodo" placeholder="Selecione o período" readonly style="cursor:pointer; width: 160px;" />
+                    <span class="chevron-periodo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                        <i class="fa fa-chevron-down"></i>
+                    </span>
+                </div>
+                <div id="periodo-popup" class="faixa-popup" style="display:none;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div>
+                            <span>Data Início:</span>
+                            <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
+                        </div>
+                        <div>
+                            <span>Data Fim:</span>
+                            <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- ...existing code... -->
                 <div class="multiselect multiselect-tipo input-group" style="min-width: 120px;">
                     <label for="filter-tipo-mov">Movimentação</label>
                     <div style="position:relative;">
