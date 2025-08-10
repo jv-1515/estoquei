@@ -265,43 +265,6 @@ input:focus[readonly] {
     box-shadow: none !important;
 }
 
-/* sweetAlert */
-.swal2-popup {
-    width: 400px;
-    min-width: 400px;
-    max-width: 400px;
-    border-radius: 10px;
-}
-
-.swal2-container {
-    backdrop-filter: blur(2px);
-}
-
-.swal2-actions {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 0 20px;
-}
-
-.swal2-confirm,
-.swal2-cancel,
-.swal2-deny,
-.swal2-styled.swal2-confirm,
-.swal2-styled.swal2-cancel,
-.swal2-styled.swal2-deny {
-    flex: 1;
-    margin: 0;
-    border-radius: 4px;
-    font-size: 12px;
-    height: 30px;
-    padding: 2px 8px;
-    box-shadow: none;
-    border: none;
-    transition: background 0.2s, color 0.2s;
-}
-
 .multiselect-tipo {
     min-width: 120px;
     position: relative;
@@ -342,6 +305,79 @@ input:focus[readonly] {
     cursor: pointer;
     z-index: 2;
 }
+
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    margin-top: 0;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 7px 7px 7px 5px;
+    color: #757575;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+.faixa-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius:4px;
+    gap: 2px;
+    padding: 10px;
+    z-index: 10;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #757575;
+}
+.faixa-popup input {
+    height: 25px;
+}
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
 /* Botão de cancelar */
 .swal2-cancel,
 .swal2-styled.swal2-cancel {

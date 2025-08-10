@@ -9,6 +9,7 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Botão topo
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
@@ -16,21 +17,87 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
-});
 
-
-// Filtro simples
-document.addEventListener('DOMContentLoaded', function() {
+    // Filtros
     const buscaInput = document.getElementById('busca-movimentacao');
     const codigoMovInput = document.getElementById('filter-codigo-mov');
-    const dataInput = document.getElementById('filter-data');
     const tipoMovInput = document.getElementById('filter-tipo-mov');
     const parteEnvolvidaInput = document.getElementById('filter-parte-envolvida');
     const btnLimpar = document.getElementById('btn-limpar-filtros');
 
+    // PERÍODO
+    const periodoInput = document.getElementById('filter-periodo');
+    const periodoPopup = document.getElementById('periodo-popup');
+    const dataInicio = document.getElementById('periodo-data-inicio');
+    const dataFim = document.getElementById('periodo-data-fim');
+
+    // Abre popup ao clicar no input
+    periodoInput.addEventListener('click', function(e) {
+        periodoPopup.style.display = 'block';
+        dataInicio.focus();
+        e.stopPropagation();
+    });
+
+    // Fecha popup ao clicar fora e atualiza placeholder/cor
+    document.addEventListener('mousedown', function(e) {
+        function formatarDataBR(data) {
+            if (!data) return '';
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+        let ativo = true;
+        if (dataInicio.value && dataFim.value) {
+            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        } else if (dataInicio.value) {
+            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
+        } else if (dataFim.value) {
+            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
+        } else {
+            periodoInput.value = '';
+            ativo = false;
+        }
+        if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
+            periodoPopup.style.display = 'none';
+            ativo = false;
+        }
+        if (ativo) {
+            periodoInput.style.border = '2px solid #1e94a3';
+            periodoInput.style.color = '#1e94a3';
+        } else {
+            periodoInput.style.border = '';
+            periodoInput.style.color = '';
+        }
+        filtrarMovimentacoes();
+    });
+
+    // Validação: fim sem início
+    dataInicio.addEventListener('change', function() {
+        if (dataFim.value && !dataInicio.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione a data de início!',
+                text: 'Para filtrar por período, informe a data de início.',
+                timer: 1800,
+                showConfirmButton: false
+            });
+            dataFim.value = '';
+        }
+    });
+    dataFim.addEventListener('change', function() {
+        if (dataFim.value && !dataInicio.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione a data de início!',
+                text: 'Para filtrar por período, informe a data de início.',
+                timer: 1800,
+                showConfirmButton: false
+            });
+            dataFim.value = '';
+        }
+    });
+
     // Sugestões (igual estoque)
     buscaInput.addEventListener('input', function() {
-        // Aqui você pode implementar sugestões se quiser, igual estoque.js
         filtrarMovimentacoes();
     });
 
@@ -39,15 +106,17 @@ document.addEventListener('DOMContentLoaded', function() {
         filtrarMovimentacoes();
     });
 
-    dataInput.addEventListener('change', filtrarMovimentacoes);
     parteEnvolvidaInput.addEventListener('input', filtrarMovimentacoes);
 
     btnLimpar.addEventListener('click', function() {
         buscaInput.value = '';
         codigoMovInput.value = '';
-        dataInput.value = '';
         tipoMovInput.value = '';
         parteEnvolvidaInput.value = '';
+        // Limpa o período
+        dataInicio.value = '';
+        dataFim.value = '';
+        periodoInput.value = '';
         filtrarMovimentacoes();
     });
 });
@@ -56,8 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function filtrarMovimentacoes() {
     const termo = document.getElementById('busca-movimentacao').value.trim().toLowerCase();
     const codigoMov = document.getElementById('filter-codigo-mov').value.trim();
-    const data = document.getElementById('filter-data').value;
-    const tipo = document.getElementById('filter-tipo-mov').value;
+    const dataInicio = document.getElementById('periodo-data-inicio').value;
+    const dataFim = document.getElementById('periodo-data-fim').value;
     const parte = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
 
     let filtradas = movimentacoes.filter(m => {
@@ -67,7 +136,13 @@ function filtrarMovimentacoes() {
         // Código da movimentação
         if (codigoMov && (!m.codigoMovimentacao || !m.codigoMovimentacao.toString().includes(codigoMov))) ok = false;
         // Data
-        if (data && m.data !== data) ok = false;
+        if (dataInicio && dataFim) {
+            if (m.data < dataInicio || m.data > dataFim) ok = false;
+        } else if (dataInicio) {
+            if (m.data < dataInicio) ok = false;
+        } else if (dataFim) {
+            if (m.data > dataFim) ok = false;
+        }
         // Tipo
         const tiposSelecionados = getTiposSelecionados();
         if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
