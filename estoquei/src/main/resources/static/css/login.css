@@ -63,7 +63,7 @@ h1 {
     color: #fff;
     font-size: 20px;
     text-align: center;
-    margin: 50px auto 5px auto;
+    margin: 70px auto 5px auto;
 }
 label {
     color: #333;
@@ -141,13 +141,6 @@ input:focus {
     flex-direction: column;
     align-items: center;
     z-index: 2;
-}
-
-.login-logo-title {
-    color: #fff;
-    font-size: 20px;
-    text-align: center;
-    margin: 60px auto 5px auto;
 }
 
 .login-logo-link {
