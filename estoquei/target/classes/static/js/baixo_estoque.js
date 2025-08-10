@@ -548,7 +548,6 @@ function filtrar() {
         if (precoMax !== null && p.preco > precoMax) return false;
 
         // Lógica de filtragem de quantidade
-        // Todas as combinações possíveis
         if (chkTodos.checked && chkBaixo.checked && chkZerados.checked) {
             // Todas
             return true;

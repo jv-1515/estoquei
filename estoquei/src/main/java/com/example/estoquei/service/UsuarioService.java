@@ -69,6 +69,9 @@ public class UsuarioService {
         usuario.setCpf(usuarioAtualizado.getCpf());
         usuario.setDataNascimento(usuarioAtualizado.getDataNascimento());
         usuario.setAtivo(usuarioAtualizado.getAtivo());
+        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
+            usuario.setSenha(usuarioAtualizado.getSenha());
+        }      
         return usuarioRepository.save(usuario);
     }
 

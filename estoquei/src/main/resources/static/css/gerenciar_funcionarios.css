@@ -49,13 +49,12 @@ h2 {
 
 .input-group {
     position: relative;
-    flex: 1 1 90px;
-    min-width: 90px;
-    max-width: 160px;
+    flex: 1 1 100px;
+    min-width: 100px;
+    max-width: 100px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
-    gap: 2px;
 }
 
 .input-group.codigo {
@@ -67,7 +66,6 @@ h2 {
     color: #333;
     padding: 5px 5px 5px 0px;
     font-weight: bold;
-    letter-spacing: 0.2px;
     pointer-events: none;
 }
 
@@ -205,10 +203,6 @@ tbody tr:nth-child(odd) {
     height: 30px;
 }
 
-.input-group:has(#filter-nome) {
-    min-width: 160px;
-}
-
 span label {
     color: #333;
     font-weight: bold;
@@ -283,24 +277,7 @@ input:focus[readonly] {
     transition: background 0.2s, color 0.2s;
 }
 
-.swal2-confirm-custom {
-    background-color: #1E94A3 !important;
-    color: #fff !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-confirm-custom:hover {
-    background-color: #277580 !important;
-}
-.swal2-cancel-custom {
-    background-color: #ccc !important;
-    color: #000 !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-cancel-custom:hover {
-    background-color: #aaa !important;
-}
+
 #cad-cargo option[disabled][hidden],
 #edit-cargo option[disabled][hidden],
 #filter-cargo option[disabled][hidden] {
@@ -373,28 +350,33 @@ input:focus[readonly] {
   transform: translateX(45px);
 }
 
-#codigo-sugestoes {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 10;
+#paginacao button {
+    margin: 0 3px 9px 3px;
+    padding: 5px 8px;
+    border: 1px solid #1E94A3;
     background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 0 0 6px 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    max-height: 180px;
-    overflow-y: auto;
-    font-size: 13px;
-    display: none;
-}
-#codigo-sugestoes div {
-    padding: 6px 12px;
+    color: #1E94A3;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.15s;
+    font-size: 10px;
+    height: 24px;
+    width: 24px;
+    transition: background 0.2s, color 0.2s;
 }
-#codigo-sugestoes div:hover {
-    background: #f0f0f0;
+#paginacao button.pagina-ativa {
+    background: #1E94A3;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #1E94A3;
+}
+#paginacao button.pagina-ativa:hover {
+    background: #277580;
+    border: 1px solid #277580;
+    transition: border 0.2s, background 0.2s;
+}
+#paginacao button:hover:not(.pagina-ativa) {
+    background: #1E94A3;
+    color: #fff;
 }
 
 .fa-arrow-left:hover,
@@ -403,13 +385,108 @@ input:focus[readonly] {
     transition: color 0.2s;
 }
 
+th.ordenar {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+th.ordenar .sort-icon {
+    position: absolute;
+    top: 50%;
+    padding-left: 2px;
+    transform: translateY(-50%);
+    display: none;
+    pointer-events: none;
+    font-size: 10px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+th.ordenar:hover .sort-icon,
+th.ordenar.sorted .sort-icon {
+    display: inline-block;
+    color: #1E94A3;
+}
+
 select#registros-select {
     color: #1E94A3;
     border: #1e94a3 2px solid;
+    background-color: white !important;
 }
 
 select#registros-select option {
     color: #757575;
+}
+
+
+.multiselect {
+  min-width: 90px;
+  position: relative;
+}
+.selectBox {
+  position: relative;
+}
+.selectBox select {
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+}
+.overSelect {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  cursor: pointer;
+}
+#checkboxes-cargo-multi,
+#checkboxes-status-multi {
+    display: none;
+    border: 1px #aaa solid;
+    border-radius: 4px;
+    background: #fff;
+    position: absolute;
+    top: 100% !important;
+    z-index: 1000;
+    width: 100%;
+    max-height: 90px;
+    overflow-y: auto;
+}
+#checkboxes-cargo-multi label,
+#checkboxes-status-multi label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    color: #757575 !important;
+    font-weight: normal !important;
+    pointer-events: auto !important;
+    padding: 2px 8px;
+}
+
+#checkboxes-cargo-multi label:hover,
+#checkboxes-status-multi label:hover {
+    background-color: #f3f3f3;
+    color: black !important;
+}
+
+#checkboxes-cargo-multi input[type="checkbox"],
+#checkboxes-status-multi input[type="checkbox"] {
+    margin: 0 0 0 8px !important;
+    width: 12px !important;
+    height: 12px !important;
+}
+.filters-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.input-group label {
+    font-size: 12px;
+    color: #333;
+    padding: 2px 0;
+    font-weight: bold;
+    pointer-events: none;
 }
 
 

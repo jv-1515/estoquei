@@ -1,20 +1,20 @@
 let funcionarios = [];
 
+window.expandedCargoMulti = false;
+window.expandedStatusMulti = false;
+
+// Utilidades de avatar
 function getIniciais(nome) {
     const partes = nome.trim().split(' ');
     if (partes.length === 1) return partes[0][0].toUpperCase();
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
-
 function corAvatar(str) {
-    // Gera uma cor pastel baseada no nome
     let hash = 0;
     for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
     const h = Math.abs(hash) % 360;
     return `hsl(${h}, 60%, 80%)`;
 }
-
-
 
 // Atualiza avatar ao digitar o nome no cadastro e na edição
 document.addEventListener('DOMContentLoaded', function() {
@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (icon) icon.style.display = '';
         }
     }
-
     if (nomeInput && avatarDiv && iniciaisSpan) {
         nomeInput.addEventListener('input', atualizarAvatarCadastro);
         atualizarAvatarCadastro();
@@ -60,122 +59,321 @@ document.addEventListener('DOMContentLoaded', function() {
             if (editIcon) editIcon.style.display = '';
         }
     }
-
     if (editNomeInput && editAvatarDiv && editIniciaisSpan) {
         editNomeInput.addEventListener('input', atualizarAvatarEdicao);
         atualizarAvatarEdicao();
     }
-
-    // Atualiza avatar ao abrir modal de edição
     window.atualizarAvatarEdicao = atualizarAvatarEdicao;
 });
 
+// Renderização da tabela
 function renderizarFuncionarios(lista) {
+    const select = document.getElementById('registros-select');
+    let totalItens = lista.length;
+    let valorSelect = select.value;
+    let itensPorPagina = valorSelect === "" ? totalItens : parseInt(valorSelect);
+
+    const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
+    if (paginaAtual > totalPaginas) paginaAtual = 1;
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
+    const pagina = lista.slice(inicio, fim);
+
     const container = document.getElementById("product-list");
-    container.innerHTML = `
-    <thead>
-    <tr>
-        <th style="width:48px"></th>
-        <th>Código</th>
-        <th>Nome</th>
-        <th>Cargo</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    ${lista
+        const tbody = document.querySelector("#product-list tbody");
+    tbody.innerHTML = pagina
         .map(
             (f, idx) => `
-        <tr tabindex="${idx + 1}">
-            <td>
-                <div style="
-                    width:30px;height:30px;
-                    border-radius:50%;
-                    background:${corAvatar(f.nome)};
-                    display:flex;align-items:center;justify-content:center;
-                    font-weight:bold;font-size:12px;
-                    color: rgba(0,0,0,0.65);
-                    margin:0 auto;
+            <tr tabindex="${idx + 1}">
+                <td style="padding-left: 20px">
+                    <div style="
+                        width:30px;height:30px;
+                        border-radius:50%;
+                        background:${corAvatar(f.nome)};
+                        display:flex;align-items:center;justify-content:center;
+                        font-weight:bold;font-size:12px;
+                        color: rgba(0,0,0,0.65);
+                        ">
+                        ${getIniciais(f.nome)}
+                    </div>
+                </td>
+                <td>${f.codigo}</td>
+                <td>${f.nome}</td>
+                <td>${f.cargo
+                    .toLowerCase()
+                    .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
+                <td>${f.email}</td>
+                <td>
+                    <span style="
+                        display:inline-block;
+                        padding:${f.ativo ? '4px 12px' : '4px 8px'};
+                        border-radius:12px;
+                        font-size:12px;
+                        color:#fff;
+                        background:${f.ativo ? '#43b04a' : '#888'};
                     ">
-                    ${getIniciais(f.nome)}
-                </div>
-            </td>
-            <td>${f.codigo}</td>
-            <td>${f.nome}</td>
-            <td>${f.cargo
-                .toLowerCase()
-                .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
-            <td>${f.email}</td>
-            <td>
-                <span style="
-                    display:inline-block;
-                    padding:${f.ativo ? '4px 12px' : '4px 8px'};
-                    border-radius:12px;
-                    font-size:12px;
-                    color:#fff;
-                    background:${f.ativo ? '#43b04a' : '#888'};
-                ">
-                    ${f.ativo ? 'Ativo' : 'Inativo'}
-                </span>
-            </td>
-            <td class="actions">
-                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${lista.length + idx + 1}">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * lista.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
-        `
+                        ${f.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+            `
         )
-        .join("")}
-    </tbody>
-    `;
+        .join("");
+
+    renderizarPaginacao(totalPaginas);
+    atualizarSetasOrdenacao();
+}
+let paginaAtual = 1;
+let itensPorPagina = 10;
+
+
+// Função para renderizar a paginação
+function renderizarPaginacao(totalPaginas) {
+    const paginacaoDiv = document.getElementById('paginacao');
+    if (!paginacaoDiv) return;
+    paginacaoDiv.innerHTML = '';
+    if (totalPaginas <= 1) return;
+    for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
+            paginaAtual = i;
+            filtrarFuncionarios();
+        };
+        paginacaoDiv.appendChild(btn);
+    }
 }
 
-function filtrar() {
-    const codigo = document.getElementById("filter-codigo").value;
-    const nome = document.getElementById("filter-nome").value;
-    const cargo = document.getElementById("filter-cargo").value;
-    const email = document.getElementById("filter-email").value;
-    const status = document.getElementById("filter-status").value;
+document.getElementById('registros-select').addEventListener('change', function() {
+    paginaAtual = 1;
+    filtrarFuncionarios();
+});
 
-    const filtrados = funcionarios.filter(
-        (f) =>
-            (codigo === "" || f.codigo.includes(codigo)) &&
-            (nome === "" || f.nome.toLowerCase().includes(nome.toLowerCase())) &&
-            (cargo === "" || f.cargo.toLowerCase().includes(cargo.toLowerCase())) &&
-            (email === "" || f.email.toLowerCase().includes(email.toLowerCase())) &&
-            (status === "" || (status === "ativo" ? f.ativo : !f.ativo))
-    );
-
-    let msgDiv = document.getElementById("no-results-msg");
-    if (!msgDiv) {
-    msgDiv = document.createElement("div");
-    msgDiv.id = "no-results-msg";
-    msgDiv.style.textAlign = "center";
-    msgDiv.style.padding = "0 0 10px 0";
-    msgDiv.style.color = "#888";
-    msgDiv.style.fontSize = "16px";
-    document.querySelector(".main-container .table-space").appendChild(msgDiv);
-    }
-
-    if (filtrados.length === 0) {
-    document.getElementById("product-list").style.display = "none";
-    msgDiv.textContent = "Nenhum funcionário encontrado com os filtros selecionados.";
-    msgDiv.style.display = "block";
+// --- MULTISELECT CARGO ---
+function showCheckboxesCargoMulti() {
+    var checkboxes = document.getElementById("checkboxes-cargo-multi");
+    var overSelect = document.querySelector('#filter-cargo').parentNode.querySelector('.overSelect');
+    if (!window.expandedCargoMulti) {
+        checkboxes.style.display = "block";
+        window.expandedCargoMulti = true;
+        if (overSelect) overSelect.style.position = "static";
     } else {
-    document.getElementById("product-list").style.display = "";
-    msgDiv.style.display = "none";
-    renderizarFuncionarios(filtrados);
+        checkboxes.style.display = "none";
+        window.expandedCargoMulti = false;
+        if (overSelect) overSelect.style.position = "absolute";
     }
-
-    document.querySelector('.main-container').style.borderTopLeftRadius = "0";
-    document.querySelector('.main-container').style.borderTopRightRadius = "0";
 }
 
+function atualizarPlaceholderCargoMulti() {
+    const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+    const todas = checks[0];
+    const input = document.getElementById('filter-cargo');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = false;
+
+    if (selecionados.length === 0) {
+        todas.checked = false; // Permite desmarcar todos
+        input.value = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === individuais.length) {
+        todas.checked = true;
+        input.value = 'Todos';
+        ativo = false;
+    } else {
+        todas.checked = false;
+        input.value = selecionados.length === 1 ? selecionados[0] : selecionados.join(', ');
+        ativo = true;
+    }
+    const chevron = input.parentNode.querySelector('.chevron-cargo');
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+}
+
+document.querySelectorAll('.cargo-multi-check').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+        const todas = checks[0];
+        const individuais = checks.slice(1);
+
+        if (cb === todas) {
+            // Se clicou em "Todos"
+            if (todas.checked) {
+                individuais.forEach(c => c.checked = true);
+            } else {
+                individuais.forEach(c => c.checked = false);
+            }
+        } else {
+            if (individuais.every(c => c.checked)) {
+                todas.checked = true;
+            } else {
+                todas.checked = false;
+            }
+        }
+        atualizarPlaceholderCargoMulti();
+        filtrarFuncionarios();
+    });
+});
+atualizarPlaceholderCargoMulti();
+
+// --- MULTISELECT STATUS ---
+function showCheckboxesStatusMulti() {
+    var checkboxes = document.getElementById("checkboxes-status-multi");
+    var overSelect = document.querySelector('#filter-status').parentNode.querySelector('.overSelect');
+    if (!window.expandedStatusMulti) {
+        checkboxes.style.display = "block";
+        window.expandedStatusMulti = true;
+        if (overSelect) overSelect.style.position = "static";
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedStatusMulti = false;
+        if (overSelect) overSelect.style.position = "absolute";
+    }
+}
+
+function atualizarPlaceholderStatusMulti() {
+    const checks = Array.from(document.querySelectorAll('.status-multi-check'));
+    const todas = checks[0];
+    const input = document.getElementById('filter-status');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = false;
+
+    if (selecionados.length === 0) {
+        todas.checked = false;
+        input.value = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === individuais.length) {
+        todas.checked = true;
+        input.value = 'Todos';
+        ativo = false;
+    } else {
+        todas.checked = false;
+        input.value = selecionados.length === 1 ? selecionados[0] : selecionados.join(', ');
+        ativo = true;
+    }
+    const chevron = input.parentNode.querySelector('.chevron-status');
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+
+}
+document.querySelectorAll('.status-multi-check').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checks = Array.from(document.querySelectorAll('.status-multi-check'));
+        const todas = checks[0];
+        const individuais = checks.slice(1);
+
+        if (cb === todas) {
+            // Se clicou em "Todos"
+            if (todas.checked) {
+                individuais.forEach(c => c.checked = true);
+            } else {
+                individuais.forEach(c => c.checked = false);
+            }
+        } else {
+            if (individuais.every(c => c.checked)) {
+                todas.checked = true;
+            } else {
+                todas.checked = false;
+            }
+        }
+        atualizarPlaceholderStatusMulti();
+        filtrarFuncionarios();
+    });
+});
+
+document.getElementById('edit-ativo').addEventListener('change', function() {
+    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
+    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
+    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
+});
+
+const buscaInput = document.getElementById('busca-funcionario');
+buscaInput.addEventListener('input', filtrarFuncionarios);
+
+function filtrarFuncionarios() {
+    const termo = buscaInput.value.trim().toLowerCase();
+    const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+    const status = Array.from(document.querySelectorAll('.status-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+
+    const filtrados = funcionarios.filter(f =>
+        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
+        (cargos.length === 0 || cargos.includes(f.cargo)) &&
+        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
+    );
+    renderizarFuncionarios(filtrados);
+}
+
+// --- LIMPAR FILTROS ---
+function limpar() {
+    buscaInput.value = '';
+    document.querySelectorAll('.cargo-multi-check, .status-multi-check').forEach(cb => cb.checked = false);
+    atualizarPlaceholderCargoMulti();
+    atualizarPlaceholderStatusMulti();
+    filtrarFuncionarios();
+}
+
+// --- AO CARREGAR, MOSTRA TODOS OS FUNCIONÁRIOS ---
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFuncionarios();
+});
+
+// Carregar funcionários do backend
+function carregarFuncionarios() {
+    fetch('/usuarios')
+        .then(res => res.json())
+        .then(data => {
+            funcionarios = data;
+            filtrarFuncionarios();
+        })
+        .catch(() => {
+            funcionarios = [];
+            filtrarFuncionarios();
+        });
+}
+
+// Remover funcionário
 function removerFuncionario(id) {
+    if (usuarioLogadoId && String(id) === String(usuarioLogadoId)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ação não permitida!',
+            text: 'Você não pode remover a si mesmo.',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
     const funcionario = funcionarios.find(f => f.id == id);
     if (!funcionario) {
         Swal.fire({
@@ -190,13 +388,17 @@ function removerFuncionario(id) {
         return;
     }
     Swal.fire({
-        title: 'Tem certeza?',
+        title: `Remover "${funcionario.nome}"?`,
         text: 'Esta ação não poderá ser desfeita',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Cancelar',
         allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/usuarios/${id}`, { method: 'DELETE' })
@@ -204,7 +406,7 @@ function removerFuncionario(id) {
                     if (res.ok) {
                         carregarFuncionarios();
                         Swal.fire({
-                            title: `Funcionário ${funcionario.nome} removido!`,
+                            title: `Funcionário(a) "${funcionario.nome}" removido(a)!`,
                             icon: "success",
                             showConfirmButton: false,
                             timer: 1500,
@@ -227,40 +429,215 @@ function removerFuncionario(id) {
     });
 }
 
-function limpar() {
-    document.querySelectorAll(".filters input, .filters select").forEach((el) => (el.value = ""));
-    carregarFuncionarios();
-}
-
-renderizarFuncionarios(funcionarios);
-
-//gera senha
+// Cadastro
 function gerarSenhaProvisoria() {
-const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-let senha = '';
-for (let i = 0; i < 8; i++) {
-    senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let senha = '';
+    for (let i = 0; i < 8; i++) {
+        senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('cad-senha').value = senha;
 }
-document.getElementById('cad-senha').value = senha;
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('icon-' + inputId);
+    if (!input || !icon) return;
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
 }
+
+function limparFormularioCadastroFuncionario() {
+    document.getElementById('cad-codigo').value = '';
+    document.getElementById('cad-nome').value = '';
+    document.getElementById('cad-cargo').selectedIndex = 0;
+    document.getElementById('cad-email').value = '';
+    document.getElementById('cad-senha').value = '';
+    document.getElementById('cad-cpf').value = '';
+    document.getElementById('cad-nascimento').value = '';
+    document.getElementById('cad-contato').value = '';
+    if (window.atualizarAvatarCadastro) window.atualizarAvatarCadastro();
+    aplicarEstiloInputs && aplicarEstiloInputs();
+}
+
 function abrirCadastroFuncionario() {
+    limparFormularioCadastroFuncionario();
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
-gerarSenhaProvisoria();
+    gerarSenhaProvisoria();
+
+    const telCad = document.getElementById('cad-contato');
+    const cpfCad = document.getElementById('cad-cpf');
+    if (telCad) mascaraTelefone(telCad);
+    if (cpfCad) mascaraCPF(cpfCad);
 }
+
 function fecharCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'none';
     document.body.style.overflow = '';
 }
+
 function cadastrarFuncionario() {
+    const codigo = document.getElementById('cad-codigo').value;
+    const nome = document.getElementById('cad-nome').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
+    const senha = document.getElementById('cad-senha').value;
+    const dataNascimento = document.getElementById('cad-nascimento').value;
+    const cpf = document.getElementById('cad-cpf').value;
+
+    // Validação de código duplicado
+    if (funcionarios.some(f => f.codigo === codigo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de email duplicado
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Informe outro email',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de CPF duplicado
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF já cadastrado!',
+            text: 'Informe o CPF correto',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+
+    // Validação do nome
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode estar vazio',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da senha
+    if (!senha || senha.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Senha inválida!',
+            text: 'A senha deve ter pelo menos 8 caracteres',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da data de nascimento
+    if (!dataNascimento) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'Informe a data de nascimento',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (!validaCPF(cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF inválido!',
+            text: 'Digite um CPF válido',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+    if (nascimento > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A data de nascimento não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (idade < 16) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário deve ter pelo menos 16 anos',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    //monta o objeto e envia
     const funcionario = {
-        codigo: document.getElementById('cad-codigo').value,
-        nome: document.getElementById('cad-nome').value,
+        codigo: codigo,
+        nome: nome,
         cargo: document.getElementById('cad-cargo').value,
-        email: document.getElementById('cad-email').value,
-        senha: document.getElementById('cad-senha').value,
-        cpf: document.getElementById('cad-cpf').value,
-        dataNascimento: document.getElementById('cad-nascimento').value,
+        email: email,
+        senha: senha,
+        cpf: cpf,
+        dataNascimento: dataNascimento,
         telefone: document.getElementById('cad-contato').value,
         ativo: true
     };
@@ -273,7 +650,7 @@ function cadastrarFuncionario() {
     .then(res => {
         if (res.ok) {
             Swal.fire({
-                title: `Funcionário ${funcionario.nome} cadastrado!`,
+                text: `Funcionário(a) ${funcionario.nome} cadastrado(a)!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -293,11 +670,23 @@ function cadastrarFuncionario() {
                 allowOutsideClick: false
             });
         }
+        
+        document.getElementById('editar-funcionario').style.display = 'flex';
+
+        const telEdit = document.getElementById('edit-contato');
+        const cpfEdit = document.getElementById('edit-cpf');
+        if (telEdit && !telEdit._mascaraAplicada) {
+            mascaraTelefone(telEdit);
+            telEdit._mascaraAplicada = true;
+        }
+        if (cpfEdit && !cpfEdit._mascaraAplicada) {
+            mascaraCPF(cpfEdit);
+            cpfEdit._mascaraAplicada = true;
+        }
     });
 }
 
-
-//editar funcionario
+// Edição
 function abrirEdicaoFuncionario(id) {
     const funcionario = funcionarios.find(f => f.id == id);
     document.getElementById('edit-id').value = funcionario.id;
@@ -311,7 +700,6 @@ function abrirEdicaoFuncionario(id) {
     })
     .then(res => res.json())
     .then(funcionario => {
-        // Preenche os campos do form
         document.getElementById('edit-codigo').value = funcionario.codigo;
         document.getElementById('edit-nome').value = funcionario.nome;
         document.getElementById('edit-cargo').value = funcionario.cargo;
@@ -322,39 +710,181 @@ function abrirEdicaoFuncionario(id) {
         document.getElementById('edit-nascimento').value = funcionario.dataNascimento
             ? funcionario.dataNascimento.substring(0, 10)
             : '';
-        document.getElementById('edit-ativo').checked = funcionario.ativo ?? true; // true por padrão
+        document.getElementById('edit-ativo').checked = funcionario.ativo ?? true;
         document.getElementById('label-ativo').textContent = funcionario.ativo ? 'Ativo' : 'Inativo';
 
         const label = document.getElementById('label-ativo');
         label.classList.toggle('ativo', funcionario.ativo);
         label.classList.toggle('inativo', !funcionario.ativo);
-        
-        // Atualiza o avatar de edição imediatamente com o nome já preenchido
+
         if (window.atualizarAvatarEdicao) {
             window.atualizarAvatarEdicao();
         }
-
-        // Mostra o modal de edição
         document.getElementById('editar-funcionario').style.display = 'flex';
+        
+        const telEdit = document.getElementById('edit-contato');
+        const cpfEdit = document.getElementById('edit-cpf');
+        if (telEdit) mascaraTelefone(telEdit);
+        if (cpfEdit) mascaraCPF(cpfEdit);
     });
 }
-
 function fecharEdicaoFuncionario() {
     document.getElementById('editar-funcionario').style.display = 'none';
     document.body.style.overflow = '';
 }
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
-    // const funcionario = funcionarios.find(f => f.id == id);
+    const codigo = document.getElementById('edit-codigo').value;
+    const nome = document.getElementById('edit-nome').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    const senha = document.getElementById('edit-senha').value;
+    const dataNascimento = document.getElementById('edit-nascimento').value;
+    const cpf = document.getElementById('edit-cpf').value;
+
+    if (funcionarios.some(f => f.codigo === codigo && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Escolha outro código.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de email duplicado (exceto o próprio)
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase() && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Escolha outro email.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de CPF duplicado (exceto o próprio)
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF já cadastrado!',
+            text: 'Escolha outro CPF.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }    
+
+    // Validação do nome
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode estar vazio.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da senha
+    if (senha && senha.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Senha inválida!',
+            text: 'A senha deve ter pelo menos 8 caracteres.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da data de nascimento
+    if (!dataNascimento) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'Informe a data de nascimento',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (!validaCPF(cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF inválido!',
+            text: 'Digite um CPF válido.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+    if (nascimento > hoje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data inválida!',
+            text: 'A data de nascimento não pode ser posterior a hoje',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (idade < 16) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário deve ter pelo menos 16 anos.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
 
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
-        nome: document.getElementById('edit-nome').value,
+        nome: nome,
         cargo: document.getElementById('edit-cargo').value,
         email: document.getElementById('edit-email').value,
-        senha: document.getElementById('edit-senha').value,
-        cpf: document.getElementById('edit-cpf').value,
-        dataNascimento: document.getElementById('edit-nascimento').value,
+        senha: senha,
+        cpf: cpf,
+        dataNascimento: dataNascimento,
         telefone: document.getElementById('edit-contato').value,
         ativo: document.getElementById('edit-ativo').checked
     };
@@ -364,8 +894,8 @@ function salvarEdicaoFuncionario() {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim',
-        cancelButtonText: 'Não',
+        confirmButtonText: 'Sim, salvar alterações',
+        cancelButtonText: 'Não, voltar',
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -390,7 +920,7 @@ function salvarEdicaoFuncionario() {
                     Swal.fire({
                         icon: 'error',
                         title: 'Erro!',
-                        text: 'Não foi possível salvar as alterações.',
+                        text: 'Não foi possível salvar as alterações',
                         showConfirmButton: false,
                         timer: 1500,
                         timerProgressBar: true,
@@ -402,16 +932,11 @@ function salvarEdicaoFuncionario() {
     });
 }
 
-//botao voltar ao topo
+// Botão voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
-    if (window.scrollY > 100) {
-        btn.style.display = 'block';
-    } else {
-        btn.style.display = 'none';
-    }
+    if (btn) btn.style.display = window.scrollY > 100 ? 'block' : 'none';
 });
-
 document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('btn-topo');
     if (btn) {
@@ -422,93 +947,284 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.getElementById('edit-ativo').addEventListener('change', function() {
-    document.getElementById('label-ativo').textContent = this.checked ? 'Ativo' : 'Inativo';
-    document.getElementById('label-ativo').classList.toggle('ativo', this.checked);
-    document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
-});
-
-// Sugestão de códigos igual ao estoque
-const codigoInput = document.getElementById('filter-codigo');
-const codigoGroup = codigoInput.closest('.input-group');
-let sugestaoContainer = document.createElement('div');
-sugestaoContainer.id = 'codigo-sugestoes';
-codigoGroup.appendChild(sugestaoContainer);
-
-codigoInput.addEventListener('input', function() {
-    const termo = this.value.trim().toUpperCase();
-    sugestaoContainer.innerHTML = '';
-    if (!termo) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    const encontrados = funcionarios.filter(f => f.codigo.toUpperCase().includes(termo));
-    if (encontrados.length === 0) {
-        sugestaoContainer.style.display = 'none';
-        filtrar();
-        return;
-    }
-    encontrados.forEach(f => {
-        const div = document.createElement('div');
-        div.textContent = `${f.codigo} - ${f.nome}`;
-        div.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            codigoInput.value = f.codigo;
-            sugestaoContainer.style.display = 'none';
-            filtrar();
-        });
-        sugestaoContainer.appendChild(div);
-    });
-    sugestaoContainer.style.display = 'block';
-    filtrar();
-});
+document.getElementById('filter-cargo').addEventListener('click', showCheckboxesCargoMulti);
+document.getElementById('filter-status').addEventListener('click', showCheckboxesStatusMulti);
 
 document.addEventListener('mousedown', function(e) {
-    if (!sugestaoContainer.contains(e.target) && e.target !== codigoInput) {
-        sugestaoContainer.style.display = 'none';
+    // Cargo
+    var checkboxesCargo = document.getElementById("checkboxes-cargo-multi");
+    var overSelectCargo = document.querySelector('#filter-cargo').parentNode.querySelector('.overSelect');
+    if (
+        window.expandedCargoMulti &&
+        checkboxesCargo &&
+        !checkboxesCargo.contains(e.target) &&
+        (!overSelectCargo || !overSelectCargo.contains(e.target))
+    ) {
+        checkboxesCargo.style.display = "none";
+        window.expandedCargoMulti = false;
+        if (overSelectCargo) overSelectCargo.style.position = "absolute";
+    }
+    // Status
+    var checkboxesStatus = document.getElementById("checkboxes-status-multi");
+    var overSelectStatus = document.querySelector('#filter-status').parentNode.querySelector('.overSelect');
+    if (
+        window.expandedStatusMulti &&
+        checkboxesStatus &&
+        !checkboxesStatus.contains(e.target) &&
+        (!overSelectStatus || !overSelectStatus.contains(e.target))
+    ) {
+        checkboxesStatus.style.display = "none";
+        window.expandedStatusMulti = false;
+        if (overSelectStatus) overSelectStatus.style.position = "absolute";
     }
 });
 
-document.querySelectorAll('.filters input').forEach(el => {
-    el.addEventListener('input', filtrar);
-});
-document.querySelectorAll('.filters select').forEach(el => {
-    el.addEventListener('change', filtrar);
-});
-
-function carregarFuncionarios() {
-    fetch('/usuarios')
-        .then(res => res.json())
-        .then(data => {
-            funcionarios = data;
-            renderizarFuncionarios(funcionarios);
-        })
-        .catch(() => {
-            funcionarios = [];
-            renderizarFuncionarios([]);
-        });
-}
+//ORDENACAO
+let estadoOrdenacao = [true, true, true, true, true];
+let campoOrdenacao = ['codigo', 'nome', 'cargo', 'email', 'ativo'];
+let indiceOrdenacaoAtual = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
-    carregarFuncionarios();
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        th.style.cursor = 'pointer';
+        th.onclick = function() {
+            if (indiceOrdenacaoAtual === idx) {
+                estadoOrdenacao[idx] = !estadoOrdenacao[idx];
+            } else {
+                indiceOrdenacaoAtual = idx;
+            }
+            filtrarFuncionarios();
+            atualizarSetasOrdenacao();
+        };
+    });
+    atualizarSetasOrdenacao();
 });
 
-
-function togglePassword(inputId) {
-    const senhaInput = document.getElementById(inputId);
-    const eyeIcon = document.getElementById('icon-' + inputId);
-    if (senhaInput.type === "password") {
-        senhaInput.type = "text";
-        eyeIcon.classList.remove("fa-eye-slash");
-        eyeIcon.classList.add("fa-eye");
-    } else {
-        senhaInput.type = "password";
-        eyeIcon.classList.remove("fa-eye");
-        eyeIcon.classList.add("fa-eye-slash");
-    }
+function atualizarSetasOrdenacao() {
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        const icon = th.querySelector('.sort-icon');
+        if (indiceOrdenacaoAtual === idx) {
+            th.classList.add('sorted');
+            if (icon) {
+                icon.innerHTML = estadoOrdenacao[idx]
+                    ? '<i class="fa-solid fa-arrow-down"></i>'
+                    : '<i class="fa-solid fa-arrow-up"></i>';
+            }
+        } else {
+            th.classList.remove('sorted');
+            if (icon) {
+                icon.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+            }
+        }
+    });
 }
 
+// No filtrarFuncionarios, ordene antes de renderizar:
+function filtrarFuncionarios() {
+    const termo = buscaInput.value.trim().toLowerCase();
+    const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+    const status = Array.from(document.querySelectorAll('.status-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+
+    let filtrados = funcionarios.filter(f =>
+        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
+        (cargos.length === 0 || cargos.includes(f.cargo)) &&
+        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
+    );
+    // Ordenação:
+    const campo = campoOrdenacao[indiceOrdenacaoAtual];
+    filtrados = filtrados.slice().sort((a, b) => {
+        let valA = a[campo], valB = b[campo];
+        if (campo === 'ativo') {
+            valA = a.ativo ? 1 : 0;
+            valB = b.ativo ? 1 : 0;
+        }
+        if (estadoOrdenacao[indiceOrdenacaoAtual]) {
+            return valB > valA ? 1 : valB < valA ? -1 : 0;
+        } else {
+            return valA > valB ? 1 : valA < valB ? -1 : 0;
+        }
+    });
+    renderizarFuncionarios(filtrados);
+}
+
+//mascara codigo
+function aplicarMascaraCodigo(input) {
+    input.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const cadCodigo = document.getElementById('cad-codigo');
+    const editCodigo = document.getElementById('edit-codigo');
+    if (cadCodigo) aplicarMascaraCodigo(cadCodigo);
+    if (editCodigo) aplicarMascaraCodigo(editCodigo);
+});
+
+function mascaraTelefone(input) {
+    function formatarTel(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        let mask = '(__) _____-____';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
+            } else {
+                out += mask[i];
+            }
+        }
+        return out;
+    }
+
+    function setCaret(pos) {
+        if (pos < 2) pos = 2;
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+
+    input.addEventListener('input', function(e) {
+        let raw = input.value.replace(/\D/g, '').slice(0, 11);
+        let caret = input.selectionStart;
+
+        // Atualiza valor
+        input.value = formatarTel(raw);
+
+        // Sempre coloca o cursor ANTES do próximo "_"
+        let nextUnderscore = input.value.indexOf('_');
+        if (nextUnderscore === -1) nextUnderscore = input.value.length;
+
+        // Corrige para apagar corretamente ao ficar preso em caractere especial
+        if (e.inputType === 'deleteContentBackward') {
+            // Se o cursor está em um caractere especial, volta até o próximo dígito
+            while (nextUnderscore > 2 && /[^\d_]/.test(input.value[nextUnderscore - 1])) {
+                nextUnderscore--;
+            }
+        }
+
+        setCaret(nextUnderscore);
+    });
+
+    // Impede o usuário de clicar antes do parêntese
+    input.addEventListener('click', function() {
+        let pos = input.selectionStart;
+        if (pos < 2) setCaret(2);
+    });
+    input.addEventListener('keydown', function(e) {
+        if ((e.key === "ArrowLeft" || e.key === "Home") && input.selectionStart <= 2) {
+            setCaret(2);
+            e.preventDefault();
+        }
+    });
+
+    // Aplica ao carregar
+    input.value = formatarTel(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos < 2) pos = 2;
+    setCaret(pos);
+}
+
+
+//CPF
+function mascaraCPF(input) {
+    function formatarCPF(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        let mask = '___.___.___-__';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
+            } else {
+                out += mask[i];
+            }
+        }
+        return v.length === 0 ? '' : out;
+    }
+
+    function setCaret(pos) {
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+
+    input.addEventListener('input', function(e) {
+        let old = input.value;
+        let caret = input.selectionStart;
+        let raw = old.replace(/\D/g, '').slice(0, 11);
+
+        input.value = formatarCPF(raw);
+
+        let newCaret = caret;
+        if (e.inputType === 'deleteContentBackward') {
+            while (newCaret > 0 && /[^\d_]/.test(input.value[newCaret - 1])) newCaret--;
+        } else if (e.inputType === 'insertText') {
+            while (newCaret < input.value.length && /[^\d_]/.test(input.value[newCaret])) newCaret++;
+        }
+        setCaret(newCaret);
+    });
+
+    input.value = formatarCPF(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos === -1) pos = input.value.length;
+    setCaret(pos);
+}
+
+function validaCPF(cpf) {
+    var Soma = 0
+    var Resto
+
+    var strCPF = String(cpf).replace(/[^\d]/g, '')
+
+    if (strCPF.length !== 11)
+        return false
+
+    if ([
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999',
+    ].indexOf(strCPF) !== -1)
+        return false
+
+    for (let i = 1; i <= 9; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(9, 10)))
+        return false
+
+    Soma = 0
+
+    for (let i = 1; i <= 10; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(10, 11)))
+        return false
+
+    return true
+}
+
+// Estilo inputs
 function aplicarEstiloInputs() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
@@ -520,7 +1236,6 @@ function aplicarEstiloInputs() {
             }
         });
     });
-
     const selects = document.querySelectorAll('select, input[type="date"]');
     selects.forEach(select => {
         select.addEventListener('focus', () => {
