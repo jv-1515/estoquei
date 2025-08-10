@@ -49,13 +49,12 @@ h2 {
 
 .input-group {
     position: relative;
-    flex: 1 1 90px;
-    min-width: 90px;
-    max-width: 160px;
+    flex: 1 1 100px;
+    min-width: 100px;
+    max-width: 100px;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
-    gap: 2px;
 }
 
 .input-group.codigo {
@@ -67,7 +66,6 @@ h2 {
     color: #333;
     padding: 5px 5px 5px 0px;
     font-weight: bold;
-    letter-spacing: 0.2px;
     pointer-events: none;
 }
 
@@ -203,10 +201,6 @@ tbody tr:nth-child(odd) {
     width: 100%;
     font-family: Arial, sans-serif;
     height: 30px;
-}
-
-.input-group:has(#filter-nome) {
-    min-width: 160px;
 }
 
 span label {
@@ -391,6 +385,30 @@ input:focus[readonly] {
     transition: color 0.2s;
 }
 
+th.ordenar {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+th.ordenar .sort-icon {
+    position: absolute;
+    top: 50%;
+    padding-left: 2px;
+    transform: translateY(-50%);
+    display: none;
+    pointer-events: none;
+    font-size: 10px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+th.ordenar:hover .sort-icon,
+th.ordenar.sorted .sort-icon {
+    display: inline-block;
+    color: #1E94A3;
+}
+
 select#registros-select {
     color: #1E94A3;
     border: #1e94a3 2px solid;
@@ -401,7 +419,7 @@ select#registros-select option {
 }
 
 .multiselect {
-  min-width: 120px;
+  min-width: 90px;
   position: relative;
 }
 .selectBox {
@@ -461,17 +479,10 @@ select#registros-select option {
     align-items: flex-end;
 }
 
-.input-group input {
-    background: #fff;
-}
-.input-group input:focus {
-    background: #fff;
-    border-color: #1e94a3;
-}
 .input-group label {
     font-size: 12px;
     color: #333;
-    padding: 2px 0 0 0;
+    padding: 2px 0;
     font-weight: bold;
     pointer-events: none;
 }
