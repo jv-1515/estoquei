@@ -23,14 +23,14 @@
 <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
     <h2 style="margin-bottom: -10px;">Buscar Funcionários</h2>
     <div class="filters-row">
-            <div class="input-group" style="max-width: 400px; flex: 2;">
+            <div class="input-group" style="max-width: 100%; flex: 2;">
                 <input type="text" id="busca-funcionario" placeholder="Digite o código ou nome do funcionário" style="font-size:12px; padding:8px 32px 8px 8px; background: #fff;" />
                 <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                     <i class="fa fa-search"></i>
                 </span>
             </div>
             <!-- Multi-select Cargo -->
-            <div class="multiselect input-group" style="min-width: 140px;">
+            <div class="multiselect input-group">
                 <label for="filter-cargo">Cargo</label>
                 <div style="position:relative;">
                     <input type="text" id="filter-cargo" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <!-- Multi-select Status -->
-            <div class="multiselect input-group" style="min-width: 120px;">
+            <div class="multiselect input-group">
                 <label for="filter-status">Status</label>
                 <div style="position:relative;">
                     <input type="text" id="filter-status" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
@@ -92,10 +92,9 @@
                 <!-- Esquerda: Inputs Código e Cargo -->
                 <div style="display: flex; flex-direction: column; flex: 1;">
                     <label for="cad-codigo">Código*</label>
-                    <input type="text" id="cad-codigo" name="codigo" maxlength="6" required placeholder="X00000" tabindex="1" />
-
+                    <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1" />
                     <label for="cad-cargo">Cargo*</label>
-                    <select id="cad-cargo" name="cargo" required tabindex="3">
+                    <select id="cad-cargo" name="cargo" required tabindex="2">
                         <option value="" selected disabled hidden>Cargo</option>
                         <option value="GERENTE">Gerente</option>
                         <option value="VENDEDOR">Vendedor</option>
@@ -112,7 +111,7 @@
             </div>
 
             <label for="nome">Nome*</label>
-            <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="2" />
+            <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50" />
 
 
             <label for="cad-email">Email*</label>
@@ -125,13 +124,13 @@
             </div>
 
             <label for="cad-cpf">CPF*</label>
-            <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" tabindex="7" />
+            <input type="text" id="cad-cpf" name="cpf" required placeholder="000.000.000-00" tabindex="7" />
 
             <label for="cad-nascimento">Data de Nascimento*</label>
             <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
 
             <label for="cad-contato">Número de Contato*</label>
-            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" tabindex="9" />
+            <input type="text" id="cad-contato" name="contato" required placeholder="(00) 00000-0000" tabindex="9" />
             <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
         </form>
         </span>
@@ -174,11 +173,11 @@
                         <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
                         <span id="edit-avatar-iniciais" style="z-index: 1; position: relative;"></span>
                     </div>
-                </div>
+                </div> 
             </div>
 
-            <label for="edit-nome">Nome*</label>
-            <input type="text" id="edit-nome" name="nome" required placeholder="Nome completo" />
+            <label for="edit-nome">Nome Completo*</label>
+            <input type="text" id="edit-nome" name="nome" required placeholder="Nome completo" maxlength="50" />
 
             <label for="edit-email">Email*</label>
             <input type="email" id="edit-email" name="email" required placeholder="Email da empresa" />
@@ -192,13 +191,13 @@
             </div>
 
             <label for="edit-cpf">CPF*</label>
-            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" />
+            <input type="text" id="edit-cpf" name="cpf" required placeholder="000.000.000-00" />
 
             <label for="edit-nascimento">Data de Nascimento*</label>
             <input type="date" id="edit-nascimento" name="nascimento" required placeholder="Data de Nascimento" />
 
             <label for="edit-contato">Número de Contato*</label>
-            <input type="text" id="edit-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" />
+            <input type="tel" id="edit-contato" name="contato" required placeholder="(00) 00000-0000" />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
             </form>
@@ -206,7 +205,21 @@
 
         <div class="main-container">
             <div class="table-space"></div>
-            <table id="product-list"></table>
+            <table id="product-list">
+                <thead>
+                    <tr>
+                        <th style="width:48px; padding-left: 15px;"></th>
+                        <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Cargo <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Email <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Status <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
             <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
         </div>
         <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
