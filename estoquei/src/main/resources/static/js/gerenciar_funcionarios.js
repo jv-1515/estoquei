@@ -80,68 +80,54 @@ function renderizarFuncionarios(lista) {
     const pagina = lista.slice(inicio, fim);
 
     const container = document.getElementById("product-list");
-    container.innerHTML = `
-    <thead>
-    <tr>
-        <th style="width:48px"></th>
-        <th>Código</th>
-        <th>Nome</th>
-        <th>Cargo</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    ${pagina
+        const tbody = document.querySelector("#product-list tbody");
+    tbody.innerHTML = pagina
         .map(
             (f, idx) => `
-        <tr tabindex="${idx + 1}">
-            <td>
-                <div style="
-                    width:30px;height:30px;
-                    border-radius:50%;
-                    background:${corAvatar(f.nome)};
-                    display:flex;align-items:center;justify-content:center;
-                    font-weight:bold;font-size:12px;
-                    color: rgba(0,0,0,0.65);
-                    margin:0 auto;
+            <tr tabindex="${idx + 1}">
+                <td style="padding-left: 20px">
+                    <div style="
+                        width:30px;height:30px;
+                        border-radius:50%;
+                        background:${corAvatar(f.nome)};
+                        display:flex;align-items:center;justify-content:center;
+                        font-weight:bold;font-size:12px;
+                        color: rgba(0,0,0,0.65);
+                        ">
+                        ${getIniciais(f.nome)}
+                    </div>
+                </td>
+                <td>${f.codigo}</td>
+                <td>${f.nome}</td>
+                <td>${f.cargo
+                    .toLowerCase()
+                    .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
+                <td>${f.email}</td>
+                <td>
+                    <span style="
+                        display:inline-block;
+                        padding:${f.ativo ? '4px 12px' : '4px 8px'};
+                        border-radius:12px;
+                        font-size:12px;
+                        color:#fff;
+                        background:${f.ativo ? '#43b04a' : '#888'};
                     ">
-                    ${getIniciais(f.nome)}
-                </div>
-            </td>
-            <td>${f.codigo}</td>
-            <td>${f.nome}</td>
-            <td>${f.cargo
-                .toLowerCase()
-                .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
-            <td>${f.email}</td>
-            <td>
-                <span style="
-                    display:inline-block;
-                    padding:${f.ativo ? '4px 12px' : '4px 8px'};
-                    border-radius:12px;
-                    font-size:12px;
-                    color:#fff;
-                    background:${f.ativo ? '#43b04a' : '#888'};
-                ">
-                    ${f.ativo ? 'Ativo' : 'Inativo'}
-                </span>
-            </td>
-            <td class="actions">
-                <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
-        `
+                        ${f.ativo ? 'Ativo' : 'Inativo'}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+            `
         )
-        .join("")}
-    </tbody>
-    `;
+        .join("");
 
     renderizarPaginacao(totalPaginas);
+    atualizarSetasOrdenacao();
 }
 let paginaAtual = 1;
 let itensPorPagina = 10;
@@ -173,16 +159,18 @@ document.getElementById('registros-select').addEventListener('change', function(
 // --- MULTISELECT CARGO ---
 function showCheckboxesCargoMulti() {
     var checkboxes = document.getElementById("checkboxes-cargo-multi");
+    var overSelect = document.querySelector('#filter-cargo').parentNode.querySelector('.overSelect');
     if (!window.expandedCargoMulti) {
         checkboxes.style.display = "block";
         window.expandedCargoMulti = true;
-        atualizarPlaceholderCargoMulti();
+        if (overSelect) overSelect.style.position = "static";
     } else {
         checkboxes.style.display = "none";
         window.expandedCargoMulti = false;
-        atualizarPlaceholderCargoMulti();
+        if (overSelect) overSelect.style.position = "absolute";
     }
 }
+
 function atualizarPlaceholderCargoMulti() {
     const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
     const todas = checks[0];
@@ -245,16 +233,18 @@ atualizarPlaceholderCargoMulti();
 // --- MULTISELECT STATUS ---
 function showCheckboxesStatusMulti() {
     var checkboxes = document.getElementById("checkboxes-status-multi");
+    var overSelect = document.querySelector('#filter-status').parentNode.querySelector('.overSelect');
     if (!window.expandedStatusMulti) {
         checkboxes.style.display = "block";
         window.expandedStatusMulti = true;
-        atualizarPlaceholderStatusMulti();
+        if (overSelect) overSelect.style.position = "static";
     } else {
         checkboxes.style.display = "none";
         window.expandedStatusMulti = false;
-        atualizarPlaceholderStatusMulti();
+        if (overSelect) overSelect.style.position = "absolute";
     }
 }
+
 function atualizarPlaceholderStatusMulti() {
     const checks = Array.from(document.querySelectorAll('.status-multi-check'));
     const todas = checks[0];
@@ -319,11 +309,9 @@ document.getElementById('edit-ativo').addEventListener('change', function() {
     document.getElementById('label-ativo').classList.toggle('inativo', !this.checked);
 });
 
-// --- BUSCA FUNCIONÁRIO (SEM SUGESTÃO) ---
 const buscaInput = document.getElementById('busca-funcionario');
 buscaInput.addEventListener('input', filtrarFuncionarios);
 
-// --- FILTRAR FUNCIONÁRIOS ---
 function filtrarFuncionarios() {
     const termo = buscaInput.value.trim().toLowerCase();
     const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
@@ -418,7 +406,7 @@ function removerFuncionario(id) {
                     if (res.ok) {
                         carregarFuncionarios();
                         Swal.fire({
-                            title: `Funcionário ${funcionario.nome} removido!`,
+                            title: `Funcionário(a) "${funcionario.nome}" removido(a)!`,
                             icon: "success",
                             showConfirmButton: false,
                             timer: 1500,
@@ -450,10 +438,45 @@ function gerarSenhaProvisoria() {
     }
     document.getElementById('cad-senha').value = senha;
 }
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('icon-' + inputId);
+    if (!input || !icon) return;
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    } else {
+        input.type = "password";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
+}
+
+function limparFormularioCadastroFuncionario() {
+    document.getElementById('cad-codigo').value = '';
+    document.getElementById('cad-nome').value = '';
+    document.getElementById('cad-cargo').selectedIndex = 0;
+    document.getElementById('cad-email').value = '';
+    document.getElementById('cad-senha').value = '';
+    document.getElementById('cad-cpf').value = '';
+    document.getElementById('cad-nascimento').value = '';
+    document.getElementById('cad-contato').value = '';
+    if (window.atualizarAvatarCadastro) window.atualizarAvatarCadastro();
+    aplicarEstiloInputs && aplicarEstiloInputs();
+}
+
 function abrirCadastroFuncionario() {
+    limparFormularioCadastroFuncionario();
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     gerarSenhaProvisoria();
+
+    const telCad = document.getElementById('cad-contato');
+    const cpfCad = document.getElementById('cad-cpf');
+    if (telCad) mascaraTelefone(telCad);
+    if (cpfCad) mascaraCPF(cpfCad);
 }
 
 function fecharCadastroFuncionario() {
@@ -462,10 +485,49 @@ function fecharCadastroFuncionario() {
 }
 
 function cadastrarFuncionario() {
+    const codigo = document.getElementById('cad-codigo').value;
     const nome = document.getElementById('cad-nome').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
     const senha = document.getElementById('cad-senha').value;
     const dataNascimento = document.getElementById('cad-nascimento').value;
     const cpf = document.getElementById('cad-cpf').value;
+
+    // Validação de código duplicado
+    if (funcionarios.some(f => f.codigo === codigo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de email duplicado
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase())) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Informe outro email',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de CPF duplicado
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF já cadastrado!',
+            text: 'Informe o CPF correto',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
 
     // Validação do nome
     if (!nome) {
@@ -569,10 +631,10 @@ function cadastrarFuncionario() {
 
     //monta o objeto e envia
     const funcionario = {
-        codigo: document.getElementById('cad-codigo').value,
+        codigo: codigo,
         nome: nome,
         cargo: document.getElementById('cad-cargo').value,
-        email: document.getElementById('cad-email').value,
+        email: email,
         senha: senha,
         cpf: cpf,
         dataNascimento: dataNascimento,
@@ -588,7 +650,7 @@ function cadastrarFuncionario() {
     .then(res => {
         if (res.ok) {
             Swal.fire({
-                title: `Funcionário(a) ${funcionario.nome} cadastrado(a)!`,
+                text: `Funcionário(a) ${funcionario.nome} cadastrado(a)!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -607,6 +669,19 @@ function cadastrarFuncionario() {
                 timerProgressBar: true,
                 allowOutsideClick: false
             });
+        }
+        
+        document.getElementById('editar-funcionario').style.display = 'flex';
+
+        const telEdit = document.getElementById('edit-contato');
+        const cpfEdit = document.getElementById('edit-cpf');
+        if (telEdit && !telEdit._mascaraAplicada) {
+            mascaraTelefone(telEdit);
+            telEdit._mascaraAplicada = true;
+        }
+        if (cpfEdit && !cpfEdit._mascaraAplicada) {
+            mascaraCPF(cpfEdit);
+            cpfEdit._mascaraAplicada = true;
         }
     });
 }
@@ -646,6 +721,11 @@ function abrirEdicaoFuncionario(id) {
             window.atualizarAvatarEdicao();
         }
         document.getElementById('editar-funcionario').style.display = 'flex';
+        
+        const telEdit = document.getElementById('edit-contato');
+        const cpfEdit = document.getElementById('edit-cpf');
+        if (telEdit) mascaraTelefone(telEdit);
+        if (cpfEdit) mascaraCPF(cpfEdit);
     });
 }
 function fecharEdicaoFuncionario() {
@@ -654,10 +734,48 @@ function fecharEdicaoFuncionario() {
 }
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
+    const codigo = document.getElementById('edit-codigo').value;
     const nome = document.getElementById('edit-nome').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
     const senha = document.getElementById('edit-senha').value;
     const dataNascimento = document.getElementById('edit-nascimento').value;
     const cpf = document.getElementById('edit-cpf').value;
+
+    if (funcionarios.some(f => f.codigo === codigo && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Escolha outro código.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de email duplicado (exceto o próprio)
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase() && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Escolha outro email.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de CPF duplicado (exceto o próprio)
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF já cadastrado!',
+            text: 'Escolha outro CPF.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }    
 
     // Validação do nome
     if (!nome) {
@@ -705,7 +823,7 @@ function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Data inválida!',
-            text: 'Informe a data de nascimento.',
+            text: 'Informe a data de nascimento',
             timer: 1500,
             timerProgressBar: true,
             showConfirmButton: false,
@@ -832,11 +950,10 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('filter-cargo').addEventListener('click', showCheckboxesCargoMulti);
 document.getElementById('filter-status').addEventListener('click', showCheckboxesStatusMulti);
 
-// Clique fora fecha
 document.addEventListener('mousedown', function(e) {
     // Cargo
     var checkboxesCargo = document.getElementById("checkboxes-cargo-multi");
-    var overSelectCargo = document.querySelector('.multiselect .overSelect');
+    var overSelectCargo = document.querySelector('#filter-cargo').parentNode.querySelector('.overSelect');
     if (
         window.expandedCargoMulti &&
         checkboxesCargo &&
@@ -845,11 +962,11 @@ document.addEventListener('mousedown', function(e) {
     ) {
         checkboxesCargo.style.display = "none";
         window.expandedCargoMulti = false;
-        atualizarPlaceholderCargoMulti();
+        if (overSelectCargo) overSelectCargo.style.position = "absolute";
     }
     // Status
     var checkboxesStatus = document.getElementById("checkboxes-status-multi");
-    var overSelectStatus = document.querySelectorAll('.multiselect .overSelect')[1];
+    var overSelectStatus = document.querySelector('#filter-status').parentNode.querySelector('.overSelect');
     if (
         window.expandedStatusMulti &&
         checkboxesStatus &&
@@ -858,59 +975,204 @@ document.addEventListener('mousedown', function(e) {
     ) {
         checkboxesStatus.style.display = "none";
         window.expandedStatusMulti = false;
-        atualizarPlaceholderStatusMulti();
+        if (overSelectStatus) overSelectStatus.style.position = "absolute";
     }
 });
 
-//mascara de tel
-function aplicarMascaraTelefone(input) {
-    input.addEventListener('input', function() {
-        let v = input.value.replace(/\D/g, '');
-        if (v.length > 11) v = v.slice(0, 11);
-        if (v.length > 10) {
-            input.value = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-        } else if (v.length > 6) {
-            input.value = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-        } else if (v.length > 2) {
-            input.value = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+//ORDENACAO
+let estadoOrdenacao = [true, true, true, true, true];
+let campoOrdenacao = ['codigo', 'nome', 'cargo', 'email', 'ativo'];
+let indiceOrdenacaoAtual = 0;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        th.style.cursor = 'pointer';
+        th.onclick = function() {
+            if (indiceOrdenacaoAtual === idx) {
+                estadoOrdenacao[idx] = !estadoOrdenacao[idx];
+            } else {
+                indiceOrdenacaoAtual = idx;
+            }
+            filtrarFuncionarios();
+            atualizarSetasOrdenacao();
+        };
+    });
+    atualizarSetasOrdenacao();
+});
+
+function atualizarSetasOrdenacao() {
+    document.querySelectorAll('th.ordenar').forEach((th, idx) => {
+        const icon = th.querySelector('.sort-icon');
+        if (indiceOrdenacaoAtual === idx) {
+            th.classList.add('sorted');
+            if (icon) {
+                icon.innerHTML = estadoOrdenacao[idx]
+                    ? '<i class="fa-solid fa-arrow-down"></i>'
+                    : '<i class="fa-solid fa-arrow-up"></i>';
+            }
         } else {
-            input.value = v.replace(/^(\d*)/, '($1');
+            th.classList.remove('sorted');
+            if (icon) {
+                icon.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+            }
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const telCad = document.getElementById('cad-contato');
-    const telEdit = document.getElementById('edit-contato');
-    if (telCad) aplicarMascaraTelefone(telCad);
-    if (telEdit) aplicarMascaraTelefone(telEdit);
-});
+// No filtrarFuncionarios, ordene antes de renderizar:
+function filtrarFuncionarios() {
+    const termo = buscaInput.value.trim().toLowerCase();
+    const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
+    const status = Array.from(document.querySelectorAll('.status-multi-check'))
+        .slice(1)
+        .filter(cb => cb.checked && cb.value)
+        .map(cb => cb.value);
 
-
-//cpf
-function aplicarMascaraCPF(input) {
-    input.addEventListener('input', function() {
-        let v = input.value.replace(/\D/g, '');
-        if (v.length > 11) v = v.slice(0, 11);
-        if (v.length > 9) {
-            input.value = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2}).*/, '$1.$2.$3-$4');
-        } else if (v.length > 6) {
-            input.value = v.replace(/^(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
-        } else if (v.length > 3) {
-            input.value = v.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
+    let filtrados = funcionarios.filter(f =>
+        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
+        (cargos.length === 0 || cargos.includes(f.cargo)) &&
+        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
+    );
+    // Ordenação:
+    const campo = campoOrdenacao[indiceOrdenacaoAtual];
+    filtrados = filtrados.slice().sort((a, b) => {
+        let valA = a[campo], valB = b[campo];
+        if (campo === 'ativo') {
+            valA = a.ativo ? 1 : 0;
+            valB = b.ativo ? 1 : 0;
+        }
+        if (estadoOrdenacao[indiceOrdenacaoAtual]) {
+            return valB > valA ? 1 : valB < valA ? -1 : 0;
         } else {
-            input.value = v;
+            return valA > valB ? 1 : valA < valB ? -1 : 0;
         }
     });
+    renderizarFuncionarios(filtrados);
 }
 
+//mascara codigo
+function aplicarMascaraCodigo(input) {
+    input.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+}
 document.addEventListener('DOMContentLoaded', function() {
-    const cpfCad = document.getElementById('cad-cpf');
-    const cpfEdit = document.getElementById('edit-cpf');
-    if (cpfCad) aplicarMascaraCPF(cpfCad);
-    if (cpfEdit) aplicarMascaraCPF(cpfEdit);
+    const cadCodigo = document.getElementById('cad-codigo');
+    const editCodigo = document.getElementById('edit-codigo');
+    if (cadCodigo) aplicarMascaraCodigo(cadCodigo);
+    if (editCodigo) aplicarMascaraCodigo(editCodigo);
 });
 
+function mascaraTelefone(input) {
+    function formatarTel(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        let mask = '(__) _____-____';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
+            } else {
+                out += mask[i];
+            }
+        }
+        return out;
+    }
+
+    function setCaret(pos) {
+        if (pos < 2) pos = 2;
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+
+    input.addEventListener('input', function(e) {
+        let raw = input.value.replace(/\D/g, '').slice(0, 11);
+        let caret = input.selectionStart;
+
+        // Atualiza valor
+        input.value = formatarTel(raw);
+
+        // Sempre coloca o cursor ANTES do próximo "_"
+        let nextUnderscore = input.value.indexOf('_');
+        if (nextUnderscore === -1) nextUnderscore = input.value.length;
+
+        // Corrige para apagar corretamente ao ficar preso em caractere especial
+        if (e.inputType === 'deleteContentBackward') {
+            // Se o cursor está em um caractere especial, volta até o próximo dígito
+            while (nextUnderscore > 2 && /[^\d_]/.test(input.value[nextUnderscore - 1])) {
+                nextUnderscore--;
+            }
+        }
+
+        setCaret(nextUnderscore);
+    });
+
+    // Impede o usuário de clicar antes do parêntese
+    input.addEventListener('click', function() {
+        let pos = input.selectionStart;
+        if (pos < 2) setCaret(2);
+    });
+    input.addEventListener('keydown', function(e) {
+        if ((e.key === "ArrowLeft" || e.key === "Home") && input.selectionStart <= 2) {
+            setCaret(2);
+            e.preventDefault();
+        }
+    });
+
+    // Aplica ao carregar
+    input.value = formatarTel(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos < 2) pos = 2;
+    setCaret(pos);
+}
+
+
+//CPF
+function mascaraCPF(input) {
+    function formatarCPF(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        let mask = '___.___.___-__';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
+            } else {
+                out += mask[i];
+            }
+        }
+        return v.length === 0 ? '' : out;
+    }
+
+    function setCaret(pos) {
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+
+    input.addEventListener('input', function(e) {
+        let old = input.value;
+        let caret = input.selectionStart;
+        let raw = old.replace(/\D/g, '').slice(0, 11);
+
+        input.value = formatarCPF(raw);
+
+        let newCaret = caret;
+        if (e.inputType === 'deleteContentBackward') {
+            while (newCaret > 0 && /[^\d_]/.test(input.value[newCaret - 1])) newCaret--;
+        } else if (e.inputType === 'insertText') {
+            while (newCaret < input.value.length && /[^\d_]/.test(input.value[newCaret])) newCaret++;
+        }
+        setCaret(newCaret);
+    });
+
+    input.value = formatarCPF(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos === -1) pos = input.value.length;
+    setCaret(pos);
+}
 
 function validaCPF(cpf) {
     var Soma = 0
