@@ -20,50 +20,59 @@
     <div>
         <h1>Gerenciar Funcionários</h1>
     </div>
-    <!-- Filtro igual ao estoque -->
-    <div class="filters-container">
-    <div class="filters">
-        <h2>Filtrar Funcionários</h2>
-        <div class="filters-row">
-            <div class="input-group codigo">
-    <label for="filter-codigo">Código</label>
-    <input type="text" id="filter-codigo" placeholder="Todos" maxlength="9" autocomplete="off" />
-    <!-- NÃO coloque a div de sugestão aqui manualmente, ela será criada via JS -->
-</div>
-            <div class="input-group">
-                <label for="filter-nome">Nome</label>
-                <input type="text" id="filter-nome" placeholder="Todos" />
+<div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
+    <h2 style="margin-bottom: -10px;">Buscar Funcionários</h2>
+    <div class="filters-row">
+            <div class="input-group" style="max-width: 100%; flex: 2;">
+                <input type="text" id="busca-funcionario" placeholder="Digite o código ou nome do funcionário" style="font-size:12px; padding:8px 32px 8px 8px; background: #fff;" />
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
             </div>
-            <div class="input-group">
+            <!-- Multi-select Cargo -->
+            <div class="multiselect input-group">
                 <label for="filter-cargo">Cargo</label>
-                <select id="filter-cargo">
-                    <option value="" selected>Todos</option>
-                    <option value="GERENTE">Gerente</option>
-                    <option value="VENDEDOR">Vendedor</option>
-                    <option value="CAIXA">Caixa</option>
-                    <option value="ESTOQUISTA">Estoquista</option>
-                </select>
+                <div style="position:relative;">
+                    <input type="text" id="filter-cargo" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+                    <span class="chevron-cargo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                      <i class="fa fa-chevron-down"></i>
+                    </span>
+                    <div class="overSelect" onclick="showCheckboxesCargoMulti()"></div>
+                </div>
+                <div id="checkboxes-cargo-multi" style="display:none;">
+                    <label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked /> Todos</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="GERENTE" checked /> Gerente</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="VENDEDOR" checked /> Vendedor</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="CAIXA" checked /> Caixa</label>
+                    <label><input type="checkbox" class="cargo-multi-check" value="ESTOQUISTA" checked /> Estoquista</label>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="filter-email">Email</label>
-                <input type="email" id="filter-email" placeholder="Todos" />
-            </div>
-            <div class="input-group">
+            <!-- Multi-select Status -->
+            <div class="multiselect input-group">
                 <label for="filter-status">Status</label>
-                <select id="filter-status">
-                    <option value="" selected>Todos</option>
-                    <option value="ativo">Ativo</option>
-                    <option value="inativo">Inativo</option>
-                </select>
+                <div style="position:relative;">
+                    <input type="text" id="filter-status" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+                    <span class="chevron-status" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                      <i class="fa fa-chevron-down"></i>
+                    </span>
+                    <div class="overSelect" onclick="showCheckboxesStatusMulti()"></div>
+                </div>
+                <div id="checkboxes-status-multi" style="display:none;">
+                    <label><input type="checkbox" id="status-multi-todos" class="status-multi-check" value="" checked /> Todos</label>
+                    <label><input type="checkbox" class="status-multi-check" value="ATIVO" checked /> Ativo</label>
+                    <label><input type="checkbox" class="status-multi-check" value="INATIVO" checked /> Inativo</label>
+                </div>
             </div>
-            <button class="btn limpar" onclick="limpar()" style="align-self: flex-end;">Limpar Filtros</button>
+            <button class="btn limpar" onclick="limpar()" style="align-self: flex-end; min-width: 110px;">
+                <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
+            </button>
         </div>
     </div>
-</div>
-    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 20px;">
         <div style="display: flex; align-items: center; gap: 5px;">
             <label for="registros-select">Mostrando</label>
-            <select id="registros-select" style="padding: 5px 0; border-radius: 4px;font-size: 12px; width: 43px;">
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px;font-size: 12px; width: 55px;">
+                <option value="" selected>Todos</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -83,10 +92,9 @@
                 <!-- Esquerda: Inputs Código e Cargo -->
                 <div style="display: flex; flex-direction: column; flex: 1;">
                     <label for="cad-codigo">Código*</label>
-                    <input type="text" id="cad-codigo" name="codigo" maxlength="6" required placeholder="X00000" tabindex="1" />
-
+                    <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1" />
                     <label for="cad-cargo">Cargo*</label>
-                    <select id="cad-cargo" name="cargo" required tabindex="3">
+                    <select id="cad-cargo" name="cargo" required tabindex="2">
                         <option value="" selected disabled hidden>Cargo</option>
                         <option value="GERENTE">Gerente</option>
                         <option value="VENDEDOR">Vendedor</option>
@@ -103,7 +111,7 @@
             </div>
 
             <label for="nome">Nome*</label>
-            <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="2" />
+            <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50" />
 
 
             <label for="cad-email">Email*</label>
@@ -116,13 +124,13 @@
             </div>
 
             <label for="cad-cpf">CPF*</label>
-            <input type="text" id="cad-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" tabindex="7" />
+            <input type="text" id="cad-cpf" name="cpf" required placeholder="000.000.000-00" tabindex="7" />
 
             <label for="cad-nascimento">Data de Nascimento*</label>
             <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
 
             <label for="cad-contato">Número de Contato*</label>
-            <input type="text" id="cad-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" tabindex="9" />
+            <input type="text" id="cad-contato" name="contato" required placeholder="(00) 00000-0000" tabindex="9" />
             <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
         </form>
         </span>
@@ -165,11 +173,11 @@
                         <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
                         <span id="edit-avatar-iniciais" style="z-index: 1; position: relative;"></span>
                     </div>
-                </div>
+                </div> 
             </div>
 
-            <label for="edit-nome">Nome*</label>
-            <input type="text" id="edit-nome" name="nome" required placeholder="Nome completo" />
+            <label for="edit-nome">Nome Completo*</label>
+            <input type="text" id="edit-nome" name="nome" required placeholder="Nome completo" maxlength="50" />
 
             <label for="edit-email">Email*</label>
             <input type="email" id="edit-email" name="email" required placeholder="Email da empresa" />
@@ -183,13 +191,13 @@
             </div>
 
             <label for="edit-cpf">CPF*</label>
-            <input type="text" id="edit-cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" />
+            <input type="text" id="edit-cpf" name="cpf" required placeholder="000.000.000-00" />
 
             <label for="edit-nascimento">Data de Nascimento*</label>
             <input type="date" id="edit-nascimento" name="nascimento" required placeholder="Data de Nascimento" />
 
             <label for="edit-contato">Número de Contato*</label>
-            <input type="text" id="edit-contato" name="contato" maxlength="15" required placeholder="(00) 00000-0000" />
+            <input type="tel" id="edit-contato" name="contato" required placeholder="(00) 00000-0000" />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
             </form>
@@ -198,12 +206,29 @@
         <div class="main-container">
             <div class="table-space"></div>
             <table id="product-list">
+                <thead>
+                    <tr>
+                        <th style="width:48px; padding-left: 15px;"></th>
+                        <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Cargo <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Email <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Status <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
             </table>
+            <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
         </div>
         <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
             <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
             <i class="fa-solid fa-arrow-up" style="font-size: 20px; padding-top: 4px;"></i>
         </button>
     </a>
+    <script th:inline="javascript">
+    window.usuarioLogadoId = "[[${usuarioLogado.id}]]";
+    </script>
 </body>
 </html>

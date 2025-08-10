@@ -132,7 +132,7 @@ function fillFields(product) {
         if (value.length > 5) value = value.slice(0, 5);
         if (value.length > 0) {
             value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
-            precoInput.value = 'R$' + value;
+            precoInput.value = 'R$ ' + value;
         } else {
             precoInput.value = '';
         }
