@@ -39,37 +39,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fecha popup ao clicar fora e atualiza placeholder/cor
-    document.addEventListener('mousedown', function(e) {
-        function formatarDataBR(data) {
-            if (!data) return '';
-            const [ano, mes, dia] = data.split('-');
-            return `${dia}/${mes}/${ano}`;
-        }
-        let ativo = true;
-        if (dataInicio.value && dataFim.value) {
-            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
-        } else if (dataInicio.value) {
-            periodoInput.value = `de ${formatarDataBR(dataInicio.value)}`;
-        } else if (dataFim.value) {
-            periodoInput.value = `até ${formatarDataBR(dataFim.value)}`;
-        } else {
-            periodoInput.value = '';
-            ativo = false;
-        }
-        if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
-            periodoPopup.style.display = 'none';
-            ativo = false;
-        }
-        if (ativo) {
-            periodoInput.style.border = '2px solid #1e94a3';
-            periodoInput.style.color = '#1e94a3';
-        } else {
-            periodoInput.style.border = '';
-            periodoInput.style.color = '';
-        }
-        filtrarMovimentacoes();
-    });
-
+document.addEventListener('mousedown', function(e) {
+    function formatarDataBR(data) {
+        if (!data) return '';
+        const [ano, mes, dia] = data.split('-');
+        return `${dia}/${mes}/${ano}`;
+    }
+    let ativo = false;
+    if (dataInicio.value && dataFim.value) {
+        periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        ativo = true;
+    } else if (dataInicio.value) {
+        periodoInput.value = `${formatarDataBR(dataInicio.value)}`;
+        ativo = true;
+    } else if (dataFim.value) {
+        periodoInput.value = `${formatarDataBR(dataFim.value)}`;
+        ativo = true;
+    } else {
+        periodoInput.value = '';
+        ativo = false;
+    }
+    if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
+        periodoPopup.style.display = 'none';
+    }
+    const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
+    if (ativo) {
+        periodoInput.style.border = '2px solid #1e94a3';
+        periodoInput.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        periodoInput.style.border = '';
+        periodoInput.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+    filtrarMovimentacoes();
+});
     // Validação: fim sem início
     dataInicio.addEventListener('change', function() {
         if (dataFim.value && !dataInicio.value) {
@@ -117,6 +121,19 @@ document.addEventListener('DOMContentLoaded', function() {
         dataInicio.value = '';
         dataFim.value = '';
         periodoInput.value = '';
+        // Remove borda/cor do período
+        periodoInput.style.border = '';
+        periodoInput.style.color = '';
+        const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
+        if (chevron) chevron.style.color = '#888';
+        // Limpa checkboxes de movimentação (marca "Todas")
+        const todas = document.getElementById('tipo-mov-todas');
+        const checks = document.querySelectorAll('.tipo-mov-check');
+        if (todas && checks.length) {
+            todas.checked = true;
+            checks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderTipoMov();
+        }
         filtrarMovimentacoes();
     });
 });
