@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Filtros
     const buscaInput = document.getElementById('busca-movimentacao');
-    const codigoMovInput = document.getElementById('filter-codigo-mov');
     const tipoMovInput = document.getElementById('filter-tipo-mov');
     const parteEnvolvidaInput = document.getElementById('filter-parte-envolvida');
     const btnLimpar = document.getElementById('btn-limpar-filtros');
@@ -105,16 +104,10 @@ document.addEventListener('mousedown', function(e) {
         filtrarMovimentacoes();
     });
 
-    codigoMovInput.addEventListener('input', function() {
-        this.value = this.value.replace(/\D/g, '').slice(0, 9);
-        filtrarMovimentacoes();
-    });
-
     parteEnvolvidaInput.addEventListener('input', filtrarMovimentacoes);
 
     btnLimpar.addEventListener('click', function() {
         buscaInput.value = '';
-        codigoMovInput.value = '';
         tipoMovInput.value = '';
         parteEnvolvidaInput.value = '';
         // Limpa o período
@@ -136,12 +129,30 @@ document.addEventListener('mousedown', function(e) {
         }
         filtrarMovimentacoes();
     });
+
+    const btnFiltrosAvancados = document.getElementById('btn-filtros-avancados');
+    const filtrosAvancados = document.getElementById('filtros-avancados');
+
+    if (btnFiltrosAvancados && filtrosAvancados) {
+        btnFiltrosAvancados.addEventListener('click', function() {
+            if (filtrosAvancados.style.display === 'none' || filtrosAvancados.style.display === '') {
+                filtrosAvancados.style.display = 'flex';
+                btnFiltrosAvancados.style.border = '';
+                btnFiltrosAvancados.style.background = '';
+                btnFiltrosAvancados.style.color = '';
+            } else {
+                filtrosAvancados.style.display = 'none';
+                btnFiltrosAvancados.style.border = '1px solid #1e94a3';
+                btnFiltrosAvancados.style.background = '#fff';
+                btnFiltrosAvancados.style.color = '#1e94a3';
+            }
+        });
+    }
 });
 
 // Função filtro simples
 function filtrarMovimentacoes() {
     const termo = document.getElementById('busca-movimentacao').value.trim().toLowerCase();
-    const codigoMov = document.getElementById('filter-codigo-mov').value.trim();
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
     const parte = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
@@ -150,8 +161,6 @@ function filtrarMovimentacoes() {
         let ok = true;
         // Nome ou código do produto
         if (termo && !(m.nome.toLowerCase().includes(termo) || (m.codigoProduto && m.codigoProduto.toString().includes(termo)))) ok = false;
-        // Código da movimentação
-        if (codigoMov && (!m.codigoMovimentacao || !m.codigoMovimentacao.toString().includes(codigoMov))) ok = false;
         // Data
         if (dataInicio && dataFim) {
             if (m.data < dataInicio || m.data > dataFim) ok = false;
