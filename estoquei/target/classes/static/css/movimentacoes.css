@@ -264,6 +264,10 @@ label {
     color: #333;
     font-weight: bold;
     display: block;
+    padding: 5px 0;
+}
+
+.filters-row label {
     padding: 2px 0;
 }
 
