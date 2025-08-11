@@ -9,12 +9,268 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Botão topo
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    }
+
+    // Filtros
+    const tipoMovInput = document.getElementById('filter-tipo-mov');
+    const parteEnvolvidaInput = document.getElementById('filter-parte-envolvida');
+    const btnLimpar = document.getElementById('btn-limpar-filtros');
+
+    // PERÍODO
+    const periodoInput = document.getElementById('filter-periodo');
+    const periodoPopup = document.getElementById('periodo-popup');
+    const dataInicio = document.getElementById('periodo-data-inicio');
+    const dataFim = document.getElementById('periodo-data-fim');
+
+    // Abre popup ao clicar no input
+    periodoInput.addEventListener('click', function(e) {
+        periodoPopup.style.display = 'block';
+        dataInicio.focus();
+        e.stopPropagation();
+    });
+
+    // Fecha popup ao clicar fora e atualiza placeholder/cor
+document.addEventListener('mousedown', function(e) {
+    function formatarDataBR(data) {
+        if (!data) return '';
+        const [ano, mes, dia] = data.split('-');
+        return `${dia}/${mes}/${ano}`;
+    }
+    let ativo = false;
+    if (dataInicio.value && dataFim.value) {
+        periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        ativo = true;
+    } else if (dataInicio.value) {
+        periodoInput.value = `${formatarDataBR(dataInicio.value)}`;
+        ativo = true;
+    } else if (dataFim.value) {
+        periodoInput.value = `${formatarDataBR(dataFim.value)}`;
+        ativo = true;
+    } else {
+        periodoInput.value = '';
+        ativo = false;
+    }
+    if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
+        periodoPopup.style.display = 'none';
+    }
+    const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
+    if (ativo) {
+        periodoInput.style.border = '2px solid #1e94a3';
+        periodoInput.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        periodoInput.style.border = '';
+        periodoInput.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+    filtrarMovimentacoes();
+});
+    // Validação: fim sem início
+    dataInicio.addEventListener('change', function() {
+        if (dataFim.value && !dataInicio.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione a data de início!',
+                text: 'Para filtrar por período, informe a data de início.',
+                timer: 1800,
+                showConfirmButton: false
+            });
+            dataFim.value = '';
+        }
+    });
+    dataFim.addEventListener('change', function() {
+        if (dataFim.value && !dataInicio.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Selecione a data de início!',
+                text: 'Para filtrar por período, informe a data de início.',
+                timer: 1800,
+                showConfirmButton: false
+            });
+            dataFim.value = '';
+        }
+    });
+
+
+    parteEnvolvidaInput.addEventListener('input', filtrarMovimentacoes);
+
+    btnLimpar.addEventListener('click', function() {
+        tipoMovInput.value = '';
+        parteEnvolvidaInput.value = '';
+        // Limpa o período
+        dataInicio.value = '';
+        dataFim.value = '';
+        periodoInput.value = '';
+        // Remove borda/cor do período
+        periodoInput.style.border = '';
+        periodoInput.style.color = '';
+        const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
+        if (chevron) chevron.style.color = '#888';
+        // Limpa checkboxes de movimentação (marca "Todas")
+        const todas = document.getElementById('tipo-mov-todas');
+        const checks = document.querySelectorAll('.tipo-mov-check');
+        if (todas && checks.length) {
+            todas.checked = true;
+            checks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderTipoMov();
+        }
+        filtrarMovimentacoes();
+    });
+
+    const btnFiltrosAvancados = document.getElementById('btn-filtros-avancados');
+    const filtrosAvancados = document.getElementById('filtros-avancados');
+
+    if (btnFiltrosAvancados) {
+        btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Mais Filtros';
+        btnFiltrosAvancados.style.border = '1px solid #1e94a3';
+        btnFiltrosAvancados.style.background = '#fff';
+        btnFiltrosAvancados.style.color = '#1e94a3';
+    }
+
+    if (btnFiltrosAvancados && filtrosAvancados) {
+        btnFiltrosAvancados.addEventListener('click', function() {
+            if (filtrosAvancados.style.display === 'none' || filtrosAvancados.style.display === '') {
+                filtrosAvancados.style.display = 'flex';
+                btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter" style="margin-right:4px;"></i>Mais Filtros';
+                btnFiltrosAvancados.style.border = '';
+                btnFiltrosAvancados.style.background = '';
+                btnFiltrosAvancados.style.color = '';
+            } else {
+                filtrosAvancados.style.display = 'none';
+                btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Mais Filtros';
+                btnFiltrosAvancados.style.border = '1px solid #1e94a3';
+                btnFiltrosAvancados.style.background = '#fff';
+                btnFiltrosAvancados.style.color = '#1e94a3';
+            }
+        });
+    }
+});
+
+// Função filtro simples
+function filtrarMovimentacoes() {
+    const termo = document.getElementById('busca-movimentacao').value.trim().toLowerCase();
+    const dataInicio = document.getElementById('periodo-data-inicio').value;
+    const dataFim = document.getElementById('periodo-data-fim').value;
+    const parte = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
+
+    let filtradas = movimentacoes.filter(m => {
+        let ok = true;
+        // Nome ou código do produto
+        if (termo && !(m.nome.toLowerCase().includes(termo) || (m.codigoProduto && m.codigoProduto.toString().includes(termo)))) ok = false;
+        // Data
+        if (dataInicio && dataFim) {
+            if (m.data < dataInicio || m.data > dataFim) ok = false;
+        } else if (dataInicio) {
+            if (m.data < dataInicio) ok = false;
+        } else if (dataFim) {
+            if (m.data > dataFim) ok = false;
+        }
+        // Tipo
+        const tiposSelecionados = getTiposSelecionados();
+        if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
+        // Parte envolvida
+        if (parte && (!m.parteEnvolvida || !m.parteEnvolvida.toLowerCase().includes(parte))) ok = false;
+        return ok;
+    });
+
+    paginaAtual = 1;
+    renderizarMovimentacoes(filtradas);
+}
+
+
+// Função tipo de movimentação
+window.expandedTipoMov = false;
+function showCheckboxesTipoMov() {
+    var checkboxes = document.getElementById("checkboxes-tipo-mov");
+    if (!window.expandedTipoMov) {
+        checkboxes.style.display = "block";
+        window.expandedTipoMov = true;
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedTipoMov = false;
+        atualizarPlaceholderTipoMov();
+        filtrarMovimentacoes();
+    }
+}
+
+// Lógica de seleção "Todas"
+function marcarOuDesmarcarTodosTipos() {
+    const todas = document.getElementById('tipo-mov-todas');
+    const checks = document.querySelectorAll('.tipo-mov-check');
+    checks.forEach(cb => cb.checked = todas.checked);
+    atualizarPlaceholderTipoMov();
+    filtrarMovimentacoes();
+}
+
+// Atualiza "Todas" se ambos individuais marcados
+document.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarPlaceholderTipoMov();
+            filtrarMovimentacoes();
+        });
+    });
+    atualizarPlaceholderTipoMov();
+});
+
+// Atualiza placeholder do input
+function atualizarPlaceholderTipoMov() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    const input = document.getElementById('filter-tipo-mov');
+    const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todas.checked = checks.slice(1).every(cb => cb.checked);
+
+    let texto = 'Todas';
+    let ativo = true;
+    if (selecionados.length === 0 || todas.checked) {
+        texto = 'Todas';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-tipo');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+// Função para pegar tipos selecionados
+function getTiposSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tipo-mov-check'));
+    const todas = document.getElementById('tipo-mov-todas');
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+document.addEventListener('mousedown', function(e) {
+    var checkboxes = document.getElementById("checkboxes-tipo-mov");
+    var overSelect = document.querySelector('.multiselect-tipo .overSelect');
+    if (
+        window.expandedTipoMov &&
+        checkboxes &&
+        !checkboxes.contains(e.target) &&
+        (!overSelect || !overSelect.contains(e.target))
+    ) {
+        checkboxes.style.display = "none";
+        window.expandedTipoMov = false;
+        atualizarPlaceholderTipoMov();
+        filtrarMovimentacoes();
     }
 });
 
@@ -116,11 +372,6 @@ function renderizarMovimentacoes(movimentacoes) {
             const rowHtml = `
                 <tr>
                     <td style="padding-left:10px;">${formatarData(m.data)}</td>
-                    <td>${m.codigoProduto}</td>
-                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
-                    <td class="categoria">${categoria}</td>
-                    <td>${tamanhoExibido}</td>
-                    <td class="genero">${genero}</td>
                     <td><span class="${tipoClass}">${tipoTexto}</span></td>
                     <td>${m.codigoMovimentacao || '-'}</td>
                     <td>${m.quantidadeMovimentada}</td>
@@ -128,6 +379,11 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${valorFormatado}</td>
                     <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
                     ${responsavelHtml}
+                    <td>${m.codigoProduto}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
+                    <td class="categoria">${categoria}</td>
+                    <td>${tamanhoExibido}</td>
+                    <td class="genero">${genero}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
                             <i class="fa-solid fa-pen"></i>
