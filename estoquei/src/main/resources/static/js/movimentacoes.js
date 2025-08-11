@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Filtros
-    const buscaInput = document.getElementById('busca-movimentacao');
     const tipoMovInput = document.getElementById('filter-tipo-mov');
     const parteEnvolvidaInput = document.getElementById('filter-parte-envolvida');
     const btnLimpar = document.getElementById('btn-limpar-filtros');
@@ -99,15 +98,10 @@ document.addEventListener('mousedown', function(e) {
         }
     });
 
-    // Sugestões (igual estoque)
-    buscaInput.addEventListener('input', function() {
-        filtrarMovimentacoes();
-    });
 
     parteEnvolvidaInput.addEventListener('input', filtrarMovimentacoes);
 
     btnLimpar.addEventListener('click', function() {
-        buscaInput.value = '';
         tipoMovInput.value = '';
         parteEnvolvidaInput.value = '';
         // Limpa o período
@@ -133,15 +127,24 @@ document.addEventListener('mousedown', function(e) {
     const btnFiltrosAvancados = document.getElementById('btn-filtros-avancados');
     const filtrosAvancados = document.getElementById('filtros-avancados');
 
+    if (btnFiltrosAvancados) {
+        btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Mais Filtros';
+        btnFiltrosAvancados.style.border = '1px solid #1e94a3';
+        btnFiltrosAvancados.style.background = '#fff';
+        btnFiltrosAvancados.style.color = '#1e94a3';
+    }
+
     if (btnFiltrosAvancados && filtrosAvancados) {
         btnFiltrosAvancados.addEventListener('click', function() {
             if (filtrosAvancados.style.display === 'none' || filtrosAvancados.style.display === '') {
                 filtrosAvancados.style.display = 'flex';
+                btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter" style="margin-right:4px;"></i>Mais Filtros';
                 btnFiltrosAvancados.style.border = '';
                 btnFiltrosAvancados.style.background = '';
                 btnFiltrosAvancados.style.color = '';
             } else {
                 filtrosAvancados.style.display = 'none';
+                btnFiltrosAvancados.innerHTML = '<i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Mais Filtros';
                 btnFiltrosAvancados.style.border = '1px solid #1e94a3';
                 btnFiltrosAvancados.style.background = '#fff';
                 btnFiltrosAvancados.style.color = '#1e94a3';
@@ -369,11 +372,6 @@ function renderizarMovimentacoes(movimentacoes) {
             const rowHtml = `
                 <tr>
                     <td style="padding-left:10px;">${formatarData(m.data)}</td>
-                    <td>${m.codigoProduto}</td>
-                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
-                    <td class="categoria">${categoria}</td>
-                    <td>${tamanhoExibido}</td>
-                    <td class="genero">${genero}</td>
                     <td><span class="${tipoClass}">${tipoTexto}</span></td>
                     <td>${m.codigoMovimentacao || '-'}</td>
                     <td>${m.quantidadeMovimentada}</td>
@@ -381,6 +379,11 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${valorFormatado}</td>
                     <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
                     ${responsavelHtml}
+                    <td>${m.codigoProduto}</td>
+                    <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
+                    <td class="categoria">${categoria}</td>
+                    <td>${tamanhoExibido}</td>
+                    <td class="genero">${genero}</td>
                     <td style="width:35px; max-width: 35px; padding-right:20px" class="actions">
                         <button type="button" onclick="abrirEdicaoMovimentacao(${m.id})" title="Editar" style="background:none; border:none; cursor:pointer;">
                             <i class="fa-solid fa-pen"></i>
