@@ -31,7 +31,7 @@
         <h2 style="margin-bottom: -10px;">Buscar Movimentações</h2>
         <div class="filters-row">
             <div class="input-group" style="min-width: 625px; position:relative;">
-                <input type="text" id="filter-parte-envolvida" placeholder="Nome da parte ou código da movimentação" style="padding-right:32px;" />
+                <input type="text" id="filter-parte-envolvida" placeholder="Digite o nome da parte ou código da movimentação" style="padding-right:32px;" />
                 <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                     <i class="fa fa-search"></i>
                 </span>
@@ -161,7 +161,6 @@
                     <div class="overSelect" onclick="showCheckboxesResponsavelMulti()"></div>
                 </div>
                 <div id="checkboxes-responsavel-multi" style="display:none;">
-                    <!-- Checkboxes de responsável são gerados via JS igual filtro de usuários -->
                 </div>
             </div>
           <!-- Produtos -->
@@ -186,7 +185,6 @@
                         <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
                     </div>
                     <div id="checkboxes-categoria-multi" style="display:none;">
-                        <!-- Checkboxes de categoria são gerados via JS igual estoque.js -->
                     </div>
                 </div>
                 <!-- Tamanho -->
@@ -200,23 +198,25 @@
                         <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
                     </div>
                     <div id="checkboxes-tamanho-multi" style="display:none;">
-                        <!-- Checkboxes de tamanho são gerados via JS igual estoque.js -->
                     </div>
                 </div>
                 <!-- Gênero -->
                 <div class="multiselect multiselect-genero input-group">
                     <label for="filter-genero-multi">Gêneros</label>
                     <div style="position:relative;">
-                        <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; width: 130px;" />
+                        <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
                         <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                             <i class="fa fa-chevron-down"></i>
                         </span>
                         <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
                     </div>
                     <div id="checkboxes-genero-multi" style="display:none;">
-                        <!-- Checkboxes de gênero são gerados via JS igual estoque.js -->
                     </div>
                 </div>
+
+                <button id="btn-limpar-filtros-extras" class="btn limpar" style="font-size:12px; width: 95px;">
+                    <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar
+                </button>
             </div>
         </div>
 
