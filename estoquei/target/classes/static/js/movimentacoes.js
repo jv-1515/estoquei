@@ -45,7 +45,11 @@ document.addEventListener('mousedown', function(e) {
     }
     let ativo = false;
     if (dataInicio.value && dataFim.value) {
-        periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        if (dataInicio.value === dataFim.value) {
+            periodoInput.value = `${formatarDataBR(dataInicio.value)}`;
+        } else {
+            periodoInput.value = `${formatarDataBR(dataInicio.value)} - ${formatarDataBR(dataFim.value)}`;
+        }
         ativo = true;
     } else if (dataInicio.value) {
         periodoInput.value = `${formatarDataBR(dataInicio.value)}`;
@@ -59,6 +63,7 @@ document.addEventListener('mousedown', function(e) {
     }
     if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
         periodoPopup.style.display = 'none';
+        filtrarMovimentacoes();
     }
     const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
     if (ativo) {
@@ -70,7 +75,7 @@ document.addEventListener('mousedown', function(e) {
         periodoInput.style.color = '';
         if (chevron) chevron.style.color = '#888';
     }
-    filtrarMovimentacoes();
+    // filtrarMovimentacoes();
 });
     // Validação: fim sem início
     dataInicio.addEventListener('change', function() {
@@ -80,7 +85,8 @@ document.addEventListener('mousedown', function(e) {
                 title: 'Selecione a data de início!',
                 text: 'Para filtrar por período, informe a data de início.',
                 timer: 1800,
-                showConfirmButton: false
+                showConfirmButton: false,
+                allowOutsideClick: false
             });
             dataFim.value = '';
         }
@@ -350,7 +356,7 @@ function renderizarMovimentacoes(movimentacoes) {
     const movimentacoesPagina = movimentacoes.slice(inicio, fim);
 
     if (movimentacoesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
