@@ -155,16 +155,22 @@ document.addEventListener('mousedown', function(e) {
 
 // Função filtro simples
 function filtrarMovimentacoes() {
-    const termo = document.getElementById('busca-movimentacao').value.trim().toLowerCase();
+    const termo = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
-    const parte = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
+    const tiposSelecionados = getTiposSelecionados();
 
     let filtradas = movimentacoes.filter(m => {
         let ok = true;
-        // Nome ou código do produto
-        if (termo && !(m.nome.toLowerCase().includes(termo) || (m.codigoProduto && m.codigoProduto.toString().includes(termo)))) ok = false;
-        // Data
+
+        // Busca por parte envolvida OU código da movimentação
+        if (termo) {
+            const parte = m.parteEnvolvida ? m.parteEnvolvida.toLowerCase() : '';
+            const codigoMov = m.codigoMovimentacao ? m.codigoMovimentacao.toString() : '';
+            if (!parte.includes(termo) && !codigoMov.includes(termo)) ok = false;
+        }
+
+        // Período
         if (dataInicio && dataFim) {
             if (m.data < dataInicio || m.data > dataFim) ok = false;
         } else if (dataInicio) {
@@ -172,11 +178,10 @@ function filtrarMovimentacoes() {
         } else if (dataFim) {
             if (m.data > dataFim) ok = false;
         }
-        // Tipo
-        const tiposSelecionados = getTiposSelecionados();
+
+        // Tipo de movimentação
         if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
-        // Parte envolvida
-        if (parte && (!m.parteEnvolvida || !m.parteEnvolvida.toLowerCase().includes(parte))) ok = false;
+
         return ok;
     });
 
