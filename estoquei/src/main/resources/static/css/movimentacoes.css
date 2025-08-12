@@ -28,7 +28,7 @@ h2 {
 .filters-row {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     align-items: flex-end;
 }
 .filters-container {
