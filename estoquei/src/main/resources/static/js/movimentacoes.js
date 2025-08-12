@@ -157,6 +157,46 @@ document.addEventListener('mousedown', function(e) {
             }
         });
     }
+
+    // --- QUANTIDADE FAIXA ---
+    const qtdInput = document.getElementById('filter-quantidade');
+    const qtdPopup = document.getElementById('quantidade-faixa-popup');
+    const qtdMin = document.getElementById('quantidade-min');
+    const qtdMax = document.getElementById('quantidade-max');
+
+    // Abrir popup ao clicar no input
+    if (qtdInput && qtdPopup) {
+        qtdInput.addEventListener('click', function(e) {
+            qtdPopup.style.display = 'block';
+            qtdMin.focus();
+            e.stopPropagation();
+        });
+        // Fecha popup ao clicar fora e aplica filtro
+        document.addEventListener('mousedown', function(e) {
+            if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
+                qtdPopup.style.display = 'none';
+                aplicarFiltroQtdFaixa();
+            }
+        });
+    }
+
+    // Máscara para min/max
+    if (qtdMin) qtdMin.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    });
+    if (qtdMax) qtdMax.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    });
+
+    // Listeners para checkboxes e inputs
+    ['quantidade-min','quantidade-max'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', aplicarFiltroQtdFaixa);
+        if (el && (id === 'quantidade-min' || id === 'quantidade-max')) el.addEventListener('input', aplicarFiltroQtdFaixa);
+    });
+
+    // Atualiza placeholder ao carregar
+    atualizarPlaceholderQuantidade();
 });
 
 // Função filtro simples
@@ -165,6 +205,8 @@ function filtrarMovimentacoes() {
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
     const tiposSelecionados = getTiposSelecionados();
+    const qtdMin = document.getElementById('quantidade-min').value ? parseInt(document.getElementById('quantidade-min').value) : 0;
+    const qtdMax = document.getElementById('quantidade-max').value ? parseInt(document.getElementById('quantidade-max').value) : 999;
 
     let filtradas = movimentacoes.filter(m => {
         let ok = true;
@@ -187,6 +229,8 @@ function filtrarMovimentacoes() {
 
         // Tipo de movimentação
         if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
+
+        if (m.quantidadeMovimentada < qtdMin || m.quantidadeMovimentada > qtdMax) ok = false;
 
         return ok;
     });
@@ -891,4 +935,57 @@ function aplicarEstiloInputsMovimentacao() {
             input.style.backgroundColor = 'white';
         });
     });
+}
+
+// Função para aplicar o filtro e atualizar placeholder
+function aplicarFiltroQtdFaixa() {
+    const qtdInput = document.getElementById('filter-quantidade');
+    const qtdMin = document.getElementById('quantidade-min');
+    const qtdMax = document.getElementById('quantidade-max');
+    let min = qtdMin.value;
+    let max = qtdMax.value;
+    let ativo = true;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (min === "" && max === "") {
+        qtdInput.value = '';
+        ativo = false;
+        atualizarPlaceholderQuantidade();
+        filtrarMovimentacoes();
+        return;
+    }
+
+    min = min === "" ? 0 : parseInt(min);
+    max = max === "" ? 999 : parseInt(max);
+
+    if (min > max) [min, max] = [max, min];
+    qtdMin.value = min;
+    qtdMax.value = max;
+    qtdInput.value = `${min} - ${max}`;
+    if (qtdInput.value === "0 - 999") {
+        qtdInput.value = "Todas";
+        ativo = false;
+    }
+
+    atualizarPlaceholderQuantidade();
+    filtrarMovimentacoes();
+}
+
+// Atualiza placeholder e cor
+function atualizarPlaceholderQuantidade() {
+    const qtdInput = document.getElementById('filter-quantidade');
+    const qtdMin = document.getElementById('quantidade-min');
+    const qtdMax = document.getElementById('quantidade-max');
+    let min = qtdMin.value;
+    let max = qtdMax.value;
+    let ativo = false;
+
+    if ((min && min !== "0") || (max && max !== "999")) ativo = true;
+
+    if (qtdInput) {
+        qtdInput.style.border = ativo ? '2px solid #1e94a3' : '';
+        qtdInput.style.color = ativo ? '#1e94a3' : '';
+    }
+    const chevron = qtdInput.parentNode.querySelector('.chevron-quantidade');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 }
