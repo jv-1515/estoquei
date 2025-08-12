@@ -285,7 +285,10 @@ input:focus[readonly] {
     min-width: 120px;
     position: relative;
 }
-#checkboxes-tipo-mov {
+#checkboxes-tipo-mov,
+#checkboxes-categoria-multi,
+#checkboxes-tamanho-multi,
+#checkboxes-genero-multi {
     display: none;
     border: 1px #aaa solid;
     border-radius: 4px;
@@ -297,7 +300,14 @@ input:focus[readonly] {
     max-height: 90px;
     overflow-y: auto;
 }
-#checkboxes-tipo-mov label {
+#checkboxes-genero-multi {
+    border-radius: 4px;;
+}
+
+#checkboxes-tipo-mov label,
+#checkboxes-categoria-multi label,
+#checkboxes-tamanho-multi label,
+#checkboxes-genero-multi label {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
@@ -310,7 +320,10 @@ input:focus[readonly] {
     gap: 8px;
     justify-content: space-between;
 }
-#checkboxes-tipo-mov input[type="checkbox"] {
+#checkboxes-tipo-mov input[type="checkbox"],
+#checkboxes-categoria-multi input[type="checkbox"],
+#checkboxes-tamanho-multi input[type="checkbox"],
+#checkboxes-genero-multi input[type="checkbox"] {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
@@ -321,6 +334,15 @@ input:focus[readonly] {
     left: 0; right: 0; top: 0; bottom: 0;
     cursor: pointer;
     z-index: 2;
+}
+
+#checkboxes-categoria-multi label:hover,
+#checkboxes-tamanho-multi label:hover,
+#checkboxes-genero-multi label:hover,
+#checkboxes-tipo-mov label:hover,
+.quantidade-check-label:hover {
+    background-color: #f3f3f3;
+    color: black !important;
 }
 
 .input-group input,
