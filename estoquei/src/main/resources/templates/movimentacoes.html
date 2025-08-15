@@ -40,7 +40,7 @@
             <div class="input-group" style="max-width: 160px; position:relative;">
                 <label for="filter-periodo">Período</label>
                 <div style="position:relative;">
-                    <input type="text" id="filter-periodo" placeholder="Todo o período" readonly style="cursor:pointer; width: 160px;" />
+                    <input type="text" id="filter-periodo" placeholder="Todo o período" readonly style="cursor:pointer;" />
                     <span class="chevron-periodo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                         <i class="fa fa-chevron-down"></i>
                     </span>
@@ -58,10 +58,10 @@
                     </div>
                 </div>
             </div>
-                <div class="multiselect multiselect-tipo input-group" style="min-width: 150px; width: 150px;">
+                <div class="multiselect multiselect-tipo input-group" >
                     <label for="filter-tipo-mov">Movimentação</label>
                     <div style="position:relative;">
-                        <input type="text" id="filter-tipo-mov" placeholder="Todas" style="cursor:pointer; padding-right: 20px; width: 150px;" />
+                        <input type="text" id="filter-tipo-mov" placeholder="Todas" style="cursor:pointer; padding-right: 20px;" />
                         <span class="chevron-tipo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                             <i class="fa fa-chevron-down"></i>
                         </span>
@@ -96,7 +96,7 @@
         <!-- Filtros Extras -->
         <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; width:1300px;">
             <h2>Filtros Extras</h2>
-            <div class="filters-row" style="display:flex; gap:8px;">
+            <div class="filters-row">
                 <!-- Quantidade -->
                 <div class="input-group">
                     <label for="filter-quantidade">Quantidades</label>

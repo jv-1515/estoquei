@@ -1,6 +1,12 @@
-window.onload = function() {
+// window.onload = function() {
+//     renderizarRelatorios(window.relatoriosGerados);
+// }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Sempre recarrega do localStorage ao abrir a tela
+    window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
     renderizarRelatorios(window.relatoriosGerados);
-}
+});
 
 //botão voltar ao topo
 window.addEventListener('scroll', function() {
@@ -142,7 +148,7 @@ window.renomearRelatorio = function(id) {
     // Mostra só o nome sem .pdf
     const nomeSemExtensao = relatorio.nome.replace(/\.pdf$/i, '');
     Swal.fire({
-        title: '<div style="padding-top:20px;">Renomear Relatório</div>',
+        title: '<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear Relatório</h2>',
         input: 'text',
         inputValue: nomeSemExtensao,
         showCloseButton: true,
@@ -162,13 +168,15 @@ window.renomearRelatorio = function(id) {
         if (result.isConfirmed) {
             const novoNome = (result.value || '').trim();
             // Não pode salvar vazio, só espaços, só .pdf ou caracteres especiais
-            const nomeValido = novoNome.length > 0 
+            const nomeValido = 
+                novoNome.length > 0 
                 && !/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(novoNome) // permite letras, números, espaço, underline, hífen e acentos
-                && novoNome.toLowerCase() !== 'pdf';
+                && novoNome.toLowerCase() !== 'pdf'
+                && !/[_\-]$/.test(novoNome); // nao pode terminar com _ ou -
             if (!nomeValido) {
                 Swal.fire({
                     title: 'Nome inválido!',
-                    text: 'O nome não pode ser vazio, só ".pdf" ou conter caracteres especiais.',
+                    text: 'O nome não pode ser vazio, só ".pdf" ou conter caracteres especiais',
                     icon: 'error',
                     showConfirmButton: false,
                     timer: 1500,

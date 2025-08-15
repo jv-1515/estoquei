@@ -468,6 +468,7 @@ select#registros-select option {
 
 .fa-arrow-left:hover,
 .fa-house:hover,
+.fa-bell:hover,
 .fa-arrow-up:hover {
     color: #1E94A3;
     transition: color 0.2s;
@@ -622,6 +623,24 @@ select#registros-select option {
 .close-icon:hover {
     color: #f27474;
 }
+
+
+
+.notification {
+    position: relative;
+    font-size: 24px;
+}
+
+.notification .badge {
+    position: absolute;
+    top: 2px;
+    left: 16px;
+    font-size: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 100%;
+}
+
 
 
 /* sweetAlert */

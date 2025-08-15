@@ -63,7 +63,7 @@ document.addEventListener('mousedown', function(e) {
     }
     if (!periodoPopup.contains(e.target) && e.target !== periodoInput) {
         periodoPopup.style.display = 'none';
-        filtrarMovimentacoes();
+        // filtrarMovimentacoes();
     }
     const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
     if (ativo) {
@@ -179,6 +179,14 @@ document.addEventListener('mousedown', function(e) {
             }
         });
     }
+
+    // Fecha popup de período ao clicar fora e aplica filtro
+    document.addEventListener('mousedown', function(e) {
+        if (periodoPopup && periodoPopup.style.display === 'block' && !periodoPopup.contains(e.target) && e.target !== periodoInput) {
+            periodoPopup.style.display = 'none';
+            filtrarMovimentacoes(); // ao fechar o popup de período
+        }
+    });
 
     // Máscara para min/max
     if (qtdMin) qtdMin.addEventListener('input', function() {
