@@ -220,7 +220,6 @@ window.addEventListener('DOMContentLoaded', function () {
             span.style.display = "none";
             p.appendChild(span);
             if (idx === 0 && icon) {
-                // ✅ DELAY para sincronizar com a animação do card (1.2s)
                 setTimeout(() => {
                     icon.classList.remove('fa-solid');
                     icon.classList.add('fa-regular');
