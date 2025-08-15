@@ -9,6 +9,7 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
@@ -2027,4 +2028,44 @@ function formatarData(data) {
     const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
     const ano = dataObj.getFullYear();
     return `${dia}/${mes}/${ano}`;
+}
+
+
+
+function atualizarBadgeBaixoEstoque() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/baixo-estoque')
+        .then(res => res.json())
+        .then(produtos => {
+            const qtd = produtos.length;
+            if (qtd < 0) {
+                const bellIcon = document.querySelector('.fa-regular.fa-bell');
+                const notification = document.querySelector('.notification');
+                const nots = document.getElementById('nots');
+                if (bellIcon && notification && nots) {
+                    bellIcon.style.display = 'none';
+                    notification.style.display = 'none';
+                    nots.style.display = 'none';
+                }
+                return;
+            }
+
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.removeAttribute('style');
+            badge.style.display = 'inline-block';
+
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+        });
 }

@@ -96,7 +96,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
             <div style="display: flex; flex-direction: column; flex: 2;">
             <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final</label>
-            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f9f9f9" readonly>
+            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f1f1f1" readonly>
             </div>
             </div>
             <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
@@ -124,6 +124,47 @@ window.addEventListener('DOMContentLoaded', function() {
         // Preencher campos do produto
         if (produto && produto.codigo) preencherCampos(produto);
 
+        
+        // Validação ao digitar código da compra/venda
+        const codigoCompraInput = document.getElementById('codigo-compra');
+        const codigoVendaInput = document.getElementById('codigo-venda');
+        
+        if (codigoCompraInput) {
+            codigoCompraInput.addEventListener('input', function() {
+                // Se produto já está no limite, não pode abastecer
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) >= 999) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Limite de estoque atingido!',
+                        text: 'Este produto não pode ser abastecido.',
+                        timer: 1800,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                    // Limpa o campo para evitar envio
+                    codigoCompraInput.value = '';
+                }
+            });
+        }
+        if (codigoVendaInput) {
+            codigoVendaInput.addEventListener('input', function() {
+                // Se produto está zerado, não pode registrar saída
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Estoque insuficiente!',
+                        text: 'O produto precisa ser reabastecido antes de registrar saída.',
+                        timer: 1800,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                    // Limpa o campo para evitar envio
+                    codigoVendaInput.value = '';
+                }
+            });
+        }
+
         // Cria aviso limite acima do campo quantidade-final
         const quantidadeFinalInput = document.getElementById('quantidade-final');
         if (quantidadeFinalInput && !document.getElementById('aviso-limite')) {
@@ -150,9 +191,11 @@ window.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Selecione um produto!',
-                        text: 'Nenhum produto foi selecionado.',
+                        text: 'Nenhum produto foi selecionado',
                         timer: 1500,
-                        showConfirmButton: false
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
                     });
                     return;
                 }
@@ -345,7 +388,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     title: 'Estoque insuficiente!',
                     text: `Você só pode vender até ${maxPermitido} unidades.`,
                     timer: 2500,
-                    showConfirmButton: false
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
                 });
             } else if (tipo === 'SAIDA' && maxPermitido === 0) {
                 quantidadeFinalInput.value = atual - entradaNum;
@@ -354,7 +399,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     title: 'Estoque insuficiente!',
                     text: `O produto precisa ser reabastecido.`,
                     timer: 1500,
-                    showConfirmButton: false
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
                 });
             } else if (tipo === 'ENTRADA' && maxPermitido === 0) {
                 quantidadeFinalInput.value = atual;
@@ -363,7 +410,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     title: 'Limite de estoque atingido!',
                     text: 'Este produto não pode ser abastecido.',
                     timer: 1500,
-                    showConfirmButton: false
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
                 });
             } else {
                 quantidadeFinalInput.value = atual + entradaNum;
@@ -372,7 +421,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     title: 'Limite atingido!',
                     text: `Você só pode abastecer até ${maxPermitido} unidades.`,
                     timer: 2500,
-                    showConfirmButton: false
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
                 });
             }
             return;
@@ -559,10 +610,6 @@ function aplicarEstiloInputs() {
                 } else {
                     input.style.backgroundColor = '#f1f1f1';
                 }
-            });
-            // Ao focar, sempre branco
-            input.addEventListener('focus', () => {
-                input.style.backgroundColor = 'white';
             });
         });
     }
