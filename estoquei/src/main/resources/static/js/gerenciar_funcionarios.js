@@ -365,7 +365,7 @@ function removerFuncionario(id) {
         Swal.fire({
             icon: 'warning',
             title: 'Ação não permitida!',
-            text: 'Você não pode remover a si mesmo.',
+            text: 'Você não pode remover a si mesmo',
             showConfirmButton: false,
             timer: 1500,
             timerProgressBar: true,
