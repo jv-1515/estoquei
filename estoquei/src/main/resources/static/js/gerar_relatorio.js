@@ -213,13 +213,14 @@
 //             let nomeArquivo = `${baseNomeArquivo}.pdf`;
 
 //             // Garante nome único adicionando _1, _2, etc.
-//             if (window.relatoriosGerados) {
-//                 let contador = 1;
-//                 while (window.relatoriosGerados.some(r => r.nome === nomeArquivo)) {
-//                     nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
-//                     contador++;
-//                 }
+//             let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+//             let contador = 1;
+//             let nomeUnico = `${baseNomeArquivo}.pdf`;
+//             while (relatorios.some(r => r.nome === nomeUnico)) {
+//                 nomeUnico = `${baseNomeArquivo}_${contador}.pdf`;
+//                 contador++;
 //             }
+//             nomeArquivo = nomeUnico;
 
 //             doc.save(nomeArquivo); // (mantém para baixar na hora)
 
@@ -460,12 +461,15 @@ async function gerarRelatorio() {
         const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
         let nomeArquivo = `${baseNomeArquivo}.pdf`;
 
-        if (!window.relatoriosGerados) window.relatoriosGerados = [];
+        // Antes de criar nomeArquivo:
+        let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
         let contador = 1;
-        while (window.relatoriosGerados.some(r => r.nome === nomeArquivo)) {
-            nomeArquivo = `${baseNomeArquivo}_${contador}.pdf`;
+        let nomeUnico = `${baseNomeArquivo}.pdf`;
+        while (relatorios.some(r => r.nome === nomeUnico)) {
+            nomeUnico = `${baseNomeArquivo}_${contador}.pdf`;
             contador++;
         }
+        nomeArquivo = nomeUnico;
 
         // Download
         const a = document.createElement('a');
@@ -490,8 +494,10 @@ async function gerarRelatorio() {
                     : formatarDataBR(hoje.toISOString().slice(0, 10)),
                 base64
             };
-            window.relatoriosGerados.push(novoRelatorio);
-            localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
+            let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+            relatorios.push(novoRelatorio);
+            window.relatoriosGerados = relatorios;
+            localStorage.setItem('relatoriosGerados', JSON.stringify(relatorios));
         };
         reader.readAsDataURL(blob);
 
