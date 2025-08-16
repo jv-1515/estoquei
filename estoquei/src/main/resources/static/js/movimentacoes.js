@@ -310,6 +310,119 @@ function atualizarPlaceholderValor() {
 
 
 
+
+
+// --- RESPONSÁVEL MULTISELECT ---
+function montarCheckboxesResponsavel(responsaveis) {
+    const divResp = document.getElementById('checkboxes-responsavel-multi');
+    divResp.innerHTML = `<label><input type="checkbox" id="responsavel-multi-todos" class="responsavel-multi-check" value="" checked> Todos</label>`;
+    responsaveis.forEach(r => {
+        divResp.innerHTML += `<label><input type="checkbox" class="responsavel-multi-check" value="${r}" checked> ${r}</label>`;
+    });
+
+    const checks = Array.from(divResp.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+
+    // "Todos" marca/desmarca todos
+    todos.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todos.checked);
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    });
+
+    // Individuais: se todos marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todos.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderResponsavelMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderResponsavelMulti();
+
+    const respInput = document.getElementById('filter-responsavel');
+    const respPopup = document.getElementById('checkboxes-responsavel-multi');
+    if (respInput && respPopup) {
+        respInput.onclick = function(e) {
+            respPopup.style.display = 'block';
+            window.expandedResponsavelMulti = true;
+            e.stopPropagation();
+        };
+    }
+}
+
+document.addEventListener('mousedown', function(e) {
+    const respInput = document.getElementById('filter-responsavel');
+    const respPopup = document.getElementById('checkboxes-responsavel-multi');
+    if (
+        respPopup &&
+        respPopup.style.display === 'block' &&
+        !respPopup.contains(e.target) &&
+        e.target !== respInput
+    ) {
+        respPopup.style.display = 'none';
+        window.expandedResponsavelMulti = false;
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    }
+});
+
+// Função para mostrar/ocultar o popup
+window.expandedResponsavelMulti = false;
+function showCheckboxesResponsavelMulti() {
+    var checkboxes = document.getElementById("checkboxes-responsavel-multi");
+    if (!window.expandedResponsavelMulti) {
+        checkboxes.style.display = "block";
+        window.expandedResponsavelMulti = true;
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedResponsavelMulti = false;
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    }
+}
+
+// Atualiza placeholder do input
+function atualizarPlaceholderResponsavelMulti() {
+    const checks = Array.from(document.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-responsavel');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todos.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        texto = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-responsavel');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+// Pega responsáveis selecionados
+function getResponsaveisSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+    if (todos.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+
+
+
+
 // Função filtro
 function filtrarMovimentacoes() {
     const termo = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
@@ -324,6 +437,8 @@ function filtrarMovimentacoes() {
     const minValor = valorMinRaw ? parseFloat(valorMinRaw) / 100 : 0;
     const maxValor = valorMaxRaw ? parseFloat(valorMaxRaw) / 100 : 999999.99;
 
+    const responsaveisSelecionados = getResponsaveisSelecionados();
+        
     let filtradas = movimentacoes.filter(m => {
         let ok = true;
 
@@ -350,6 +465,9 @@ function filtrarMovimentacoes() {
 
         // Filtro de valor
         if (m.valorMovimentacao < minValor || m.valorMovimentacao > maxValor) ok = false;
+
+        if (responsaveisSelecionados.length && !responsaveisSelecionados.includes(m.responsavel)) ok = false;
+
 
         return ok;
     });
@@ -811,6 +929,9 @@ function carregarMovimentacoes(top) {
         })
         .then(data => {
             movimentacoes = data;
+
+            const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+            montarCheckboxesResponsavel(nomes);            
             
             movimentacoes.sort((a, b) => {
                 const dataA = new Date(a.data);
@@ -1013,6 +1134,18 @@ window.onload = function() {
             btnExibirDetalhes.style.color = '';
         }
     });
+
+    // Carrega todos os funcionários para o filtro de responsável
+    // fetch('/movimentacoes')
+    //     .then(res => res.json())
+    //     .then(movimentacoes => {
+    //         const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+    //         montarCheckboxesResponsavel(nomes);
+    //     })
+    //     .catch(() => {
+    //         const responsaveisUnicos = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+    //         montarCheckboxesResponsavel(responsaveisUnicos);
+    //     });
 };
 
 function validarDataEdicaoMovimentacao() {
@@ -1126,6 +1259,14 @@ if (btnLimparFiltrosExtras) {
         document.getElementById('valor-max').value = '';
         document.getElementById('filter-valor').value = '';
         atualizarPlaceholderValor();
+
+        const respTodos = document.getElementById('responsavel-multi-todos');
+        const respChecks = document.querySelectorAll('.responsavel-multi-check');
+        if (respTodos && respChecks.length) {
+            respTodos.checked = true;
+            respChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderResponsavelMulti();
+        }
 
         filtrarMovimentacoes();
     });
