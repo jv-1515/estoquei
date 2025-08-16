@@ -316,11 +316,13 @@ input:focus[readonly] {
     outline: none !important;
     box-shadow: none !important;
 }
-
+.multiselect,
 .multiselect-tipo {
     min-width: 120px;
     position: relative;
 }
+
+#checkboxes-responsavel-multi,
 #checkboxes-tipo-mov,
 #checkboxes-categoria-multi,
 #checkboxes-tamanho-multi,
@@ -337,9 +339,10 @@ input:focus[readonly] {
     overflow-y: auto;
 }
 #checkboxes-genero-multi {
-    border-radius: 4px;;
+    border-radius: 4px;
 }
 
+#checkboxes-responsavel-multi label,
 #checkboxes-tipo-mov label,
 #checkboxes-categoria-multi label,
 #checkboxes-tamanho-multi label,
@@ -356,6 +359,7 @@ input:focus[readonly] {
     gap: 8px;
     justify-content: space-between;
 }
+#checkboxes-responsavel-multi input[type="checkbox"],
 #checkboxes-tipo-mov input[type="checkbox"],
 #checkboxes-categoria-multi input[type="checkbox"],
 #checkboxes-tamanho-multi input[type="checkbox"],
@@ -372,6 +376,7 @@ input:focus[readonly] {
     z-index: 2;
 }
 
+#checkboxes-responsavel-multi label:hover,
 #checkboxes-categoria-multi label:hover,
 #checkboxes-tamanho-multi label:hover,
 #checkboxes-genero-multi label:hover,
