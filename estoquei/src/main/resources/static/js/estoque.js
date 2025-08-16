@@ -388,7 +388,11 @@ function atualizarPlaceholderQuantidade() {
         if (chkZerados.checked) filtros.push('Zerados');
         let faixa = '';
         if (min && max) {
-            faixa = `de ${min} até ${max}`;
+            if (min == max) {
+            faixa = `${min}`;
+            } else {
+            faixa = `${min} - ${max}`;
+            }
         } else if (min) {
             faixa = `a partir de ${min}`;
         } else if (max) {
@@ -1195,7 +1199,11 @@ function aplicarFiltroPrecoFaixa() {
     min = minNum.toFixed(2).replace('.', ',');
     max = maxNum.toFixed(2).replace('.', ',');
 
-    precoInput.value = `R$ ${min} - R$ ${max}`;
+    if (min === max) {
+        precoInput.value = `R$ ${min}`;
+    } else {
+        precoInput.value = `R$ ${min} - R$ ${max}`;
+    }
     if (precoInput.value === "R$ 0,00 - R$ 999,99") {
         precoInput.value = 'Todos';
         ativo = false;
@@ -1328,7 +1336,11 @@ function aplicarFiltroLimiteFaixa() {
     if (min > max) [min, max] = [max, min];
     limiteMin.value = min;
     limiteMax.value = max;
-    limiteInput.value = `${min} - ${max}`;
+    if (min === max) {
+        limiteInput.value = `Apenas com ${min}`;
+    } else {
+        limiteInput.value = `${min} - ${max}`;
+    }
     if (limiteInput.value === "1 - 999") {
         limiteInput.value = "Todos";
         ativo = false;
