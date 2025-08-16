@@ -108,7 +108,7 @@ h2 {
     transition: width 1.2s cubic-bezier(0.4,0,0.2,1) 0s;
 }
 .card:not(:hover):not(.card-animating)::before {
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1) 0.5s;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1) 0.5s;
 }
 
 .card a {
