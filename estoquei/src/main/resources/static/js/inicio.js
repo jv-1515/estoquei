@@ -216,15 +216,15 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
         card.addEventListener('mouseleave', () => {
-            p.innerHTML = cardInfo.original + "<br>";
-            span.style.display = "none";
-            p.appendChild(span);
-            if (idx === 0 && icon) {
-                setTimeout(() => {
+            setTimeout(() => {
+                p.innerHTML = cardInfo.original + "<br>";
+                span.style.display = "none";
+                p.appendChild(span);
+                if (idx === 0 && icon) {
                     icon.classList.remove('fa-solid');
                     icon.classList.add('fa-regular');
-                }, 1300); // Mesmo tempo da animação do card
-            }
+                }
+            }, 1190);
         });
     });
 });
