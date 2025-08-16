@@ -119,6 +119,7 @@ document.addEventListener('mousedown', function(e) {
         periodoInput.style.color = '';
         const chevron = periodoInput.parentNode.querySelector('.chevron-periodo');
         if (chevron) chevron.style.color = '#888';
+
         // Limpa checkboxes de movimentação (marca "Todas")
         const todas = document.getElementById('tipo-mov-todas');
         const checks = document.querySelectorAll('.tipo-mov-check');
@@ -127,6 +128,7 @@ document.addEventListener('mousedown', function(e) {
             checks.forEach(cb => cb.checked = true);
             atualizarPlaceholderTipoMov();
         }
+
         filtrarMovimentacoes();
     });
 
@@ -207,7 +209,221 @@ document.addEventListener('mousedown', function(e) {
     atualizarPlaceholderQuantidade();
 });
 
-// Função filtro simples
+
+
+
+// --- VALOR FAIXA ---
+const valorInput = document.getElementById('filter-valor');
+const valorPopup = document.getElementById('valor-faixa-popup');
+const valorMin = document.getElementById('valor-min');
+const valorMax = document.getElementById('valor-max');
+
+// Abrir popup ao clicar no input
+if (valorInput && valorPopup) {
+    valorInput.addEventListener('click', function(e) {
+        valorPopup.style.display = 'block';
+        valorMin.focus();
+        e.stopPropagation();
+    });
+    // Fecha popup ao clicar fora e aplica filtro
+    document.addEventListener('mousedown', function(e) {
+        if (valorPopup.style.display === 'block' && !valorPopup.contains(e.target) && e.target !== valorInput) {
+            valorPopup.style.display = 'none';
+            aplicarFiltroValorFaixa();
+        }
+    });
+}
+
+// Máscara para min/max
+function mascaraValorFaixa(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 9) value = value.slice(0, 9); // até 999.999,99
+    if (value.length > 0) {
+        let floatValue = (parseInt(value) / 100).toFixed(2);
+        let partes = floatValue.split('.');
+        let inteiro = partes[0];
+        let decimal = partes[1];
+        inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        input.value = 'R$ ' + inteiro + ',' + decimal;
+    } else {
+        input.value = '';
+    }
+}
+if (valorMin) valorMin.addEventListener('input', function() { mascaraValorFaixa(this); });
+if (valorMax) valorMax.addEventListener('input', function() { mascaraValorFaixa(this); });
+
+// Função para aplicar o filtro e atualizar placeholder
+function aplicarFiltroValorFaixa() {
+    let min = valorMin.value.replace(/\D/g, '');
+    let max = valorMax.value.replace(/\D/g, '');
+    let ativo = true;
+
+    // Se ambos vazios, limpa o input para mostrar o placeholder
+    if (!min && !max) {
+        valorInput.value = '';
+        ativo = false;
+        atualizarPlaceholderValor();
+        filtrarMovimentacoes();
+        return;
+    }
+
+    // Se só "de" preenchido, assume até 99999999 (R$ 999.999,99)
+    if (min && !max) max = '99999999';
+    if (!min && max) min = '0';
+
+    let minNum = min ? parseFloat(min) / 100 : 0;
+    let maxNum = max ? parseFloat(max) / 100 : 999999.99;
+
+    if (minNum > maxNum) [minNum, maxNum] = [maxNum, minNum];
+
+    // Formata para o input principal
+    let minStr = minNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    let maxStr = maxNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    valorInput.value = `R$ ${minStr} - R$ ${maxStr}`;
+    if (valorInput.value === "R$ 0,00 - R$ 999.999,99") {
+        valorInput.value = "Todos";
+        ativo = false;
+    }
+
+    atualizarPlaceholderValor();
+    filtrarMovimentacoes();
+}
+
+// Atualiza placeholder e cor
+function atualizarPlaceholderValor() {
+    const valorInput = document.getElementById('filter-valor');
+    const valorMin = document.getElementById('valor-min');
+    const valorMax = document.getElementById('valor-max');
+    let min = valorMin.value;
+    let max = valorMax.value;
+    let ativo = false;
+
+    if ((min && min !== "R$ 0,00") || (max && max !== "R$ 999.999,99")) ativo = true;
+
+    if (valorInput) {
+        valorInput.style.border = ativo ? '2px solid #1e94a3' : '';
+        valorInput.style.color = ativo ? '#1e94a3' : '';
+    }
+    const chevron = valorInput.parentNode.querySelector('.chevron-valor');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+
+
+
+
+// --- RESPONSÁVEL MULTISELECT ---
+function montarCheckboxesResponsavel(responsaveis) {
+    const divResp = document.getElementById('checkboxes-responsavel-multi');
+    divResp.innerHTML = `<label><input type="checkbox" id="responsavel-multi-todos" class="responsavel-multi-check" value="" checked> Todos</label>`;
+    responsaveis.forEach(r => {
+        divResp.innerHTML += `<label><input type="checkbox" class="responsavel-multi-check" value="${r}" checked> ${r}</label>`;
+    });
+
+    const checks = Array.from(divResp.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+
+    // "Todos" marca/desmarca todos
+    todos.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todos.checked);
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    });
+
+    // Individuais: se todos marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todos.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderResponsavelMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderResponsavelMulti();
+
+    const respInput = document.getElementById('filter-responsavel');
+    const respPopup = document.getElementById('checkboxes-responsavel-multi');
+    if (respInput && respPopup) {
+        respInput.onclick = function(e) {
+            respPopup.style.display = 'block';
+            window.expandedResponsavelMulti = true;
+            e.stopPropagation();
+        };
+    }
+}
+
+document.addEventListener('mousedown', function(e) {
+    const respInput = document.getElementById('filter-responsavel');
+    const respPopup = document.getElementById('checkboxes-responsavel-multi');
+    if (
+        respPopup &&
+        respPopup.style.display === 'block' &&
+        !respPopup.contains(e.target) &&
+        e.target !== respInput
+    ) {
+        respPopup.style.display = 'none';
+        window.expandedResponsavelMulti = false;
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    }
+});
+
+// Função para mostrar/ocultar o popup
+window.expandedResponsavelMulti = false;
+function showCheckboxesResponsavelMulti() {
+    var checkboxes = document.getElementById("checkboxes-responsavel-multi");
+    if (!window.expandedResponsavelMulti) {
+        checkboxes.style.display = "block";
+        window.expandedResponsavelMulti = true;
+    } else {
+        checkboxes.style.display = "none";
+        window.expandedResponsavelMulti = false;
+        atualizarPlaceholderResponsavelMulti();
+        filtrarMovimentacoes();
+    }
+}
+
+// Atualiza placeholder do input
+function atualizarPlaceholderResponsavelMulti() {
+    const checks = Array.from(document.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-responsavel');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todos.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        texto = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-responsavel');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+// Pega responsáveis selecionados
+function getResponsaveisSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.responsavel-multi-check'));
+    const todos = checks[0];
+    if (todos.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+
+
+
+
+// Função filtro
 function filtrarMovimentacoes() {
     const termo = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
     const dataInicio = document.getElementById('periodo-data-inicio').value;
@@ -216,6 +432,13 @@ function filtrarMovimentacoes() {
     const qtdMin = document.getElementById('quantidade-min').value ? parseInt(document.getElementById('quantidade-min').value) : 0;
     const qtdMax = document.getElementById('quantidade-max').value ? parseInt(document.getElementById('quantidade-max').value) : 999;
 
+    const valorMinRaw = document.getElementById('valor-min').value.replace(/\D/g, '');
+    const valorMaxRaw = document.getElementById('valor-max').value.replace(/\D/g, '');
+    const minValor = valorMinRaw ? parseFloat(valorMinRaw) / 100 : 0;
+    const maxValor = valorMaxRaw ? parseFloat(valorMaxRaw) / 100 : 999999.99;
+
+    const responsaveisSelecionados = getResponsaveisSelecionados();
+        
     let filtradas = movimentacoes.filter(m => {
         let ok = true;
 
@@ -239,6 +462,12 @@ function filtrarMovimentacoes() {
         if (tiposSelecionados.length && !tiposSelecionados.includes(m.tipoMovimentacao)) ok = false;
 
         if (m.quantidadeMovimentada < qtdMin || m.quantidadeMovimentada > qtdMax) ok = false;
+
+        // Filtro de valor
+        if (m.valorMovimentacao < minValor || m.valorMovimentacao > maxValor) ok = false;
+
+        if (responsaveisSelecionados.length && !responsaveisSelecionados.includes(m.responsavel)) ok = false;
+
 
         return ok;
     });
@@ -700,6 +929,9 @@ function carregarMovimentacoes(top) {
         })
         .then(data => {
             movimentacoes = data;
+
+            const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+            montarCheckboxesResponsavel(nomes);            
             
             movimentacoes.sort((a, b) => {
                 const dataA = new Date(a.data);
@@ -902,6 +1134,18 @@ window.onload = function() {
             btnExibirDetalhes.style.color = '';
         }
     });
+
+    // Carrega todos os funcionários para o filtro de responsável
+    // fetch('/movimentacoes')
+    //     .then(res => res.json())
+    //     .then(movimentacoes => {
+    //         const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+    //         montarCheckboxesResponsavel(nomes);
+    //     })
+    //     .catch(() => {
+    //         const responsaveisUnicos = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
+    //         montarCheckboxesResponsavel(responsaveisUnicos);
+    //     });
 };
 
 function validarDataEdicaoMovimentacao() {
@@ -996,4 +1240,34 @@ function atualizarPlaceholderQuantidade() {
     }
     const chevron = qtdInput.parentNode.querySelector('.chevron-quantidade');
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+
+
+const btnLimparFiltrosExtras = document.getElementById('btn-limpar-filtros-extras');
+if (btnLimparFiltrosExtras) {
+    btnLimparFiltrosExtras.addEventListener('click', function() {
+        // Limpa quantidade
+        document.getElementById('quantidade-min').value = '';
+        document.getElementById('quantidade-max').value = '';
+        document.getElementById('filter-quantidade').value = '';
+        atualizarPlaceholderQuantidade();
+        
+        
+        // Limpa valor
+        document.getElementById('valor-min').value = '';
+        document.getElementById('valor-max').value = '';
+        document.getElementById('filter-valor').value = '';
+        atualizarPlaceholderValor();
+
+        const respTodos = document.getElementById('responsavel-multi-todos');
+        const respChecks = document.querySelectorAll('.responsavel-multi-check');
+        if (respTodos && respChecks.length) {
+            respTodos.checked = true;
+            respChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderResponsavelMulti();
+        }
+
+        filtrarMovimentacoes();
+    });
 }
