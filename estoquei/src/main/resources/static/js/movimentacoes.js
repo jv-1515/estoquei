@@ -805,7 +805,7 @@ function salvarEdicaoMovimentacao() {
             })
             .then(data => {
                 Swal.fire({
-                    title: "Sucesso",
+                    title: "Sucesso!",
                     text: "Alterações salvas!",
                     icon: "success",
                     timer: 1500,
