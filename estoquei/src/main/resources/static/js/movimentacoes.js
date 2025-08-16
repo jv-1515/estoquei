@@ -279,7 +279,11 @@ function aplicarFiltroValorFaixa() {
     // Formata para o input principal
     let minStr = minNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     let maxStr = maxNum.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    valorInput.value = `R$ ${minStr} - R$ ${maxStr}`;
+    if (minNum === maxNum) {
+        valorInput.value = `R$ ${minStr}`;
+    } else {
+        valorInput.value = `R$ ${minStr} - R$ ${maxStr}`;
+    }
     if (valorInput.value === "R$ 0,00 - R$ 999.999,99") {
         valorInput.value = "Todos";
         ativo = false;
@@ -805,7 +809,7 @@ function salvarEdicaoMovimentacao() {
             })
             .then(data => {
                 Swal.fire({
-                    title: "Sucesso",
+                    title: "Sucesso!",
                     text: "Alterações salvas!",
                     icon: "success",
                     timer: 1500,
@@ -1213,7 +1217,12 @@ function aplicarFiltroQtdFaixa() {
     if (min > max) [min, max] = [max, min];
     qtdMin.value = min;
     qtdMax.value = max;
-    qtdInput.value = `${min} - ${max}`;
+
+    if (min === max) {
+        qtdInput.value = `${min}`;
+    } else {
+        qtdInput.value = `${min} - ${max}`;
+    }
     if (qtdInput.value === "0 - 999") {
         qtdInput.value = "Todas";
         ativo = false;
