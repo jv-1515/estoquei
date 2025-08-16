@@ -395,7 +395,7 @@ input:focus[readonly] {
     border: 1px solid #aaa;
     border-radius: 4px;
     font-size: 12px;
-    padding: 7px 7px 7px 5px;
+    padding: 7px;
     color: #757575;
     background: #fff;
     transition: border-color 0.2s;
