@@ -1,3 +1,5 @@
+let produtosFiltrados = [];
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -569,7 +571,7 @@ function filtrar() {
     // Filtro por busca (nome OU código)
     const termoBusca = buscaInput && buscaInput.value ? buscaInput.value.trim() : '';
 
-    let produtosFiltrados = produtos.filter(p => {
+    produtosFiltrados = produtos.filter(p => {
         // Busca por nome OU código
         if (termoBusca) {
             const termo = termoBusca.toLowerCase();
@@ -865,7 +867,7 @@ function renderizarPaginacao(totalPaginas) {
         btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
         btn.onclick = function() {
             paginaAtual = i;
-            renderizarProdutos(produtos);
+            renderizarProdutos(produtosFiltrados);
         };
         paginacaoDiv.appendChild(btn);
     }
@@ -886,13 +888,14 @@ function carregarProdutos(top) {
         })
         .then(data => {
             produtos = data;
-
+            produtosFiltrados = [...produtos]; 
+        
             produtos.sort((a, b) => {
                 const valorA = (a.codigo || '').toString().toLowerCase();
                 const valorB = (b.codigo || '').toString().toLowerCase();
                 return valorA.localeCompare(valorB, undefined, { numeric: true });
             });
-            renderizarProdutos(produtos);
+            renderizarProdutos(produtosFiltrados); 
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
             
@@ -962,7 +965,7 @@ window.onload = function() {
     select.addEventListener('change', function() {
         itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
         paginaAtual = 1;
-        renderizarProdutos(produtos);
+        renderizarProdutos(produtosFiltrados);
     });
 
     const campos = [
@@ -1005,7 +1008,7 @@ window.onload = function() {
             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
             th.classList.add('sorted');
     
-            produtos.sort((a, b) => {
+            produtosFiltrados.sort((a, b) => {
                 let valorA, valorB;
                 
                 if (campo === 'quantidade' || campo === 'limiteMinimo' || campo === 'preco' || campo === 'entradasHoje' || campo === 'saidasHoje') {
@@ -1036,7 +1039,7 @@ window.onload = function() {
                 // true seta para baixo (decrescente) false seta para cima (crescente)
                 ? '<i class="fa-solid fa-arrow-down"></i>'
                 : '<i class="fa-solid fa-arrow-up"></i>';
-            renderizarProdutos(produtos);
+            renderizarProdutos(produtosFiltrados);
             icon.style.display = 'inline-block';
         });
     });
@@ -1250,10 +1253,10 @@ qtdInput.addEventListener('click', function(e) {
     e.stopPropagation();
 });
 qtdMin.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    this.value = this.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 3);
 });
 qtdMax.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    this.value = this.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 3);
 });
 // function aplicarFiltroQtdFaixa() {
 //     let min = qtdMin.value;

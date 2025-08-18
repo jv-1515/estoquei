@@ -1,3 +1,5 @@
+let filtradas = [];
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -90,6 +92,7 @@ document.addEventListener('mousedown', function(e) {
             });
             dataFim.value = '';
         }
+        filtrarMovimentacoes();
     });
     dataFim.addEventListener('change', function() {
         if (dataFim.value && !dataInicio.value) {
@@ -102,6 +105,7 @@ document.addEventListener('mousedown', function(e) {
             });
             dataFim.value = '';
         }
+        filtrarMovimentacoes();
     });
 
 
@@ -405,7 +409,7 @@ function atualizarPlaceholderResponsavelMulti() {
         texto = selecionados[0];
         ativo = true;
     } else {
-        texto = selecionados.join(', ');
+        texto = `${selecionados.length} selecionados`;
         ativo = true;
     }
     input.value = texto;
@@ -425,6 +429,384 @@ function getResponsaveisSelecionados() {
 
 
 
+// Produtos
+function montarCheckboxesProduto(produtos) {
+    const divProd = document.getElementById('checkboxes-produto-multi');
+    divProd.innerHTML = `<label><input type="checkbox" id="produto-multi-todos" class="produto-multi-check" value="" checked> Todos</label>`;
+    produtos.forEach(p => {
+        divProd.innerHTML += `<label><input type="checkbox" class="produto-multi-check" value="${p.codigo}" checked> ${p.codigo} - ${p.nome}</label>`;
+    });
+
+    const checks = Array.from(divProd.querySelectorAll('.produto-multi-check'));
+    const todos = checks[0];
+
+    // "Todos" marca/desmarca todos
+    todos.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todos.checked);
+        atualizarPlaceholderProdutoMulti();
+        filtrarMovimentacoes();
+    });
+
+    // Individuais: se todos marcados, marca "Todos". Se algum desmarcado, desmarca "Todos"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todos.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderProdutoMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderProdutoMulti();
+
+    const prodInput = document.getElementById('filter-produto');
+    const prodPopup = document.getElementById('checkboxes-produto-multi');
+    if (prodInput && prodPopup) {
+        prodInput.onclick = function(e) {
+            prodPopup.style.display = 'block';
+            e.stopPropagation();
+        };
+    }
+}
+
+// Fecha popup ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    const prodInput = document.getElementById('filter-produto');
+    const prodPopup = document.getElementById('checkboxes-produto-multi');
+    if (
+        prodPopup &&
+        prodPopup.style.display === 'block' &&
+        !prodPopup.contains(e.target) &&
+        e.target !== prodInput
+    ) {
+        prodPopup.style.display = 'none';
+        atualizarPlaceholderProdutoMulti();
+        filtrarMovimentacoes();
+    }
+});
+
+// Atualiza placeholder do input
+function atualizarPlaceholderProdutoMulti() {
+    const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-produto');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todos.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        texto = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = `${selecionados.length} selecionados`;
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-produto');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+// Função para pegar produtos selecionados
+function getProdutosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.produto-multi-check'));
+    const todos = checks[0];
+    if (todos.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+
+
+
+
+function montarCheckboxesCategoria(categorias) {
+    const divCat = document.getElementById('checkboxes-categoria-multi');
+    divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
+    categorias.forEach(cat => {
+        const catCap = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${catCap}</label>`;
+    });
+
+    const checks = Array.from(divCat.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+
+    // "Todas" marca/desmarca todos
+    todas.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todas.checked);
+        atualizarPlaceholderCategoriaMulti();
+        filtrarMovimentacoes();
+    });
+
+    // Individuais: se todos marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderCategoriaMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderCategoriaMulti();
+
+    const catInput = document.getElementById('filter-categoria');
+    const catPopup = document.getElementById('checkboxes-categoria-multi');
+    if (catInput && catPopup) {
+        catInput.onclick = function(e) {
+            catPopup.style.display = 'block';
+            e.stopPropagation();
+        };
+    }
+}
+
+function atualizarPlaceholderCategoriaMulti() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-categoria');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todas.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todas';
+    let ativo = true;
+    if (todas.checked || selecionados.length === 0) {
+        texto = 'Todas';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-categoria');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+
+function getCategoriasSelecionadas() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+document.addEventListener('mousedown', function(e) {
+    const catInput = document.getElementById('filter-categoria');
+    const catPopup = document.getElementById('checkboxes-categoria-multi');
+    if (
+        catPopup &&
+        catPopup.style.display === 'block' &&
+        !catPopup.contains(e.target) &&
+        e.target !== catInput
+    ) {
+        catPopup.style.display = 'none';
+        atualizarPlaceholderCategoriaMulti();
+        filtrarMovimentacoes();
+    }
+});
+
+
+
+
+// Tamanho
+function montarCheckboxesTamanho(tamanhos) {
+    const divTam = document.getElementById('checkboxes-tamanho-multi');
+    divTam.innerHTML = `<label><input type="checkbox" id="tamanho-multi-todos" class="tamanho-multi-check" value="" checked> Todos</label>`;
+
+    // Ordem desejada
+    const ordem = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+    const letras = ordem.filter(t => tamanhos.includes(t));
+    const numeros = tamanhos.filter(t => /^_\d+$/.test(t)).sort((a, b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+
+    // Adiciona letras na ordem
+    letras.forEach(tam => {
+        divTam.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${tam}" checked> ${exibirTamanho(tam)}</label>`;
+    });
+    // Adiciona números em ordem crescente
+    numeros.forEach(tam => {
+        divTam.innerHTML += `<label><input type="checkbox" class="tamanho-multi-check" value="${tam}" checked> ${exibirTamanho(tam)}</label>`;
+    });
+
+    const checks = Array.from(divTam.querySelectorAll('.tamanho-multi-check'));
+    const todos = checks[0];
+
+    todos.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todos.checked);
+        atualizarPlaceholderTamanhoMulti();
+        filtrarMovimentacoes();
+    });
+
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todos.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderTamanhoMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderTamanhoMulti();
+
+    const tamInput = document.getElementById('filter-tamanho');
+    const tamPopup = document.getElementById('checkboxes-tamanho-multi');
+    if (tamInput && tamPopup) {
+        tamInput.onclick = function(e) {
+            tamPopup.style.display = 'block';
+            e.stopPropagation();
+        };
+    }
+}
+function exibirGenero(genero) {
+    if (!genero) return '';
+    return genero.charAt(0).toUpperCase() + genero.slice(1).toLowerCase();
+}
+
+// Montar checkboxes de Gênero
+function montarCheckboxesGenero(generos) {
+    const divGen = document.getElementById('checkboxes-genero-multi');
+    divGen.innerHTML = `<label><input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked> Todos</label>`;
+    generos.forEach(gen => {
+        divGen.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="${gen}" checked> ${exibirGenero(gen)}</label>`;
+    });
+
+    const checks = Array.from(divGen.querySelectorAll('.genero-multi-check'));
+    const todos = checks[0];
+
+    todos.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todos.checked);
+        atualizarPlaceholderGeneroMulti();
+        filtrarMovimentacoes();
+    });
+
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todos.checked = checks.slice(1).every(cb2 => cb2.checked);
+            atualizarPlaceholderGeneroMulti();
+            filtrarMovimentacoes();
+        });
+    });
+
+    atualizarPlaceholderGeneroMulti();
+
+    const genInput = document.getElementById('filter-genero');
+    const genPopup = document.getElementById('checkboxes-genero-multi');
+    if (genInput && genPopup) {
+        genInput.onclick = function(e) {
+            genPopup.style.display = 'block';
+            e.stopPropagation();
+        };
+    }
+}
+
+
+function atualizarPlaceholderTamanhoMulti() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-tamanho');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todos.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        texto = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-tamanho');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+function atualizarPlaceholderGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = checks[0];
+    const individuais = checks.slice(1);
+    const input = document.getElementById('filter-genero');
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    todos.checked = individuais.every(cb => cb.checked);
+
+    let texto = 'Todos';
+    let ativo = true;
+    if (todos.checked || selecionados.length === 0) {
+        texto = 'Todos';
+        ativo = false;
+    } else if (selecionados.length === 1) {
+        texto = selecionados[0];
+        ativo = true;
+    } else {
+        texto = selecionados.join(', ');
+        ativo = true;
+    }
+    input.value = texto;
+    input.style.border = ativo ? '2px solid #1e94a3' : '';
+    input.style.color = ativo ? '#1e94a3' : '';
+    const chevron = input.parentNode.querySelector('.chevron-genero');
+    if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
+}
+
+
+
+
+function getTamanhosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
+    const todos = checks[0];
+    if (todos.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+function getGenerosSelecionados() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = checks[0];
+    if (todos.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+}
+
+
+document.addEventListener('mousedown', function(e) {
+    // Tamanho
+    const tamInput = document.getElementById('filter-tamanho');
+    const tamPopup = document.getElementById('checkboxes-tamanho-multi');
+    if (
+        tamPopup &&
+        tamPopup.style.display === 'block' &&
+        !tamPopup.contains(e.target) &&
+        e.target !== tamInput
+    ) {
+        tamPopup.style.display = 'none';
+        atualizarPlaceholderTamanhoMulti();
+        filtrarMovimentacoes();
+    }
+
+    // Gênero
+    const genInput = document.getElementById('filter-genero');
+    const genPopup = document.getElementById('checkboxes-genero-multi');
+    if (
+        genPopup &&
+        genPopup.style.display === 'block' &&
+        !genPopup.contains(e.target) &&
+        e.target !== genInput
+    ) {
+        genPopup.style.display = 'none';
+        atualizarPlaceholderGeneroMulti();
+        filtrarMovimentacoes();
+    }
+});
 
 
 // Função filtro
@@ -442,8 +824,17 @@ function filtrarMovimentacoes() {
     const maxValor = valorMaxRaw ? parseFloat(valorMaxRaw) / 100 : 999999.99;
 
     const responsaveisSelecionados = getResponsaveisSelecionados();
-        
-    let filtradas = movimentacoes.filter(m => {
+
+    const produtosSelecionados = getProdutosSelecionados();
+
+    const categoriasSelecionadas = getCategoriasSelecionadas();
+
+    const tamanhosSelecionados = getTamanhosSelecionados();
+
+    const generosSelecionados = getGenerosSelecionados();
+
+
+    filtradas = movimentacoes.filter(m => {
         let ok = true;
 
         // Busca por parte envolvida OU código da movimentação
@@ -472,12 +863,22 @@ function filtrarMovimentacoes() {
 
         if (responsaveisSelecionados.length && !responsaveisSelecionados.includes(m.responsavel)) ok = false;
 
+        // Produtos
+        if (produtosSelecionados.length && !produtosSelecionados.includes(m.produto)) ok = false;
+
+        if (categoriasSelecionadas.length && !categoriasSelecionadas.includes(m.categoria)) ok = false;
+
+        if (tamanhosSelecionados.length && !tamanhosSelecionados.includes(m.tamanho)) ok = false;
+
+        if (generosSelecionados.length && !generosSelecionados.includes(m.genero)) ok = false;
 
         return ok;
     });
 
     paginaAtual = 1;
     renderizarMovimentacoes(filtradas);
+    atualizarDetalhesInfo(filtradas);
+    atualizarCardsMovimentacoes(filtradas);
 }
 
 
@@ -910,7 +1311,7 @@ function renderizarPaginacao(totalPaginas) {
         btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
         btn.onclick = function() {
             paginaAtual = i;
-            renderizarMovimentacoes(movimentacoes);
+            renderizarMovimentacoes(filtradas);
         };
         paginacaoDiv.appendChild(btn);
     }
@@ -937,15 +1338,40 @@ function carregarMovimentacoes(top) {
             const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
             montarCheckboxesResponsavel(nomes);            
             
+            const produtosUnicos = [];
+            const codigosSet = new Set();
+            movimentacoes.forEach(m => {
+                if (m.codigoProduto && !codigosSet.has(m.codigoProduto)) {
+                    produtosUnicos.push({
+                        codigo: m.codigoProduto,
+                        nome: m.nome
+                    });
+                    codigosSet.add(m.codigoProduto);
+                }
+            });
+            montarCheckboxesProduto(produtosUnicos);
+
+
+            const categoriasUnicas = [...new Set(movimentacoes.map(m => m.categoria).filter(Boolean))];
+            montarCheckboxesCategoria(categoriasUnicas);
+
+            const tamanhosUnicos = [...new Set(movimentacoes.map(m => m.tamanho).filter(Boolean))];
+            montarCheckboxesTamanho(tamanhosUnicos);
+            
+            const generosUnicos = [...new Set(movimentacoes.map(m => m.genero).filter(Boolean))];
+            montarCheckboxesGenero(generosUnicos);
+            
+
             movimentacoes.sort((a, b) => {
                 const dataA = new Date(a.data);
                 const dataB = new Date(b.data);
                 return dataB - dataA;
             });
             
-            renderizarMovimentacoes(movimentacoes);
-            atualizarDetalhesInfo(movimentacoes);
-            atualizarCardsMovimentacoes(movimentacoes);
+            filtradas = [...movimentacoes];
+            renderizarMovimentacoes(filtradas);
+            atualizarDetalhesInfo(filtradas);
+            atualizarCardsMovimentacoes(filtradas);
         })
         .catch(error => {
             console.error('Erro na API:', error);
@@ -963,7 +1389,7 @@ function atualizarDetalhesInfo(movimentacoes) {
         
         const hoje = new Date().toISOString().split('T')[0];
         const totalMovimentacoes = movimentacoes.filter(m => m.data === hoje).length;
-        const estoqueAtual = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+        const produtosCadastrados = produtos.length;
         const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
         const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
         // const totalProdutos = produtos.length;
@@ -971,7 +1397,7 @@ function atualizarDetalhesInfo(movimentacoes) {
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
         document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
-        document.getElementById('detalhe-produtos-cadastrados').textContent = estoqueAtual;
+        document.getElementById('detalhe-produtos-cadastrados').textContent = produtosCadastrados;
         document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
         document.getElementById('detalhe-estoque-zerado').textContent = zerados;
         
@@ -1058,14 +1484,24 @@ window.onload = function() {
     select.addEventListener('change', function() {
         itensPorPagina = this.value === "" ? movimentacoes.length : parseInt(this.value);
         paginaAtual = 1;
-        renderizarMovimentacoes(movimentacoes);
+        renderizarMovimentacoes(filtradas);
     });
 
-    const campos = [
-        'data', 'codigoProduto', 'nome', 'categoria', 'tamanho', 
-        'genero', 'tipoMovimentacao', 'codigoMovimentacao', 
-        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao', 'parteEnvolvida'
-    ];
+const campos = [
+    'data',
+    'tipoMovimentacao',
+    'codigoMovimentacao',
+    'quantidadeMovimentada',
+    'estoqueFinal',
+    'valorMovimentacao',
+    'parteEnvolvida',
+    'responsavel',
+    'codigoProduto',
+    'nome',
+    'categoria',
+    'tamanho',
+    'genero'
+];
     
     let estadoOrdenacao = Array(campos.length).fill(true);
     
@@ -1087,7 +1523,7 @@ window.onload = function() {
             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
             th.classList.add('sorted');
             
-            movimentacoes.sort((a, b) => {
+            filtradas.sort((a, b) => {
                 let valorA, valorB;
                 
                 if (campo === 'data') {
@@ -1112,7 +1548,7 @@ window.onload = function() {
                 ? '<i class="fa-solid fa-arrow-down"></i>'
                 : '<i class="fa-solid fa-arrow-up"></i>';
             
-            renderizarMovimentacoes(movimentacoes);
+            renderizarMovimentacoes(filtradas);
             icon.style.display = 'inline-block';
         });
     });
@@ -1130,8 +1566,8 @@ window.onload = function() {
             btnExibirDetalhes.style.color = '#1e94a3';
         } else {
             detalhesDiv.style.display = 'flex';
-            atualizarDetalhesInfo(movimentacoes);
-            atualizarCardsMovimentacoes(movimentacoes);
+            atualizarDetalhesInfo(filtradas);
+            atualizarCardsMovimentacoes(filtradas);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
             btnExibirDetalhes.style.border = '';
             btnExibirDetalhes.style.background = '';
@@ -1276,6 +1712,38 @@ if (btnLimparFiltrosExtras) {
             respChecks.forEach(cb => cb.checked = true);
             atualizarPlaceholderResponsavelMulti();
         }
+
+        const prodTodos = document.getElementById('produto-multi-todos');
+        const prodChecks = document.querySelectorAll('.produto-multi-check');
+        if (prodTodos && prodChecks.length) {
+            prodTodos.checked = true;
+            prodChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderProdutoMulti();
+        }
+
+        const catTodos = document.getElementById('categoria-multi-todas');
+        const catChecks = document.querySelectorAll('.categoria-multi-check');
+        if (catTodos && catChecks.length) {
+            catTodos.checked = true;
+            catChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderCategoriaMulti();
+        }
+
+        const tamTodos = document.getElementById('tamanho-multi-todos');
+        const tamChecks = document.querySelectorAll('.tamanho-multi-check');
+        if (tamTodos && tamChecks.length) {
+            tamTodos.checked = true;
+            tamChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderTamanhoMulti();
+        }
+
+        const genTodos = document.getElementById('genero-multi-todos');
+        const genChecks = document.querySelectorAll('.genero-multi-check');
+        if (genTodos && genChecks.length) {
+            genTodos.checked = true;
+            genChecks.forEach(cb => cb.checked = true);
+            atualizarPlaceholderGeneroMulti();
+        }      
 
         filtrarMovimentacoes();
     });
