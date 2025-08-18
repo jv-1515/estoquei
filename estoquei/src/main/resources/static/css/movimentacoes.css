@@ -322,6 +322,8 @@ input:focus[readonly] {
     position: relative;
 }
 
+#checkboxes-categorias-multi,
+#checkboxes-produto-multi,
 #checkboxes-responsavel-multi,
 #checkboxes-tipo-mov,
 #checkboxes-categoria-multi,
@@ -342,6 +344,8 @@ input:focus[readonly] {
     border-radius: 4px;
 }
 
+#checkboxes-categorias-multi label,
+#checkboxes-produto-multi label,
 #checkboxes-responsavel-multi label,
 #checkboxes-tipo-mov label,
 #checkboxes-categoria-multi label,
@@ -355,10 +359,17 @@ input:focus[readonly] {
     font-weight: normal !important;
     pointer-events: auto !important;
     cursor: pointer !important;
-    padding: 2px 10px;
+    padding: 2px 0px 2px 10px;
     gap: 8px;
     justify-content: space-between;
 }
+
+#checkboxes-genero-multi label {
+    padding: 2px 10px;
+}
+
+#checkboxes-categorias-multi input[type="checkbox"],
+#checkboxes-produto-multi input[type="checkbox"],
 #checkboxes-responsavel-multi input[type="checkbox"],
 #checkboxes-tipo-mov input[type="checkbox"],
 #checkboxes-categoria-multi input[type="checkbox"],
@@ -376,6 +387,8 @@ input:focus[readonly] {
     z-index: 2;
 }
 
+#checkboxes-categorias-multi label:hover,
+#checkboxes-produto-multi label:hover,
 #checkboxes-responsavel-multi label:hover,
 #checkboxes-categoria-multi label:hover,
 #checkboxes-tamanho-multi label:hover,

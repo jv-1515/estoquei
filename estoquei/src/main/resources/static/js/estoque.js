@@ -1250,10 +1250,10 @@ qtdInput.addEventListener('click', function(e) {
     e.stopPropagation();
 });
 qtdMin.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    this.value = this.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 3);
 });
 qtdMax.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 3);
+    this.value = this.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 3);
 });
 // function aplicarFiltroQtdFaixa() {
 //     let min = qtdMin.value;
