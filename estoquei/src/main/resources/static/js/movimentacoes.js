@@ -1,3 +1,5 @@
+let filtradas = [];
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -90,6 +92,7 @@ document.addEventListener('mousedown', function(e) {
             });
             dataFim.value = '';
         }
+        filtrarMovimentacoes();
     });
     dataFim.addEventListener('change', function() {
         if (dataFim.value && !dataInicio.value) {
@@ -102,6 +105,7 @@ document.addEventListener('mousedown', function(e) {
             });
             dataFim.value = '';
         }
+        filtrarMovimentacoes();
     });
 
 
@@ -830,7 +834,7 @@ function filtrarMovimentacoes() {
     const generosSelecionados = getGenerosSelecionados();
 
 
-    let filtradas = movimentacoes.filter(m => {
+    filtradas = movimentacoes.filter(m => {
         let ok = true;
 
         // Busca por parte envolvida OU código da movimentação
@@ -873,6 +877,8 @@ function filtrarMovimentacoes() {
 
     paginaAtual = 1;
     renderizarMovimentacoes(filtradas);
+    atualizarDetalhesInfo(filtradas);
+    atualizarCardsMovimentacoes(filtradas);
 }
 
 
@@ -1305,7 +1311,7 @@ function renderizarPaginacao(totalPaginas) {
         btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
         btn.onclick = function() {
             paginaAtual = i;
-            renderizarMovimentacoes(movimentacoes);
+            renderizarMovimentacoes(filtradas);
         };
         paginacaoDiv.appendChild(btn);
     }
@@ -1362,9 +1368,10 @@ function carregarMovimentacoes(top) {
                 return dataB - dataA;
             });
             
-            renderizarMovimentacoes(movimentacoes);
-            atualizarDetalhesInfo(movimentacoes);
-            atualizarCardsMovimentacoes(movimentacoes);
+            filtradas = [...movimentacoes];
+            renderizarMovimentacoes(filtradas);
+            atualizarDetalhesInfo(filtradas);
+            atualizarCardsMovimentacoes(filtradas);
         })
         .catch(error => {
             console.error('Erro na API:', error);
@@ -1382,7 +1389,7 @@ function atualizarDetalhesInfo(movimentacoes) {
         
         const hoje = new Date().toISOString().split('T')[0];
         const totalMovimentacoes = movimentacoes.filter(m => m.data === hoje).length;
-        const estoqueAtual = produtos.reduce((soma, p) => soma + (Number(p.quantidade) || 0), 0);
+        const produtosCadastrados = produtos.length;
         const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
         const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
         // const totalProdutos = produtos.length;
@@ -1390,7 +1397,7 @@ function atualizarDetalhesInfo(movimentacoes) {
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
         document.getElementById('detalhe-saidas-hoje').textContent = saidasHoje;
-        document.getElementById('detalhe-produtos-cadastrados').textContent = estoqueAtual;
+        document.getElementById('detalhe-produtos-cadastrados').textContent = produtosCadastrados;
         document.getElementById('detalhe-baixo-estoque').textContent = baixoEstoque;
         document.getElementById('detalhe-estoque-zerado').textContent = zerados;
         
@@ -1477,14 +1484,24 @@ window.onload = function() {
     select.addEventListener('change', function() {
         itensPorPagina = this.value === "" ? movimentacoes.length : parseInt(this.value);
         paginaAtual = 1;
-        renderizarMovimentacoes(movimentacoes);
+        renderizarMovimentacoes(filtradas);
     });
 
-    const campos = [
-        'data', 'codigoProduto', 'nome', 'categoria', 'tamanho', 
-        'genero', 'tipoMovimentacao', 'codigoMovimentacao', 
-        'quantidadeMovimentada', 'estoqueFinal', 'valorMovimentacao', 'parteEnvolvida'
-    ];
+const campos = [
+    'data',
+    'tipoMovimentacao',
+    'codigoMovimentacao',
+    'quantidadeMovimentada',
+    'estoqueFinal',
+    'valorMovimentacao',
+    'parteEnvolvida',
+    'responsavel',
+    'codigoProduto',
+    'nome',
+    'categoria',
+    'tamanho',
+    'genero'
+];
     
     let estadoOrdenacao = Array(campos.length).fill(true);
     
@@ -1506,7 +1523,7 @@ window.onload = function() {
             document.querySelectorAll('th.ordenar').forEach(t => t.classList.remove('sorted'));
             th.classList.add('sorted');
             
-            movimentacoes.sort((a, b) => {
+            filtradas.sort((a, b) => {
                 let valorA, valorB;
                 
                 if (campo === 'data') {
@@ -1531,7 +1548,7 @@ window.onload = function() {
                 ? '<i class="fa-solid fa-arrow-down"></i>'
                 : '<i class="fa-solid fa-arrow-up"></i>';
             
-            renderizarMovimentacoes(movimentacoes);
+            renderizarMovimentacoes(filtradas);
             icon.style.display = 'inline-block';
         });
     });
@@ -1549,8 +1566,8 @@ window.onload = function() {
             btnExibirDetalhes.style.color = '#1e94a3';
         } else {
             detalhesDiv.style.display = 'flex';
-            atualizarDetalhesInfo(movimentacoes);
-            atualizarCardsMovimentacoes(movimentacoes);
+            atualizarDetalhesInfo(filtradas);
+            atualizarCardsMovimentacoes(filtradas);
             btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
             btnExibirDetalhes.style.border = '';
             btnExibirDetalhes.style.background = '';
