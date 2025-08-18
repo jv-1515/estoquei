@@ -108,15 +108,6 @@
                     </div>
                     <div id="quantidade-faixa-popup" class="faixa-popup" style="padding: 0;">
                         <div style="display: flex; flex-direction: column; align-items: stretch;">
-                            <!-- <label for="quantidade-todas-popup" class="quantidade-check-label" style="padding: 2px 10px;">
-                                <input type="checkbox" id="quantidade-todas-popup" checked style="margin:0;" />Todas
-                            </label> -->
-                            <!-- <label for="quantidade-baixo-estoque-popup" class="quantidade-check-label" style="padding: 2px 10px;">
-                                <input type="checkbox" id="quantidade-baixo-estoque-popup" style="margin:2px 0;" checked />Baixo estoque
-                            </label> -->
-                            <!-- <label for="quantidade-zerados-popup" class="quantidade-check-label" style="padding: 2px 10px;">
-                                <input type="checkbox" id="quantidade-zerados-popup" style="margin:0;" checked />Produtos zerados
-                            </label> -->
                             <div style="display: flex; align-items: center; margin:10px;">
                                 <span style="min-width: 28px;">de:</span>
                                 <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
@@ -176,47 +167,45 @@
             </div>
                 <!-- Categoria -->
                 <div class="multiselect multiselect-categoria input-group">
-                    <label for="filter-categoria-multi">Categorias</label>
+                    <label for="filter-categoria">Categorias</label>
                     <div style="position:relative;">
                         <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; padding-right: 20px;" />
                         <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                             <i class="fa fa-chevron-down"></i>
                         </span>
-                        <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
                     </div>
                     <div id="checkboxes-categoria-multi" style="display:none;">
-                    </div>
                 </div>
-                <!-- Tamanho -->
+                </div>
+                <!-- Tamanhos -->
                 <div class="multiselect multiselect-tamanho input-group">
-                    <label for="filter-tamanho-multi">Tamanhos</label>
+                    <label for="filter-tamanho">Tamanhos</label>
                     <div style="position:relative;">
                         <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
                         <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                             <i class="fa fa-chevron-down"></i>
                         </span>
-                        <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
                     </div>
-                    <div id="checkboxes-tamanho-multi" style="display:none;">
-                    </div>
+                    <div id="checkboxes-tamanho-multi" style="display:none;"></div>
                 </div>
-                <!-- Gênero -->
+                
+                <!-- Gêneros -->
                 <div class="multiselect multiselect-genero input-group">
-                    <label for="filter-genero-multi">Gêneros</label>
+                    <label for="filter-genero">Gêneros</label>
                     <div style="position:relative;">
                         <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
                         <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                             <i class="fa fa-chevron-down"></i>
                         </span>
-                        <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
                     </div>
-                    <div id="checkboxes-genero-multi" style="display:none;">
-                    </div>
+                    <div id="checkboxes-genero-multi" style="display:none;"></div>
                 </div>
-
-                <button id="btn-limpar-filtros-extras" class="btn limpar" style="font-size:12px; width: 80px;">
+                    <button id="btn-limpar-filtros-extras" class="btn limpar" style="font-size:12px; width: 80px;">
                     <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar
                 </button>
+                </div>
+
+
             </div>
         </div>
 
