@@ -45,7 +45,7 @@ public class ProdutoRepository {
 
     //estoque
     public List<Produto> findAll() {
-        return entityManager.createQuery("SELECT p FROM Produto p", Produto.class).getResultList();
+        return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = false", Produto.class).getResultList();
     }
 
     //mostrando top
@@ -246,5 +246,9 @@ public class ProdutoRepository {
         return entityManager.createQuery(jpql, Produto.class)
             .setParameter("ids", ids)
             .getResultList();
+    }
+
+        public List<Produto> findAllRemovidos() {
+        return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = true", Produto.class).getResultList();
     }
 }

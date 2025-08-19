@@ -116,21 +116,32 @@ public class ProdutoService {
         return null;
     }
 
-    public boolean deletar(Long id) {
-        Produto produtoParaDeletar = produtoRepository.findById(id);
+        public List<Produto> listarRemovidos() {
+        return produtoRepository.findAllRemovidos();
+    }
 
+    public boolean deletar(Long id, String responsavel) {
+        Produto produtoParaDeletar = produtoRepository.findById(id);
+    
         if (produtoParaDeletar != null) {
-            if (produtoParaDeletar.getUrl_imagem() != null && !produtoParaDeletar.getUrl_imagem().isEmpty()) {
+            produtoParaDeletar.setIc_excluido(true);
+            produtoParaDeletar.setDataExclusao(java.time.LocalDate.now());
+            produtoParaDeletar.setResponsavelExclusao(responsavel); // <-- igual movimentação!
+            produtoRepository.save(produtoParaDeletar);
+            return true;
+        }
+        return false;
+    }
+
+        public void excluirDefinitivo(Long id) {
+            Produto produto = produtoRepository.findById(id);
+            if (produto != null && produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()) {
                 try {
-                    firebaseStorageService.deleteFileByFirebaseUrl(produtoParaDeletar.getUrl_imagem());
-                    produtoRepository.deleteById(id);
+                    firebaseStorageService.deleteFileByFirebaseUrl(produto.getUrl_imagem());
                 } catch (Exception e) {
                     System.err.println("Falha ao tentar deletar a imagem do Firebase para o produto ID " + id + ": " + e.getMessage());
                 }
             }
             produtoRepository.deleteById(id);
-            return true;
-        }
-        return false;
     }
 }
