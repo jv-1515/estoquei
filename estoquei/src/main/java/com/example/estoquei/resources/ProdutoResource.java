@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/produtos")
@@ -139,6 +142,7 @@ public class ProdutoResource {
                 ? produto.getUrl_imagem()
                 : null);
             produtoMap.put("dataExclusao", produto.getDataExclusao());
+            produtoMap.put("responsavelExclusao", produto.getResponsavelExclusao());
             return produtoMap;
         }).collect(Collectors.toList());
     }
@@ -197,8 +201,15 @@ public class ProdutoResource {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        boolean removido = produtoService.deletar(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+        String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+        String[] nomes = nomeUsuario.trim().split("\\s+");
+        String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+        String responsavel = codigoUsuario + " - " + nomeFormatado;
+    
+        boolean removido = produtoService.deletar(id, responsavel);
         if (removido) {
             return ResponseEntity.noContent().build();
         }
@@ -209,6 +220,24 @@ public class ProdutoResource {
     public ResponseEntity<Void> deletarDefinitivo(@PathVariable Long id) {
         produtoService.excluirDefinitivo(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/restaurar/{id}")
+    public ResponseEntity<Void> restaurarProduto(@PathVariable Long id) {
+        Produto produto = produtoService.buscarPorId(id);
+        if (produto != null && produto.getIc_excluido()) {
+            produto.setIc_excluido(false);
+            produto.setDataExclusao(null);
+            produto.setResponsavelExclusao(null);
+            try {
+                produtoService.salvar(produto, null);
+            } catch (IOException e) {
+                System.err.println("Erro ao restaurar produto: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{codigo}/movimentacao-hoje")
