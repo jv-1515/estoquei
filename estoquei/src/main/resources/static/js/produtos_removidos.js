@@ -13,6 +13,17 @@ function formatarData(data) {
     return d.toLocaleDateString('pt-BR');
 }
 
+function atualizarBotaoSelecionados() {
+    const selecionados = document.querySelectorAll('.check-produto:checked').length;
+    document.querySelector('.btn').innerHTML = `<i class="fa-solid fa-circle-check" style="margin-right: 4px;"></i> Selecionados (${selecionados})`;
+}
+
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('check-produto') || e.target.id === 'check-all') {
+        atualizarBotaoSelecionados();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/produtos/removidos')
         .then(res => res.json())
@@ -80,10 +91,77 @@ document.addEventListener('DOMContentLoaded', function() {
             // Excluir múltiplos
             document.querySelector('.btn').onclick = function() {
                 const selecionados = Array.from(document.querySelectorAll('.check-produto:checked'));
-                if (!selecionados.length) {
-                    return;
-                }
-                excluirProdutosDefinitivos(selecionados.map(cb => cb.dataset.id));
+                if (!selecionados.length || selecionados.length === 1) return;
+
+                // Fluxo múltiplos: mostra opções em um novo SweetAlert
+                Swal.fire({
+                    title: `${selecionados.length} produtos selecionados`,
+                    text: 'Selecione uma opção',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Remover todos',
+                    cancelButtonText: 'Restaurar todos',
+                    customClass: {
+                        confirmButton: 'swal2-remove-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        // Confirmação para excluir todos
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `${selecionados.length} produtos serão excluídos`,
+                            html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
+                            input: 'text',
+                            inputValidator: (value) => {
+                                if (value !== 'Excluir') return 'Digite exatamente: Excluir';
+                            },
+                            showCloseButton: true,
+                            showConfirmButton: true,
+                            didOpen: () => {
+                                const input = Swal.getInput();
+                                if (input) {
+                                    input.style.fontSize = '12px';
+                                    input.style.margin = '10px 20px';
+                                    input.style.border = 'solid 1px #aaa';
+                                    input.style.borderRadius = '4px';
+                                }
+                            }
+                        }).then((res) => {
+                            if (res.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Excluindo produtos...',
+                                    text: 'Aguarde enquanto os produtos são excluídos.',
+                                    icon: 'info',
+                                    showConfirmButton: false,
+                                    timer: 1800,
+                                    timerProgressBar: true,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                        Promise.all(selecionados.map(cb =>
+                                            fetch(`/produtos/excluir/${cb.dataset.id}`, { method: 'DELETE' })
+                                        )).then(() => location.reload());
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        // Confirmação para restaurar todos
+                        Swal.fire({
+                            title: `${selecionados.length} produtos serão restaurados`,
+                            icon: 'info',
+                            showConfirmButton: false,
+                            timer: 1800,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                Promise.all(selecionados.map(cb =>
+                                    fetch(`/produtos/restaurar/${cb.dataset.id}`, { method: 'PUT' })
+                                )).then(() => location.reload());
+                            }
+                        });
+                    }
+                });
             };
 
             // Excluir individual
@@ -103,18 +181,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     const id = this.getAttribute('data-id');
                     const nome = this.closest('tr').querySelector('td:nth-child(3)').textContent || 'produto';
                     Swal.fire({
-                        title: `Restaurar "${nome}"?`,
-                        text: 'O produto voltará para o estoque',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Restaurar',
-                        cancelButtonText: 'Cancelar'
-                    }).then(result => {
-                        if (result.isConfirmed) {
+                        title: `"${nome}" será restaurado`,
+                        icon: 'info',
+                        showConfirmButton: false,
+                        timer: 1800,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
                             fetch(`/produtos/restaurar/${id}`, { method: 'PUT' })
                                 .then(res => {
-                                    if (res.ok) location.reload();
-                                    else Swal.fire('Erro ao restaurar produto.', '', 'error');
+                                    if (res.ok) {
+                                        setTimeout(() => location.reload(), 1500);
+                                    } else {
+                                        Swal.fire('Erro ao restaurar produto.', '', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire('Erro ao restaurar produto.', '', 'error');
                                 });
                         }
                     });
@@ -145,59 +228,84 @@ document.getElementById('check-all').addEventListener('change', function() {
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('/produtos/excluir/' + id, {
-                    method: 'DELETE'
-                }).then(response => {
-                    if (response.ok) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `"${nomeProduto}" será excluído`,
+                    html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
+                    input: 'text',
+                    inputValidator: (value) => {
+                        if (value !== 'Excluir') return 'Digite exatamente: Excluir';
+                    },
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    didOpen: () => {
+                        const input = Swal.getInput();
+                        if (input) {
+                            input.style.fontSize = '12px';
+                            input.style.margin = '10px 20px';
+                            input.style.border = 'solid 1px #aaa';
+                            input.style.borderRadius = '4px';
+                        }
+                    }
+                }).then((res) => {
+                    if (res.isConfirmed) {
                         Swal.fire({
-                            title: `Excluindo ${nomeProduto}...`,
-                            text: 'Aguarde enquanto o produto é excluído.',
+                            title: `"${nomeProduto}" está sendo excluído...`,
+                            text: 'Aguarde enquanto o produto é excluído',
                             icon: 'info',
                             showConfirmButton: false,
                             allowOutsideClick: false,
                             timer: 1500,
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: `Não foi possível excluir ${nomeProduto}. Tente novamente.`,
-                            icon: 'error',
-                            showConfirmButton: false,
-                            allowOutsideClick: false,
-                            timer: 1500,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                fetch('/produtos/excluir/' + id, {
+                                    method: 'DELETE'
+                                }).then(response => {
+                                    if (response.ok) {
+                                        setTimeout(() => location.reload(), 1500);
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Erro!',
+                                            text: `Não foi possível excluir ${nomeProduto}. Tente novamente`,
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            allowOutsideClick: false,
+                                            timer: 1500,
+                                        });
+                                    }
+                                }).catch(error => {
+                                    console.error('Erro ao excluir produto:', error);
+                                    Swal.fire({
+                                        title: 'Erro de Conexão!',
+                                        text: `Não foi possível se conectar ao servidor para excluir "${nomeProduto}"`,
+                                        icon: 'error',
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                        timer: 1500
+                                    });
+                                });
+                            }
                         });
                     }
-                }).catch(error => {
-                    console.error('Erro ao excluir produto:', error);
-                    Swal.fire({
-                        title: 'Erro de Conexão!',
-                        text: `Não foi possível se conectar ao servidor para excluir "${nomeProduto}"`,
-                        icon: 'error',
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        timer: 1500
-                    });
                 });
             }
         });
     }
 
-    function excluirProdutosDefinitivos(ids) {
-        Swal.fire({
-            title: `Excluir ${ids.length} produto(s) selecionado(s)?`,
-            text: 'Esta ação é permanente',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Excluir',
-            cancelButtonText: 'Cancelar'
-        }).then(result => {
-            if (result.isConfirmed) {
-                Promise.all(ids.map(id =>
-                    fetch(`/produtos/excluir/${id}`, { method: 'DELETE' })
-                )).then(() => location.reload());
-            }
-        });
-    }
+    // function excluirProdutosDefinitivos(ids) {
+    //     Swal.fire({
+    //         title: `Excluir ${ids.length} produto(s) selecionado(s)?`,
+    //         text: 'Esta ação é permanente',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Excluir',
+    //         cancelButtonText: 'Cancelar'
+    //     }).then(result => {
+    //         if (result.isConfirmed) {
+    //             Promise.all(ids.map(id =>
+    //                 fetch(`/produtos/excluir/${id}`, { method: 'DELETE' })
+    //             )).then(() => location.reload());
+    //         }
+    //     });
+    // }
 });
