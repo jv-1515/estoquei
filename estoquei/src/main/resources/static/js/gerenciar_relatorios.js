@@ -149,19 +149,21 @@ window.renomearRelatorio = function(id) {
     const nomeSemExtensao = relatorio.nome.replace(/\.pdf$/i, '');
     Swal.fire({
         title: '<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear Relatório</h2>',
+        html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">${nomeSemExtensao}</p>`,
         input: 'text',
-        inputValue: nomeSemExtensao,
+        inputValue: '',
         showCloseButton: true,
         inputPlaceholder: 'Digite o novo nome do relatório',
         showCancelButton: true,
         confirmButtonText: 'Salvar',
         cancelButtonText: 'Cancelar',
-        titleHtml: true,
         didOpen: () => {
             const input = Swal.getInput();
             if (input) {
                 input.style.fontSize = '12px';
-                input.style.margin = '10px 20px';
+                input.style.margin = '0px 20px 10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
             }
         }
     }).then(result => {

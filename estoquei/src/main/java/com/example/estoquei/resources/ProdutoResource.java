@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/produtos")
@@ -120,6 +123,30 @@ public class ProdutoResource {
         return ResponseEntity.ok(produtos);
     }
 
+    @GetMapping("/removidos")
+    public List<Map<String, Object>> listarRemovidos() {
+        List<Produto> produtos = produtoService.listarRemovidos();
+        return produtos.stream().map(produto -> {
+            Map<String, Object> produtoMap = new HashMap<>();
+            produtoMap.put("id", produto.getId());
+            produtoMap.put("codigo", produto.getCodigo());
+            produtoMap.put("nome", produto.getNome());
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().toString() : "");
+            produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
+            produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
+            produtoMap.put("quantidade", produto.getQuantidade());
+            produtoMap.put("limiteMinimo", produto.getLimiteMinimo());
+            produtoMap.put("preco", produto.getPreco());
+            produtoMap.put("descricao", produto.getDescricao());
+            produtoMap.put("url_imagem", produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()
+                ? produto.getUrl_imagem()
+                : null);
+            produtoMap.put("dataExclusao", produto.getDataExclusao());
+            produtoMap.put("responsavelExclusao", produto.getResponsavelExclusao());
+            return produtoMap;
+        }).collect(Collectors.toList());
+    }
+
     @GetMapping("/baixo-estoque")
     public ResponseEntity<List<Produto>> listarBaixoEstoque(@RequestParam(required = false) Integer top) {
         List<Produto> produtos;
@@ -174,9 +201,40 @@ public class ProdutoResource {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        boolean removido = produtoService.deletar(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
+        String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
+        String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+        String[] nomes = nomeUsuario.trim().split("\\s+");
+        String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
+        String responsavel = codigoUsuario + " - " + nomeFormatado;
+    
+        boolean removido = produtoService.deletar(id, responsavel);
         if (removido) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<Void> deletarDefinitivo(@PathVariable Long id) {
+        produtoService.excluirDefinitivo(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/restaurar/{id}")
+    public ResponseEntity<Void> restaurarProduto(@PathVariable Long id) {
+        Produto produto = produtoService.buscarPorId(id);
+        if (produto != null && produto.getIc_excluido()) {
+            produto.setIc_excluido(false);
+            produto.setDataExclusao(null);
+            produto.setResponsavelExclusao(null);
+            try {
+                produtoService.salvar(produto, null);
+            } catch (IOException e) {
+                System.err.println("Erro ao restaurar produto: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
