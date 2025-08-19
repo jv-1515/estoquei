@@ -4,6 +4,15 @@ function exibirTamanho(tamanho) {
     return tamanho;
 }
 
+function capitalize(str) {
+    return str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : '';
+}
+function formatarData(data) {
+    if (!data) return '-';
+    const d = new Date(data);
+    return d.toLocaleDateString('pt-BR');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/produtos/removidos')
         .then(res => res.json())
@@ -11,10 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderizarRemovidos(produtos) {
         const tbody = document.getElementById('removidos-table-body');
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Carregando produtos...</td></tr>`;
         if (!produtos.length) {
             tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto na lixeira</td></tr>`;
             return;
         }
+        
         tbody.innerHTML = '';
 
         // Aguarda todas as imagens carregarem antes de renderizar as linhas
@@ -45,19 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td>${produto.codigo || '-'}</td>
                     <td>${produto.nome || '-'}</td>
-                    <td>${produto.categoria || '-'}</td>
+                    <td>${capitalize(produto.categoria) || '-'}</td>
                     <td>${exibirTamanho(produto.tamanho) || '-'}</td>
-                    <td>${produto.genero || '-'}</td>
+                    <td>${capitalize(produto.genero) || '-'}</td>
                     <td>${produto.preco ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',') : '-'}</td>
                     <td>${produto.quantidade ?? '-'}</td>
                     <td>${produto.limiteMinimo ?? '-'}</td>
-                    <td>${produto.dataExclusao || '-'}</td>
+                    <td>${formatarData(produto.dataExclusao) || '-'}</td>
+                    <td>${produto.responsavelExclusao || '-'}</td>
                     <td style="text-align: right; padding-right:20px" class="actions">
+                        <button class="btn-reverter" data-id="${produto.id}" title="Restaurar">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
                         <button class="btn-excluir-definitivo" data-id="${produto.id}" data-nome="${produto.nome || ''}" title="Excluir">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
-                    </td>
-                    <td>
                         <input type="checkbox" class="check-produto" data-id="${produto.id}">
                     </td>
                 `;
@@ -77,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Excluir individual
             document.querySelectorAll('.btn-excluir-definitivo').forEach(btn => {
                 btn.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Impede propagação para não acionar múltiplo
+                    e.stopPropagation();
                     const id = this.getAttribute('data-id');
                     const nome = this.getAttribute('data-nome') || 'produto';
                     excluirProdutoDefinitivo(id, nome);
@@ -85,6 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+
+document.getElementById('check-all').addEventListener('change', function() {
+    document.querySelectorAll('.check-produto').forEach(cb => cb.checked = this.checked);
+});
 
     function excluirProdutoDefinitivo(id, nome) {
         const nomeProduto = nome || 'produto';
@@ -157,4 +175,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+});
+
+
+document.querySelectorAll('.btn-reverter').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        Swal.fire({
+            title: 'Restaurar produto?',
+            text: 'O produto voltará para o estoque.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Restaurar',
+            cancelButtonText: 'Cancelar'
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch(`/produtos/restaurar/${id}`, { method: 'PUT' })
+                    .then(res => {
+                        if (res.ok) location.reload();
+                        else Swal.fire('Erro ao restaurar produto.', '', 'error');
+                    });
+            }
+        });
+    });
 });

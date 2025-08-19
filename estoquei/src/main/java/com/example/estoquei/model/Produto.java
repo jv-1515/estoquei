@@ -46,7 +46,8 @@ public class Produto {
     private boolean ic_excluido = false;
     private java.time.LocalDate dataExclusao;
 
-    
+    private String responsavelExclusao;
+
     public Produto(){
     }
 
@@ -168,5 +169,8 @@ public class Produto {
 
     public java.time.LocalDate getDataExclusao() { return dataExclusao; }
     public void setDataExclusao(java.time.LocalDate dataExclusao) { this.dataExclusao = dataExclusao; }
+
+    public String getResponsavelExclusao() { return responsavelExclusao; }
+    public void setResponsavelExclusao(String responsavelExclusao) { this.responsavelExclusao = responsavelExclusao; }
 
 }

@@ -120,12 +120,13 @@ public class ProdutoService {
         return produtoRepository.findAllRemovidos();
     }
 
-    public boolean deletar(Long id) {
+    public boolean deletar(Long id, String responsavel) {
         Produto produtoParaDeletar = produtoRepository.findById(id);
     
         if (produtoParaDeletar != null) {
             produtoParaDeletar.setIc_excluido(true);
             produtoParaDeletar.setDataExclusao(java.time.LocalDate.now());
+            produtoParaDeletar.setResponsavelExclusao(responsavel); // <-- igual movimentação!
             produtoRepository.save(produtoParaDeletar);
             return true;
         }
