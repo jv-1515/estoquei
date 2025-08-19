@@ -205,7 +205,8 @@ tbody tr:nth-child(even) .produto-img {
     color: #9d9d9d;
     transition: transform 0.2s;
 }
-.fa-trash:hover {
+.fa-trash:hover,
+.fa-trash-can:hover {
     color: red;
 }
 
@@ -295,6 +296,7 @@ button:hover,
 .actions a:hover,
 .actions button:hover,
 .fa-trash:hover,
+.fa-trash-can:hover,
 .edit-icon:hover {
     transition: background-color 0.2s, color 0.2s;
 }
