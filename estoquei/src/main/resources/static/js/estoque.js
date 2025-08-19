@@ -21,6 +21,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+function verificarLixeira() {
+    fetch('/produtos/removidos')
+        .then(res => res.json())
+        .then(removidos => {
+            const btnLixeira = document.querySelector('a[href="/produtos-removidos"]');
+            if (removidos && removidos.length > 0) {
+                btnLixeira.style.display = '';
+            } else {
+                btnLixeira.style.display = 'none';
+            }
+        });
+}
+
+// Chame após carregar a página
+window.addEventListener('DOMContentLoaded', function() {
+    verificarLixeira();
+});
+
+function atualizarBadgeLixeira() {
+    const badge = document.querySelector('.badge-lixeira');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/removidos')
+        .then(res => res.json())
+        .then(removidos => {
+            const qtd = removidos.length;
+            if (qtd <= 0) {
+                badge.style.display = 'none';
+                return;
+            }
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.style.display = 'inline-block';
+
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+        });
+}
+
 // Fecha dropdown de gêneros ao clicar fora
 document.addEventListener('mousedown', function(e) {
     var checkboxes = document.getElementById("checkboxes-genero-multi");
@@ -705,7 +751,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado. Cadastre agora!</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }

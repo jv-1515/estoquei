@@ -205,7 +205,7 @@ tbody tr:nth-child(even) .produto-img {
     color: #9d9d9d;
     transition: transform 0.2s;
 }
-.fa-trash:hover {
+.fa-trash-can:hover {
     color: red;
 }
 
@@ -641,13 +641,19 @@ select#registros-select option {
     border-radius: 100%;
 }
 
+/* Alinha os checkboxes centralizados na célula */
+td input[type="checkbox"].check-produto,
+th input[type="checkbox"]#check-all {
+    vertical-align: middle;
+}
+
 
 
 /* sweetAlert */
 .swal2-popup {
-    width: 400px;
-    min-width: 400px;
-    max-width: 400px;
+    width: 350px;
+    min-width: 350px;
+    max-width: 350px;
     border-radius: 10px;
 }
 
