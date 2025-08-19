@@ -627,7 +627,7 @@ function removerProduto(id, nome) {
     nomeProduto = nome || 'produto';
     Swal.fire({
         title: `Remover "${nomeProduto}"?`,
-        text: 'Esta ação não poderá ser desfeita.',
+        text: 'Esta ação não poderá ser desfeita',
         icon: 'warning',
         showCancelButton: true,
         allowOutsideClick: false,
@@ -645,7 +645,7 @@ function removerProduto(id, nome) {
                 if (response.ok) {
                     Swal.fire({
                         title: `Removendo ${nomeProduto}...`,
-                        text: 'Aguarde enquanto o produto é removido.',
+                        text: 'Aguarde enquanto o produto é removido',
                         icon: 'info',
                         showConfirmButton: false,
                         allowOutsideClick: false,
@@ -656,7 +656,7 @@ function removerProduto(id, nome) {
                 } else {
                     Swal.fire({
                         title: 'Erro!',
-                        text: `Não foi possível remover ${nomeProduto}. Tente novamente.`,
+                        text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
                         icon: 'error',
                         showConfirmButton: false,
                         allowOutsideClick: false,
@@ -705,7 +705,7 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado</td></tr>`;
         document.getElementById('paginacao').innerHTML = '';
         return;
     }
@@ -818,7 +818,7 @@ function renderizarProdutos(produtos) {
                 <tr>
                     <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${imageUrl 
-                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})' />`
+                            ? `<img src="${imageUrl}" alt="${p.descricao || 'Foto do produto'}" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})' />`
                             : `<span class="produto-img icon" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})'><i class="fa-regular fa-image"></i></span>`
                         }
                     </td>

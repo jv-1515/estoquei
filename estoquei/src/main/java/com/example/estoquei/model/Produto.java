@@ -43,6 +43,9 @@ public class Produto {
     private java.time.LocalDate dtUltimaEntrada;
     private java.time.LocalDate dtUltimaSaida;
 
+    private boolean ic_excluido = false;
+    private java.time.LocalDate dataExclusao;
+
     
     public Produto(){
     }
@@ -159,5 +162,11 @@ public class Produto {
     public void setUrl_imagem(String url_imagem) {
         this.url_imagem = url_imagem;
     }
+
+    public boolean getIc_excluido() { return ic_excluido; }
+    public void setIc_excluido(boolean ic_excluido) { this.ic_excluido = ic_excluido; }
+
+    public java.time.LocalDate getDataExclusao() { return dataExclusao; }
+    public void setDataExclusao(java.time.LocalDate dataExclusao) { this.dataExclusao = dataExclusao; }
 
 }

@@ -1127,7 +1127,7 @@ function abrirEdicaoMovimentacao(id) {
             if (produto.url_imagem) {
                 const img = document.createElement('img');
                 img.src = produto.url_imagem;
-                img.alt = 'Imagem do produto';
+                img.alt = produto.nome ? `Imagem do produto: ${produto.nome}` : 'Imagem do produto';
                 img.style.maxWidth = '100%';
                 img.style.height = 'auto';
                 preview.appendChild(img);

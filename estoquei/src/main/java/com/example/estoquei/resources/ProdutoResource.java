@@ -120,6 +120,29 @@ public class ProdutoResource {
         return ResponseEntity.ok(produtos);
     }
 
+    @GetMapping("/removidos")
+    public List<Map<String, Object>> listarRemovidos() {
+        List<Produto> produtos = produtoService.listarRemovidos();
+        return produtos.stream().map(produto -> {
+            Map<String, Object> produtoMap = new HashMap<>();
+            produtoMap.put("id", produto.getId());
+            produtoMap.put("codigo", produto.getCodigo());
+            produtoMap.put("nome", produto.getNome());
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().toString() : "");
+            produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
+            produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
+            produtoMap.put("quantidade", produto.getQuantidade());
+            produtoMap.put("limiteMinimo", produto.getLimiteMinimo());
+            produtoMap.put("preco", produto.getPreco());
+            produtoMap.put("descricao", produto.getDescricao());
+            produtoMap.put("url_imagem", produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()
+                ? produto.getUrl_imagem()
+                : null);
+            produtoMap.put("dataExclusao", produto.getDataExclusao());
+            return produtoMap;
+        }).collect(Collectors.toList());
+    }
+
     @GetMapping("/baixo-estoque")
     public ResponseEntity<List<Produto>> listarBaixoEstoque(@RequestParam(required = false) Integer top) {
         List<Produto> produtos;
@@ -180,6 +203,12 @@ public class ProdutoResource {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<Void> deletarDefinitivo(@PathVariable Long id) {
+        produtoService.excluirDefinitivo(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{codigo}/movimentacao-hoje")
