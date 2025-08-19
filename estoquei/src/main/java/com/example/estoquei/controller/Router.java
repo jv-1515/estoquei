@@ -82,6 +82,13 @@ public class Router {
         return "movimentar_produto";
     }
 
+    @GetMapping("/produtos-removidos")
+    public String produtosRemovidos(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario==null) return "redirect:/";
+        return "produtos_removidos";
+    }
+
     //funcionario
     @GetMapping("/cadastrar-funcionario")
     public String cadastrarFuncionario(HttpSession session) {

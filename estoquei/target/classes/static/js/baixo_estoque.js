@@ -677,7 +677,7 @@ function renderizarProdutos(produtos) {
                 <tr>
                     <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${imageUrl 
-                            ? `<img src="${imageUrl}" alt="Foto do produto" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})' />`
+                            ? `<img src="${imageUrl}" alt="${p.descricao || 'Foto do produto'}" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})' />`
                             : `<span class="produto-img icon" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)})'><i class="fa-regular fa-image"></i></span>`
                         }
                     </td>
