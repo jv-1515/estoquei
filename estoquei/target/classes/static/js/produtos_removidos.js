@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.btn').onclick = function() {
                 const selecionados = Array.from(document.querySelectorAll('.check-produto:checked'));
                 if (!selecionados.length) {
-                    Swal.fire('Selecione pelo menos um produto para excluir.', '', 'warning');
                     return;
                 }
                 excluirProdutosDefinitivos(selecionados.map(cb => cb.dataset.id));
@@ -96,6 +95,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     excluirProdutoDefinitivo(id, nome);
                 });
             });
+
+            // RESTAURAR INDIVIDUAL
+            document.querySelectorAll('.btn-reverter').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.getAttribute('data-id');
+                    const nome = this.closest('tr').querySelector('td:nth-child(3)').textContent || 'produto';
+                    Swal.fire({
+                        title: `Restaurar "${nome}"?`,
+                        text: 'O produto voltará para o estoque',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Restaurar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            fetch(`/produtos/restaurar/${id}`, { method: 'PUT' })
+                                .then(res => {
+                                    if (res.ok) location.reload();
+                                    else Swal.fire('Erro ao restaurar produto.', '', 'error');
+                                });
+                        }
+                    });
+                });
+            });
+
         });
     }
 
@@ -175,28 +200,4 @@ document.getElementById('check-all').addEventListener('change', function() {
             }
         });
     }
-});
-
-
-document.querySelectorAll('.btn-reverter').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        Swal.fire({
-            title: 'Restaurar produto?',
-            text: 'O produto voltará para o estoque.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Restaurar',
-            cancelButtonText: 'Cancelar'
-        }).then(result => {
-            if (result.isConfirmed) {
-                fetch(`/produtos/restaurar/${id}`, { method: 'PUT' })
-                    .then(res => {
-                        if (res.ok) location.reload();
-                        else Swal.fire('Erro ao restaurar produto.', '', 'error');
-                    });
-            }
-        });
-    });
 });
