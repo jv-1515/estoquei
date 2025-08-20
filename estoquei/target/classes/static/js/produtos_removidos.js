@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             inputValidator: (value) => {
                                 if (value !== 'Excluir') return 'Digite exatamente: Excluir';
                             },
+                            allowOutsideClick: false,
                             showCloseButton: true,
                             showConfirmButton: true,
                             didOpen: () => {
@@ -161,7 +162,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             title: `${selecionados.length} produtos serão restaurados`,
                             icon: 'info',
                             showConfirmButton: false,
-                            timer: 1800,
+                            allowOutsideClick: false,
+                            timer: 2000,
                             timerProgressBar: true,
                             didOpen: () => {
                                 Swal.showLoading();

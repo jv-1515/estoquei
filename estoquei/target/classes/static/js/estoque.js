@@ -23,19 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function verificarLixeira() {
+    const notificationLixeira = document.querySelector('.notification[onclick*="/produtos-removidos"]');
+    if (!notificationLixeira) return;
+    const containerLixeira = notificationLixeira.parentElement;
+
     fetch('/produtos/removidos')
         .then(res => res.json())
         .then(removidos => {
-            const btnLixeira = document.querySelector('a[href="/produtos-removidos"]');
             if (removidos && removidos.length > 0) {
-                btnLixeira.style.display = '';
+                containerLixeira.style.display = 'flex';
             } else {
-                btnLixeira.style.display = 'none';
+                containerLixeira.style.display = 'none';
             }
         });
 }
 
-// Chame após carregar a página
 window.addEventListener('DOMContentLoaded', function() {
     verificarLixeira();
 });
@@ -65,8 +67,32 @@ function atualizarBadgeBaixoEstoque() {
             } else if (qtd > 99) {
                 badge.style.padding = '5px 0px 3px 2px';
             }
+
+            const bellIcon = document.querySelector('.fa-bell');
+            if (bellIcon) {
+                bellIcon.classList.add('fa-shake');
+                setTimeout(() => {
+                    bellIcon.classList.remove('fa-shake');
+                }, 3000);
+            }
         });
 }
+
+const bellIcon = document.querySelector('.fa-bell');
+if (bellIcon) {
+    bellIcon.classList.add('fa-shake');
+    setTimeout(() => {
+        bellIcon.classList.remove('fa-shake');
+    }, 2500);
+
+    bellIcon.addEventListener('mouseenter', () => {
+        bellIcon.classList.add('fa-shake');
+    });
+    bellIcon.addEventListener('mouseleave', () => {
+        bellIcon.classList.remove('fa-shake');
+    });
+}
+
 
 function atualizarBadgeLixeira() {
     const badge = document.querySelector('.badge-lixeira');

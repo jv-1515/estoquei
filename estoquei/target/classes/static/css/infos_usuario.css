@@ -130,7 +130,9 @@ label {
     text-decoration: underline;
     color:#277580;
 }
-.fa-arrow-left:hover {
+.fa-bell:hover,
+.fa-arrow-left:hover,
+.fa-arrow-right-from-bracket:hover {
     color: #1E94A3;
     transition: color 0.2s;
 }
