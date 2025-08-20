@@ -19,20 +19,23 @@
         </button>
     </a>
     <div style="display: flex; gap: 12px; position:absolute; top:20px; right:20px; z-index:10; align-items:center;">
-        <a href="/produtos-removidos" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px; justify-content: center;">
-            <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px; display: flex; align-items: center; justify-content: center;">
-                <i class="fa-solid fa-trash-can" style="font-size: 16px;"></i>
-            </button>
-        </a>
+        <div style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+            <div class="notification" onclick="window.location.href='/produtos-removidos'" style="cursor:pointer;">
+                <span style="display: inline-block; position: relative;">
+                    <i class="fa-regular fa-trash-can" tabindex="14" style="font-size: 18px; padding: 8px 0 0 11px;"></i>
+                </span>
+                <span class="badge badge-lixeira"></span>
+            </div>
+        </div>
         <div id="nots" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
                 <span style="display: inline-block; position: relative;">
                     <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
                 </span>
-                <span class="badge"></span>
+                <span class="badge badge-baixo-estoque"></span>
             </div>
         </div>
-        <a href="/inicio" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px; justify-content: center;">
+        <a href="/inicio" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px; justify-content: center; text-decoration:none;">
             <button tabindex="13" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px; display: flex; align-items: center; justify-content: center;">
                 <i class="fa-solid fa-house" style="font-size: 16px;"></i>
             </button>
