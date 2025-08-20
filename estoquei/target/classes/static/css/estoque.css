@@ -295,6 +295,7 @@ button:hover,
 .actions a:hover,
 .actions button:hover,
 .fa-trash:hover,
+.fa-trash-can:hover,
 .edit-icon:hover {
     transition: background-color 0.2s, color 0.2s;
 }
@@ -466,6 +467,7 @@ select#registros-select option {
     height: 12px !important;
 }
 
+.fa-trash-can:hover,
 .fa-arrow-left:hover,
 .fa-house:hover,
 .fa-bell:hover,
@@ -632,6 +634,7 @@ select#registros-select option {
 }
 
 .notification .badge {
+    display: none;
     position: absolute;
     top: 2px;
     left: 16px;
@@ -639,9 +642,16 @@ select#registros-select option {
     background-color: red;
     color: white;
     border-radius: 100%;
+    min-width: 18px;
+    height: 18px;
+    text-align: center;
+    z-index: 2;
+    line-height: 12px;
+    font-weight: bold;
+    box-sizing: border-box;
+    pointer-events: none;
+    padding: 3px 6px;
 }
-
-
 
 /* sweetAlert */
 .swal2-popup {

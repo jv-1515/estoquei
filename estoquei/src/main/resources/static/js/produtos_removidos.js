@@ -15,7 +15,7 @@ function formatarData(data) {
 
 function atualizarBotaoSelecionados() {
     const selecionados = document.querySelectorAll('.check-produto:checked').length;
-    document.querySelector('.btn').innerHTML = `<i class="fa-solid fa-circle-check" style="margin-right: 4px;"></i> Selecionados (${selecionados})`;
+    document.querySelector('.btn').innerHTML = `(${selecionados}) Selecionados`;
 }
 
 document.addEventListener('change', function(e) {
@@ -25,19 +25,27 @@ document.addEventListener('change', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('removidos-table-body');
+    // Mostra o loading imediatamente
+    tbody.innerHTML = `<tr style="background-color: #fff">
+        <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
+                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
+            </span>
+            <span id="loading-text">Carregando produtos</span>
+        </td>
+    </tr>`;
+
     fetch('/produtos/removidos')
         .then(res => res.json())
         .then(produtos => renderizarRemovidos(produtos));
 
     function renderizarRemovidos(produtos) {
         const tbody = document.getElementById('removidos-table-body');
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Carregando produtos...</td></tr>`;
         if (!produtos.length) {
             tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto na lixeira</td></tr>`;
             return;
         }
-        
-        tbody.innerHTML = '';
 
         // Aguarda todas as imagens carregarem antes de renderizar as linhas
         const promessasImagens = produtos.map(produto => {
@@ -54,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         Promise.all(promessasImagens).then(() => {
+            tbody.innerHTML = '';
             produtos.forEach(produto => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -99,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     text: 'Selecione uma opção',
                     icon: 'question',
                     showCancelButton: true,
+                    showCloseButton: true,
                     confirmButtonText: 'Remover todos',
                     cancelButtonText: 'Restaurar todos',
                     customClass: {
@@ -116,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             inputValidator: (value) => {
                                 if (value !== 'Excluir') return 'Digite exatamente: Excluir';
                             },
+                            allowOutsideClick: false,
                             showCloseButton: true,
                             showConfirmButton: true,
                             didOpen: () => {
@@ -151,7 +162,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             title: `${selecionados.length} produtos serão restaurados`,
                             icon: 'info',
                             showConfirmButton: false,
-                            timer: 1800,
+                            allowOutsideClick: false,
+                            timer: 2000,
                             timerProgressBar: true,
                             didOpen: () => {
                                 Swal.showLoading();
@@ -210,6 +222,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('check-all').addEventListener('change', function() {
     document.querySelectorAll('.check-produto').forEach(cb => cb.checked = this.checked);
+});
+
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('check-produto')) {
+        const allChecks = document.querySelectorAll('.check-produto');
+        const allChecked = Array.from(allChecks).every(cb => cb.checked);
+        document.getElementById('check-all').checked = allChecked;
+    }
 });
 
     function excluirProdutoDefinitivo(id, nome) {
