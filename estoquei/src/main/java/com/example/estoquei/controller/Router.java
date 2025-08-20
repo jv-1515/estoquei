@@ -45,9 +45,10 @@ public class Router {
 
     //estoque
     @GetMapping("/estoque")
-    public String estoque(HttpSession session) {
+    public String estoque(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario==null) return "redirect:/";
+        model.addAttribute("tipo", usuario.getTipo().name());
         return "estoque";
     }
 

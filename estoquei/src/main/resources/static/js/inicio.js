@@ -67,7 +67,32 @@ function atualizarBadgeBaixoEstoque() {
             } else if (qtd > 99) {
                 badge.style.padding = '5px 0px 3px 2px';
             }
+
+            const bellIcon = document.querySelector('.fa-bell');
+            if (bellIcon) {
+                bellIcon.classList.add('fa-shake');
+                setTimeout(() => {
+                    bellIcon.classList.remove('fa-shake');
+                }, 2500);
+            }
         });
+}
+
+
+
+const bellIcon = document.querySelector('.fa-bell');
+if (bellIcon) {
+    bellIcon.classList.add('fa-shake');
+    setTimeout(() => {
+        bellIcon.classList.remove('fa-shake');
+    }, 2500);
+
+    bellIcon.addEventListener('mouseenter', () => {
+        bellIcon.classList.add('fa-shake');
+    });
+    bellIcon.addEventListener('mouseleave', () => {
+        bellIcon.classList.remove('fa-shake');
+    });
 }
 
 function atualizarCardFuncionarios() {
