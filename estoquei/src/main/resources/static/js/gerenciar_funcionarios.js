@@ -16,6 +16,14 @@ function corAvatar(str) {
     return `hsl(${h}, 60%, 80%)`;
 }
 
+const coresCargo = {
+    ADMIN: "#000000",
+    GERENTE: "#1e94a3",
+    VENDEDOR: "#16a085",
+    CAIXA: "#e67e22",
+    ESTOQUISTA: "#c0392b"
+};
+
 // Atualiza avatar ao digitar o nome no cadastro e na edição
 document.addEventListener('DOMContentLoaded', function() {
     // Cadastro
@@ -79,8 +87,49 @@ function renderizarFuncionarios(lista) {
     const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
     const pagina = lista.slice(inicio, fim);
 
-    const tbody = document.querySelector("#func-list tbody");
+    const tbody = document.getElementById('func-list');
+    const thead = tbody.parentNode.querySelector('thead');
+    const registrosPagina = document.getElementById('registros-pagina');
+
+    if (pagina.length === 0) {
+        if (thead) thead.style.display = 'none';
+        if (registrosPagina) registrosPagina.style.display = 'none';
+
+        // Se não há nenhum funcionário cadastrado
+        if (funcionarios.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum funcionário cadastrado</span>
+                            <span>Cadastre o primeiro funcionário</span>
+                            <img src="/images/sem_funcionarios.png" alt="Sem funcionários" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum funcionário encontrado</span>
+                            <span>Selecione outros filtros</span>
+                            <img src="/images/sem_funcionarios.png" alt="Nenhum funcionário encontrado" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        document.getElementById('paginacao').innerHTML = '';
+        return;
+    } else {
+        if (thead) thead.style.display = '';
+        if (registrosPagina) registrosPagina.style.display = '';
+    }
+
     tbody.innerHTML = pagina
+        .filter(f => f.tipo !== "ADMIN")
         .map(
             (f, idx) => `
             <tr tabindex="${idx + 1}">
@@ -98,9 +147,22 @@ function renderizarFuncionarios(lista) {
                 </td>
                 <td>${f.codigo}</td>
                 <td>${f.nome}</td>
-                <td>${f.cargo
-                    .toLowerCase()
-                    .replace(/(^|\s)\S/g, l => l.toUpperCase())}</td>
+                <td>
+                    <span style="
+                        display:inline-block;
+                        padding:4px 12px;
+                        border-radius:12px;
+                        font-size:12px;
+                        color:#fff;
+                        background:${coresCargo[f.cargo] || '#888'};
+                        min-width:50px;
+                        text-align:center;
+                    ">
+                        ${f.cargo
+                            .toLowerCase()
+                            .replace(/(^|\s)\S/g, l => l.toUpperCase())}
+                    </span>
+                </td>
                 <td>${f.email}</td>
                 <td>
                     <span style="
