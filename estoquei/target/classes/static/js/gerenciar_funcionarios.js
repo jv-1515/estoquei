@@ -79,8 +79,7 @@ function renderizarFuncionarios(lista) {
     const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
     const pagina = lista.slice(inicio, fim);
 
-    const container = document.getElementById("product-list");
-        const tbody = document.querySelector("#product-list tbody");
+    const tbody = document.querySelector("#func-list tbody");
     tbody.innerHTML = pagina
         .map(
             (f, idx) => `
