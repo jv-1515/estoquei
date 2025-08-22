@@ -973,6 +973,7 @@ document.addEventListener('mousedown', function(e) {
 
 //var global e controle de paginação
 let movimentacoes = [];
+let movimentacoesOriginais = [];
 let paginaAtual = 1;
 let itensPorPagina = 10;
 
@@ -1023,6 +1024,8 @@ function aplicarMascaraDinheiro(input) {
 
 function renderizarMovimentacoes(movimentacoes) {
     const tbody = document.getElementById('movimentacao-table-body');
+    const thead = tbody.parentNode.querySelector('thead');
+    const registrosPagina = document.getElementById('registros-pagina');
     
     tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
@@ -1042,9 +1045,40 @@ function renderizarMovimentacoes(movimentacoes) {
     const movimentacoesPagina = movimentacoes.slice(inicio, fim);
 
     if (movimentacoesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhuma movimentação encontrada</td></tr>`;
+        if (thead) thead.style.display = 'none';
+        if (registrosPagina) registrosPagina.style.display = 'none';
+
+        if (movimentacoesOriginais.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhuma movimentação cadastrada</span>
+                            <span>Registre a primeira movimentação</span>
+                            <img src="/images/sem_movimentacoes.png" alt="Sem movimentações" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhuma movimentação encontrada</span>
+                            <span>Tente outros filtros</span>
+                            <img src="/images/sem_movimentacoes.png" alt="Nenhuma movimentação encontrada" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
         document.getElementById('paginacao').innerHTML = '';
         return;
+    } else {
+        if (thead) thead.style.display = '';
+        if (registrosPagina) registrosPagina.style.display = '';
+
     }
 
     setTimeout(() => {
@@ -1334,6 +1368,7 @@ function carregarMovimentacoes(top) {
         })
         .then(data => {
             movimentacoes = data;
+            movimentacoesOriginais = [...movimentacoes];
 
             const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
             montarCheckboxesResponsavel(nomes);            
