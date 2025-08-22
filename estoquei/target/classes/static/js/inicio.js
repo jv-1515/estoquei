@@ -171,7 +171,7 @@ function atualizarCardsInfo() {
     }
 
     // Só gerente ou admin
-    if (tipo === 'Gerente' || tipo === 'Admin') {
+    if (tipo === 'Gerente' || tipo === 'Administrador') {
         if (document.getElementById('valor-fornecedores')) {
             document.getElementById('valor-fornecedores').textContent = 0;
         }

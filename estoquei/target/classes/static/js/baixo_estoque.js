@@ -614,7 +614,7 @@ function renderizarProdutos(produtos) {
                 <tr>
                     <td colspan="14" style="text-align: center; padding: 0 0 30px 0; background-color: white">
                         <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
-                            <span style="font-weight:bold;">Nenhum produto em Baixo Estoque</span>
+                            <span style="font-weight:bold;">Nenhum produto em baixo estoque</span>
                             <span>Tudo certo por aqui</span>
                             <img src="/images/sem_baixo_estoque.png.png" alt="Sem baixo estoque" style="width:400px;">
                         </div>

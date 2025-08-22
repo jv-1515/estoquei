@@ -20,7 +20,7 @@
             </div>
             <div style="display:flex;flex-direction:column; margin-top: 3px;">
                 <span id="avatar-nome" style="font-size:12px;font-weight:bold;color:#333;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-                <span id="avatar-tipo" style="font-size:10px;color:#757575;margin-top: 1px;" th:text="${tipo == 'FUNCIONARIO' ? 'Funcionário' : tipo}"></span>
+                <span id="avatar-tipo" style="font-size:10px;color:#757575;margin-top: 1px;" th:text="${tipo == 'FUNCIONARIO' ? 'Funcionário' : (tipo == 'ADMIN' ? 'Administrador' : tipo)}"></span>
             </div>
         </a>
     </div>
