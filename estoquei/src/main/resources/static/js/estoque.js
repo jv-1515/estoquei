@@ -638,6 +638,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 //var global e controle de paginação
+let produtosOriginais = [];
 let produtos = [];
 let paginaAtual = 1;
 let itensPorPagina = 10;
@@ -792,6 +793,8 @@ function exibirTamanho(tamanho) {
 
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
+    const thead = tbody.parentNode.querySelector('thead');
+    const registrosPagina = document.getElementById('registros-pagina');
     // Mostra o loading imediatamente
     tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
@@ -811,10 +814,42 @@ function renderizarProdutos(produtos) {
     const produtosPagina = produtos.slice(inicio, fim);
 
     if (produtosPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto encontrado. Cadastre agora!</td></tr>`;
+        if (thead) thead.style.display = 'none';
+
+        if (registrosPagina) registrosPagina.style.display = 'none';
+
+        if (produtosOriginais.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" style="text-align: center; padding: 0 0 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum produto no Estoque</span>
+                            <span>Cadastre o primeiro produto</span>
+                            <img src="/images/sem_estoque.png" alt="Sem estoque" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="14" style="text-align: center; padding: 0 0 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum produto encontrado</span>
+                            <span>Selecione outros filtros</span>
+                            <img src="/images/filtro_estoque.png" alt="Nenhum produto encontrado" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
         document.getElementById('paginacao').innerHTML = '';
         return;
+    } else {
+        if (thead) thead.style.display = '';
+        if (registrosPagina) registrosPagina.style.display = '';
     }
+
 
     // Aguarda todas as imagens carregarem antes de renderizar as linhas
     const promessasImagens = produtosPagina.map(p => {
@@ -994,6 +1029,7 @@ function carregarProdutos(top) {
         })
         .then(data => {
             produtos = data;
+            produtosOriginais = [...produtos];
             produtosFiltrados = [...produtos]; 
         
             produtos.sort((a, b) => {
