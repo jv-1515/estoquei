@@ -28,14 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
 function dataBRparaISO(dataBR) {
     if (!dataBR) return '';
     const [dia, mes, ano] = dataBR.split('/');
     return `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
 }
-// Carrega relatórios do localStorage ao abrir a página
+
+let relatoriosOriginais = [];
+
+// Carrega relatórios do localStorage
 window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+relatoriosOriginais = [...window.relatoriosGerados]
 
 window.adicionarRelatorio = function(relatorio) {
     // Salva o blob como base64 para persistir no localStorage
@@ -61,17 +64,46 @@ window.adicionarRelatorio = function(relatorio) {
 function renderizarRelatorios(relatorios) {
     const tbody = document.getElementById('product-table-body');
     const thead = document.getElementById('relatorios-thead');
+    const registrosPagina = document.getElementById('registros-pagina');
+
     tbody.innerHTML = '';
-    if (!relatorios || relatorios.length === 0) {
+
+    if (relatorios.length === 0) {
         if (thead) thead.style.display = 'none';
-        tbody.innerHTML = `<tr>
-            <td colspan="4" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-                Nenhum relatório encontrado
-            </td>
-        </tr>`;
+        if (registrosPagina) registrosPagina.style.display = 'none';
+
+        if (relatoriosOriginais.length === 0) {
+            // Nenhum relatório cadastrado
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum relatório cadastrado</span>
+                            <span>Gere o primeiro relatório</span>
+                            <img src="/images/sem_relatorios.png" alt="Sem relatórios" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            // Nenhum relatório encontrado pelo filtro
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold;">Nenhum relatório encontrado</span>
+                            <span>Tente outros filtros</span>
+                            <img src="/images/sem_relatorios.png" alt="Nenhum relatório encontrado" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
         return;
     }
     if (thead) thead.style.display = '';
+    if (registrosPagina) registrosPagina.style.display = '';
+
 
     relatorios = relatorios.slice().sort((a, b) => {
         const campo = campoOrdenacaoRel[indiceOrdenacaoAtual];
