@@ -95,7 +95,6 @@ function renderizarFuncionarios(lista) {
         if (thead) thead.style.display = 'none';
         if (registrosPagina) registrosPagina.style.display = 'none';
 
-        // Se não há nenhum funcionário cadastrado
         if (funcionarios.length === 0) {
             tbody.innerHTML = `
                 <tr>
