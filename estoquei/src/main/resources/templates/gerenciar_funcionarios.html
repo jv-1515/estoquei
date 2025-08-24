@@ -84,127 +84,148 @@
         </button>
         </div>
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
-          <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
-            <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
-            <h2 style="margin-bottom:10px;">Cadastrar Funcionário</h2>
-        
-            <!-- ETAPA 1 -->
-            <div class="etapa-cadastro" data-etapa="1">
-              <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
-                <div style="display: flex; flex-direction: column; flex: 1;">
-                  <label for="cad-codigo">Código*</label>
-                  <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1" />
-                  <label for="cad-cargo">Cargo*</label>
-                  <select id="cad-cargo" name="cargo" required tabindex="2">
-                    <option value="" selected disabled hidden>Cargo</option>
-                    <option value="GERENTE">Gerente</option>
-                    <option value="VENDEDOR">Vendedor</option>
-                    <option value="CAIXA">Caixa</option>
-                    <option value="ESTOQUISTA">Estoquista</option>
-                  </select>
-                </div>
-                <div style="display: flex; align-items: flex-end; height: 100%;">
-                  <div id="cad-avatar-1" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
-                    <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
-                    <span id="cad-avatar-iniciais-1" style="z-index: 1; position: relative;"></span>
-                  </div>
-                </div>
-              </div>
-              <label for="cad-nome">Nome*</label>
-              <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50" />
-              <label for="cad-email">Email*</label>
-              <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" />
-              <label for="cad-senha">Senha Provisória*</label>
-              <div style="display: flex; gap: 10px; height: 30px;">
-                <input type="text" id="cad-senha" name="senha" readonly style="width:60%;" tabindex="5" />
-                <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
-              </div>
-              <!-- Bolinhas e próximo -->
-              <div class="cadastro-bullets">
-                <span class="bullet active"></span>
-                <span class="bullet"></span>
-                <span class="bullet"></span>
-              </div>
-              <button type="button" id="btn-proximo-1" class="btn-proximo">
-                Próximo <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-        
-            <!-- ETAPA 2 -->
-            <div class="etapa-cadastro" data-etapa="2" style="display:none;">
-              <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
-                <div style="display: flex; flex-direction: column; flex: 1;">
-                  <label for="cad-codigo-2">Código*</label>
-                  <input type="text" id="cad-codigo-2" name="codigo-2" readonly />
-                  <label for="cad-cargo-2">Cargo*</label>
-                  <input type="text" id="cad-cargo-2" name="cargo-2" readonly />
-                </div>
-                <div style="display: flex; align-items: flex-end; height: 100%;">
-                  <div id="cad-avatar-2" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
-                    <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
-                    <span id="cad-avatar-iniciais-2" style="z-index: 1; position: relative;"></span>
-                  </div>
-                </div>
-              </div>
-              <label for="cad-cpf">CPF*</label>
-              <input type="text" id="cad-cpf" name="cpf" required placeholder="000.000.000-00" tabindex="7" />
-              <label for="cad-nascimento">Data de Nascimento*</label>
-              <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
-              <label for="cad-contato">Número de Contato*</label>
-              <input type="text" id="cad-contato" name="contato" required placeholder="(00) 00000-0000" tabindex="9" />
-              <div class="cadastro-bullets">
-                <span class="bullet active"></span>
-                <span class="bullet active"></span>
-                <span class="bullet"></span>
-              </div>
-              <button type="button" id="btn-voltar-2" class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i> Voltar
-              </button>
-              <button type="button" id="btn-proximo-2" class="btn-proximo">
-                Próximo <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-        
-            <!-- ETAPA 3 -->
-            <div class="etapa-cadastro" data-etapa="3" style="display:none;">
-              <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
-                <div style="display: flex; flex-direction: column; flex: 1;">
-                  <label for="cad-codigo-3">Código*</label>
-                  <input type="text" id="cad-codigo-3" name="codigo-3" readonly />
-                  <label for="cad-cargo-3">Cargo*</label>
-                  <input type="text" id="cad-cargo-3" name="cargo-3" readonly />
-                </div>
-                <div style="display: flex; align-items: flex-end; height: 100%;">
-                  <div id="cad-avatar-3" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
-                    <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
-                    <span id="cad-avatar-iniciais-3" style="z-index: 1; position: relative;"></span>
-                  </div>
-                </div>
-              </div>
-              <label for="cad-nome-3">Nome*</label>
-              <input type="text" id="cad-nome-3" name="nome-3" readonly />
-              <label for="cad-email-3">Email*</label>
-              <input type="email" id="cad-email-3" name="email-3" readonly />
-              <label for="cad-senha-3">Senha Provisória*</label>
-              <input type="text" id="cad-senha-3" name="senha-3" readonly />
-              <label for="cad-cpf-3">CPF*</label>
-              <input type="text" id="cad-cpf-3" name="cpf-3" readonly />
-              <label for="cad-nascimento-3">Data de Nascimento*</label>
-              <input type="date" id="cad-nascimento-3" name="nascimento-3" readonly />
-              <label for="cad-contato-3">Número de Contato*</label>
-              <input type="text" id="cad-contato-3" name="contato-3" readonly />
-              <div class="cadastro-bullets">
-                <span class="bullet active"></span>
-                <span class="bullet active"></span>
-                <span class="bullet active"></span>
-              </div>
-              <button type="button" id="btn-voltar-3" class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i> Voltar
-              </button>
-              <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
-            </div>
-          </form>
-        </span>
+  <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
+    <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
+    <h2 style="margin-bottom:5px;">Cadastrar Funcionário</h2>
+
+    <!-- ETAPA 1 -->
+    <div class="etapa-cadastro" data-etapa="1">
+      <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+        <!-- Inputs Código e Cargo -->
+        <div style="display: flex; flex-direction: column; flex: 1;">
+          <div style="display: flex; flex-direction: column;">
+            <label for="cad-codigo">Código*</label>
+            <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1" style="padding: 8px;"/>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <label for="cad-cargo">Cargo*</label>
+            <select id="cad-cargo" name="cargo" required tabindex="2" style="padding: 8px;">
+              <option value="" selected disabled hidden>Cargo</option>
+              <option value="GERENTE">Gerente</option>
+              <option value="VENDEDOR">Vendedor</option>
+              <option value="CAIXA">Caixa</option>
+              <option value="ESTOQUISTA">Estoquista</option>
+            </select>
+          </div>
+        </div>
+        <!-- Avatar -->
+        <div style="display: flex; align-items: flex-end; height: 100%;">
+          <div id="cad-avatar-1" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+            <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
+            <span id="cad-avatar-iniciais-1" style="z-index: 1; position: relative;"></span>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: column;">
+          <label for="cad-nome">Nome*</label>
+          <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50" style="padding: 8px;"/>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <label for="cad-email">Email*</label>
+          <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" style="padding: 8px;"/>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <label for="cad-senha">Senha Provisória*</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="cad-senha" name="senha" readonly style="width:60%; padding: 8px;" tabindex="5" />
+            <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
+          </div>
+        </div>
+      </div>
+      <div class="cadastro-bullets" style="margin-top: 10px;">
+        <span class="bullet active"></span>
+        <span class="bullet"></span>
+        <span class="bullet"></span>
+      </div>
+      <button type="button" id="btn-proximo-1" class="btn-proximo" style="margin-top: 10px;">
+        Próximo <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- ETAPA 2 -->
+    <div class="etapa-cadastro" data-etapa="2" style="display:none;">
+      <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex: 1;">
+          <label for="cad-codigo-2">Código*</label>
+          <input type="text" id="cad-codigo-2" name="codigo-2" readonly />
+          <label for="cad-cargo-2">Cargo*</label>
+          <input type="text" id="cad-cargo-2" name="cargo-2" readonly />
+        </div>
+        <div style="display: flex; align-items: flex-end; height: 100%;">
+          <div id="cad-avatar-2" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+            <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
+            <span id="cad-avatar-iniciais-2" style="z-index: 1; position: relative;"></span>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <label for="cad-cpf">CPF*</label>
+        <input type="text" id="cad-cpf" name="cpf" required placeholder="000.000.000-00" tabindex="7" />
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <label for="cad-nascimento">Data de Nascimento*</label>
+        <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <label for="cad-contato">Número de Contato*</label>
+        <input type="text" id="cad-contato" name="contato" required placeholder="(00) 00000-0000" tabindex="9" />
+      </div>
+      <div class="cadastro-bullets">
+        <span class="bullet active"></span>
+        <span class="bullet active"></span>
+        <span class="bullet"></span>
+      </div>
+      <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+        <button type="button" id="btn-voltar-2" class="btn-voltar">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </button>
+        <button type="button" id="btn-proximo-2" class="btn-proximo">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA 3 -->
+    <div class="etapa-cadastro" data-etapa="3" style="display:none;">
+      <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+        <div style="display: flex; flex-direction: column; flex: 1;">
+          <label for="cad-codigo-3">Código*</label>
+          <input type="text" id="cad-codigo-3" name="codigo-3" readonly />
+          <label for="cad-cargo-3">Cargo*</label>
+          <input type="text" id="cad-cargo-3" name="cargo-3" readonly />
+          <label for="cad-nome-3">Nome*</label>
+          <input type="text" id="cad-nome-3" name="nome-3" readonly />
+          <label for="cad-email-3">Email*</label>
+          <input type="email" id="cad-email-3" name="email-3" readonly />
+          <label for="cad-senha-3">Senha Provisória*</label>
+          <input type="text" id="cad-senha-3" name="senha-3" readonly />
+          <label for="cad-cpf-3">CPF*</label>
+          <input type="text" id="cad-cpf-3" name="cpf-3" readonly />
+          <label for="cad-nascimento-3">Data de Nascimento*</label>
+          <input type="date" id="cad-nascimento-3" name="nascimento-3" readonly />
+          <label for="cad-contato-3">Número de Contato*</label>
+          <input type="text" id="cad-contato-3" name="contato-3" readonly />
+        </div>
+        <div style="display: flex; align-items: flex-end; height: 100%;">
+          <div id="cad-avatar-3" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+            <i class="fa-solid fa-user" style="font-size: 32px; color: #777; z-index: 0;"></i>
+            <span id="cad-avatar-iniciais-3" style="z-index: 1; position: relative;"></span>
+          </div>
+        </div>
+      </div>
+      <div class="cadastro-bullets">
+        <span class="bullet active"></span>
+        <span class="bullet active"></span>
+        <span class="bullet active"></span>
+      </div>
+      <button type="button" id="btn-voltar-3" class="btn-voltar">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </button>
+      <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
+    </div>
+  </form>
+</span>
         <!-- editar de Funcionário -->
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             
