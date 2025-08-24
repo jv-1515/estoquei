@@ -558,7 +558,7 @@ function abrirCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     gerarSenhaProvisoria();
-    mostrarEtapaCadastro(1); // <-- Garante que só a etapa 1 aparece
+    mostrarEtapaCadastro(1);
 
     const telCad = document.getElementById('cad-contato');
     const cpfCad = document.getElementById('cad-cpf');
@@ -1536,9 +1536,10 @@ document.getElementById('btn-voltar-3').onclick = function() {
 function abrirCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+        gerarSenhaProvisoria();
+
     mostrarEtapaCadastro(1);
     atualizarAvatarCadastro();
-    gerarSenhaProvisoria();
 }
 
 // Máscaras (se já não estiver no seu JS)
