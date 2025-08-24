@@ -1066,8 +1066,8 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td colspan="14" style="text-align: center; padding: 30px 0; background-color: white">
                         <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
                             <span style="font-weight:bold;">Nenhuma movimentação encontrada</span>
-                            <span>Tente outros filtros</span>
-                            <img src="/images/sem_movimentacoes.png" alt="Nenhuma movimentação encontrada" style="width:400px;">
+                            <span>Selecione outros filtros</span>
+                            <img src="/images/filtro_movimentacoes.png" alt="Nenhuma movimentação encontrada" style="width:400px;">
                         </div>
                     </td>
                 </tr>
