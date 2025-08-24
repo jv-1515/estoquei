@@ -178,9 +178,16 @@ tbody tr:nth-child(odd) {
     color: red;
 }
 
+.fa-xmark:hover {
+    color: #f27474; 
+}
+
 .fa-eye,
 .fa-eye-slash {
     color: #757575;
+}
+.actions .fa-eye{
+    color: inherit;
 }
 .form-container {
     background-color: white;
@@ -276,7 +283,6 @@ input:focus[readonly] {
 .fa-trash:hover {
     transition: background 0.2s, color 0.2s;
 }
-
 
 #cad-cargo option[disabled][hidden],
 #edit-cargo option[disabled][hidden],
@@ -488,6 +494,124 @@ select#registros-select option {
     font-weight: bold;
     pointer-events: none;
 }
+
+
+.detalhes-modal-bg {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3); z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+}
+.detalhes-modal {
+    background: #fff;
+    border-radius: 12px; 
+    padding: 20px;
+    min-width: 420px; 
+    min-height: 160px; 
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+}
+.botao-fechar {
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+}
+.detalhes-flex {
+    display: flex; flex-direction: row; align-items: flex-start; gap: 32px;
+}
+.detalhes-avatar {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.avatar-grande {
+    width: 110px; height: 110px; border-radius: 50%; background: #e0e7ef;
+    display: flex; align-items: center; justify-content: center; font-weight: bold;
+    font-size: 40px; color: #333; position: relative;
+}
+.avatar-icone {
+    font-size: 60px; color: #bbb; position: absolute; left: 25px; top: 25px; z-index: 0;
+}
+.avatar-iniciais {
+    z-index: 1; position: relative; font-size: 38px; color: #333;
+}
+.detalhes-info {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    min-width: 260px;
+}
+.detalhes-nome {
+    font-size: 22px; font-weight: 600; color: #333; margin-bottom: 2px;
+}
+.detalhes-cargo {
+    font-size: 15px; color: #757575; margin-bottom: 18px;
+}
+.detalhes-contato {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 8px;
+}
+.detalhes-email, .detalhes-telefone {
+    font-size: 15px; color: #1e94a3;
+}
+.detalhes-telefone { color: #333; }
+
+
+
+.cadastro-bullets {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 8px;
+}
+.bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+  display: inline-block;
+  transition: background 0.2s;
+}
+.bullet.active {
+  background: #1e94a3;
+}
+.btn-proximo, .btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px auto;
+    background: none;
+    color: #1e94a3;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    cursor: pointer;
+    justify-content: flex-end;
+    font-weight: bold;
+}
+.btn-voltar {
+    color: #757575;
+    padding: 0 64px 0 0;
+    margin: 0;
+}
+.btn-proximo{
+    padding: 0 0 0 64px;
+    margin: 0
+}
+
+.btn-proximo:disabled, .btn-voltar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-voltar:hover{
+   color:#555; 
+}
+.btn-proximo:hover{
+   color:#277580;
+}
+
+
+
 
 
 /* sweetAlert */
