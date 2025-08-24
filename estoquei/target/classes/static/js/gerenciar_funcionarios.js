@@ -558,6 +558,7 @@ function abrirCadastroFuncionario() {
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     gerarSenhaProvisoria();
+    mostrarEtapaCadastro(1); // <-- Garante que só a etapa 1 aparece
 
     const telCad = document.getElementById('cad-contato');
     const cpfCad = document.getElementById('cad-cpf');
@@ -769,8 +770,6 @@ function cadastrarFuncionario() {
             });
         }
         
-        document.getElementById('editar-funcionario').style.display = 'flex';
-
         const telEdit = document.getElementById('edit-contato');
         const cpfEdit = document.getElementById('edit-cpf');
         if (telEdit && !telEdit._mascaraAplicada) {
@@ -1387,7 +1386,165 @@ function fecharDetalhesFuncionario() {
     document.body.style.overflow = '';
 }
 
-// Estilo inputs
+
+let etapaCadastroAtual = 1;
+
+function mostrarEtapaCadastro(etapa) {
+    document.querySelectorAll('.etapa-cadastro').forEach(div => {
+        div.style.display = div.getAttribute('data-etapa') == etapa ? '' : 'none';
+    });
+}
+
+function atualizarAvatarCadastro() {
+    const nome = document.getElementById('cad-nome').value || '';
+    const iniciais = getIniciais(nome);
+
+    [
+        {div: 'cad-avatar-1', span: 'cad-avatar-iniciais-1'},
+        {div: 'cad-avatar-2', span: 'cad-avatar-iniciais-2'},
+        {div: 'cad-avatar-3', span: 'cad-avatar-iniciais-3'}
+    ].forEach(({div, span}) => {
+        const avatarDiv = document.getElementById(div);
+        const spanEl = document.getElementById(span);
+        const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+        if (avatarDiv && spanEl) {
+            if (nome.length > 0) {
+                spanEl.textContent = iniciais;
+                avatarDiv.style.background = corAvatar(nome);
+                if (icon) icon.style.display = 'none';
+            } else {
+                spanEl.textContent = '';
+                avatarDiv.style.background = '#f1f1f1';
+                if (icon) icon.style.display = '';
+            }
+        }
+    });
+}
+
+document.getElementById('cad-nome').addEventListener('input', atualizarAvatarCadastro);
+
+document.getElementById('btn-proximo-1').onclick = function() {
+    // Validação dos campos da etapa 1
+    const codigo = document.getElementById('cad-codigo').value.trim();
+    const nome = document.getElementById('cad-nome').value.trim();
+    const cargo = document.getElementById('cad-cargo').value;
+    const email = document.getElementById('cad-email').value.trim();
+    const senha = document.getElementById('cad-senha').value;
+
+    if (!codigo || codigo.length !== 6) {
+        Swal.fire({ icon: 'warning', title: 'Código inválido!', text: 'Informe um código de 6 dígitos.' });
+        return;
+    }
+    if (!cargo) {
+        Swal.fire({ icon: 'warning', title: 'Cargo obrigatório!', text: 'Selecione o cargo.' });
+        return;
+    }
+    if (!nome || /\d/.test(nome)) {
+        Swal.fire({ icon: 'warning', title: 'Nome inválido!', text: 'Informe um nome válido, sem números.' });
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        Swal.fire({ icon: 'warning', title: 'Email inválido!', text: 'Informe um email válido.' });
+        return;
+    }
+    if (!senha || senha.length < 8) {
+        Swal.fire({ icon: 'warning', title: 'Senha inválida!', text: 'A senha deve ter pelo menos 8 caracteres.' });
+        return;
+    }
+    // Duplicidade
+    if (funcionarios.some(f => f.codigo === codigo)) {
+        Swal.fire({ icon: 'warning', title: 'Código já cadastrado!', text: 'Informe outro código.' });
+        return;
+    }
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase())) {
+        Swal.fire({ icon: 'warning', title: 'Email já cadastrado!', text: 'Informe outro email.' });
+        return;
+    }
+
+    // Preenche etapa 2
+    document.getElementById('cad-codigo-2').value = codigo;
+    document.getElementById('cad-cargo-2').value = document.getElementById('cad-cargo').options[document.getElementById('cad-cargo').selectedIndex].text;
+    mostrarEtapaCadastro(2);
+    atualizarAvatarCadastro();
+};
+document.getElementById('btn-voltar-2').onclick = function() {
+    mostrarEtapaCadastro(1);
+    atualizarAvatarCadastro();
+};
+
+
+document.getElementById('btn-proximo-2').onclick = function() {
+    // Validação dos campos da etapa 2
+    const cpf = document.getElementById('cad-cpf').value;
+    const nascimento = document.getElementById('cad-nascimento').value;
+    const contato = document.getElementById('cad-contato').value;
+
+    if (!validaCPF(cpf)) {
+        Swal.fire({ icon: 'warning', title: 'CPF inválido!', text: 'Digite um CPF válido.' });
+        return;
+    }
+    if (!nascimento) {
+        Swal.fire({ icon: 'warning', title: 'Data inválida!', text: 'Informe a data de nascimento.' });
+        return;
+    }
+    // Idade
+    const hoje = new Date();
+    const nasc = new Date(nascimento);
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+    if (nasc > hoje) {
+        Swal.fire({ icon: 'warning', title: 'Data inválida!', text: 'A data de nascimento não pode ser posterior a hoje.' });
+        return;
+    }
+    if (idade < 16) {
+        Swal.fire({ icon: 'warning', title: 'Idade inválida!', text: 'O funcionário deve ter pelo menos 16 anos.' });
+        return;
+    }
+    if (idade > 99) {
+        Swal.fire({ icon: 'warning', title: 'Idade inválida!', text: 'O funcionário não pode ter mais de 99 anos.' });
+        return;
+    }
+    if (!contato || contato.replace(/\D/g, '').length < 10) {
+        Swal.fire({ icon: 'warning', title: 'Telefone inválido!', text: 'Informe um telefone válido.' });
+        return;
+    }
+    // Duplicidade de CPF
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''))) {
+        Swal.fire({ icon: 'warning', title: 'CPF já cadastrado!', text: 'Informe outro CPF.' });
+        return;
+    }
+
+    // Preenche etapa 3
+    document.getElementById('cad-codigo-3').value = document.getElementById('cad-codigo').value;
+    document.getElementById('cad-cargo-3').value = document.getElementById('cad-cargo').options[document.getElementById('cad-cargo').selectedIndex].text;
+    document.getElementById('cad-nome-3').value = document.getElementById('cad-nome').value;
+    document.getElementById('cad-email-3').value = document.getElementById('cad-email').value;
+    document.getElementById('cad-senha-3').value = document.getElementById('cad-senha').value;
+    document.getElementById('cad-cpf-3').value = cpf;
+    document.getElementById('cad-nascimento-3').value = nascimento;
+    document.getElementById('cad-contato-3').value = contato;
+    mostrarEtapaCadastro(3);
+    atualizarAvatarCadastro();
+};
+document.getElementById('btn-voltar-3').onclick = function() {
+    mostrarEtapaCadastro(2);
+    atualizarAvatarCadastro();
+};
+
+// Sempre começa na etapa 1 ao abrir
+function abrirCadastroFuncionario() {
+    document.getElementById('cadastro-funcionario').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    mostrarEtapaCadastro(1);
+    atualizarAvatarCadastro();
+    gerarSenhaProvisoria();
+}
+
+// Máscaras (se já não estiver no seu JS)
+mascaraCPF(document.getElementById('cad-cpf'));
+mascaraTelefone(document.getElementById('cad-contato'));
+
 function aplicarEstiloInputs() {
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
@@ -1409,7 +1566,7 @@ function aplicarEstiloInputs() {
                 select.style.backgroundColor = 'white';
             } else {
                 select.style.backgroundColor = '#f1f1f1';
-            }
+    }
         });
     });
 }

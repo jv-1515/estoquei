@@ -557,6 +557,48 @@ select#registros-select option {
 
 
 
+.cadastro-bullets {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 18px 0 8px 0;
+}
+.bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+  display: inline-block;
+  transition: background 0.2s;
+}
+.bullet.active {
+  background: #1e94a3;
+}
+.btn-proximo, .btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto;
+  margin-bottom: 8px;
+  background: #1e94a3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 18px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-voltar {
+  background: #ccc;
+  color: #333;
+}
+.btn-proximo:disabled, .btn-voltar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
 /* sweetAlert */
 .swal2-popup {
     width: 400px;
