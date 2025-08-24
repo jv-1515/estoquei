@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.estoquei.model.CargoUsuario;
 import com.example.estoquei.model.TipoUsuario;
 import com.example.estoquei.model.Usuario;
+import com.example.estoquei.repository.UsuarioFiltroRepository;
 import com.example.estoquei.repository.UsuarioRepository;
 
 @Service
@@ -16,6 +17,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioFiltroRepository usuarioFiltroRepository;
 
     public Usuario autenticar(String email, String senha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
@@ -81,5 +85,9 @@ public class UsuarioService {
             return true;
         }
         return false;
+    }
+
+    public List<Usuario> filtrar(Usuario filtro) {
+        return usuarioFiltroRepository.findAndFilter(filtro);
     }
 }
