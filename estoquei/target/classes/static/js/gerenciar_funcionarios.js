@@ -16,14 +16,6 @@ function corAvatar(str) {
     return `hsl(${h}, 60%, 80%)`;
 }
 
-const coresCargo = {
-    ADMIN: "#000000",
-    GERENTE: "#1e94a3",
-    VENDEDOR: "#16a085",
-    CAIXA: "#e67e22",
-    ESTOQUISTA: "#c0392b"
-};
-
 function formatarNome(nome) {
     if (!nome) return '';
     const partes = nome.trim().split(/\s+/);
@@ -153,21 +145,7 @@ function renderizarFuncionarios(lista) {
                 </td>
                 <td>${f.codigo}</td>
                 <td>${formatarNome(f.nome)}</td>
-                <td>
-                    <span style="
-                        display:inline-block;
-                        padding:4px 12px;
-                        border-radius:12px;
-                        font-size:12px;
-                        color:#fff;
-                        background:${coresCargo[f.cargo] || '#888'};
-                        min-width:50px;
-                        text-align:center;
-                    ">
-                        ${f.cargo
-                            .toLowerCase()
-                            .replace(/(^|\s)\S/g, l => l.toUpperCase())}
-                    </span>
+                <td>${f.cargo.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())}
                 </td>
                 <td>${f.email}</td>
                 <td>
@@ -183,7 +161,10 @@ function renderizarFuncionarios(lista) {
                     </span>
                 </td>
                 <td class="actions">
-                    <a href="javascript:void(0)" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
+                    <a href="#" onclick="abrirDetalhesFuncionario('${f.id}')" title="Ver detalhes">
+                        <i class="fa-solid fa-eye""></i>
+                    </a>
+                    <a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
                         <i class="fa-solid fa-pen"></i>
                     </a>
                     <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
@@ -462,6 +443,7 @@ function carregarFuncionarios() {
 
 // Remover funcionário
 function removerFuncionario(id) {
+    fecharDetalhesFuncionario();
     if (usuarioLogadoId && String(id) === String(usuarioLogadoId)) {
         Swal.fire({
             icon: 'warning',
@@ -789,6 +771,7 @@ function cadastrarFuncionario() {
 
 // Edição
 function abrirEdicaoFuncionario(id) {
+    fecharDetalhesFuncionario();
     const funcionario = funcionarios.find(f => f.id == id);
     document.getElementById('edit-id').value = funcionario.id;
 
@@ -1120,39 +1103,6 @@ function atualizarSetasOrdenacao() {
     });
 }
 
-// No filtrarFuncionarios, ordene antes de renderizar:
-// function filtrarFuncionarios() {
-//     const termo = buscaInput.value.trim().toLowerCase();
-//     const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
-//         .slice(1)
-//         .filter(cb => cb.checked && cb.value)
-//         .map(cb => cb.value);
-//     const status = Array.from(document.querySelectorAll('.status-multi-check'))
-//         .slice(1)
-//         .filter(cb => cb.checked && cb.value)
-//         .map(cb => cb.value);
-
-//     let filtrados = funcionarios.filter(f =>
-//         (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
-//         (cargos.length === 0 || cargos.includes(f.cargo)) &&
-//         (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
-//     );
-//     // Ordenação:
-//     const campo = campoOrdenacao[indiceOrdenacaoAtual];
-//     filtrados = filtrados.slice().sort((a, b) => {
-//         let valA = a[campo], valB = b[campo];
-//         if (campo === 'ativo') {
-//             valA = a.ativo ? 1 : 0;
-//             valB = b.ativo ? 1 : 0;
-//         }
-//         if (estadoOrdenacao[indiceOrdenacaoAtual]) {
-//             return valB > valA ? 1 : valB < valA ? -1 : 0;
-//         } else {
-//             return valA > valB ? 1 : valA < valB ? -1 : 0;
-//         }
-//     });
-//     renderizarFuncionarios(filtrados);
-// }
 
 //mascara codigo
 function aplicarMascaraCodigo(input) {
@@ -1323,6 +1273,61 @@ function validaCPF(cpf) {
         return false
 
     return true
+}
+
+
+function formatarTelefoneExibicao(telefone) {
+    if (!telefone) return 'Não informado';
+    let v = telefone.replace(/\D/g, '');
+    if (v.length === 11) {
+        return `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    } else if (v.length === 10) {
+        return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
+    }
+    return telefone;
+}
+
+function abrirDetalhesFuncionario(id) {
+    window.detalhesFuncionarioId = id;
+    const funcionario = funcionarios.find(f => String(f.id) === String(id));
+    if (!funcionario) return;
+
+    // Avatar
+    const avatarDiv = document.getElementById('detalhes-avatar-func');
+    const iniciaisSpan = document.getElementById('detalhes-avatar-iniciais');
+    if (avatarDiv && iniciaisSpan) {
+        avatarDiv.style.background = corAvatar(funcionario.nome);
+        const partes = funcionario.nome.trim().split(/\s+/);
+        let iniciais = partes.length === 1
+            ? partes[0][0].toUpperCase()
+            : (partes[0][0] + partes[partes.length-1][0]).toUpperCase();
+        iniciaisSpan.textContent = iniciais;
+    }
+
+    // Código
+    document.getElementById('detalhes-codigo').textContent = "Cód: " + (funcionario.codigo || "-");
+
+    // Nome e cargo
+    document.getElementById('detalhes-nome').textContent = funcionario.nome || '';
+    document.getElementById('detalhes-cargo').textContent = funcionario.cargo
+        ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
+        : '';
+
+    // Email (link mailto)
+    const emailEl = document.getElementById('detalhes-email');
+    emailEl.textContent = funcionario.email || '';
+    emailEl.href = funcionario.email ? `mailto:${funcionario.email}` : '#';
+
+    // Telefone
+    document.getElementById('detalhes-telefone').textContent = formatarTelefoneExibicao(funcionario.telefone || 'Não informado');
+    
+    // Exibe o modal
+    document.getElementById('detalhes-funcionario-popup').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function fecharDetalhesFuncionario() {
+    document.getElementById('detalhes-funcionario-popup').style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 // Estilo inputs
