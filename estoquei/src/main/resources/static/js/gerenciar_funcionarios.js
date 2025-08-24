@@ -24,6 +24,13 @@ const coresCargo = {
     ESTOQUISTA: "#c0392b"
 };
 
+function formatarNome(nome) {
+    if (!nome) return '';
+    const partes = nome.trim().split(/\s+/);
+    if (partes.length === 1) return partes[0];
+    return partes[0] + ' ' + partes[partes.length - 1];
+}
+
 // Atualiza avatar ao digitar o nome no cadastro e na edição
 document.addEventListener('DOMContentLoaded', function() {
     // Cadastro
@@ -145,7 +152,7 @@ function renderizarFuncionarios(lista) {
                     </div>
                 </td>
                 <td>${f.codigo}</td>
-                <td>${f.nome}</td>
+                <td>${formatarNome(f.nome)}</td>
                 <td>
                     <span style="
                         display:inline-block;
@@ -373,7 +380,7 @@ const buscaInput = document.getElementById('busca-funcionario');
 buscaInput.addEventListener('input', filtrarFuncionarios);
 
 function filtrarFuncionarios() {
-    const termo = buscaInput.value.trim().toLowerCase();
+    const termo = buscaInput.value.trim();
     const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
         .slice(1)
         .filter(cb => cb.checked && cb.value)
@@ -383,12 +390,46 @@ function filtrarFuncionarios() {
         .filter(cb => cb.checked && cb.value)
         .map(cb => cb.value);
 
-    const filtrados = funcionarios.filter(f =>
-        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
-        (cargos.length === 0 || cargos.includes(f.cargo)) &&
-        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
-    );
-    renderizarFuncionarios(filtrados);
+    const filtro = {};
+    if (termo) {
+        filtro.nome = termo;
+        filtro.codigo = termo;
+    }
+    if (cargos.length === 1) {
+        filtro.cargo = cargos[0];
+    }
+
+    fetch('/usuarios/filtrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filtro)
+    })
+    .then(res => res.json())
+    .then(data => {
+        funcionarios = data;
+        let filtrados = funcionarios;
+
+        if (status.length === 1) {
+            filtrados = funcionarios.filter(f => status[0] === "ATIVO" ? f.ativo : !f.ativo);
+        }
+
+        // Ordenacao
+        const campo = campoOrdenacao[indiceOrdenacaoAtual];
+        filtrados = filtrados.slice().sort((a, b) => {
+            let valA = a[campo], valB = b[campo];
+            if (campo === 'ativo') {
+                valA = a.ativo ? 1 : 0;
+                valB = b.ativo ? 1 : 0;
+            }
+            if (estadoOrdenacao[indiceOrdenacaoAtual]) {
+                return valB > valA ? 1 : valB < valA ? -1 : 0;
+            } else {
+                return valA > valB ? 1 : valA < valB ? -1 : 0;
+            }
+        });
+
+        renderizarFuncionarios(filtrados);
+    });
 }
 
 // --- LIMPAR FILTROS ---
@@ -402,7 +443,7 @@ function limpar() {
 
 // --- AO CARREGAR, MOSTRA TODOS OS FUNCIONÁRIOS ---
 document.addEventListener('DOMContentLoaded', function() {
-    carregarFuncionarios();
+    filtrarFuncionarios();
 });
 
 // Carregar funcionários do backend
@@ -1080,38 +1121,38 @@ function atualizarSetasOrdenacao() {
 }
 
 // No filtrarFuncionarios, ordene antes de renderizar:
-function filtrarFuncionarios() {
-    const termo = buscaInput.value.trim().toLowerCase();
-    const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
-        .slice(1)
-        .filter(cb => cb.checked && cb.value)
-        .map(cb => cb.value);
-    const status = Array.from(document.querySelectorAll('.status-multi-check'))
-        .slice(1)
-        .filter(cb => cb.checked && cb.value)
-        .map(cb => cb.value);
+// function filtrarFuncionarios() {
+//     const termo = buscaInput.value.trim().toLowerCase();
+//     const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
+//         .slice(1)
+//         .filter(cb => cb.checked && cb.value)
+//         .map(cb => cb.value);
+//     const status = Array.from(document.querySelectorAll('.status-multi-check'))
+//         .slice(1)
+//         .filter(cb => cb.checked && cb.value)
+//         .map(cb => cb.value);
 
-    let filtrados = funcionarios.filter(f =>
-        (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
-        (cargos.length === 0 || cargos.includes(f.cargo)) &&
-        (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
-    );
-    // Ordenação:
-    const campo = campoOrdenacao[indiceOrdenacaoAtual];
-    filtrados = filtrados.slice().sort((a, b) => {
-        let valA = a[campo], valB = b[campo];
-        if (campo === 'ativo') {
-            valA = a.ativo ? 1 : 0;
-            valB = b.ativo ? 1 : 0;
-        }
-        if (estadoOrdenacao[indiceOrdenacaoAtual]) {
-            return valB > valA ? 1 : valB < valA ? -1 : 0;
-        } else {
-            return valA > valB ? 1 : valA < valB ? -1 : 0;
-        }
-    });
-    renderizarFuncionarios(filtrados);
-}
+//     let filtrados = funcionarios.filter(f =>
+//         (!termo || f.codigo.toLowerCase().includes(termo) || f.nome.toLowerCase().includes(termo)) &&
+//         (cargos.length === 0 || cargos.includes(f.cargo)) &&
+//         (status.length === 0 || status.includes(f.ativo ? 'ATIVO' : 'INATIVO'))
+//     );
+//     // Ordenação:
+//     const campo = campoOrdenacao[indiceOrdenacaoAtual];
+//     filtrados = filtrados.slice().sort((a, b) => {
+//         let valA = a[campo], valB = b[campo];
+//         if (campo === 'ativo') {
+//             valA = a.ativo ? 1 : 0;
+//             valB = b.ativo ? 1 : 0;
+//         }
+//         if (estadoOrdenacao[indiceOrdenacaoAtual]) {
+//             return valB > valA ? 1 : valB < valA ? -1 : 0;
+//         } else {
+//             return valA > valB ? 1 : valA < valB ? -1 : 0;
+//         }
+//     });
+//     renderizarFuncionarios(filtrados);
+// }
 
 //mascara codigo
 function aplicarMascaraCodigo(input) {
