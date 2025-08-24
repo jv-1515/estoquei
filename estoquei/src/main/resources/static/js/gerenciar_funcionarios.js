@@ -139,7 +139,10 @@ function renderizarFuncionarios(lista) {
                         display:flex;align-items:center;justify-content:center;
                         font-weight:bold;font-size:12px;
                         color: rgba(0,0,0,0.65);
-                        ">
+                        cursor:pointer;"
+                        onclick="abrirDetalhesFuncionario('${f.id}')"
+                        title="Ver detalhes"
+                    >
                         ${getIniciais(f.nome)}
                     </div>
                 </td>
@@ -1333,9 +1336,6 @@ function abrirDetalhesFuncionario(id) {
 
     // Nome e cargo
     document.getElementById('detalhes-nome').textContent = funcionario.nome || '';
-    document.getElementById('detalhes-cargo').textContent = funcionario.cargo
-        ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
-        : '';
 
     // Ativo/Inativo
     const statusDiv = document.getElementById('detalhes-status');
@@ -1345,8 +1345,12 @@ function abrirDetalhesFuncionario(id) {
         statusDiv.innerHTML = '<span style="display:inline-block; padding:4px 12px; border-radius:12px; font-size:12px; color:#fff; background:#888;">Inativo</span>';
     }
     
-    // Idade
-    const idadeDiv = document.getElementById('detalhes-idade');
+    // Cargo + idade na mesma linha
+    const cargoIdadeDiv = document.getElementById('detalhes-cargo-idade');
+    let cargo = funcionario.cargo
+        ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
+        : '';
+    let idadeStr = '';
     if (funcionario.dataNascimento) {
         const nasc = new Date(funcionario.dataNascimento);
         const hoje = new Date();
@@ -1355,10 +1359,9 @@ function abrirDetalhesFuncionario(id) {
         if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
             idade--;
         }
-        idadeDiv.textContent = `${idade} anos`;
-    } else {
-        idadeDiv.textContent = 'Idade: Não informada';
+        idadeStr = `, ${idade} anos`;
     }
+    cargoIdadeDiv.textContent = cargo + idadeStr;
     
     // Email (link mailto)
     const emailEl = document.getElementById('detalhes-email');
@@ -1366,7 +1369,14 @@ function abrirDetalhesFuncionario(id) {
     emailEl.href = funcionario.email ? `mailto:${funcionario.email}` : '#';
 
     // Telefone
-    document.getElementById('detalhes-telefone').textContent = formatarTelefoneExibicao(funcionario.telefone || 'Não informado');
+    const detalhesTelefoneEl = document.getElementById('detalhes-telefone');
+    const telefoneFormatado = formatarTelefoneExibicao(funcionario.telefone || '');
+    detalhesTelefoneEl.textContent = telefoneFormatado;
+    if (!funcionario.telefone) {
+        detalhesTelefoneEl.style.color = '#757575';
+    } else {
+        detalhesTelefoneEl.style.color = '';
+    }
     
     // Exibe o modal
     document.getElementById('detalhes-funcionario-popup').style.display = 'flex';

@@ -186,6 +186,9 @@ tbody tr:nth-child(odd) {
 .fa-eye-slash {
     color: #757575;
 }
+.actions .fa-eye{
+    color: inherit;
+}
 .form-container {
     background-color: white;
     border-radius: 10px;
