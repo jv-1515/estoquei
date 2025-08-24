@@ -559,9 +559,9 @@ select#registros-select option {
 
 .cadastro-bullets {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  align-items: flex-end;
   gap: 8px;
-  margin: 18px 0 8px 0;
 }
 .bullet {
   width: 10px;
@@ -575,27 +575,42 @@ select#registros-select option {
   background: #1e94a3;
 }
 .btn-proximo, .btn-voltar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 auto;
-  margin-bottom: 8px;
-  background: #1e94a3;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 7px 18px;
-  font-size: 13px;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px auto;
+    background: none;
+    color: #1e94a3;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    cursor: pointer;
+    justify-content: flex-end;
+    font-weight: bold;
 }
 .btn-voltar {
-  background: #ccc;
-  color: #333;
+    color: #757575;
+    padding: 0 64px 0 0;
+    margin: 0;
 }
+.btn-proximo{
+    padding: 0 0 0 64px;
+    margin: 0
+}
+
 .btn-proximo:disabled, .btn-voltar:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.btn-voltar:hover{
+   color:#555; 
+}
+.btn-proximo:hover{
+   color:#277580;
+}
+
+
 
 
 

@@ -129,18 +129,22 @@
                 <label for="cad-senha">Senha Provisória*</label>
                 <div style="display: flex; gap: 10px;">
                   <input type="text" id="cad-senha" name="senha" readonly tabindex="5" />
-                  <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
+                    <button class="btn" style="width:85px; min-width: 85px; padding: 8px;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">
+                    <i class="fa-solid fa-rotate"></i> Trocar
+                    </button>
                 </div>
               </div>
             </div>
-            <div class="cadastro-bullets" style="margin-top: 10px;">
+            <div class="cadastro-bullets">
               <span class="bullet active"></span>
               <span class="bullet"></span>
               <span class="bullet"></span>
+              <div style="display: flex; flex-direction: row; justify-content: flex-end; margin-top: 10px;">
+                <button type="button" id="btn-proximo-1" class="btn-proximo">
+                  Próximo <i class="fa-solid fa-arrow-right"></i>
+                </button>
             </div>
-            <button type="button" id="btn-proximo-1" class="btn-proximo" style="margin-top: 10px;">
-              Próximo <i class="fa-solid fa-arrow-right"></i>
-            </button>
+            </div>
           </div>
 
           <!-- ETAPA 2 -->
@@ -161,32 +165,31 @@
                 </div>
               </div>
             </div>
-            
             <div style="display: flex; flex-direction: column;">
-              <label for="cad-cpf">CPF</label>
+              <label style="font-weight: normal;" for="cad-cpf">CPF</label>
               <input type="text" id="cad-cpf" name="cpf" placeholder="000.000.000-00" tabindex="7" />
             </div>
             
             <div style="display: flex; flex-direction: column;">
-              <label for="cad-nascimento">Data de Nascimento</label>
+              <label style="font-weight: normal;" for="cad-nascimento">Data de Nascimento</label>
               <input type="date" id="cad-nascimento" name="nascimento" tabindex="8" />
             </div>
             <div style="display: flex; flex-direction: column;">
-              <label for="cad-contato">Número de Contato</label>
+              <label style="font-weight: normal;" for="cad-contato">Número de Contato</label>
               <input type="text" id="cad-contato" name="contato" placeholder="(00) 00000-0000" tabindex="9" />
             </div>
             <div class="cadastro-bullets">
+              <button type="button" id="btn-voltar-2" class="btn-voltar" style="padding: 10px 75px 0 0">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+              </button>
               <span class="bullet active"></span>
               <span class="bullet active"></span>
               <span class="bullet"></span>
-            </div>
-            <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-              <button type="button" id="btn-voltar-2" class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i> Voltar
-              </button>
-              <button type="button" id="btn-proximo-2" class="btn-proximo">
+              <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+              <button type="button" id="btn-proximo-2" class="btn-proximo" style="padding: 0 0 0 73px;">
                 Pular <i class="fa-solid fa-arrow-right"></i>
               </button>
+            </div>
             </div>
           </div>
 
@@ -194,9 +197,9 @@
           <div class="etapa-cadastro" data-etapa="3" style="display:none;">
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
               <div style="display: flex; flex-direction: column; flex: 1;">
-                <label for="cad-codigo-3">Código</label>
+                <label for="cad-codigo-3">Código*</label>
                 <input type="text" id="cad-codigo-3" name="codigo-3" readonly />
-                <label for="cad-cargo-3">Cargo</label>
+                <label for="cad-cargo-3">Cargo*</label>
                 <input type="text" id="cad-cargo-3" name="cargo-3" readonly />
               </div>
               <div style="display: flex; align-items: flex-end; height: 100%;">
@@ -207,13 +210,13 @@
               </div>
             </div>
             <div style="display: flex; flex-direction: column;">
-              <label for="cad-nome-3">Nome</label>
+              <label for="cad-nome-3">Nome*</label>
               <input type="text" id="cad-nome-3" name="nome-3" readonly />
               
-              <label for="cad-email-3">Email</label>
+              <label for="cad-email-3">Email*</label>
               <input type="email" id="cad-email-3" name="email-3" readonly />
               
-              <label for="cad-senha-3">Senha Provisória</label>
+              <label for="cad-senha-3">Senha Provisória*</label>
               <input type="text" id="cad-senha-3" name="senha-3" readonly />
               
               <label for="cad-cpf-3">CPF</label>
@@ -225,15 +228,15 @@
               <label for="cad-contato-3">Número de Contato</label>
               <input type="text" id="cad-contato-3" name="contato-3" readonly placeholder="Não informado" />
             </div>
-            <div class="cadastro-bullets">
+            <button class="btn" type="submit" style="margin:10px 0; width: 100%;">Cadastrar</button>
+            <div class="cadastro-bullets" style="justify-content: unset;">
+            <button type="button" id="btn-voltar-3" class="btn-voltar" style="padding:0 72px 0 0;">
+              <i class="fa-solid fa-arrow-left"></i> Voltar
+            </button>
               <span class="bullet active"></span>
               <span class="bullet active"></span>
               <span class="bullet active"></span>
             </div>
-            <button type="button" id="btn-voltar-3" class="btn-voltar">
-              <i class="fa-solid fa-arrow-left"></i> Voltar
-            </button>
-            <button class="btn" type="submit" style="margin-top:10px;">Cadastrar</button>
           </div>
         </form>
       </span>
