@@ -1391,9 +1391,16 @@ let etapaCadastroAtual = 1;
 
 function mostrarEtapaCadastro(etapa) {
     document.querySelectorAll('.etapa-cadastro').forEach(div => {
-        div.style.display = div.getAttribute('data-etapa') == etapa ? '' : 'none';
+        div.style.display = div.getAttribute('data-etapa') == etapa ? 'block' : 'none';
     });
+    const titulo = document.getElementById('cadastro-etapa-titulo');
+    if (titulo) {
+        if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário';
+        else if (etapa == 2) titulo.textContent = 'Informações Pessoais';
+        else if (etapa == 3) titulo.textContent = 'Revisar Informações';
+    }
 }
+
 
 function atualizarAvatarCadastro() {
     const nome = document.getElementById('cad-nome').value || '';
@@ -1427,37 +1434,85 @@ document.getElementById('btn-proximo-1').onclick = function() {
     // Validação dos campos da etapa 1
     const codigo = document.getElementById('cad-codigo').value.trim();
     const nome = document.getElementById('cad-nome').value.trim();
-    const cargo = document.getElementById('cad-cargo').value;
+    // const cargo = document.getElementById('cad-cargo').value;
     const email = document.getElementById('cad-email').value.trim();
     const senha = document.getElementById('cad-senha').value;
 
-    if (!codigo || codigo.length !== 6) {
-        Swal.fire({ icon: 'warning', title: 'Código inválido!', text: 'Informe um código de 6 dígitos.' });
-        return;
-    }
-    if (!cargo) {
-        Swal.fire({ icon: 'warning', title: 'Cargo obrigatório!', text: 'Selecione o cargo.' });
-        return;
-    }
-    if (!nome || /\d/.test(nome)) {
-        Swal.fire({ icon: 'warning', title: 'Nome inválido!', text: 'Informe um nome válido, sem números.' });
-        return;
-    }
-    if (!email || !email.includes('@')) {
-        Swal.fire({ icon: 'warning', title: 'Email inválido!', text: 'Informe um email válido.' });
-        return;
-    }
-    if (!senha || senha.length < 8) {
-        Swal.fire({ icon: 'warning', title: 'Senha inválida!', text: 'A senha deve ter pelo menos 8 caracteres.' });
-        return;
-    }
-    // Duplicidade
+    // Validação de código duplicado
     if (funcionarios.some(f => f.codigo === codigo)) {
-        Swal.fire({ icon: 'warning', title: 'Código já cadastrado!', text: 'Informe outro código.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
         return;
     }
+    // Validação de email duplicado
     if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase())) {
-        Swal.fire({ icon: 'warning', title: 'Email já cadastrado!', text: 'Informe outro email.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Informe outro email',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+    // Validação de CPF duplicado
+    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CPF já cadastrado!',
+            text: 'Informe o CPF correto',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+        return;
+    }
+
+    // Validação do nome
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode estar vazio',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // Validação da senha
+    if (!senha || senha.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Senha inválida!',
+            text: 'A senha deve ter pelo menos 8 caracteres',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
         return;
     }
 
