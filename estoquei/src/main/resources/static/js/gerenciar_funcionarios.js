@@ -711,6 +711,18 @@ function cadastrarFuncionario() {
         });
         return;
     }
+    if (idade > 99) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário não pode ter mais de 99 anos',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
 
     //monta o objeto e envia
     const funcionario = {
@@ -719,9 +731,9 @@ function cadastrarFuncionario() {
         cargo: document.getElementById('cad-cargo').value,
         email: email,
         senha: senha,
-        cpf: cpf,
+        cpf: document.getElementById('cad-cpf').value.replace(/\D/g, ''),
         dataNascimento: dataNascimento,
-        telefone: document.getElementById('cad-contato').value,
+        telefone: document.getElementById('cad-contato').value.replace(/\D/g, ''),
         ativo: true
     };
 
@@ -960,6 +972,18 @@ function salvarEdicaoFuncionario() {
         });
         return;
     }
+    if (idade > 99) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Idade inválida!',
+            text: 'O funcionário não pode ter mais de 99 anos.',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        return;
+    }
 
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
@@ -967,9 +991,9 @@ function salvarEdicaoFuncionario() {
         cargo: document.getElementById('edit-cargo').value,
         email: document.getElementById('edit-email').value,
         senha: senha,
-        cpf: cpf,
+        cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: dataNascimento,
-        telefone: document.getElementById('edit-contato').value,
+        telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
         ativo: document.getElementById('edit-ativo').checked
     };
 
@@ -1313,6 +1337,29 @@ function abrirDetalhesFuncionario(id) {
         ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
         : '';
 
+    // Ativo/Inativo
+    const statusDiv = document.getElementById('detalhes-status');
+    if (funcionario.ativo) {
+        statusDiv.innerHTML = '<span style="display:inline-block; padding:4px 12px; border-radius:12px; font-size:12px; color:#fff; background:#43b04a;">Ativo</span>';
+    } else {
+        statusDiv.innerHTML = '<span style="display:inline-block; padding:4px 12px; border-radius:12px; font-size:12px; color:#fff; background:#888;">Inativo</span>';
+    }
+    
+    // Idade
+    const idadeDiv = document.getElementById('detalhes-idade');
+    if (funcionario.dataNascimento) {
+        const nasc = new Date(funcionario.dataNascimento);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nasc.getFullYear();
+        const m = hoje.getMonth() - nasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+            idade--;
+        }
+        idadeDiv.textContent = `${idade} anos`;
+    } else {
+        idadeDiv.textContent = 'Idade: Não informada';
+    }
+    
     // Email (link mailto)
     const emailEl = document.getElementById('detalhes-email');
     emailEl.textContent = funcionario.email || '';
