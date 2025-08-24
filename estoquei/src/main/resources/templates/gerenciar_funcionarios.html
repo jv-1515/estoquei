@@ -86,7 +86,7 @@
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
   <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
     <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
-    <h2 style="margin-bottom:5px;">Cadastrar Funcionário</h2>
+    <h2 id="cadastro-etapa-titulo">Cadastrar Funcionário</h2>
 
     <!-- ETAPA 1 -->
     <div class="etapa-cadastro" data-etapa="1">
@@ -95,11 +95,11 @@
         <div style="display: flex; flex-direction: column; flex: 1;">
           <div style="display: flex; flex-direction: column;">
             <label for="cad-codigo">Código*</label>
-            <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1" style="padding: 8px;"/>
+            <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1"/>
           </div>
           <div style="display: flex; flex-direction: column;">
             <label for="cad-cargo">Cargo*</label>
-            <select id="cad-cargo" name="cargo" required tabindex="2" style="padding: 8px;">
+            <select id="cad-cargo" name="cargo" required tabindex="2">
               <option value="" selected disabled hidden>Cargo</option>
               <option value="GERENTE">Gerente</option>
               <option value="VENDEDOR">Vendedor</option>
@@ -119,16 +119,16 @@
       <div style="display: flex; flex-direction: column;">
         <div style="display: flex; flex-direction: column;">
           <label for="cad-nome">Nome*</label>
-          <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50" style="padding: 8px;"/>
+          <input type="text" id="cad-nome" name="nome" required placeholder="Nome" tabindex="3" maxlength="50"/>
         </div>
         <div style="display: flex; flex-direction: column;">
           <label for="cad-email">Email*</label>
-          <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4" style="padding: 8px;"/>
+          <input type="email" id="cad-email" name="email" required placeholder="Email" tabindex="4"/>
         </div>
         <div style="display: flex; flex-direction: column;">
           <label for="cad-senha">Senha Provisória*</label>
           <div style="display: flex; gap: 10px;">
-            <input type="text" id="cad-senha" name="senha" readonly style="width:60%; padding: 8px;" tabindex="5" />
+            <input type="text" id="cad-senha" name="senha" readonly tabindex="5" />
             <button class="btn senha-provisoria" style="width:40%;" type="button" onclick="gerarSenhaProvisoria()" tabindex="6">Gerar Senha</button>
           </div>
         </div>
@@ -160,16 +160,16 @@
         </div>
       </div>
       <div style="display: flex; flex-direction: column;">
-        <label for="cad-cpf">CPF*</label>
-        <input type="text" id="cad-cpf" name="cpf" required placeholder="000.000.000-00" tabindex="7" />
+        <label for="cad-cpf">CPF</label>
+        <input type="text" id="cad-cpf" name="cpf" placeholder="000.000.000-00" tabindex="7" />
       </div>
       <div style="display: flex; flex-direction: column;">
-        <label for="cad-nascimento">Data de Nascimento*</label>
-        <input type="date" id="cad-nascimento" name="nascimento" required tabindex="8" />
+        <label for="cad-nascimento">Data de Nascimento</label>
+        <input type="date" id="cad-nascimento" name="nascimento" tabindex="8" />
       </div>
       <div style="display: flex; flex-direction: column;">
-        <label for="cad-contato">Número de Contato*</label>
-        <input type="text" id="cad-contato" name="contato" required placeholder="(00) 00000-0000" tabindex="9" />
+        <label for="cad-contato">Número de Contato</label>
+        <input type="text" id="cad-contato" name="contato" placeholder="(00) 00000-0000" tabindex="9" />
       </div>
       <div class="cadastro-bullets">
         <span class="bullet active"></span>
@@ -190,21 +190,21 @@
     <div class="etapa-cadastro" data-etapa="3" style="display:none;">
       <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
         <div style="display: flex; flex-direction: column; flex: 1;">
-          <label for="cad-codigo-3">Código*</label>
+          <label for="cad-codigo-3">Código</label>
           <input type="text" id="cad-codigo-3" name="codigo-3" readonly />
-          <label for="cad-cargo-3">Cargo*</label>
+          <label for="cad-cargo-3">Cargo</label>
           <input type="text" id="cad-cargo-3" name="cargo-3" readonly />
-          <label for="cad-nome-3">Nome*</label>
+          <label for="cad-nome-3">Nome</label>
           <input type="text" id="cad-nome-3" name="nome-3" readonly />
-          <label for="cad-email-3">Email*</label>
+          <label for="cad-email-3">Email</label>
           <input type="email" id="cad-email-3" name="email-3" readonly />
-          <label for="cad-senha-3">Senha Provisória*</label>
+          <label for="cad-senha-3">Senha Provisória</label>
           <input type="text" id="cad-senha-3" name="senha-3" readonly />
-          <label for="cad-cpf-3">CPF*</label>
+          <label for="cad-cpf-3">CPF</label>
           <input type="text" id="cad-cpf-3" name="cpf-3" readonly />
-          <label for="cad-nascimento-3">Data de Nascimento*</label>
+          <label for="cad-nascimento-3">Data de Nascimento</label>
           <input type="date" id="cad-nascimento-3" name="nascimento-3" readonly />
-          <label for="cad-contato-3">Número de Contato*</label>
+          <label for="cad-contato-3">Número de Contato</label>
           <input type="text" id="cad-contato-3" name="contato-3" readonly />
         </div>
         <div style="display: flex; align-items: flex-end; height: 100%;">
