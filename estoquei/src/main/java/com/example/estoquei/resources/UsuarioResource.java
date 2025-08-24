@@ -78,4 +78,10 @@ public class UsuarioResource {
         usuarioService.salvar(usuario);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/filtrar")
+    public ResponseEntity<List<Usuario>> filtrar(@RequestBody Usuario filtro) {
+        List<Usuario> usuarios = usuarioService.filtrar(filtro);
+        return ResponseEntity.ok(usuarios);
+    }
 }
