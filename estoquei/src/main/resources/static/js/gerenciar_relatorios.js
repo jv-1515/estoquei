@@ -573,5 +573,3 @@ btnLimparFiltros.addEventListener('click', function(e) {
     });
     filtrosAvancados.style.display = 'none';
 });
-
-
