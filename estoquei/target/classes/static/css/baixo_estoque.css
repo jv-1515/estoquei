@@ -604,8 +604,9 @@ select#registros-select option {
 .edit-icon:hover {
     color: #1E94A3;
 }
-.trash-icon:hover {
-    color: #c0392b;
+
+.fa-trash:hover {
+    color: red;
 }
 
 .close-icon {

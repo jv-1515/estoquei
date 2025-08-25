@@ -43,7 +43,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderizarRemovidos(produtos) {
         const tbody = document.getElementById('removidos-table-body');
         if (!produtos.length) {
-            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px; background-color: white">Nenhum produto na lixeira</td></tr>`;
+            const thead = document.querySelector('#removidos-list thead');
+            if (thead) thead.style.display = 'none';
+            const registrosSelect = document.querySelector('#registros-select');
+            if (registrosSelect) registrosSelect.parentElement.style.display = 'none';
+        
+            const btnSelecionados = document.querySelector('.btn');
+            if (btnSelecionados) btnSelecionados.style.display = 'none';
+        
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="12" style="text-align: center; padding: 0 0 30px 0; background-color: white">
+                        <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
+                            <span style="font-weight:bold; margin-top: 10px">Nenhum produto na lixeira</span>
+                            <span>Alguém já tirou o lixo</span>
+                            <img src="/images/sem_removidos.png" alt="Sem produtos removidos" style="width:400px;">
+                        </div>
+                    </td>
+                </tr>
+            `;
             return;
         }
 
@@ -121,10 +139,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             icon: 'warning',
                             title: `${selecionados.length} produtos serão excluídos`,
-                            html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
+                            html: 'Digite <strong>EXCLUIR</strong> para confirmar:',
                             input: 'text',
+                            inputPlaceholder: 'EXCLUIR',
                             inputValidator: (value) => {
-                                if (value !== 'Excluir') return 'Digite exatamente: Excluir';
+                                if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
                             },
                             allowOutsideClick: false,
                             showCloseButton: true,
@@ -136,13 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                     input.style.margin = '10px 20px';
                                     input.style.border = 'solid 1px #aaa';
                                     input.style.borderRadius = '4px';
+                                    input.style.background = '#fff';
                                 }
                             }
                         }).then((res) => {
                             if (res.isConfirmed) {
                                 Swal.fire({
                                     title: 'Excluindo produtos...',
-                                    text: 'Aguarde enquanto os produtos são excluídos.',
+                                    text: 'Aguarde enquanto os produtos são excluídos',
                                     icon: 'info',
                                     showConfirmButton: false,
                                     timer: 1800,
@@ -163,13 +183,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             icon: 'info',
                             showConfirmButton: false,
                             allowOutsideClick: false,
-                            timer: 2000,
+                            timer: 2500,
                             timerProgressBar: true,
                             didOpen: () => {
                                 Swal.showLoading();
                                 Promise.all(selecionados.map(cb =>
                                     fetch(`/produtos/restaurar/${cb.dataset.id}`, { method: 'PUT' })
-                                )).then(() => location.reload());
+                                )).then(() => {
+                                    setTimeout(() => location.reload(), 2500);
+                                });
                             }
                         });
                     }
@@ -182,7 +204,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.stopPropagation();
                     const id = this.getAttribute('data-id');
                     const nome = this.getAttribute('data-nome') || 'produto';
-                    excluirProdutoDefinitivo(id, nome);
+                    const tr = this.closest('tr');
+                    const quantidade = tr ? Number(tr.querySelector('td:nth-child(8)').textContent) : 0;
+                    excluirProdutoDefinitivo(id, nome, quantidade);
                 });
             });
 
@@ -232,11 +256,13 @@ document.addEventListener('change', function(e) {
     }
 });
 
-    function excluirProdutoDefinitivo(id, nome) {
+    function excluirProdutoDefinitivo(id, nome, quantidade) {
         const nomeProduto = nome || 'produto';
-        Swal.fire({
+        if (quantidade > 0) {
+            const unidadeTexto = quantidade === 1 ? 'unidade' : 'unidades';
+            Swal.fire({
             title: `Excluir "${nomeProduto}"?`,
-            text: 'Esta ação é permanente',
+            html: `Este produto possui <b>${quantidade} ${unidadeTexto}</b><br>Esta ação é permanente`,
             icon: 'warning',
             showCancelButton: true,
             allowOutsideClick: false,
@@ -246,72 +272,96 @@ document.addEventListener('change', function(e) {
                 confirmButton: 'swal2-remove-custom',
                 cancelButton: 'swal2-cancel-custom'
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: `"${nomeProduto}" será excluído`,
-                    html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
-                    input: 'text',
-                    inputValidator: (value) => {
-                        if (value !== 'Excluir') return 'Digite exatamente: Excluir';
-                    },
-                    showCloseButton: true,
-                    showConfirmButton: true,
-                    didOpen: () => {
-                        const input = Swal.getInput();
-                        if (input) {
-                            input.style.fontSize = '12px';
-                            input.style.margin = '10px 20px';
-                            input.style.border = 'solid 1px #aaa';
-                            input.style.borderRadius = '4px';
-                        }
-                    }
-                }).then((res) => {
-                    if (res.isConfirmed) {
-                        Swal.fire({
-                            title: `"${nomeProduto}" está sendo excluído...`,
-                            text: 'Aguarde enquanto o produto é excluído',
-                            icon: 'info',
-                            showConfirmButton: false,
-                            allowOutsideClick: false,
-                            timer: 1500,
-                            didOpen: () => {
-                                Swal.showLoading();
-                                fetch('/produtos/excluir/' + id, {
-                                    method: 'DELETE'
-                                }).then(response => {
-                                    if (response.ok) {
-                                        setTimeout(() => location.reload(), 1500);
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Erro!',
-                                            text: `Não foi possível excluir ${nomeProduto}. Tente novamente`,
-                                            icon: 'error',
-                                            showConfirmButton: false,
-                                            allowOutsideClick: false,
-                                            timer: 1500,
-                                        });
-                                    }
-                                }).catch(error => {
-                                    console.error('Erro ao excluir produto:', error);
-                                    Swal.fire({
-                                        title: 'Erro de Conexão!',
-                                        text: `Não foi possível se conectar ao servidor para excluir "${nomeProduto}"`,
-                                        icon: 'error',
-                                        showConfirmButton: false,
-                                        allowOutsideClick: false,
-                                        timer: 1500
-                                    });
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    abrirConfirmacaoExclusao(id, nomeProduto);
+                }
+            });
+        } else {
+            Swal.fire({
+                title: `Removendo "${nomeProduto}"...`,
+                text: 'O produto será excluído definitivamente',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch('/produtos/excluir/' + id, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 2000);
+                            } else {
+                                Swal.fire({
+                                    title: 'Erro!',
+                                    text: `Não foi possível excluir ${nomeProduto}. Tente novamente`,
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    timer: 1500,
                                 });
                             }
                         });
+                }
+            });
+        }
+    }
+    
+    function abrirConfirmacaoExclusao(id, nomeProduto) {
+        Swal.fire({
+            icon: 'warning',
+            title: `Esta ação é irreversível!`,
+            html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
+            input: 'text',
+            inputValidator: (value) => {
+                if (value !== 'Excluir') return 'Digite exatamente: Excluir';
+            },
+            showCloseButton: true,
+            showConfirmButton: true,
+            customClass: {
+                confirmButton: 'swal2-remove-custom'
+            },
+            didOpen: () => {
+                const input = Swal.getInput();
+                if (input) {
+                    input.style.fontSize = '12px';
+                    input.style.margin = '10px 20px';
+                    input.style.border = 'solid 1px #aaa';
+                    input.style.borderRadius = '4px';
+                }
+            }
+        }).then((res) => {
+            if (res.isConfirmed) {
+                Swal.fire({
+                    title: `Excluindo "${nomeProduto}"...`,
+                    text: 'Aguarde enquanto o produto é excluído',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    timer: 1500,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        fetch('/produtos/excluir/' + id, { method: 'DELETE' })
+                            .then(response => {
+                                if (response.ok) {
+                                    setTimeout(() => location.reload(), 1500);
+                                } else {
+                                    Swal.fire({
+                                        title: 'Erro!',
+                                        text: `Não foi possível excluir ${nomeProduto}. Tente novamente`,
+                                        icon: 'error',
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                        timer: 1500,
+                                    });
+                                }
+                            });
                     }
                 });
             }
         });
     }
-
     // function excluirProdutosDefinitivos(ids) {
     //     Swal.fire({
     //         title: `Excluir ${ids.length} produto(s) selecionado(s)?`,
