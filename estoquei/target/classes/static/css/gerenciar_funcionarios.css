@@ -269,7 +269,7 @@ input:focus[readonly] {
     right: 15px;
     background: none;
     border: none;
-    font-size: 25px;
+    font-size: 18px;
     cursor: pointer;
     transition: color 0.2s;
     color: #333;
@@ -514,10 +514,10 @@ select#registros-select option {
     flex-direction: column; 
 }
 .botao-fechar {
-    font-size: 28px;
+    font-size: 18px;
     background: none;
     border: none;
-    color: #888;
+    color: #333;
     cursor: pointer;
 }
 .detalhes-flex {
