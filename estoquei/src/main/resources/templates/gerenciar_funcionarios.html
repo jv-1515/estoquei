@@ -85,7 +85,9 @@
         </div>
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
         <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
-          <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar">&times;</button>
+          <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar" title="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>          
           <h2 id="cadastro-etapa-titulo">Cadastrar Funcionário</h2>
 
           <!-- ETAPA 1 -->
@@ -244,7 +246,9 @@
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             
             <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
-            <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar">&times;</button>
+            <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar" title="Fechar" style="padding-top: 2px;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
             <h2 style="margin-bottom:10px;">Editar Funcionário</h2>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 15px;">
                 <div style="display: flex; flex-direction: column; flex: 1;">
@@ -344,7 +348,7 @@
             <button type="button" onclick="removerFuncionario(window.detalhesFuncionarioId)" title="Remover" style="background:none; border:none; cursor:pointer;">
               <i class="fa-solid fa-trash"></i>
             </button>
-            <a href="#" title="Fechar detalhes" onclick="fecharDetalhesFuncionario()">
+            <a href="/gerenciar-funcionarios" title="Fechar detalhes" onclick="fecharDetalhesFuncionario()">
                 <i style="font-size: 20px;" class="fa-solid fa-xmark"></i>
             </a>
           </div>

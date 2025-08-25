@@ -739,61 +739,120 @@ function filtrar() {
 
 
 //remover produto
-function removerProduto(id, nome) {
-    nomeProduto = nome || 'produto';
-    Swal.fire({
-        title: `Remover "${nomeProduto}"?`,
-        text: 'Esta ação não poderá ser desfeita',
-        icon: 'warning',
-        showCancelButton: true,
-        allowOutsideClick: false,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/produtos/' + id, {
-                method: 'DELETE'
-            }).then(response => {
-                if (response.ok) {
-                    Swal.fire({
-                        title: `Removendo ${nomeProduto}...`,
-                        text: 'Aguarde enquanto o produto é removido',
-                        icon: 'info',
+function removerProduto(id, nome, quantidade) {
+    const nomeProduto = nome || 'produto';
+
+    if (quantidade === 0) {
+        let cancelado = false;
+        Swal.fire({
+            title: `Removendo "${nomeProduto}"...`,
+            text: 'O produto será movido para a lixeira',
+            icon: 'info',
+            showCancelButton: true,
+            showConfirmButton: false,
+            cancelButtonText: 'Cancelar',
+            customClass: {
+            cancelButton: 'swal2-remove-custom'
+            },
+            allowOutsideClick: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: () => {
+            const cancelBtn = Swal.getCancelButton();
+            if (cancelBtn) {
+                cancelBtn.style.width = '90px';
+                cancelBtn.style.maxWidth = '90px';
+                cancelBtn.style.border = 'none';
+            }
+
+            const swalTimer = setTimeout(() => {
+                if (!cancelado) {
+                fetch('/produtos/' + id, { method: 'DELETE' })
+                    .then(response => {
+                    if (response.ok) {
+                        Swal.fire({
+                        title: `"${nomeProduto}" removido!`,
+                        icon: 'success',
                         showConfirmButton: false,
-                        allowOutsideClick: false,
                         timer: 1500,
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
+                        timerProgressBar: true
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
                         title: 'Erro!',
                         text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
                         icon: 'error',
                         showConfirmButton: false,
-                        allowOutsideClick: false,
                         timer: 1500,
+                        timerProgressBar: true
+                        });
+                    }
                     });
                 }
-            }).catch(error => {
-                console.error('Erro ao remover produto:', error);
+            }, 3000);
+
+            Swal.getCancelButton().onclick = () => {
+                cancelado = true;
+                clearTimeout(swalTimer);
+                Swal.close();
+            };
+            }
+        });
+    } else {
+            const unidadeTexto = quantidade === 1 ? 'unidade' : 'unidades';
+            Swal.fire({
+            title: `Excluir "${nomeProduto}"?`,
+            html: `Este produto possui <b>${quantidade} ${unidadeTexto}</b><br>Esta ação é permanente`,
+            icon: 'warning',
+            showCancelButton: true,
+            allowOutsideClick: false,
+            confirmButtonText: 'Excluir',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                confirmButton: 'swal2-remove-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
                 Swal.fire({
-                    title: 'Erro de Conexão!',
-                    text: `Não foi possível se conectar ao servidor para remover "${nomeProduto}"`,
-                    icon: 'error',
+                    title: `Removendo "${nomeProduto}"`,
+                    text: 'O produto será movido para a lixeira',
+                    icon: 'info',
                     showConfirmButton: false,
                     allowOutsideClick: false,
-                    timer: 1500
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        setTimeout(() => {
+                            fetch('/produtos/' + id, { method: 'DELETE' })
+                                .then(response => {
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            title: `"${nomeProduto}" removido!`,
+                                            icon: 'success',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                            timerProgressBar: true
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Erro!',
+                                            text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                            timerProgressBar: true
+                                        });
+                                    }
+                                });
+                        }, 1500);
+                    }
                 });
-            });
-        }
-    });
+            }
+        });
+    }
 }
-
 //formatar tamanho
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
@@ -996,7 +1055,7 @@ function renderizarProdutos(produtos) {
                         <a href="/editar-produto?id=${p.id}" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        <button type="button" onclick="removerProduto('${p.id}', '${p.nome.replace(/'/g, "\\'")}')" title="Excluir">
+                        <button type="button" onclick="removerProduto('${p.id}', '${p.nome.replace(/'/g, "\\'")}', ${p.quantidade})" title="Remover">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -1293,6 +1352,7 @@ window.onload = function() {
 
         filtrar();
     });
+
 
 
 }
@@ -1665,7 +1725,7 @@ function abrirDetalhesProduto(produto) {
     const removeBtn = document.getElementById('detalhes-remove-btn');
     if (removeBtn) {
         removeBtn.onclick = function() {
-            removerProduto(produto.id);
+            removerProduto(produto.id, produto.nome, produto.quantidade);
         };
     }
 }
