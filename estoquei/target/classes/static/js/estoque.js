@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+// lixeira
 function verificarLixeira() {
     const notificationLixeira = document.querySelector('.notification[onclick*="/produtos-removidos"]');
     if (!notificationLixeira) return;
@@ -42,6 +44,43 @@ window.addEventListener('DOMContentLoaded', function() {
     verificarLixeira();
 });
 
+function atualizarBadgeLixeira() {
+    const badge = document.querySelector('.badge-lixeira');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/removidos')
+        .then(res => res.json())
+        .then(removidos => {
+            const qtd = removidos.length;
+            if (qtd <= 0) {
+                badge.style.display = 'none';
+                return;
+            }
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.removeAttribute('style');
+            badge.style.display = 'inline-block';
+
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+        });
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeLixeira();
+});
+
+//fim lixeira
+
+
+
+// notificacao
 function atualizarBadgeBaixoEstoque() {
     const badge = document.querySelector('.badge-baixo-estoque');
     if (!badge) return;
@@ -94,39 +133,6 @@ if (bellIcon) {
 }
 
 
-function atualizarBadgeLixeira() {
-    const badge = document.querySelector('.badge-lixeira');
-    if (!badge) return;
-
-    badge.style.display = 'none';
-
-    fetch('/produtos/removidos')
-        .then(res => res.json())
-        .then(removidos => {
-            const qtd = removidos.length;
-            if (qtd <= 0) {
-                badge.style.display = 'none';
-                return;
-            }
-            badge.textContent = qtd > 99 ? '99+' : qtd;
-            badge.removeAttribute('style');
-            badge.style.display = 'inline-block';
-
-            if (qtd < 10) {
-                badge.style.padding = '3px 6px';
-            } else if (qtd < 99) {
-                badge.style.padding = '3px';
-            } else if (qtd > 99) {
-                badge.style.padding = '5px 0px 3px 2px';
-            }
-        });
-}
-
-// Chame após carregar/verificar lixeira
-window.addEventListener('DOMContentLoaded', function() {
-    atualizarBadgeLixeira();
-});
-
 // Fecha dropdown de gêneros ao clicar fora
 document.addEventListener('mousedown', function(e) {
     var checkboxes = document.getElementById("checkboxes-genero-multi");
@@ -142,7 +148,8 @@ document.addEventListener('mousedown', function(e) {
         atualizarPlaceholderGeneroMulti();
     }
 });
-// Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
+
+// ao desmarcar qualquer gênero individual, o "Todos" desmarca
 document.querySelectorAll('.genero-multi-check').forEach(cb => {
     if (cb.id !== 'genero-multi-todos') {
         cb.addEventListener('change', function() {
@@ -163,7 +170,7 @@ document.querySelectorAll('.genero-multi-check').forEach(cb => {
         });
     }
 });
-// Função para marcar/desmarcar todos os gêneros
+
 function marcarOuDesmarcarTodosGeneros() {
     const todas = document.getElementById('genero-multi-todos');
     const checks = document.querySelectorAll('.genero-multi-check');
@@ -181,7 +188,8 @@ function marcarOuDesmarcarTodosGeneros() {
     atualizarPlaceholderGeneroMulti();
     filtrar();
 }
-// Função para aplicar máscara de preço (R$xx,xx)
+
+// mascara preco
 function mascaraPreco(input) {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 5) value = value.slice(0, 5);
@@ -193,6 +201,7 @@ function mascaraPreco(input) {
     }
 }
 
+//checkboxes tamanho
 function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
     const checkboxesDiv = document.getElementById('checkboxes-tamanho-multi');
     checkboxesDiv.innerHTML = '';
@@ -229,6 +238,8 @@ function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
     }
 }
 
+
+//verifica opcoes disponiveis 
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categorias = [];
@@ -267,12 +278,10 @@ function updateOptions() {
         }
     }
 
-    // Atualiza o select de tamanho
     let options = '';
     const temLetra = [...tamanhos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
     const temNum = [...tamanhos].some(v => /^_\d+$/.test(v));
 
-    // "Todos" só aparece se tem letras E números
     if (temLetra && temNum) {
         options += `<option id="tamanho-multi-placeholder" value="">Todos</option>`;
     } else if (temLetra) {
@@ -383,7 +392,7 @@ function atualizarPlaceholderTamanhoMulti() {
     const select = document.getElementById('filter-tamanho');
     const placeholderOption = document.getElementById('tamanho-multi-placeholder');
 
-    // Só conta os tamanhos individuais visíveis (não os grupos)
+    // Só conta os tamanhos individuais visíveis
     const individuaisVisiveis = checks.filter(cb =>
         !['tamanho-multi-todas','tamanho-multi-todas-letra','tamanho-multi-todas-num'].includes(cb.id)
     );
@@ -393,26 +402,27 @@ function atualizarPlaceholderTamanhoMulti() {
     let texto = 'Todos';
     let ativo = true;
     if (selecionados.length === 0 || selecionados.length === individuaisVisiveis.length) {
-        // Se só tem letras visíveis, mostra "Todos em Letras"
+        // apenas letras
         if (individuaisVisiveis.every(cb => !/^_\d+$/.test(cb.value))) {
             texto = 'Todos em Letras';
         }
-        // Se só tem números visíveis, mostra "Todos Numéricos"
+        // apenas numericos
         else if (individuaisVisiveis.every(cb => /^_\d+$/.test(cb.value))) {
             texto = 'Todos Numéricos';
         }
-        // Se tem ambos, mostra "Todos"
+        // todos
         else {
             texto = 'Todos';
             ativo = false;
         }
     } else {
-        // Verifica se todos em letras estão marcados
+        // verifica se todos em letras estão marcados
         const todosLetrasMarcados = individuaisVisiveis
             .filter(cb => !/^_\d+$/.test(cb.value))
             .every(cb => cb.checked) &&
             individuaisVisiveis.some(cb => !/^_\d+$/.test(cb.value));
-        // Verifica se todos numéricos estão marcados
+
+        // verifica se todos numéricos estão marcados
         const todosNumericosMarcados = individuaisVisiveis
             .filter(cb => /^_\d+$/.test(cb.value))
             .every(cb => cb.checked) &&
@@ -439,15 +449,10 @@ function atualizarPlaceholderTamanhoMulti() {
     const chevron = input.parentNode.querySelector('.chevron-tamanho');
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 
-    // Atualiza o texto da option placeholder
     if (placeholderOption) placeholderOption.textContent = texto;
-    // Garante que a option placeholder está selecionada visualmente
     select.selectedIndex = 0;
-    // Atualiza cor do select
-    // select.style.color = texto === 'Todos' ? '#757575' : 'black';
 }
 
-// Atualiza placeholder da quantidade conforme seleção dos checkboxes
 function atualizarPlaceholderQuantidade() {
     const chkTodos = document.getElementById('quantidade-todas-popup');
     const chkBaixo = document.getElementById('quantidade-baixo-estoque-popup');
@@ -560,7 +565,7 @@ function syncQuantidadeChecksAndInputs() {
 
     atualizarPlaceholderQuantidade();
 }
-// Adiciona listeners para atualizar o placeholder ao mudar qualquer checkbox
+
 ['quantidade-todas-popup','quantidade-baixo-estoque-popup','quantidade-zerados-popup'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', function() {
@@ -569,17 +574,16 @@ function syncQuantidadeChecksAndInputs() {
     });
 });
 
+//quantidade
 document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 
-// Atualiza tamanhos ao mudar qualquer checkbox de categoria
+//listener categoria
 document.querySelectorAll('.categoria-multi-check').forEach(cb => {
     cb.addEventListener('change', updateOptions);
 });
 
-// Atualiza ao carregar a página
-// window.addEventListener('DOMContentLoaded', function() {
-//     updateOptions();
-// });
+
+
 
 window.addEventListener('DOMContentLoaded', function() {
     updateOptions();
@@ -587,7 +591,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const btnExibirDetalhes = document.getElementById('btn-exibir-detalhes');
     const detalhesDiv = document.getElementById('detalhes-estoque');
 
-    // Começa visível ou oculta conforme seu HTML
+    // começa visível
     btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes';
 
     btnExibirDetalhes.addEventListener('click', function() {
@@ -637,14 +641,17 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+
 //var global e controle de paginação
 let produtosOriginais = [];
 let produtos = [];
 let paginaAtual = 1;
 let itensPorPagina = 10;
 
+
 function filtrar() {
-    // Filtros de categoria, tamanho, gênero, etc
+    // Filtros por categorias
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
     if (!checks[0].checked) {
@@ -730,6 +737,8 @@ function filtrar() {
     window.atualizarDetalhesEstoque(produtosFiltrados);
 }
 
+
+//remover produto
 function removerProduto(id, nome) {
     nomeProduto = nome || 'produto';
     Swal.fire({
@@ -785,17 +794,19 @@ function removerProduto(id, nome) {
     });
 }
 
+//formatar tamanho
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);
     return tamanho;
 }
 
+//listagem produtos
 function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
-    // Mostra o loading imediatamente
+
     tbody.innerHTML = `<tr style="background-color: #fff">
         <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
             <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
@@ -998,6 +1009,7 @@ function renderizarProdutos(produtos) {
     });
 }
 
+
 function renderizarPaginacao(totalPaginas) {
     const paginacaoDiv = document.getElementById('paginacao');
     paginacaoDiv.innerHTML = '';
@@ -1013,6 +1025,7 @@ function renderizarPaginacao(totalPaginas) {
         paginacaoDiv.appendChild(btn);
     }
 }
+
 
 function carregarProdutos(top) {
     let url = '/produtos';
@@ -1086,6 +1099,8 @@ function carregarProdutos(top) {
         });
 }
 
+
+//formata datas
 function parseDataQualquerFormato(dataStr) {
     if (!dataStr || dataStr === '-') return null;
     // yyyy-MM-dd
@@ -1135,7 +1150,7 @@ window.onload = function() {
         const realIdx = Array.from(th.parentNode.children).indexOf(th);
         const campo = campos[realIdx];
         
-        if (!campo) return; // Pula colunas não ordenáveis (imagem e ações)
+        if (!campo) return; // Pula imagem e ações
         
         const icon = th.querySelector('.sort-icon');
         th.addEventListener('mouseenter', function() {
@@ -1243,9 +1258,6 @@ window.onload = function() {
         qtdInput.style.border = '';
 
 
-        // Limpa categorias: marca "Todas"
-        // Marca "Todas" nas categorias
-
         // Marca todos os checkboxes de quantidade como true
         const quantidadeChecks = document.querySelectorAll('#quantidade-faixa-popup input[type="checkbox"]');
         if (quantidadeChecks) {
@@ -1279,12 +1291,14 @@ window.onload = function() {
         limiteMax.value = '';
         limiteInput.value = '';
 
-        filtrar(); // Atualiza lista
+        filtrar();
     });
 
-    // Clicou fora, esconde
 
 }
+
+
+
 
 // --- PREÇO FAIXA ---
 const precoInput = document.getElementById('filter-preco');
@@ -1313,7 +1327,6 @@ precoInput.addEventListener('click', function(e) {
     e.stopPropagation();
 });
 
-// Função para aplicar o filtro só ao fechar o popup
 function aplicarFiltroPrecoFaixa() {
     let min = precoMin.value.replace(/^R\$ ?/, '').replace(',', '.');
     let max = precoMax.value.replace(/^R\$ ?/, '').replace(',', '.');
@@ -1369,6 +1382,7 @@ function aplicarFiltroPrecoFaixa() {
     filtrar();
 }
 
+
 // Fecha popup ao clicar fora e aplica filtro
 document.addEventListener('mousedown', function(e) {
     if (precoPopup.style.display === 'block' && !precoPopup.contains(e.target) && e.target !== precoInput) {
@@ -1382,6 +1396,9 @@ function limparFaixaPreco() {
     precoMax.value = '';
     precoInput.value = '';
 }
+
+
+
 
 // --- QUANTIDADE FAIXA ---
 const qtdInput = document.getElementById('filter-quantidade');
@@ -1400,42 +1417,7 @@ qtdMin.addEventListener('input', function() {
 qtdMax.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 3);
 });
-// function aplicarFiltroQtdFaixa() {
-//     let min = qtdMin.value;
-//     let max = qtdMax.value;
-//     let ativo = true;
 
-//     // Se ambos vazios, limpa o input para mostrar o placeholder
-//     if (min === "" && max === "") {
-//         qtdInput.value = '';
-//         qtdPopup.style.display = 'none';
-//         ativo = false;
-//         filtrar();
-//         return;
-//     }
-
-//     min = min === "" ? 0 : parseInt(min);
-//     max = max === "" ? 999 : parseInt(max);
-
-//     if (min > max) [min, max] = [max, min];
-//     qtdMin.value = min;
-//     qtdMax.value = max;
-//     qtdInput.value = `${min} - ${max}`;
-//     if (qtdInput.value === "0 - 999") {
-//         qtdInput.value = "Todas";
-//         ativo = false;
-//     }
-//     qtdPopup.style.display = 'none';
-
-//     if (ativo) {
-//         qtdInput.style.border = '2px solid #1e94a3';
-//         qtdInput.style.color = '#1e94a3';
-//     } else {
-//         qtdInput.style.border = '';
-//         qtdInput.style.color = '';
-//     }
-//     filtrar();
-// }
 document.addEventListener('mousedown', function(e) {
     if (qtdPopup.style.display === 'block' && !qtdPopup.contains(e.target) && e.target !== qtdInput) {
         atualizarPlaceholderQuantidade();
@@ -1444,6 +1426,10 @@ document.addEventListener('mousedown', function(e) {
         filtrar();
     }
 });
+
+
+
+
 
 // --- LIMITE MÍNIMO FAIXA ---
 const limiteInput = document.getElementById('filter-limite');
@@ -1510,6 +1496,8 @@ document.addEventListener('mousedown', function(e) {
 });
 
 
+
+// busca
 const buscaInput = document.getElementById('busca-produto');
 const buscaSugestoes = document.getElementById('busca-sugestoes');
 
@@ -1571,7 +1559,11 @@ btnLimparFiltros.addEventListener('click', function(e) {
     filtrar(); // Atualiza lista
 });
 
-// Botão "Exibir Detalhes"
+
+
+
+
+// exibir detalhes
 let detalhesVisiveis = true; // começa visível
 
 btnExibirDetalhes.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Ocultar Detalhes';
@@ -1589,6 +1581,8 @@ btnExibirDetalhes.addEventListener('click', function() {
         detalhesDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
+
+
 
 function abrirDetalhesProduto(produto) {
     document.body.style.overflow = 'hidden';
@@ -1707,7 +1701,7 @@ function atualizarDetalhesInfo(produtos) {
     // Total de produtos cadastrados
     document.getElementById('detalhe-produtos-cadastrados').textContent = produtos.length;
 
-    // Entradas hoje - usando endpoint específico para totais
+    // Entradas hoje
     fetch('/entradas/total-hoje')
         .then(response => response.json())
         .then(total => {
@@ -1717,7 +1711,7 @@ function atualizarDetalhesInfo(produtos) {
             document.getElementById('detalhe-entradas-hoje').textContent = '0';
         });
 
-    // Saídas hoje - usando endpoint específico para totais
+    // Saídas hoje
     fetch('/saidas/total-hoje')
         .then(response => response.json())
         .then(total => {
@@ -1741,7 +1735,6 @@ function showCheckboxesCategoriaMulti() {
         if (overSelect) {
             overSelect.style.position = 'unset';
         }
-
 
         // Fecha ao clicar fora
         function handleClickOutside(e) {
@@ -1767,7 +1760,6 @@ function showCheckboxesCategoriaMulti() {
         checkboxes.style.display = "none";
         window.expandedCategoriaMulti = false;
 
-        // ATUALIZA O PLACEHOLDER DOS TAMANHOS AO FECHAR O SELECT DE CATEGORIAS
         atualizarPlaceholderTamanhoMulti();
     }
 }
@@ -1870,6 +1862,9 @@ function atualizarPlaceholderCategoriaMulti() {
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 }
 
+
+
+//tamanho
 function showCheckboxesTamanhoMulti() {
     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
     if (!window.expandedTamanhoMulti) {
@@ -1880,7 +1875,6 @@ function showCheckboxesTamanhoMulti() {
             overSelect.style.position = 'unset';
         }
 
-        // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
         atualizarPlaceholderTamanhoMulti();
 
         // Fecha ao clicar fora
@@ -2050,34 +2044,6 @@ function getTamanhosSelecionados() {
 
 // Controle de expansão do multiselect de tamanhos
 window.expandedTamanhoMulti = false;
-
-// function showCheckboxesTamanhoMulti() {
-//     var checkboxes = document.getElementById("checkboxes-tamanho-multi");
-//     if (!window.expandedTamanhoMulti) {
-//         checkboxes.style.display = "block";
-//         window.expandedTamanhoMulti = true;
-
-//         // ATUALIZA O PLACEHOLDER AGORA QUE OS CHECKBOXES ESTÃO VISÍVEIS
-//         atualizarPlaceholderTamanhoMulti();
-
-//         // Fecha ao clicar fora
-//         function handleClickOutside(e) {
-//             if (
-//                 checkboxes &&
-//                 !checkboxes.contains(e.target) &&
-//                 !document.querySelector('.multiselect .overSelect').contains(e.target)
-//             ) {
-//                 checkboxes.style.display = "none";
-//                 window.expandedTamanhoMulti = false;
-//                 document.removeEventListener('mousedown', handleClickOutside);
-//             }
-//         }
-//         document.addEventListener('mousedown', handleClickOutside);
-//     } else {
-//         checkboxes.style.display = "none";
-//         window.expandedTamanhoMulti = false;
-//     }
-// }
 
 window.expandedGeneroMulti = false;
 
