@@ -434,6 +434,15 @@ input:focus[readonly] {
     height: 25px;
 }
 
+#registros-pagina {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+.fa-xmark:hover {
+    color: #f27474; 
+}
 
 /* sweetAlert */
 .swal2-popup {
