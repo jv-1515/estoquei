@@ -1483,11 +1483,11 @@ function atualizarCardsMovimentacoes(movimentacoes) {
         const elementoSaidas = document.getElementById(`${categoriaId}-saidas`);
         
         if (elementoEntradas) {
-            elementoEntradas.textContent = entradas;
+            elementoEntradas.textContent = entradas !== 0 ? `+${entradas}` : '0';
         }
         
         if (elementoSaidas) {
-            elementoSaidas.textContent = saidas;
+            elementoSaidas.textContent = saidas !== 0 ? `-${saidas}` : '0';
         }
     });
     
