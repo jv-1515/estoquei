@@ -671,44 +671,67 @@ function removerFuncionario(id) {
         });
         return;
     }
+
     Swal.fire({
-        title: `Remover "${funcionario.nome}"?`,
-        text: 'Esta ação não poderá ser desfeita',
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
+        icon: 'warning',
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
         allowOutsideClick: false,
         customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
+            confirmButton: 'swal2-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+            }
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/usuarios/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if (res.ok) {
-                        carregarFuncionarios();
-                        Swal.fire({
-                            title: `Funcionário(a) "${funcionario.nome}" removido(a)!`,
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            allowOutsideClick: false
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: `Excluindo "${funcionario.nome}"...`,
+                text: 'Aguarde enquanto o funcionário é excluído',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch(`/usuarios/${id}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 1200);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro!',
+                                    text: 'Não foi possível excluir o funcionário',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true,
+                                    allowOutsideClick: false
+                                });
+                            }
                         });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erro!',
-                            text: 'Não foi possível remover o funcionário',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            allowOutsideClick: false
-                        });
-                    }
-                });
+                }
+            });
         }
     });
 }
@@ -1179,7 +1202,6 @@ function salvarEdicaoFuncionario() {
         return;
     }
 
-    // ...restante da função (envio dos dados)...
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,

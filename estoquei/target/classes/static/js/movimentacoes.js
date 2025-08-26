@@ -1290,7 +1290,7 @@ function salvarEdicaoMovimentacao() {
 function removerMovimentacao(id) {
     Swal.fire({
         title: 'Tem certeza?',
-        text: 'Esta ação não poderá ser desfeita.',
+        text: 'Esta ação não poderá ser desfeita',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Remover',
