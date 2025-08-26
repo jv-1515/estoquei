@@ -157,7 +157,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     input.style.borderRadius = '4px';
                                     input.style.background = '#fff';
                                 }
+                                const btn = Swal.getConfirmButton();
+                                if (btn) {
+                                    btn.style.maxWidth = '80px';
+                                }
                             }
+                            
                         }).then((res) => {
                             if (res.isConfirmed) {
                                 Swal.fire({
