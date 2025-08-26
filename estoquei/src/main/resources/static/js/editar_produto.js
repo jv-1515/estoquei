@@ -276,7 +276,7 @@ function removerProduto() {
     const nomeProduto = document.getElementById('nome').value || 'produto';
     Swal.fire({
         title: `Remover "${nomeProduto}"?`,
-        text: 'Esta ação não poderá ser desfeita',
+        text: 'O produto irá para a lixeira',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Remover',
