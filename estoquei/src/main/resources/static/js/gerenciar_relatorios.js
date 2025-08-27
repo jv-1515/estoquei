@@ -28,10 +28,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function dataBRparaISO(dataBR) {
-    if (!dataBR) return '';
-    const [dia, mes, ano] = dataBR.split('/');
-    return `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+function dataBRparaISO(data) {
+    if (!data) return '';
+    // Se já está em ISO (yyyy-MM-dd)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+        return data;
+    }
+    // Se está em BR (dd/MM/yyyy)
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+        const [dia, mes, ano] = data.split('/');
+        return `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+    }
+    // Qualquer outro formato, retorna vazio para evitar erro
+    return '';
 }
 
 let relatoriosOriginais = [];
@@ -41,6 +50,9 @@ window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') 
 relatoriosOriginais = [...window.relatoriosGerados]
 
 window.adicionarRelatorio = function(relatorio) {
+    if (!relatorio.dataCriacao) {
+        relatorio.dataCriacao = (new Date()).toISOString();
+    }
     // Salva o blob como base64 para persistir no localStorage
     fetch(relatorio.blobUrl)
         .then(res => res.blob())
@@ -147,18 +159,40 @@ window.excluirRelatorio = function(id) {
     const relatorio = window.relatoriosGerados.find(r => r.id == id);
     const nomeRelatorio = relatorio ? relatorio.nome : '';
     Swal.fire({
-        title: `Remover "${nomeRelatorio}"`,
-        text: 'Esta ação não poderá ser desfeita!',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
+        allowOutsideClick: false,
         customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
+            confirmButton: 'swal2-remove-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+                btn.style.minWidth = '60px';
+                btn.style.paddingLeft = '0';
+                btn.style.paddingRight = '0';
+                btn.style.textAlign = 'center';
+            }
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
+    }).then((res) => {
+        if (res.isConfirmed) {
             window.relatoriosGerados = window.relatoriosGerados.filter(r => r.id != id);
             localStorage.setItem('relatoriosGerados', JSON.stringify(window.relatoriosGerados));
             renderizarRelatorios(window.relatoriosGerados);
@@ -172,7 +206,6 @@ window.excluirRelatorio = function(id) {
         }
     });
 };
-
 // Renomear relatório
 window.renomearRelatorio = function(id) {
     const relatorio = window.relatoriosGerados.find(r => r.id == id);
@@ -379,7 +412,7 @@ function filtrarRelatorios() {
 
         // Filtro por data de criação (exata)
         if (dataCriacao) {
-            let dataRel = r.dataCriacao ? dataBRparaISO(r.dataCriacao) : '';
+            let dataRel = r.dataCriacao ? r.dataCriacao.slice(0, 10) : '';
             if (dataRel !== dataCriacao) ok = false;
         }
 
@@ -403,10 +436,10 @@ function filtrarRelatorios() {
 
     renderizarRelatorios(filtrados);
 
-    // Atualiza cor dos inputs de data início/fim
+    const dataCriacaoInput = document.getElementById('filter-data-criacao-busca');
     const dataInicioInput = document.getElementById('filter-data-inicio-busca');
     const dataFimInput = document.getElementById('filter-data-fim-busca');
-    [dataInicioInput, dataFimInput].forEach(input => {
+    [dataCriacaoInput, dataInicioInput, dataFimInput].forEach(input => {
         if (input) {
             if (input.value) {
                 input.style.border = '2px solid #1e94a3';
@@ -572,4 +605,11 @@ btnLimparFiltros.addEventListener('click', function(e) {
         else el.value = '';
     });
     filtrosAvancados.style.display = 'none';
+});
+
+window.relatoriosGerados = window.relatoriosGerados.map(r => {
+    if (!r.dataCriacao) {
+        r.dataCriacao = (new Date()).toISOString();
+    }
+    return r;
 });
