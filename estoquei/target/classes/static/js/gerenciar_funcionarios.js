@@ -1202,6 +1202,7 @@ function salvarEdicaoFuncionario() {
         return;
     }
 
+    // ...restante da função (envio dos dados)...
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,

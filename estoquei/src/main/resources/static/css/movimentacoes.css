@@ -295,6 +295,10 @@ select {
     width: 100%;
 }
 
+#swal2-input.swal2-input {
+    width: unset;
+}
+
 label {
     font-size: 12px;
     color: #333;
