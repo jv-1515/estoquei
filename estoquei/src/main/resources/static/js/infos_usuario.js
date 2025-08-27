@@ -181,12 +181,12 @@ document.addEventListener('DOMContentLoaded', function() {
         btnRedefinir.addEventListener('click', function() {
             senhaFields.style.display = senhaFields.style.display === 'none' ? 'flex' : 'none';
             if (senhaFields.style.display === 'flex') {
-                btnRedefinir.textContent = 'Cancelar';
+                btnRedefinir.textContent = 'Fechar';
                 btnRedefinir.style.backgroundColor = '#fff';
                 btnRedefinir.style.color = '#1e94a3';
                 btnRedefinir.style.border = '1px solid #1e94a3';
             } else {
-                btnRedefinir.textContent = 'Redefinir senha';
+                btnRedefinir.textContent = 'Redefinir';
                 btnRedefinir.style.backgroundColor = '';
                 btnRedefinir.style.color = '';
                 btnRedefinir.style.border = '';
