@@ -1,4 +1,5 @@
 let funcionarios = [];
+let funcionariosOriginais = [];
 
 window.expandedCargoMulti = false;
 window.expandedStatusMulti = false;
@@ -292,7 +293,7 @@ function renderizarFuncionarios(lista) {
         if (thead) thead.style.display = 'none';
         if (registrosPagina) registrosPagina.style.display = 'none';
 
-        if (funcionarios.length === 0) {
+        if (funcionariosOriginais.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="7" style="text-align: center; padding: 30px 0; background-color: white">
@@ -634,10 +635,12 @@ function carregarFuncionarios() {
         .then(res => res.json())
         .then(data => {
             funcionarios = data;
+            funcionariosOriginais = [...data];
             filtrarFuncionarios();
         })
         .catch(() => {
             funcionarios = [];
+            funcionariosOriginais = [];
             filtrarFuncionarios();
         });
 }
@@ -818,8 +821,8 @@ function fecharCadastroFuncionario() {
                 title: 'Tem certeza?',
                 text: 'As informações preenchidas serão descartadas',
                 showCancelButton: true,
-                confirmButtonText: 'Descartar',
-                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Sim, descartar',
+                cancelButtonText: 'Não, voltar',
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -944,11 +947,67 @@ function abrirEdicaoFuncionario(id) {
         if (telEdit) mascaraTelefone(telEdit);
         if (cpfEdit) mascaraCPF(cpfEdit);
     });
+
+    window.dadosOriginaisEdicaoFuncionario = {
+        codigo: funcionario.codigo || '',
+        nome: funcionario.nome || '',
+        cargo: funcionario.cargo || '',
+        email: funcionario.email || '',
+        senha: funcionario.senha || '',
+        cpf: funcionario.cpf || '',
+        dataNascimento: funcionario.dataNascimento ? funcionario.dataNascimento.substring(0, 10) : '',
+        telefone: funcionario.telefone || '',
+        ativo: funcionario.ativo ?? true
+    };
 }
+
 function fecharEdicaoFuncionario() {
-    document.getElementById('editar-funcionario').style.display = 'none';
-    document.body.style.overflow = '';
+    const orig = window.dadosOriginaisEdicaoFuncionario || {};
+    const codigo = document.getElementById('edit-codigo').value.trim();
+    const nome = document.getElementById('edit-nome').value.trim();
+    const cargo = document.getElementById('edit-cargo').value;
+    const email = document.getElementById('edit-email').value.trim();
+    const senha = document.getElementById('edit-senha').value;
+    const cpf = document.getElementById('edit-cpf').value.replace(/\D/g, '');
+    const dataNascimento = document.getElementById('edit-nascimento').value;
+    const telefone = document.getElementById('edit-contato').value.replace(/\D/g, '');
+    const ativo = document.getElementById('edit-ativo').checked;
+
+    const houveMudanca =
+        codigo !== (orig.codigo || '') ||
+        nome !== (orig.nome || '') ||
+        cargo !== (orig.cargo || '') ||
+        email !== (orig.email || '') ||
+        senha !== (orig.senha || '') ||
+        cpf !== (orig.cpf || '') ||
+        dataNascimento !== (orig.dataNascimento || '') ||
+        telefone !== (orig.telefone || '') ||
+        ativo !== (orig.ativo);
+
+    if (houveMudanca) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Descartar alterações?',
+            text: 'Você fez alterações não salvas. Deseja sair mesmo assim?',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, descartar',
+            cancelButtonText: 'Não, voltar',
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('editar-funcionario').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    } else {
+        document.getElementById('editar-funcionario').style.display = 'none';
+        document.body.style.overflow = '';
+    }
 }
+
 
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
@@ -1202,7 +1261,6 @@ function salvarEdicaoFuncionario() {
         return;
     }
 
-    // ...restante da função (envio dos dados)...
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,
@@ -1611,9 +1669,9 @@ function mostrarEtapaCadastro(etapa) {
     });
     const titulo = document.getElementById('cadastro-etapa-titulo');
     if (titulo) {
-        if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário';
-        else if (etapa == 2) titulo.textContent = 'Informações Pessoais';
-        else if (etapa == 3) titulo.textContent = 'Revisar Informações';
+        if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário (1/3)';
+        else if (etapa == 2) titulo.textContent = 'Informações Pessoais (2/3)';
+        else if (etapa == 3) titulo.textContent = 'Revisar Informações (3/3)';
     }
 }
 
