@@ -295,6 +295,10 @@ select {
     width: 100%;
 }
 
+#swal2-input.swal2-input {
+    width: unset;
+}
+
 label {
     font-size: 12px;
     color: #333;
@@ -434,6 +438,15 @@ input:focus[readonly] {
     height: 25px;
 }
 
+#registros-pagina {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+.fa-xmark:hover {
+    color: #f27474; 
+}
 
 /* sweetAlert */
 .swal2-popup {
