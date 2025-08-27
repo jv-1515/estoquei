@@ -1289,46 +1289,67 @@ function salvarEdicaoMovimentacao() {
 
 function removerMovimentacao(id) {
     Swal.fire({
-        title: 'Tem certeza?',
-        text: 'Esta ação não poderá ser desfeita.',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
+        allowOutsideClick: false,
         customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
+            confirmButton: 'swal2-remove-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+                btn.style.minWidth = '60px';
+                btn.style.paddingLeft = '0';
+                btn.style.paddingRight = '0';
+                btn.style.textAlign = 'center';
+            }
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/api/movimentacoes/${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao remover movimentação');
-                
-                Swal.fire({
-                    title: 'Removido!',
-                    text: 'Movimentação removida com sucesso.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-                carregarMovimentacoes();
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Erro!',
-                    text: 'Erro ao remover movimentação: ' + error.message,
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: `Excluindo movimentação...`,
+                text: 'Aguarde enquanto a movimentação é excluída',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch(`/api/movimentacoes/${id}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 1200);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro!',
+                                    text: 'Não foi possível excluir a movimentação',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true,
+                                    allowOutsideClick: false
+                                });
+                            }
+                        });
+                }
             });
         }
     });
@@ -1483,11 +1504,11 @@ function atualizarCardsMovimentacoes(movimentacoes) {
         const elementoSaidas = document.getElementById(`${categoriaId}-saidas`);
         
         if (elementoEntradas) {
-            elementoEntradas.textContent = entradas;
+            elementoEntradas.textContent = entradas !== 0 ? `+${entradas}` : '0';
         }
         
         if (elementoSaidas) {
-            elementoSaidas.textContent = saidas;
+            elementoSaidas.textContent = saidas !== 0 ? `-${saidas}` : '0';
         }
     });
     

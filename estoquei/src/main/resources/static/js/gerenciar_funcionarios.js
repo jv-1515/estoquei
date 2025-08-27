@@ -671,44 +671,67 @@ function removerFuncionario(id) {
         });
         return;
     }
+
     Swal.fire({
-        title: `Remover "${funcionario.nome}"?`,
-        text: 'Esta ação não poderá ser desfeita',
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
+        icon: 'warning',
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
         allowOutsideClick: false,
         customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
+            confirmButton: 'swal2-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+            }
         }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/usuarios/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if (res.ok) {
-                        carregarFuncionarios();
-                        Swal.fire({
-                            title: `Funcionário(a) "${funcionario.nome}" removido(a)!`,
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            allowOutsideClick: false
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: `Excluindo "${funcionario.nome}"...`,
+                text: 'Aguarde enquanto o funcionário é excluído',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch(`/usuarios/${id}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 1200);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro!',
+                                    text: 'Não foi possível excluir o funcionário',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true,
+                                    allowOutsideClick: false
+                                });
+                            }
                         });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erro!',
-                            text: 'Não foi possível remover o funcionário',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            allowOutsideClick: false
-                        });
-                    }
-                });
+                }
+            });
         }
     });
 }
@@ -926,163 +949,260 @@ function fecharEdicaoFuncionario() {
     document.getElementById('editar-funcionario').style.display = 'none';
     document.body.style.overflow = '';
 }
+
 function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
-    const codigo = document.getElementById('edit-codigo').value;
+    const codigo = document.getElementById('edit-codigo').value.trim();
     const nome = document.getElementById('edit-nome').value.trim();
     const email = document.getElementById('edit-email').value.trim();
     const senha = document.getElementById('edit-senha').value;
     const dataNascimento = document.getElementById('edit-nascimento').value;
     const cpf = document.getElementById('edit-cpf').value;
+    const contato = document.getElementById('edit-contato').value.replace(/\D/g, '');
+    const cargo = document.getElementById('edit-cargo').value;
 
+    // --- CÓDIGO ---
+    if (!codigo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código obrigatório!',
+            text: 'Informe o código do funcionário',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (codigo.length !== 6) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido!',
+            text: 'O código deve ter 6 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
     if (funcionarios.some(f => f.codigo === codigo && String(f.id) !== String(id))) {
         Swal.fire({
             icon: 'warning',
             title: 'Código já cadastrado!',
-            text: 'Escolha outro código.',
+            text: 'Escolha outro código',
             timer: 1500,
             showConfirmButton: false,
-            timerProgressBar: true
-        });
-        return;
-    }
-    // Validação de email duplicado (exceto o próprio)
-    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase() && String(f.id) !== String(id))) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Email já cadastrado!',
-            text: 'Escolha outro email.',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true
-        });
-        return;
-    }
-    // Validação de CPF duplicado (exceto o próprio)
-    if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf && String(f.id) !== String(id))) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'CPF já cadastrado!',
-            text: 'Escolha outro CPF.',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true
-        });
-        return;
-    }    
-
-    // Validação do nome
-    if (!nome) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome inválido!',
-            text: 'O nome não pode estar vazio.',
-            timer: 1500,
             timerProgressBar: true,
-            showConfirmButton: false,
             allowOutsideClick: false
         });
         return;
     }
 
+    // --- CARGO ---
+    if (!cargo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cargo obrigatório!',
+            text: 'Selecione o cargo do funcionário',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // --- NOME ---
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome obrigatório!',
+            text: 'O nome não pode estar vazio',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (nome.length < 3) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome deve ter pelo menos 3 letras',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
     if (/\d/.test(nome)) {
         Swal.fire({
             icon: 'warning',
             title: 'Nome inválido!',
-            text: 'O nome não pode conter números.',
+            text: 'O nome não pode conter números',
             timer: 1500,
-            timerProgressBar: true,
             showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (/[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter símbolos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
             allowOutsideClick: false
         });
         return;
     }
 
-    // Validação da senha
+    // --- EMAIL ---
+    if (!email) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email obrigatório!',
+            text: 'Informe o email do funcionário',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email inválido!',
+            text: 'Informe um email válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (funcionarios.some(f => f.email.toLowerCase() === email.toLowerCase() && String(f.id) !== String(id))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Escolha outro email',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+
+    // --- SENHA ---
     if (senha && senha.length < 8) {
         Swal.fire({
             icon: 'warning',
             title: 'Senha inválida!',
-            text: 'A senha deve ter pelo menos 8 caracteres.',
+            text: 'A senha deve ter pelo menos 8 caracteres',
             timer: 1500,
-            timerProgressBar: true,
             showConfirmButton: false,
+            timerProgressBar: true,
             allowOutsideClick: false
         });
         return;
     }
 
-    // Validação da data de nascimento
-    if (!dataNascimento) {
+    // --- CPF (opcional) ---
+    if (cpf) {
+        if (!validaCPF(cpf)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'CPF inválido!',
+                text: 'Digite um CPF válido',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return;
+        }
+        if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, '') && String(f.id) !== String(id))) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'CPF já cadastrado!',
+                text: 'Escolha outro CPF',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return;
+        }
+    }
+
+    // --- DATA DE NASCIMENTO (opcional) ---
+    if (dataNascimento) {
+        const hoje = new Date();
+        const nascimento = new Date(dataNascimento);
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const m = hoje.getMonth() - nascimento.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--;
+        if (nascimento > hoje) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data inválida!',
+                text: 'A data de nascimento não pode ser posterior a hoje',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return;
+        }
+        if (idade < 16) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário deve ter pelo menos 16 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return;
+        }
+        if (idade > 99) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário não pode ter mais de 99 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return;
+        }
+    }
+
+    // --- TELEFONE (opcional) ---
+    if (contato && contato.length < 10) {
         Swal.fire({
             icon: 'warning',
-            title: 'Data inválida!',
-            text: 'Informe a data de nascimento',
+            title: 'Telefone inválido!',
+            text: 'Informe um telefone válido (mínimo 10 dígitos)',
             timer: 1500,
-            timerProgressBar: true,
             showConfirmButton: false,
+            timerProgressBar: true,
             allowOutsideClick: false
         });
         return;
     }
 
-    if (!validaCPF(cpf)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'CPF inválido!',
-            text: 'Digite um CPF válido.',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-
-    const hoje = new Date();
-    const nascimento = new Date(dataNascimento);
-    let idade = hoje.getFullYear() - nascimento.getFullYear();
-    const m = hoje.getMonth() - nascimento.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
-        idade--;
-    }
-    if (nascimento > hoje) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Data inválida!',
-            text: 'A data de nascimento não pode ser posterior a hoje',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (idade < 16) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Idade inválida!',
-            text: 'O funcionário deve ter pelo menos 16 anos.',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (idade > 99) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Idade inválida!',
-            text: 'O funcionário não pode ter mais de 99 anos.',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-
+    // ...restante da função (envio dos dados)...
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,
@@ -1574,7 +1694,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
         Swal.fire({
             icon: 'warning',
             title: 'CPF inválido!',
-            text: 'Digite um CPF válido.',
+            text: 'Digite novamente o CPF',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -1643,7 +1763,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
         Swal.fire({
             icon: 'warning',
             title: 'CPF já cadastrado!',
-            text: 'Informe o CPF correto',
+            text: 'Informe outro CPF',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true
