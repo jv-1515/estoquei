@@ -345,7 +345,38 @@ function renderizarFuncionarios(lista) {
                         ${getIniciais(f.nome)}
                     </div>
                 </td>
-                <td>${f.codigo}</td>
+                <td style="position: relative;">
+                    ${f.codigo}
+                    ${
+                        (!f.cpf || f.cpf.length < 11 || !f.telefone || f.telefone.length < 10 || !f.dataNascimento)
+                        ? `
+                        <span
+                            title="Dados incompletos"
+                            onclick="abrirEdicaoFuncionario('${f.id}')"
+                            style="
+                                border-radius: 7px;
+                                position: absolute;
+                                top: 50%;
+                                right: 0px;
+                                transform: translateY(-50%);
+                                width: 7px;
+                                height: 8px;
+                                text-decoration: none;
+                                display: flex;
+                                background: black;
+                                align-items: center;
+                                justify-content: center;
+                                pointer-events: auto;
+                                padding-right: 0px;
+                                padding-left: 0px;
+                            ">
+                            <i class="fa-solid fa-triangle-exclamation"
+                                style="color: #ffc107; font-size: 14px; vertical-align: middle; z-index: 3;"></i>
+                        </span>
+                        `
+                        : ''
+                    }
+                </td>
                 <td>${formatarNome(f.nome)}</td>
                 <td>${f.cargo.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())}
                 </td>
@@ -1299,7 +1330,8 @@ function salvarEdicaoFuncionario() {
                         allowOutsideClick: false
                     });
                     carregarFuncionarios();
-                    fecharEdicaoFuncionario();
+                    document.getElementById('editar-funcionario').style.display = 'none';
+                    document.body.style.overflow = '';
                 } else {
                     Swal.fire({
                         icon: 'error',
