@@ -147,7 +147,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             }
         });
         saveBtn.disabled = false;
-        saveBtn.innerHTML = 'Cadastrar produto';
+        saveBtn.innerHTML = 'Cadastrar';
         return;
     });
 });
@@ -231,6 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const codigoInput = document.getElementById('codigo');
     if (codigoInput) {
+        codigoInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+        });        
         codigoInput.addEventListener('blur', function() {
             const codigo = this.value.trim();
             if (!codigo) return;
@@ -260,6 +263,70 @@ window.addEventListener('DOMContentLoaded', function() {
         limiteInput.addEventListener('input', function() {
             if (this.value.length > 3) this.value = this.value.slice(0, 3);
             if (this.value > 999) this.value = 999;
+        });
+    }
+});
+
+window.dadosOriginaisCadastroProduto = {
+    codigo: '',
+    nome: '',
+    categoria: '',
+    tamanho: '',
+    genero: '',
+    quantidade: '',
+    limiteMinimo: '',
+    preco: '',
+    descricao: ''
+};
+
+function descartarInformacoes() {
+    const orig = window.dadosOriginaisCadastroProduto || {};
+    const codigo = document.getElementById('codigo').value.trim();
+    const nome = document.getElementById('nome').value.trim();
+    const categoria = document.getElementById('categoria').value;
+    const tamanho = document.getElementById('tamanho').value;
+    const genero = document.getElementById('genero').value;
+    const quantidade = document.getElementById('quantidade') ? document.getElementById('quantidade').value.trim() : '';
+    const limiteMinimo = document.getElementById('limiteMinimo').value.trim();
+    const preco = document.getElementById('preco').value.replace(/[^\d,]/g, '').replace(',', '.');
+    const descricao = document.getElementById('descricao').value.trim();
+
+    return (
+        codigo !== (orig.codigo || '') ||
+        nome !== (orig.nome || '') ||
+        categoria !== (orig.categoria || '') ||
+        tamanho !== (orig.tamanho || '') ||
+        genero !== (orig.genero || '') ||
+        quantidade !== (orig.quantidade || '') ||
+        limiteMinimo !== (orig.limiteMinimo || '') ||
+        preco !== (orig.preco || '') ||
+        descricao !== (orig.descricao || '')
+    );
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnVoltar = document.getElementById('btn-voltar');
+    if (btnVoltar) {
+        btnVoltar.addEventListener('click', function(e) {
+            if (descartarInformacoes()) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Descartar informações?',
+                    text: 'As informações preenchidas não serão salvas',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, descartar',
+                    cancelButtonText: 'Não, voltar',
+                    allowOutsideClick: false,
+                    customClass: {
+                        confirmButton: 'swal2-cancel-custom'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        history.back();
+                    }
+                });
+            }
         });
     }
 });
