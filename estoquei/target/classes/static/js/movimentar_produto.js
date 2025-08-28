@@ -127,7 +127,17 @@ window.addEventListener('DOMContentLoaded', function() {
         
         // Validação ao digitar código da compra/venda
         const codigoCompraInput = document.getElementById('codigo-compra');
+        if (codigoCompraInput) {
+            codigoCompraInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
         const codigoVendaInput = document.getElementById('codigo-venda');
+        if (codigoVendaInput) {
+            codigoVendaInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
         
         if (codigoCompraInput) {
             codigoCompraInput.addEventListener('input', function() {
