@@ -331,7 +331,7 @@ function renderizarFuncionarios(lista) {
             (f, idx) => `
             <tr tabindex="${idx + 1}">
                 <td style="padding-left: 20px">
-                    <div style="
+                    <div class="avatar" style="
                         width:30px;height:30px;
                         border-radius:50%;
                         background:${corAvatar(f.nome)};
@@ -658,7 +658,7 @@ function limpar() {
 
 // --- AO CARREGAR, MOSTRA TODOS OS FUNCIONÁRIOS ---
 document.addEventListener('DOMContentLoaded', function() {
-    filtrarFuncionarios();
+    carregarFuncionarios();
 });
 
 // Carregar funcionários do backend
@@ -1399,7 +1399,7 @@ document.addEventListener('mousedown', function(e) {
 //ORDENACAO
 let estadoOrdenacao = [true, true, true, true, true];
 let campoOrdenacao = ['codigo', 'nome', 'cargo', 'email', 'ativo'];
-let indiceOrdenacaoAtual = 0;
+let indiceOrdenacaoAtual = -1;
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
@@ -1420,7 +1420,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function atualizarSetasOrdenacao() {
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
         const icon = th.querySelector('.sort-icon');
-        if (indiceOrdenacaoAtual === idx) {
+        if (indiceOrdenacaoAtual === idx && indiceOrdenacaoAtual !== -1) {
             th.classList.add('sorted');
             if (icon) {
                 icon.innerHTML = estadoOrdenacao[idx]
