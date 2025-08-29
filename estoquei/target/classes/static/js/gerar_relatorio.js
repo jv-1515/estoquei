@@ -387,6 +387,16 @@ async function atualizarLista() {
 }
 
 async function gerarRelatorio() {
+        Swal.fire({
+        icon: 'info',
+        title: 'Gerando relatório',
+        text: 'Aguarde...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
     const filtros = getFiltrosSelecionados();
 
 
@@ -461,7 +471,6 @@ async function gerarRelatorio() {
         const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
         let nomeArquivo = `${baseNomeArquivo}.pdf`;
 
-        // Antes de criar nomeArquivo:
         let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
         let contador = 1;
         let nomeUnico = `${baseNomeArquivo}.pdf`;
@@ -471,7 +480,7 @@ async function gerarRelatorio() {
         }
         nomeArquivo = nomeUnico;
 
-        // Download
+        // download
         const a = document.createElement('a');
         a.href = url;
         a.download = nomeArquivo;
@@ -479,7 +488,7 @@ async function gerarRelatorio() {
         a.click();
         document.body.removeChild(a);
 
-        // Salvar no localStorage para aparecer em Gerenciar Relatórios
+        // salva no localStorage
         const reader = new FileReader();
         reader.onloadend = function() {
             const base64 = reader.result;
@@ -500,11 +509,12 @@ async function gerarRelatorio() {
             localStorage.setItem('relatoriosGerados', JSON.stringify(relatorios));
         };
         reader.readAsDataURL(blob);
-
-        // Mostra preview na tela (iframe)
+        Swal.close();
+        // preview na tela
         document.getElementById('preview-relatorio').innerHTML =
           `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}" width="100%" height="600px"></iframe>`;        })
     .catch(() => {
+        Swal.close();
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
 }
