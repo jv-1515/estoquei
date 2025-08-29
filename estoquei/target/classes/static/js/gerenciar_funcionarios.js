@@ -331,7 +331,7 @@ function renderizarFuncionarios(lista) {
             (f, idx) => `
             <tr tabindex="${idx + 1}">
                 <td style="padding-left: 20px">
-                    <div style="
+                    <div class="avatar" style="
                         width:30px;height:30px;
                         border-radius:50%;
                         background:${corAvatar(f.nome)};
@@ -658,7 +658,7 @@ function limpar() {
 
 // --- AO CARREGAR, MOSTRA TODOS OS FUNCIONÁRIOS ---
 document.addEventListener('DOMContentLoaded', function() {
-    filtrarFuncionarios();
+    carregarFuncionarios();
 });
 
 // Carregar funcionários do backend
