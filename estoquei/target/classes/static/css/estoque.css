@@ -200,9 +200,9 @@ tbody tr:nth-child(even) .produto-img {
 }
 .produto-img i {
     padding-top: 5px;
-}    
+}
 .produto-img:hover {
-    color: #9d9d9d;
+    color: #777;
     transition: transform 0.2s;
 }
 .fa-trash:hover {
@@ -286,8 +286,8 @@ th.ordenar.sorted .sort-icon {
 
 img.produto-img:hover {
     cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s;
+    filter: brightness(0.8);
+    transition: 0.2s;
 }
 .btn:hover,
 .limpar:hover,
