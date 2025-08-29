@@ -157,6 +157,10 @@ tbody tr:nth-child(odd) {
     background-color: #f1f1f1;
 }
 
+.avatar:hover {
+    filter: brightness(0.8);
+    transition: transform 0.2s;
+}
 
 .actions a, .actions button {
     background: none;
@@ -425,7 +429,6 @@ select#registros-select option {
     color: #757575;
 }
 
-
 .multiselect {
   min-width: 90px;
   position: relative;
@@ -494,7 +497,6 @@ select#registros-select option {
     font-weight: bold;
     pointer-events: none;
 }
-
 
 .detalhes-modal-bg {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
