@@ -1399,7 +1399,7 @@ document.addEventListener('mousedown', function(e) {
 //ORDENACAO
 let estadoOrdenacao = [true, true, true, true, true];
 let campoOrdenacao = ['codigo', 'nome', 'cargo', 'email', 'ativo'];
-let indiceOrdenacaoAtual = 0;
+let indiceOrdenacaoAtual = -1;
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
@@ -1420,7 +1420,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function atualizarSetasOrdenacao() {
     document.querySelectorAll('th.ordenar').forEach((th, idx) => {
         const icon = th.querySelector('.sort-icon');
-        if (indiceOrdenacaoAtual === idx) {
+        if (indiceOrdenacaoAtual === idx && indiceOrdenacaoAtual !== -1) {
             th.classList.add('sorted');
             if (icon) {
                 icon.innerHTML = estadoOrdenacao[idx]
