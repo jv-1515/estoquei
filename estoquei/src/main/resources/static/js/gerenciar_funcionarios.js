@@ -367,6 +367,7 @@ function renderizarFuncionarios(lista) {
                                 align-items: center;
                                 justify-content: center;
                                 pointer-events: auto;
+                                cursor: pointer;
                                 padding-right: 0px;
                                 padding-left: 0px;
                             ">
@@ -394,7 +395,7 @@ function renderizarFuncionarios(lista) {
                     </span>
                 </td>
                 <td class="actions">
-                    <a href="#" onclick="abrirDetalhesFuncionario('${f.id}')" title="Ver detalhes">
+                    <a href="#" onclick="abrirDetalhesFuncionario('${f.id}')" title="Detalhes">
                         <i class="fa-solid fa-eye""></i>
                     </a>
                     <a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
@@ -1699,12 +1700,12 @@ function mostrarEtapaCadastro(etapa) {
     document.querySelectorAll('.etapa-cadastro').forEach(div => {
         div.style.display = div.getAttribute('data-etapa') == etapa ? 'block' : 'none';
     });
-    const titulo = document.getElementById('cadastro-etapa-titulo');
-    if (titulo) {
-        if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário (1/3)';
-        else if (etapa == 2) titulo.textContent = 'Informações Pessoais (2/3)';
-        else if (etapa == 3) titulo.textContent = 'Revisar Informações (3/3)';
-    }
+    // const titulo = document.getElementById('cadastro-etapa-titulo');
+    // if (titulo) {
+    //     if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário (1/3)';
+    //     else if (etapa == 2) titulo.textContent = 'Informações Pessoais (2/3)';
+    //     else if (etapa == 3) titulo.textContent = 'Revisar Informações (3/3)';
+    // }
 }
 
 
