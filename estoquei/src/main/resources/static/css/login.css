@@ -182,7 +182,7 @@ input:focus {
 }
 
 .fa-brands:hover {
-    transform: scale(1.25);
+    transform: scale(1.15);
     transition: transform 0.2s;
 }
 
