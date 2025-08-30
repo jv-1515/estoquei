@@ -143,31 +143,31 @@ public class Router {
     }
 
     //fornecedor
-    @GetMapping("/cadastrar-fornecedor")
-    public String cadastrarFornecedor(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+    // @GetMapping("/gerenciar-fornecedores")
+    // public String cadastrarFornecedor(HttpSession session) {
+    //     Usuario usuario = getUsuarioOuRedireciona(session);
+    //     if (usuario==null) return "redirect:/";
 
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
-            return "cadastrar_fornecedor";
-        }
+    //     System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
+    //     if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+    //         return "cadastrar_fornecedor";
+    //     }
 
-        return "redirect:/inicio";
-    }
+    //     return "redirect:/gerenciar_fornecedores";
+    // }
 
-    @GetMapping("/editar-fornecedor")
-    public String editarFornecedor(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+    // @GetMapping("/editar-fornecedor")
+    // public String editarFornecedor(HttpSession session) {
+    //     Usuario usuario = getUsuarioOuRedireciona(session);
+    //     if (usuario==null) return "redirect:/";
 
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
-            return "editar_fornecedor";
-        }
+    //     System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
+    //     if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+    //         return "editar_fornecedor";
+    //     }
 
-        return "redirect:/inicio";
-    }
+    //     return "redirect:/inicio";
+    // }
 
     @GetMapping("/gerenciar-fornecedores")
     public String gerenciarFornecedor(HttpSession session) {
@@ -179,7 +179,7 @@ public class Router {
             return "gerenciar_fornecedores";
         }
 
-        return "redirect:/inicio";
+        return "redirect:/gerenciar_fornecedores";
     }
 
     //gerenciar relatorios
