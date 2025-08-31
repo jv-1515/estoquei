@@ -21,7 +21,7 @@ h2 {
 }
 
 .filters-container {
-    width: 900px;
+    width: 1200px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -121,7 +121,7 @@ h2 {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 900px;
+    width: 1200px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -193,13 +193,26 @@ tbody tr:nth-child(odd) {
 .actions .fa-eye{
     color: inherit;
 }
+.etapa-cadastro label{
+    color: #333;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
 .form-container {
     background-color: white;
     border-radius: 10px;
     padding: 20px;
     display: flex;
-    max-width: 900px;
+    width: 350px;
+    max-width: 350px;
     margin-top: 20px;
+    flex-direction: column;
+}
+
+.form-container.etapa4 {
+    width: 670px !important;
+    max-width: 670px !important;
 }
 
 .form-container input,
@@ -292,9 +305,6 @@ input:focus[readonly] {
 #edit-cargo option[disabled][hidden],
 #filter-cargo option[disabled][hidden] {
     display: none;
-}
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
 }
 
 .switch-container {
@@ -446,7 +456,7 @@ select#registros-select option {
   left: 0; right: 0; top: 0; bottom: 0;
   cursor: pointer;
 }
-#checkboxes-cargo-multi,
+#checkboxes-categoria-multi,
 #checkboxes-status-multi {
     display: none;
     border: 1px #aaa solid;
@@ -459,7 +469,7 @@ select#registros-select option {
     max-height: 90px;
     overflow-y: auto;
 }
-#checkboxes-cargo-multi label,
+#checkboxes-categoria-multi label,
 #checkboxes-status-multi label {
     display: flex;
     align-items: center;
@@ -471,13 +481,13 @@ select#registros-select option {
     padding: 2px 8px;
 }
 
-#checkboxes-cargo-multi label:hover,
+#checkboxes-categoria-multi label:hover,
 #checkboxes-status-multi label:hover {
     background-color: #f3f3f3;
     color: black !important;
 }
 
-#checkboxes-cargo-multi input[type="checkbox"],
+#checkboxes-categoria-multi input[type="checkbox"],
 #checkboxes-status-multi input[type="checkbox"] {
     margin: 0 0 0 8px !important;
     width: 12px !important;
@@ -497,10 +507,20 @@ select#registros-select option {
     font-weight: bold;
     pointer-events: none;
 }
+textarea {
+    resize: none;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-family: Arial, sans-serif;
+    color: #757575;
+    min-height: 72px;
+    height: 72px;
+}
 
 .detalhes-modal-bg {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.3); z-index: 2000;
+    /* position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; */
+    /* background: rgba(0,0,0,0.3); z-index: 2000; */
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(2px);
 }
@@ -557,15 +577,14 @@ select#registros-select option {
 }
 .detalhes-telefone { color: #333; }
 
-
-
 .cadastro-bullets {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  gap: 8px;
+  gap: 5px;
   margin-top: 10px;
 }
+
 .bullet {
   width: 10px;
   height: 10px;
@@ -593,7 +612,7 @@ select#registros-select option {
 }
 .btn-voltar {
     color: #757575;
-    padding: 0 64px 0 0;
+    padding: 0 93px 0 0;
     margin: 0;
 }
 .btn-proximo{
@@ -626,6 +645,7 @@ select#registros-select option {
 }
 
 .swal2-container {
+    z-index: 9999;
     backdrop-filter: blur(2px);
 }
 
