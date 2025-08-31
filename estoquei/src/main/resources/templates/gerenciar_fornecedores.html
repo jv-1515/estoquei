@@ -75,11 +75,23 @@
             <button type="button" class="botao-fechar" style="position:absolute; top:15px; right:15px;" onclick="fecharCadastroFornecedor()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h2>Cadastrar Fornecedor</h2>
+            <h2 id="titulo-cadastro">Cadastrar Fornecedor</h2>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="etapa-contador">
+                        <span class="etapa-contador-text" id="etapa-contador-text">1/4</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <h3 id="subtitulo-cadastro">Informações Básicas</h3>
+                        <p id="aviso-cadastro">
+                            <i color="#757575" class="fa-solid fa-circle-info"></i>
+                            Obrigatórias
+                        </p>
+                    </div>
+                </div>
+
 
             <!-- ETAPA 1 -->
             <div class="etapa-cadastro" data-etapa="1">
-                <h3 style="font-size: 14px; color: #277580; margin: 0; margin-top: 5px;">(1/4) Informações Básicas</h3>
                 <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
                     <div style="display: flex; flex-direction: column; flex: 1; max-height: 107px">
                         <label for="cad-codigo">Código*</label>
@@ -121,10 +133,7 @@
                     <label for="cad-email">Email da Empresa*</label>
                     <input type="email" id="cad-email" name="email" required placeholder="Email da empresa" />
                 </div>
-                <h3 style="font-size: 12px; color: #1e94a3; margin: 0; margin-top: 8px;">
-                <i class="fa-solid fa-circle-info"></i>
-                Obrigatórias
-                </h3>
+
                 <div class="cadastro-bullets" style="padding-left: 147px;">
                     <span class="bullet active"></span>
                     <span class="bullet"></span>
@@ -136,7 +145,6 @@
 
             <!-- ETAPA 2 -->
             <div class="etapa-cadastro" data-etapa="2" style="display:none;">
-                <h3 style="font-size: 14px; color: #277580; margin: 0; margin-top: 5px;">(2/4) Informações do Responsável</h3>
                 <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
                     <div style="display: flex; flex-direction: column; flex: 1;">
                         <label for="cad-codigo-2">Código*</label>
@@ -151,10 +159,7 @@
                         </div>
                     </div>
                 </div>
-                <h3 style="font-size: 12px; color: #1e94a3; margin: 0; margin-top: 8px;">
-                <i class="fa-solid fa-circle-info"></i>
-                Você poderá completar mais tarde
-                </h3>
+
                 <div style="display: flex; flex-direction: column;">
                     <label for="cad-nome-responsavel">Nome do Responsável</label>
                     <input type="text" id="cad-nome-responsavel" name="nome_responsavel" maxlength="50" placeholder="Nome do responsável" />
@@ -175,11 +180,6 @@
 
             <!-- ETAPA 3 -->
             <div class="etapa-cadastro" data-etapa="3" style="display:none;">
-                <h3 style="font-size: 14px; color: #277580; margin: 0; margin-top: 5px;">(3/4) Informações Complementares</h3>
-                <h3 style="font-size: 12px; color: #1e94a3; margin: 0; margin-top: 8px;">
-                <i class="fa-solid fa-circle-info"></i>
-                Você poderá completar mais tarde
-                </h3>
                 <div style="display: flex; flex-direction: row; gap: 10px;">
                     <div style="flex:2; display: flex; flex-direction: column;">
                         <label for="cad-cep">CEP</label>
@@ -236,7 +236,6 @@
                 <div style="display: flex; flex-direction: row; gap: 20px;">
                     <!-- COLUNA ESQUERDA -->
                     <div class="form-column" style="flex:1; max-width: 300px">
-                    <h3 style="font-size: 14px; color: #277580; margin: 0; margin-top: 5px;">(4/4) Revisar Informações</h3>
                         <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
                             <div style="display: flex; flex-direction: column; flex: 1;">
                                 <label for="rev-codigo">Código*</label>
@@ -271,10 +270,6 @@
                     </div>
                     <!-- COLUNA DIREITA -->
                     <div class="form-column" style="flex:1; max-width: 350px;">
-                        <h3 style="font-size: 12px; color: #1e94a3; margin: 0; margin-top: 8px;">
-                        <i class="fa-solid fa-circle-info"></i>
-                        Você poderá completar mais tarde
-                        </h3>
                         <div style="display: flex; flex-direction: column;">
                             <label for="rev-email-responsavel">Email Extra</label>
                             <input type="email" id="rev-email-responsavel" readonly placeholder="Não informado" />
