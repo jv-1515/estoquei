@@ -130,9 +130,9 @@ function renderizarFornecedores(lista) {
                 <td>${f.codigo}</td>
                 <td>${formatarNomeFornecedor(f.nome_empresa)}</td>
                 <td>${f.cnpj}</td>
-                <td>${f.nome_responsavel || '-'}</td>
+                <td>${f.nome_responsavel || 'Não informado'}</td>
                 <td>${f.email}</td>
-                <td>${formatarTelefoneExibicao(f.telefone) || '-'}</td>
+                <td>${formatarTelefoneExibicao(f.telefone) || 'Não informado'}</td>
                 <td class="actions">
                     <a href="#" onclick="abrirDetalhesFornecedor('${f.id}')" title="Detalhes">
                         <i class="fa-solid fa-eye"></i>
@@ -405,6 +405,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
     mostrarEtapaCadastroFornecedor();
 };
 document.getElementById('btn-proximo-3').onclick = function() {
+    if (!validarEtapa3Fornecedor()) return;
     etapaCadastroFornecedor = 4;
     mostrarEtapaCadastroFornecedor();
 };
@@ -433,27 +434,33 @@ function preencherResumoEtapa2() {
 
 // Revisão final
 function preencherRevisaoFornecedor() {
-    const get = id => document.getElementById(id).value || '';
-    const categorias = document.getElementById('cad-categorias-input').value || 'Todas';
-    const revisao = `
-        <b>Código:</b> ${get('cad-codigo') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Categorias:</b> ${categorias}<br>
-        <b>Nome da empresa:</b> ${get('cad-nome-empresa') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>CNPJ:</b> ${get('cad-cnpj') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Email:</b> ${get('cad-email') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Nome do responsável:</b> ${get('cad-nome-responsavel') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Email do responsável:</b> ${get('cad-email-responsavel') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Telefone:</b> ${get('cad-telefone') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>CEP:</b> ${get('cad-cep') || '<span style="color:#aaa">_</span>'}<br>
-        <b>Inscrição Estadual:</b> ${get('cad-inscricao-estadual') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Logradouro:</b> ${get('cad-logradouro') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Bairro:</b> ${get('cad-bairro') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Cidade:</b> ${get('cad-cidade') || '<span style="color:#aaa">Não informado</span>'}<br>
-        <b>Estado:</b> ${get('cad-estado') || '<span style="color:#aaa">_</span>'}<br>
-        <b>Número:</b> ${get('cad-numero') || '<span style="color:#aaa">_</span>'}<br>
-        <b>Observações:</b> ${get('cad-observacoes') || '<span style="color:#aaa">Não informado</span>'}
-    `;
-    document.getElementById('revisao-campos').innerHTML = revisao;
+    // Preenche os campos readonly da etapa 4
+    document.getElementById('rev-codigo').value = document.getElementById('cad-codigo').value || '';
+    document.getElementById('rev-categorias').value = document.getElementById('cad-categorias-input').value || 'Todas';
+    document.getElementById('rev-nome-empresa').value = document.getElementById('cad-nome-empresa').value || '';
+    document.getElementById('rev-cnpj').value = document.getElementById('cad-cnpj').value || '';
+    document.getElementById('rev-email').value = document.getElementById('cad-email').value || '';
+    document.getElementById('rev-nome-responsavel').value = document.getElementById('cad-nome-responsavel').value || '';
+    document.getElementById('rev-email-responsavel').value = document.getElementById('cad-email-responsavel').value || '';
+    document.getElementById('rev-telefone').value = document.getElementById('cad-telefone').value || '';
+    document.getElementById('rev-cep').value = document.getElementById('cad-cep').value || '';
+    document.getElementById('rev-inscricao-estadual').value = document.getElementById('cad-inscricao-estadual').value || '';
+    document.getElementById('rev-logradouro').value = document.getElementById('cad-logradouro').value || '';
+    document.getElementById('rev-bairro').value = document.getElementById('cad-bairro').value || '';
+    document.getElementById('rev-cidade').value = document.getElementById('cad-cidade').value || '';
+    document.getElementById('rev-estado').value = document.getElementById('cad-estado').value || '';
+    document.getElementById('rev-numero').value = document.getElementById('cad-numero').value || '';
+    document.getElementById('rev-observacoes').value = document.getElementById('cad-observacoes').value || '';
+
+    // Avatar
+    // const nome = document.getElementById('cad-nome-empresa').value || '';
+    // const iniciais = getIniciaisFornecedor(nome);
+    // const avatarDiv = document.getElementById('rev-avatar');
+    // const iniciaisSpan = document.getElementById('rev-avatar-iniciais');
+    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+    // if (avatarDiv) avatarDiv.style.background = corAvatarFornecedor(nome);
+    // if (iniciaisSpan) iniciaisSpan.textContent = iniciais;
+    // if (icon) icon.style.display = nome.trim() ? 'none' : '';
 }
 
 // Validação da etapa 1 (padrão igual funcionários)
@@ -594,6 +601,29 @@ async function validarEtapa1Fornecedor() {
 
     return true;
 }
+
+
+function validarEtapa3Fornecedor() {
+    const cep = document.getElementById('cad-cep').value.replace(/\D/g, '');
+    const numero = document.getElementById('cad-numero').value.trim();
+
+    if (cep && cep.length === 8 && !numero) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Número obrigatório!',
+            text: 'Preencha o número do endereço',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-numero').focus();
+        return false;
+    }
+    return true;
+}
+
+
 // Envio do formulário
 document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
     e.preventDefault();
@@ -654,3 +684,46 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
         Swal.fire('Erro ao cadastrar fornecedor', '', 'error');
     });
 };
+
+
+document.getElementById('cad-cep').addEventListener('blur', buscarCepFornecedor);
+
+async function buscarCepFornecedor() {
+    const cepInput = document.getElementById('cad-cep');
+    let cep = cepInput.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    cepInput.style.background = '#e0e7ef';
+
+    try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+        if (data.erro) throw new Error('CEP não encontrado');
+
+        document.getElementById('cad-logradouro').value = data.logradouro || '';
+        document.getElementById('cad-bairro').value = data.bairro || '';
+        document.getElementById('cad-cidade').value = data.localidade || '';
+        document.getElementById('cad-estado').value = data.uf || '';
+
+        // Foco automático no número
+        setTimeout(() => {
+            document.getElementById('cad-numero').focus();
+        }, 100);
+    } catch {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CEP inválido!',
+            text: 'Não foi possível encontrar o endereço para este CEP.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-logradouro').value = '';
+        document.getElementById('cad-bairro').value = '';
+        document.getElementById('cad-cidade').value = '';
+        document.getElementById('cad-estado').value = '';
+    } finally {
+        cepInput.style.background = '';
+    }
+}
