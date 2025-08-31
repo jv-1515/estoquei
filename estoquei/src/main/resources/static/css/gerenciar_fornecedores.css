@@ -21,7 +21,7 @@ h2 {
 }
 
 .filters-container {
-    width: 900px;
+    width: 1200px;
     margin: 0 auto 20px auto;
     box-sizing: border-box;
     background: white;
@@ -121,7 +121,7 @@ h2 {
 .main-container {
     background: white;
     border-radius: 10px;
-    width: 900px;
+    width: 1200px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -208,6 +208,11 @@ tbody tr:nth-child(odd) {
     max-width: 350px;
     margin-top: 20px;
     flex-direction: column;
+}
+
+.form-container.etapa4 {
+    width: 670px !important;
+    max-width: 670px !important;
 }
 
 .form-container input,
@@ -508,10 +513,9 @@ textarea {
     border-radius: 4px;
     padding: 5px 8px;
     font-family: Arial, sans-serif;
-    background: #f1f1f1;
     color: #757575;
-    min-height: 82px;
-    height: 82px;
+    min-height: 72px;
+    height: 72px;
 }
 
 .detalhes-modal-bg {
