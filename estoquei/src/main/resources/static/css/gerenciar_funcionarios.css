@@ -564,7 +564,7 @@ select#registros-select option {
   justify-content: flex-end;
   align-items: flex-end;
   gap: 8px;
-  margin-top: 3px;
+  margin-top: 10px;
 }
 .bullet {
   width: 10px;
