@@ -304,6 +304,8 @@ function mostrarEtapaCadastroFornecedor() {
         form.classList.toggle('etapa4', etapaCadastroFornecedor === 4);
     }
 
+    atualizarAvatarFornecedor();
+
     if (etapaCadastroFornecedor === 2) preencherResumoEtapa2();
     if (etapaCadastroFornecedor === 4) preencherRevisaoFornecedor();
 }
@@ -324,10 +326,32 @@ function limparFormularioCadastroFornecedor() {
 }
 
 function atualizarAvatarFornecedor() {
-    const nome = document.getElementById('cad-nome-empresa').value;
+    const nome = document.getElementById('cad-nome-empresa').value || '';
     const iniciais = getIniciaisFornecedor(nome);
-    document.getElementById('cad-avatar-iniciais').textContent = iniciais;
-    document.getElementById('cad-avatar-iniciais-2').textContent = iniciais;
+
+    // ETAPA 1
+    const avatar1 = document.getElementById('cad-avatar');
+    const iniciais1 = document.getElementById('cad-avatar-iniciais');
+    const icon1 = avatar1 ? avatar1.querySelector('i.fa-user') : null;
+    if (avatar1) avatar1.style.background = corAvatarFornecedor(nome);
+    if (iniciais1) iniciais1.textContent = iniciais;
+    if (icon1) icon1.style.display = nome.trim() ? 'none' : '';
+
+    // ETAPA 2
+    const avatar2 = document.getElementById('cad-avatar-2');
+    const iniciais2 = document.getElementById('cad-avatar-iniciais-2');
+    const icon2 = avatar2 ? avatar2.querySelector('i.fa-user') : null;
+    if (avatar2) avatar2.style.background = corAvatarFornecedor(nome);
+    if (iniciais2) iniciais2.textContent = iniciais;
+    if (icon2) icon2.style.display = nome.trim() ? 'none' : '';
+
+    // ETAPA 4 (revisão)
+    const avatar4 = document.getElementById('rev-avatar');
+    const iniciais4 = document.getElementById('rev-avatar-iniciais');
+    const icon4 = avatar4 ? avatar4.querySelector('i.fa-user') : null;
+    if (avatar4) avatar4.style.background = corAvatarFornecedor(nome);
+    if (iniciais4) iniciais4.textContent = iniciais;
+    if (icon4) icon4.style.display = nome.trim() ? 'none' : '';
 }
 
 function getIniciaisFornecedor(nome) {
@@ -371,8 +395,8 @@ function atualizarCategoriasInput() {
 }
 
 // Navegação entre etapas
-document.getElementById('btn-proximo-1').onclick = function() {
-    if (!validarEtapa1Fornecedor()) return;
+document.getElementById('btn-proximo-1').onclick = async function() {
+    if (!(await validarEtapa1Fornecedor())) return;
     etapaCadastroFornecedor = 2;
     mostrarEtapaCadastroFornecedor();
 };
@@ -432,21 +456,15 @@ function preencherRevisaoFornecedor() {
     document.getElementById('revisao-campos').innerHTML = revisao;
 }
 
-// Validação da etapa 1
-function validarEtapa1Fornecedor() {
-    let ok = true;
-    const codigo = document.getElementById('cad-codigo');
-    const nome = document.getElementById('cad-nome-empresa');
-    const cnpj = document.getElementById('cad-cnpj');
-    const email = document.getElementById('cad-email');
-    [codigo, nome, cnpj, email].forEach(input => {
-        input.classList.remove('input-erro');
-        if (!input.value.trim()) {
-            input.classList.add('input-erro');
-            ok = false;
-        }
-    });
-    if (!codigo.value.trim()) {
+// Validação da etapa 1 (padrão igual funcionários)
+async function validarEtapa1Fornecedor() {
+    const codigo = document.getElementById('cad-codigo').value.trim();
+    const nome = document.getElementById('cad-nome-empresa').value.trim();
+    const cnpj = document.getElementById('cad-cnpj').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
+
+    // Código obrigatório
+    if (!codigo) {
         Swal.fire({
             icon: 'warning',
             title: 'Código obrigatório!',
@@ -454,12 +472,43 @@ function validarEtapa1Fornecedor() {
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
-            allowOutsideClick: false,
-            showCloseButton: false
+            allowOutsideClick: false
         });
         return false;
     }
-    if (!nome.value.trim()) {
+    // Código só números, 9 dígitos
+    if (!/^\d{9}$/.test(codigo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido!',
+            text: 'O código deve ter 9 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    // Código único (consulta backend)
+    let existeCodigo = false;
+    try {
+        existeCodigo = await fetch(`/fornecedores/codigo-existe?codigo=${encodeURIComponent(codigo)}`).then(r => r.json());
+    } catch {}
+    if (existeCodigo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    // Nome obrigatório
+    if (!nome) {
         Swal.fire({
             icon: 'warning',
             title: 'Nome obrigatório!',
@@ -467,12 +516,13 @@ function validarEtapa1Fornecedor() {
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
-            allowOutsideClick: false,
-            showCloseButton: false
+            allowOutsideClick: false
         });
         return false;
     }
-    if (!cnpj.value.trim()) {
+
+    // CNPJ obrigatório
+    if (!cnpj) {
         Swal.fire({
             icon: 'warning',
             title: 'CNPJ obrigatório!',
@@ -480,12 +530,43 @@ function validarEtapa1Fornecedor() {
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
-            allowOutsideClick: false,
-            showCloseButton: false
+            allowOutsideClick: false
         });
         return false;
     }
-    if (!email.value.trim()) {
+    // CNPJ só números, 14 dígitos
+    if (!/^\d{14}$/.test(cnpj.replace(/\D/g, ''))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ inválido!',
+            text: 'O CNPJ deve ter 14 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    // CNPJ único (consulta backend)
+    let existeCnpj = false;
+    try {
+        existeCnpj = await fetch(`/fornecedores/cnpj-existe?cnpj=${encodeURIComponent(cnpj)}`).then(r => r.json());
+    } catch {}
+    if (existeCnpj) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ já cadastrado!',
+            text: 'Informe outro CNPJ',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    // Email obrigatório
+    if (!email) {
         Swal.fire({
             icon: 'warning',
             title: 'Email obrigatório!',
@@ -493,25 +574,26 @@ function validarEtapa1Fornecedor() {
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
-            allowOutsideClick: false,
-            showCloseButton: false
+            allowOutsideClick: false
         });
         return false;
     }
-    if (!ok) {
+    // Email formato válido
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         Swal.fire({
             icon: 'warning',
-            title: 'Preencha todos os campos!',
+            title: 'Email inválido!',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
-            allowOutsideClick: false,
-            showCloseButton: false
+            allowOutsideClick: false
         });
+        return false;
     }
-    return ok;
-}
 
+    return true;
+}
 // Envio do formulário
 document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
     e.preventDefault();
@@ -552,8 +634,14 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
     .then(res => {
         if (res.ok) {
             fecharCadastroFornecedor();
-            Swal.fire('Fornecedor cadastrado com sucesso!', '', 'success').then(() => {
-                // Atualiza a lista
+            Swal.fire({
+                text: `Fornecedor(a) ${fornecedor.nome_empresa} cadastrado(a)!`,
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            }).then(() => {
                 location.reload();
             });
         } else {
