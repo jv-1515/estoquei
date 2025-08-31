@@ -1081,7 +1081,7 @@ function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Código já cadastrado!',
-            text: 'Escolha outro código',
+            text: 'Informe outro código',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -1183,7 +1183,7 @@ function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Email já cadastrado!',
-            text: 'Escolha outro email',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -1224,7 +1224,7 @@ function salvarEdicaoFuncionario() {
             Swal.fire({
                 icon: 'warning',
                 title: 'CPF já cadastrado!',
-                text: 'Escolha outro CPF',
+                text: 'Informe outro CPF',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
@@ -1742,7 +1742,6 @@ document.getElementById('btn-proximo-1').onclick = function() {
     const cargo = document.getElementById('cad-cargo').value;
     const nome = document.getElementById('cad-nome').value.trim();
     const email = document.getElementById('cad-email').value.trim();
-    const senha = document.getElementById('cad-senha').value;
 
     if (!codigo || !cargo || !nome || !email) {
         let campo;

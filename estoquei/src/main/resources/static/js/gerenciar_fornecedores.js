@@ -95,7 +95,7 @@ function renderizarFornecedores(lista) {
                         <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
                             <span style="font-weight:bold;">Nenhum fornecedor encontrado</span>
                             <span>Selecione outros filtros</span>
-                            <img src="/images/filtro_fornecedor.png" alt="Nenhum fornecedor encontrado" style="width:400px;">
+                            <img src="/images/filtro_fornecedores.png" alt="Nenhum fornecedor encontrado" style="width:400px;">
                         </div>
                     </td>
                 </tr>
@@ -129,8 +129,10 @@ function renderizarFornecedores(lista) {
                 </td>
                 <td>${f.codigo}</td>
                 <td>${formatarNomeFornecedor(f.nome_empresa)}</td>
+                <td>${f.cnpj}</td>
+                <td>${f.nome_responsavel || '-'}</td>
                 <td>${f.email}</td>
-                <td>${formatarTelefoneExibicao(f.telefone)}</td>
+                <td>${formatarTelefoneExibicao(f.telefone) || '-'}</td>
                 <td class="actions">
                     <a href="#" onclick="abrirDetalhesFornecedor('${f.id}')" title="Detalhes">
                         <i class="fa-solid fa-eye"></i>
@@ -296,6 +298,12 @@ function mostrarEtapaCadastroFornecedor() {
         div.style.display = div.getAttribute('data-etapa') == etapaCadastroFornecedor ? '' : 'none';
     });
     atualizarBulletsFornecedor();
+
+    const form = document.querySelector('.form-container');
+    if (form) {
+        form.classList.toggle('etapa4', etapaCadastroFornecedor === 4);
+    }
+
     if (etapaCadastroFornecedor === 2) preencherResumoEtapa2();
     if (etapaCadastroFornecedor === 4) preencherRevisaoFornecedor();
 }
@@ -442,7 +450,7 @@ function validarEtapa1Fornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'Código obrigatório!',
-            text: 'Informe o código do fornecedor',
+            text: 'Preencha o código',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -455,7 +463,7 @@ function validarEtapa1Fornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'Nome obrigatório!',
-            text: 'Informe o nome da empresa',
+            text: 'Preencha o nome da empresa',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -468,7 +476,7 @@ function validarEtapa1Fornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'CNPJ obrigatório!',
-            text: 'Informe o CNPJ do fornecedor',
+            text: 'Preencha o CNPJ',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -481,7 +489,7 @@ function validarEtapa1Fornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'Email obrigatório!',
-            text: 'Informe o email do fornecedor',
+            text: 'Preencha o email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -493,7 +501,7 @@ function validarEtapa1Fornecedor() {
     if (!ok) {
         Swal.fire({
             icon: 'warning',
-            title: 'Preencha todos os campos obrigatórios!',
+            title: 'Preencha todos os campos!',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
