@@ -204,8 +204,10 @@ tbody tr:nth-child(odd) {
     border-radius: 10px;
     padding: 20px;
     display: flex;
-    max-width: 900px;
+    width: 350px;
+    max-width: 350px;
     margin-top: 20px;
+    flex-direction: column;
 }
 
 .form-container input,
@@ -298,9 +300,6 @@ input:focus[readonly] {
 #edit-cargo option[disabled][hidden],
 #filter-cargo option[disabled][hidden] {
     display: none;
-}
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
 }
 
 .switch-container {
@@ -503,10 +502,21 @@ select#registros-select option {
     font-weight: bold;
     pointer-events: none;
 }
+textarea {
+    resize: none;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-family: Arial, sans-serif;
+    background: #f1f1f1;
+    color: #757575;
+    min-height: 82px;
+    height: 82px;
+}
 
 .detalhes-modal-bg {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.3); z-index: 2000;
+    /* position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; */
+    /* background: rgba(0,0,0,0.3); z-index: 2000; */
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(2px);
 }
@@ -563,15 +573,14 @@ select#registros-select option {
 }
 .detalhes-telefone { color: #333; }
 
-
-
 .cadastro-bullets {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  gap: 8px;
-  margin-top: 3px;
+  gap: 5px;
+  margin-top: 10px;
 }
+
 .bullet {
   width: 10px;
   height: 10px;
@@ -599,7 +608,7 @@ select#registros-select option {
 }
 .btn-voltar {
     color: #757575;
-    padding: 0 64px 0 0;
+    padding: 0 93px 0 0;
     margin: 0;
 }
 .btn-proximo{
@@ -632,6 +641,7 @@ select#registros-select option {
 }
 
 .swal2-container {
+    z-index: 9999;
     backdrop-filter: blur(2px);
 }
 

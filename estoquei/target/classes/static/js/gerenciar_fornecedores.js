@@ -70,7 +70,7 @@ function renderizarFornecedores(lista) {
     const tbody = document.getElementById('fornecedor-list');
 
     const thead = document.querySelector('thead');
-    const registrosPagina = document.getElementById('registros-select');
+    const registrosPagina = document.getElementById('registros-pagina');
     
     if (pagina.length === 0) {
         if (thead) thead.style.display = 'none';
@@ -438,8 +438,68 @@ function validarEtapa1Fornecedor() {
             ok = false;
         }
     });
+    if (!codigo.value.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código obrigatório!',
+            text: 'Informe o código do fornecedor',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showCloseButton: false
+        });
+        return false;
+    }
+    if (!nome.value.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome obrigatório!',
+            text: 'Informe o nome da empresa',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showCloseButton: false
+        });
+        return false;
+    }
+    if (!cnpj.value.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ obrigatório!',
+            text: 'Informe o CNPJ do fornecedor',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showCloseButton: false
+        });
+        return false;
+    }
+    if (!email.value.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email obrigatório!',
+            text: 'Informe o email do fornecedor',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showCloseButton: false
+        });
+        return false;
+    }
     if (!ok) {
-        Swal.fire('Preencha todos os campos obrigatórios!', '', 'warning');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Preencha todos os campos obrigatórios!',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showCloseButton: false
+        });
     }
     return ok;
 }
