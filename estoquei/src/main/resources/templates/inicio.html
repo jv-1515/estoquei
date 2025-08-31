@@ -47,7 +47,7 @@
         <div class="container">
         <!-- Acesso limitado ao Gerente -->
         <div class="card" id="card-fornecedores" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
-            <a th:href="@{/andamento}">
+            <a th:href="@{/gerenciar-fornecedores}">
                 <div class="icon-container"><i class="fa-regular fa-handshake"></i></div>
                 <div class="text-container">
                     <p>Gerenciar Fornecedores<br><span class="card-value" id="valor-fornecedores" style="display:none"></span></p>
