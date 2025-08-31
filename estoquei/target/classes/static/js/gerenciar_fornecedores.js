@@ -306,6 +306,42 @@ function mostrarEtapaCadastroFornecedor() {
 
     atualizarAvatarFornecedor();
 
+    const h2 = document.getElementById('titulo-cadastro');
+    const h3 = document.getElementById('subtitulo-cadastro');
+    const aviso = document.getElementById('aviso-cadastro');
+
+    // h2 só aparece fora da etapa 4
+    if (h2) h2.style.display = (etapaCadastroFornecedor === 4) ? 'none' : '';
+
+    // h3 e aviso mudam conforme a etapa
+    if (h3) {
+        if (etapaCadastroFornecedor === 1) {
+            h3.textContent = 'Informações Básicas';
+        } else if (etapaCadastroFornecedor === 2) {
+            h3.textContent = 'Informações do Responsável';
+        } else if (etapaCadastroFornecedor === 3) {
+            h3.textContent = 'Informações Complementares';
+        } else if (etapaCadastroFornecedor === 4) {
+            h3.textContent = 'Cadastrar Fornecedor';
+        }
+    }
+    if (aviso) {
+        if (etapaCadastroFornecedor === 1) {
+            aviso.style.display = '';
+            aviso.innerHTML = '<i class="fa-solid fa-circle-info"></i> Obrigatórias';
+        } else if (etapaCadastroFornecedor === 2 || etapaCadastroFornecedor === 3) {
+            aviso.style.display = '';
+            aviso.innerHTML = '<i class="fa-solid fa-circle-info"></i> Você poderá completar mais tarde';
+        } else if (etapaCadastroFornecedor === 4) {
+            aviso.style.display = 'none';
+            h3.textContent = "Revisar Informações do Fornecedor"
+            h3.style.fontSize = '20px';
+            h3.style.color = '#277580';
+            h3.style.textAlign = 'left';
+            h3.style.margin = '0';
+        }
+    }
+
     if (etapaCadastroFornecedor === 2) preencherResumoEtapa2();
     if (etapaCadastroFornecedor === 4) preencherRevisaoFornecedor();
 }
@@ -399,27 +435,33 @@ document.getElementById('btn-proximo-1').onclick = async function() {
     if (!(await validarEtapa1Fornecedor())) return;
     etapaCadastroFornecedor = 2;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-proximo-2').onclick = function() {
     etapaCadastroFornecedor = 3;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-proximo-3').onclick = function() {
     if (!validarEtapa3Fornecedor()) return;
     etapaCadastroFornecedor = 4;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-voltar-2').onclick = function() {
     etapaCadastroFornecedor = 1;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-voltar-3').onclick = function() {
     etapaCadastroFornecedor = 2;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-voltar-4').onclick = function() {
     etapaCadastroFornecedor = 3;
     mostrarEtapaCadastroFornecedor();
+    atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 
 // Avatar dinâmico
@@ -665,7 +707,7 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
         if (res.ok) {
             fecharCadastroFornecedor();
             Swal.fire({
-                text: `Fornecedor(a) ${fornecedor.nome_empresa} cadastrado(a)!`,
+                text: `Fornecedor "${fornecedor.nome_empresa}" cadastrado!`,
                 icon: 'success',
                 showConfirmButton: false,
                 timer: 1500,
@@ -725,5 +767,28 @@ async function buscarCepFornecedor() {
         document.getElementById('cad-estado').value = '';
     } finally {
         cepInput.style.background = '';
+    }
+}
+
+
+function atualizarContadorEtapaFornecedor(etapa) {
+    const total = 4;
+    const percent = etapa / total;
+    const graus = percent * 360;
+    const contador = document.querySelector('.etapa-contador');
+    const texto = document.getElementById('etapa-contador-text');
+    if (contador) {
+        contador.style.background = `conic-gradient(
+            #1e94a3 0deg ${graus}deg,
+            #e0e0e0 ${graus}deg 360deg
+        )`;
+        if (etapa === 4) {
+            contador.style.margin = '0';
+        } else {
+            contador.style.margin = '';
+        }
+    }
+    if (texto) {
+        texto.textContent = `${etapa}/${total}`;
     }
 }
