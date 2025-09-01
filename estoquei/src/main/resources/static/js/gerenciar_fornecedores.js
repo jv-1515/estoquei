@@ -317,12 +317,20 @@ function mostrarEtapaCadastroFornecedor() {
     if (h3) {
         if (etapaCadastroFornecedor === 1) {
             h3.textContent = 'Informações Básicas';
+            h3.style.fontSize = '16px';
+            h3.style.margin = '0 0 4px 0';
         } else if (etapaCadastroFornecedor === 2) {
             h3.textContent = 'Informações do Responsável';
+            h3.style.fontSize = '16px';
+            h3.style.margin = '0 0 4px 0';
         } else if (etapaCadastroFornecedor === 3) {
             h3.textContent = 'Informações Complementares';
+            h3.style.fontSize = '16px';
+            h3.style.margin = '0 0 4px 0';
         } else if (etapaCadastroFornecedor === 4) {
-            h3.textContent = 'Cadastrar Fornecedor';
+            h3.textContent = 'Revisar Informações do Fornecedor';
+            h3.style.fontSize = '20px';
+            h3.style.margin = '0';
         }
     }
     if (aviso) {
@@ -334,11 +342,6 @@ function mostrarEtapaCadastroFornecedor() {
             aviso.innerHTML = '<i class="fa-solid fa-circle-info"></i> Você poderá completar mais tarde';
         } else if (etapaCadastroFornecedor === 4) {
             aviso.style.display = 'none';
-            h3.textContent = "Revisar Informações do Fornecedor"
-            h3.style.fontSize = '20px';
-            h3.style.color = '#277580';
-            h3.style.textAlign = 'left';
-            h3.style.margin = '0';
         }
     }
 
