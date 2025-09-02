@@ -85,7 +85,7 @@ document.addEventListener('mousedown', function(e) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Selecione a data de início!',
-                text: 'Para filtrar por período, informe a data de início.',
+                text: 'Para filtrar por período, informe a data de início',
                 timer: 1800,
                 showConfirmButton: false,
                 allowOutsideClick: false
@@ -99,7 +99,7 @@ document.addEventListener('mousedown', function(e) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Selecione a data de início!',
-                text: 'Para filtrar por período, informe a data de início.',
+                text: 'Para filtrar por período, informe a data de início',
                 timer: 1800,
                 showConfirmButton: false
             });
