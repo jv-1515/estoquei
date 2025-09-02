@@ -758,7 +758,7 @@ async function buscarCepFornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'CEP inválido!',
-            text: 'Não foi possível encontrar o endereço para este CEP.',
+            text: 'Não foi possível encontrar o endereço para este CEP',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
