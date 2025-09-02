@@ -16,7 +16,7 @@ if (typeof window.erro !== "undefined" && window.erro) {
     Swal.fire({
         icon: 'error',
         title: 'Erro ao logar',
-        text: 'Email ou senha inválidos. Tente novamente.',
+        text: 'Email ou senha inválidos. Tente novamente',
         timer: 1500,
         timerProgressBar: true,
         showConfirmButton: false,
