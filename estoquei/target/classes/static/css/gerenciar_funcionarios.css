@@ -20,6 +20,12 @@ h2 {
     margin: 0;
 }
 
+h3 {
+    font-size: 16px;
+    color: #277580;
+    margin: 0 0 4px 0;
+}
+
 .filters-container {
     width: 900px;
     margin: 0 auto 20px auto;
@@ -83,6 +89,38 @@ h2 {
     background: #fff;
     transition: border-color 0.2s;
 }
+
+.etapa-contador {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 5px 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #1e94a3 0% 25%,   /* 1/4 preenchido */
+    #e0e0e0 0% 100%   /* resto cinza */
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.etapa-contador-text {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  color: #1e94a3;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+
 
 .btn {
     background-color: #1e94a3;
@@ -192,6 +230,18 @@ tbody tr:nth-child(odd) {
 }
 .actions .fa-eye{
     color: inherit;
+}
+.etapa-cadastro label{
+    color: #333;
+    font-weight: bold;
+    padding: 5px 0;
+}
+
+#aviso-cadastro {
+    font-size: 12px;
+    font-weight: bold;
+    color: #757575;
+    margin: 0;
 }
 .form-container {
     background-color: white;
