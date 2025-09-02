@@ -359,7 +359,7 @@ function renderizarFuncionarios(lista) {
                                 top: 50%;
                                 right: 0px;
                                 transform: translateY(-50%);
-                                width: 7px;
+                                width: 5px;
                                 height: 8px;
                                 text-decoration: none;
                                 display: flex;
@@ -378,7 +378,7 @@ function renderizarFuncionarios(lista) {
                         : ''
                     }
                 </td>
-                <td>${formatarNome(f.nome)}</td>
+                <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome}">${formatarNome(f.nome)}</td>
                 <td>${f.cargo.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())}
                 </td>
                 <td>${f.email}</td>
@@ -1700,6 +1700,42 @@ function mostrarEtapaCadastro(etapa) {
     document.querySelectorAll('.etapa-cadastro').forEach(div => {
         div.style.display = div.getAttribute('data-etapa') == etapa ? 'block' : 'none';
     });
+
+    const h2 = document.getElementById('cadastro-etapa-titulo');
+    const h3 = document.getElementById('subtitulo-cadastro');
+    const aviso = document.getElementById('aviso-cadastro');
+
+    // h2 só aparece fora da etapa 4
+    if (h2) h2.style.display = (etapa === 3) ? 'none' : '';
+
+    // h3 e aviso mudam conforme a etapa
+    if (h3) {
+        if (etapa === 1) {
+            h3.textContent = 'Informações Básicas';
+            h3.style.fontSize = '16px';
+            h3.style.margin = '0 0 4px 0';
+        } else if (etapa === 2) {
+            h3.textContent = 'Informações Complementares'
+            h3.style.fontSize = '16px';
+            h3.style.margin = '0 0 4px 0';
+        } else if (etapa === 3) {
+            h3.textContent = 'Revisar Informações';
+            h3.style.fontSize = '20px';
+            h3.style.margin = '0';
+        }
+    }
+    if (aviso) {
+        if (etapa === 1) {
+            aviso.style.display = '';
+            aviso.innerHTML = '<i class="fa-solid fa-circle-info"></i> Obrigatórias';
+        } else if (etapa === 2) {
+            aviso.style.display = '';
+            aviso.innerHTML = '<i class="fa-solid fa-circle-info"></i> Você poderá completar mais tarde';
+        } else if (etapa === 3) {
+            aviso.style.display = 'none';
+        }
+    }
+
     // const titulo = document.getElementById('cadastro-etapa-titulo');
     // if (titulo) {
     //     if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário (1/3)';
@@ -1766,11 +1802,13 @@ document.getElementById('btn-proximo-1').onclick = function() {
     document.getElementById('cad-cargo-2').value = document.getElementById('cad-cargo').options[document.getElementById('cad-cargo').selectedIndex].text;
     mostrarEtapaCadastro(2);
     atualizarAvatarCadastro();
+    atualizarContadorEtapaFuncionario(2);
 };
 
 document.getElementById('btn-voltar-2').onclick = function() {
     mostrarEtapaCadastro(1);
     atualizarAvatarCadastro();
+    atualizarContadorEtapaFuncionario(1);
 };
 
 
@@ -1872,10 +1910,12 @@ document.getElementById('btn-proximo-2').onclick = function() {
     document.getElementById('cad-contato-3').value = contato;
     mostrarEtapaCadastro(3);
     atualizarAvatarCadastro();
+    atualizarContadorEtapaFuncionario(3);
 };
 document.getElementById('btn-voltar-3').onclick = function() {
     mostrarEtapaCadastro(2);
     atualizarAvatarCadastro();
+    atualizarContadorEtapaFuncionario(2);
 };
 
 // Sempre começa na etapa 1 ao abrir
@@ -1886,6 +1926,7 @@ function abrirCadastroFuncionario() {
 
     mostrarEtapaCadastro(1);
     atualizarAvatarCadastro();
+    atualizarContadorEtapaFuncionario(1);
 }
 
 mascaraCPF(document.getElementById('cad-cpf'));
@@ -1931,4 +1972,27 @@ function aplicarEstiloInputs() {
             }
         });
     });
+}
+
+
+function atualizarContadorEtapaFuncionario(etapa) {
+    const total = 3;
+    const percent = etapa / total;
+    const graus = percent * 360;
+    const contador = document.querySelector('.etapa-contador');
+    const texto = document.getElementById('etapa-contador-text');
+    if (contador) {
+        contador.style.background = `conic-gradient(
+            #1e94a3 0deg ${graus}deg,
+            #e0e0e0 ${graus}deg 360deg
+        )`;
+        if (etapa === 3) {
+            contador.style.margin = '0';
+        } else {
+            contador.style.margin = '';
+        }
+    }
+    if (texto) {
+        texto.textContent = `${etapa}/${total}`;
+    }
 }

@@ -20,6 +20,12 @@ h2 {
     margin: 0;
 }
 
+h3 {
+    font-size: 16px;
+    color: #277580;
+    margin: 0 0 4px 0;
+}
+
 .filters-container {
     width: 1200px;
     margin: 0 auto 20px auto;
@@ -197,6 +203,13 @@ tbody tr:nth-child(odd) {
     color: #333;
     font-weight: bold;
     padding: 5px 0;
+}
+
+#aviso-cadastro {
+    font-size: 12px;
+    font-weight: bold;
+    color: #757575;
+    margin: 0;
 }
 
 .form-container {
@@ -517,7 +530,36 @@ textarea {
     min-height: 72px;
     height: 72px;
 }
-
+.etapa-contador {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 5px 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #1e94a3 0% 25%,   /* 1/4 preenchido */
+    #e0e0e0 0% 100%   /* resto cinza */
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.etapa-contador-text {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  color: #1e94a3;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+}
 .detalhes-modal-bg {
     /* position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; */
     /* background: rgba(0,0,0,0.3); z-index: 2000; */
