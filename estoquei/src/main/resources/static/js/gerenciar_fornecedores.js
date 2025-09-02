@@ -283,6 +283,7 @@ const totalEtapasFornecedor = 4;
 function abrirCadastroFornecedor() {
     etapaCadastroFornecedor = 1;
     document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     mostrarEtapaCadastroFornecedor();
     limparFormularioCadastroFornecedor();
     atualizarAvatarFornecedor();
@@ -290,7 +291,38 @@ function abrirCadastroFornecedor() {
 }
 
 function fecharCadastroFornecedor() {
-    document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';
+    //na etapa um se tiver algo valida, se nao ja fecha
+    if (etapaCadastroFornecedor === 1) {
+        const campos = [
+            'cad-codigo',
+            'cad-nome-empresa',
+            'cad-cnpj',
+            'cad-email'
+        ];
+        const algumPreenchido = campos.some(id => {
+            const el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        });
+        if (!algumPreenchido) {
+            document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';
+            return;
+        }
+    }
+    // se estiver em qualquer outra etapa, sempre alerta
+    Swal.fire({
+        icon: 'warning',
+        title: 'Tem certeza?',
+        text: 'As informações preenchidas serão descartadas',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, descartar',
+        cancelButtonText: 'Não, voltar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';
+        }
+    });
+
+    document.body.style.overflow = '';
 }
 
 function mostrarEtapaCadastroFornecedor() {
@@ -441,6 +473,7 @@ document.getElementById('btn-proximo-1').onclick = async function() {
     atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
 };
 document.getElementById('btn-proximo-2').onclick = function() {
+    if (!validarEtapa2Fornecedor()) return;
     etapaCadastroFornecedor = 3;
     mostrarEtapaCadastroFornecedor();
     atualizarContadorEtapaFornecedor(etapaCadastroFornecedor);
@@ -507,6 +540,37 @@ function preencherRevisaoFornecedor() {
     // if (iniciaisSpan) iniciaisSpan.textContent = iniciais;
     // if (icon) icon.style.display = nome.trim() ? 'none' : '';
 }
+
+
+//validacoes de caracteres validos
+document.getElementById('cad-codigo').addEventListener('input', function(e) {
+    this.value = this.value.replace(/\D/g, '').slice(0, 9); // só números, máx 9 dígitos
+});
+
+document.getElementById('cad-nome-responsavel').addEventListener('input', function() {
+    this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+});
+
+document.getElementById('cad-telefone').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+
+document.getElementById('cad-cep').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 8);
+});
+
+document.getElementById('cad-inscricao-estadual').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+
+document.getElementById('cad-cidade').addEventListener('input', function() {
+    this.value = this.value.replace(/[\d]/g, '');
+});
+
+document.getElementById('cad-numero').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+
 
 // Validação da etapa 1 (padrão igual funcionários)
 async function validarEtapa1Fornecedor() {
@@ -647,23 +711,32 @@ async function validarEtapa1Fornecedor() {
     return true;
 }
 
-
-function validarEtapa3Fornecedor() {
-    const cep = document.getElementById('cad-cep').value.replace(/\D/g, '');
-    const numero = document.getElementById('cad-numero').value.trim();
-
-    if (cep && cep.length === 8 && !numero) {
+function validarEtapa2Fornecedor() {
+    const emailExtra = document.getElementById('cad-email-responsavel').value.trim();
+    if (emailExtra && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailExtra)) {
         Swal.fire({
             icon: 'warning',
-            title: 'Número obrigatório!',
-            text: 'Preencha o número do endereço',
+            title: 'Email extra inválido!',
+            text: 'Informe um email válido',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
             allowOutsideClick: false
         });
-        document.getElementById('cad-numero').focus();
+        document.getElementById('cad-email-responsavel').focus();
         return false;
+    }
+    return true;
+}
+
+
+function validarEtapa3Fornecedor() {
+    const cep = document.getElementById('cad-cep').value.replace(/\D/g, '');
+    const numeroInput = document.getElementById('cad-numero');
+    let numero = numeroInput.value.trim();
+
+    if (cep && cep.length === 8 && !numero) {
+        numeroInput.value = 'S/N';
     }
     return true;
 }
