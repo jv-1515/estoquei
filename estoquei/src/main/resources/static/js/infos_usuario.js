@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     senhaAtualInput.style.border = '2px solid #f27474';
                     Swal.fire({
                         title: 'Erro',
-                        text: 'Senha atual incorreta.',
+                        text: 'Senha atual incorreta',
                         icon: 'error',
                         showConfirmButton: false,
                         timer: 1000,
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 senhaAtualInput.style.border = '2px solid #f27474';
                 Swal.fire({
                     title: 'Erro',
-                    text: 'Erro ao validar senha no servidor.',
+                    text: 'Erro ao validar senha no servidor',
                     icon: 'error',
                     showConfirmButton: false,
                     timer: 1000,
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Atenção',
-                        text: 'Preencha todos os campos obrigatórios.',
+                        text: 'Preencha todos os campos obrigatórios',
                         icon: 'warning',
                         showConfirmButton: false,
                         timer: 1000,
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Atenção',
-                        text: 'A nova senha deve ser diferente da atual.',
+                        text: 'A nova senha deve ser diferente da atual',
                         icon: 'warning',
                         showConfirmButton: false,
                         timer: 1000,
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Atenção',
-                        text: 'As senhas não coincidem. Ambas devem ser iguais.',
+                        text: 'As senhas não coincidem. Ambas devem ser iguais',
                         icon: 'warning',
                         showConfirmButton: false,
                         timer: 1200,
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Atenção',
-                        text: 'Confirme a senha atual correta.',
+                        text: 'Confirme a senha atual correta',
                         icon: 'warning',
                         showConfirmButton: false,
                         timer: 1000,
