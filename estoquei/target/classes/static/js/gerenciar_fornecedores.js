@@ -10,7 +10,7 @@ function getIniciaisFornecedor(nome) {
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 function corAvatarFornecedor(str) {
-    if (!str) return '#e0e7ef';
+    if (!str) return '#f1f1f1';
     let hash = 0;
     for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
     const h = Math.abs(hash) % 360;
@@ -128,7 +128,7 @@ function renderizarFornecedores(lista) {
                     </div>
                 </td>
                 <td>${f.codigo}</td>
-                <td>${formatarNomeFornecedor(f.nome_empresa)}</td>
+                <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome_empresa}">${formatarNomeFornecedor(f.nome_empresa)}</td>
                 <td>${f.cnpj}</td>
                 <td>${f.nome_responsavel || 'Não informado'}</td>
                 <td>${f.email}</td>
