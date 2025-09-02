@@ -1284,7 +1284,7 @@ function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Telefone inválido!',
-            text: 'Informe um telefone válido',
+            text: 'Informe um telefone válido (mínimo 10 dígitos)',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
