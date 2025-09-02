@@ -2,7 +2,7 @@ function confirmarSaida(event) {
     event.preventDefault();
     Swal.fire({
         title: 'Deseja realmente sair?',
-        text: "Você será redirecionado para a página de login",
+        text: "Você será redirecionado para a página de Login",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',

@@ -260,7 +260,7 @@ window.renomearRelatorio = function(id) {
             if (nomeExiste) {
                 Swal.fire({
                     title: 'Nome não disponível!',
-                    text: 'Já existe um relatório com esse nome. Escolha outro.',
+                    text: 'Já existe um relatório com esse nome. Escolha outro',
                     icon: 'error',
                     showConfirmButton: false,
                     timer: 1500,

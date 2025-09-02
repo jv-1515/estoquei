@@ -146,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Limite de estoque atingido!',
-                        text: 'Este produto não pode ser abastecido.',
+                        text: 'Este produto não pode ser abastecido',
                         timer: 1800,
                         timerProgressBar: true,
                         showConfirmButton: false,
@@ -164,7 +164,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Estoque insuficiente!',
-                        text: 'O produto precisa ser reabastecido antes de registrar saída.',
+                        text: 'O produto precisa ser reabastecido antes de registrar saída',
                         timer: 1800,
                         showConfirmButton: false,
                         allowOutsideClick: false
@@ -396,7 +396,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Estoque insuficiente!',
-                    text: `Você só pode vender até ${maxPermitido} unidades.`,
+                    text: `Você só pode vender até ${maxPermitido} unidades`,
                     timer: 2500,
                     timerProgressBar: true,
                     showConfirmButton: false,
@@ -407,7 +407,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Estoque insuficiente!',
-                    text: `O produto precisa ser reabastecido.`,
+                    text: `O produto precisa ser reabastecido`,
                     timer: 1500,
                     timerProgressBar: true,
                     showConfirmButton: false,
@@ -418,7 +418,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Limite de estoque atingido!',
-                    text: 'Este produto não pode ser abastecido.',
+                    text: 'Este produto não pode ser abastecido',
                     timer: 1500,
                     timerProgressBar: true,
                     showConfirmButton: false,
@@ -429,7 +429,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Limite atingido!',
-                    text: `Você só pode abastecer até ${maxPermitido} unidades.`,
+                    text: `Você só pode abastecer até ${maxPermitido} unidades`,
                     timer: 2500,
                     timerProgressBar: true,
                     showConfirmButton: false,

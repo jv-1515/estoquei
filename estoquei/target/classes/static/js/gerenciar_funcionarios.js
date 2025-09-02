@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.fire({
                 icon: 'warning',
                 title: 'CPF inválido!',
-                text: 'Digite um CPF válido.',
+                text: 'Digite um CPF válido',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.fire({
                 icon: 'warning',
                 title: 'CPF já cadastrado!',
-                text: 'Informe outro CPF.',
+                text: 'Informe outro CPF',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
@@ -1284,7 +1284,7 @@ function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Telefone inválido!',
-            text: 'Informe um telefone válido (mínimo 10 dígitos)',
+            text: 'Informe um telefone válido',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,

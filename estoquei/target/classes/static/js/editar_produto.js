@@ -259,7 +259,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 console.error('Erro ao salvar alterações:', error);
                 Swal.fire({
                     title: 'Erro!',
-                    text: error.message || 'Não foi possível salvar as alterações.',
+                    text: error.message || 'Não foi possível salvar as alterações',
                     icon: 'error',
                     timer: 1500,
                     showConfirmButton: false,
@@ -317,7 +317,7 @@ function removerProduto() {
                 } else {
                     Swal.fire({
                         title: 'Erro!',
-                        text: `Não foi possível remover "${nomeProduto}". Verifique se ele não está associado a outras operações.`,
+                        text: `Não foi possível remover "${nomeProduto}". Verifique se ele não está associado a outras operações`,
                         icon: 'error',
                         showConfirmButton: false,
                         allowOutsideClick: false,
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Erro ao buscar o produto:', error);
                 Swal.fire({
                     title: 'Erro!',
-                    text: error.message || 'Não foi possível carregar os detalhes do produto.',
+                    text: error.message || 'Não foi possível carregar os detalhes do produto',
                     icon: 'error',
                     confirmButtonColor: '#1E94A3'
                 }).then(() => {
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         Swal.fire({
             title: 'Erro!',
-            text: 'ID do produto não encontrado na URL.',
+            text: 'ID do produto não encontrado na URL',
             icon: 'error',
             confirmButtonColor: '#1E94A3'
         }).then(() => {
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Código já cadastrado!',
-                            text: 'Informe outro código.',
+                            text: 'Informe outro código',
                             timer: 1500,
                             showConfirmButton: false
                         });
