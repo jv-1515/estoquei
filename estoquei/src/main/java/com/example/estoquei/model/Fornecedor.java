@@ -33,7 +33,7 @@ public class Fornecedor implements Serializable {
     private boolean camiseta = true;
     private boolean calça = true;
     private boolean bermuda = true;
-    private boolean shorts = true;
+    private boolean vestido = true;
     private boolean sapato = true;
     private boolean meia = true;
 
@@ -71,8 +71,8 @@ public class Fornecedor implements Serializable {
     public void setCalça(boolean calça) { this.calça = calça; }
     public boolean isBermuda() { return bermuda; }
     public void setBermuda(boolean bermuda) { this.bermuda = bermuda; }
-    public boolean isShorts() { return shorts; }
-    public void setShorts(boolean shorts) { this.shorts = shorts; }
+    public boolean isVestido() { return vestido; }
+    public void setVestido(boolean vestido) { this.vestido = vestido; }
     public boolean isSapato() { return sapato; }
     public void setSapato(boolean sapato) { this.sapato = sapato; }
     public boolean isMeia() { return meia; }

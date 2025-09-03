@@ -1479,8 +1479,8 @@ agora.setHours(agora.getHours() - 3);
 const hoje = agora.toISOString().split('T')[0];
 
 function atualizarCardsMovimentacoes(movimentacoes) {
-    const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'SHORTS', 'SAPATO', 'MEIA'];
-    const categoriasIds = ['camisa', 'camiseta', 'bermuda', 'calca', 'shorts', 'sapato', 'meia'];
+    const categorias = ['CAMISA', 'CAMISETA', 'BERMUDA', 'CALÇA', 'VESTIDO', 'SAPATO', 'MEIA'];
+    const categoriasIds = ['camisa', 'camiseta', 'bermuda', 'calca', 'vestido', 'sapato', 'meia'];
     
     categorias.forEach((categoria, index) => {
         const entradasFiltradas = movimentacoes.filter(m => 
