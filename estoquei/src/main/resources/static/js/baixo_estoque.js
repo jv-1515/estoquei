@@ -150,7 +150,7 @@ function updateOptions() {
         if (categorias.some(cat => cat === 'SAPATO' || cat === 'MEIA')) {
             for (let i = 36; i <= 44; i++) tamanhos.add('_' + i);
         }
-        if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'SHORTS')) {
+        if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'VESTIDO')) {
             for (let i = 36; i <= 56; i += 2) tamanhos.add('_' + i);
         }
         if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {

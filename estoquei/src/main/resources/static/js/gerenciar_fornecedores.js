@@ -758,7 +758,7 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
         camiseta: categorias.includes('CAMISETA'),
         calça: categorias.includes('CALÇA'),
         bermuda: categorias.includes('BERMUDA'),
-        shorts: categorias.includes('SHORTS'),
+        vestido: categorias.includes('VESTIDO'),
         sapato: categorias.includes('SAPATO'),
         meia: categorias.includes('MEIA'),
         nome_responsavel: document.getElementById('cad-nome-responsavel').value,
