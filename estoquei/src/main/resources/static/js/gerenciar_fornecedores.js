@@ -242,9 +242,113 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
 function abrirDetalhesFornecedor(id) {
-    // TODO: abrir modal de detalhes
-    Swal.fire('Detalhes do fornecedor', 'Funcionalidade em construção!', 'info');
+    const f = fornecedoresOriginais.find(x => String(x.id) === String(id));
+    if (f) {
+        renderDetalhesFornecedor(f);
+        return;
+    }
+    fetch(`/fornecedores/${id}`)
+        .then(res => res.json())
+        .then(f => renderDetalhesFornecedor(f))
+        .catch(() => Swal.fire('Erro', 'Não foi possível carregar os detalhes do fornecedor.', 'error'));
+}
+
+function fecharDetalhesFornecedor() {
+    const popup = document.getElementById('detalhes-fornecedor-popup');
+    if (popup) popup.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function renderDetalhesFornecedor(f) {
+    // Avatar
+    const avatar = document.getElementById('detalhes-forn-avatar');
+    const iniciaisEl = document.getElementById('detalhes-forn-avatar-iniciais');
+    const nome = f.nome_empresa || '';
+    if (avatar) avatar.style.background = corAvatarFornecedor(nome);
+    if (iniciaisEl) iniciaisEl.textContent = getIniciaisFornecedor(nome);
+
+    // CNPJ e nome
+    document.getElementById('detalhes-forn-cnpj').textContent = `${f.cnpj || '-'}`;
+    document.getElementById('detalhes-forn-nome').textContent = f.nome_empresa || '';
+
+    // Categorias
+    document.getElementById('detalhes-forn-categorias-txt').textContent = getCategoriasTexto(f) || '-';
+
+    // Responsável
+    document.getElementById('detalhes-forn-responsavel-txt').textContent = f.nome_responsavel || 'Responsável não informado';
+
+    // Email principal
+    const email = f.email || '';
+    const emailLink = document.getElementById('detalhes-forn-email-link');
+    if (emailLink) {
+        emailLink.textContent = email;
+        emailLink.href = email ? `mailto:${email}` : '#';
+    }
+
+    // Email extra
+    const email2Div = document.getElementById('detalhes-forn-email2');
+    const email2Link = document.getElementById('detalhes-forn-email2-link');
+    if (f.email_responsavel) {
+        email2Div.style.display = 'flex';
+        email2Link.textContent = f.email_responsavel;
+        email2Link.href = `mailto:${f.email_responsavel}`;
+    } else {
+        email2Div.style.display = 'none';
+        email2Link.textContent = '';
+        email2Link.href = '#';
+    }
+
+    // Telefone
+    const tel = formatarTelefoneExibicao(f.telefone) || 'Não informado';
+    document.getElementById('detalhes-forn-telefone-txt').textContent = tel;
+
+    // Endereço
+    const endDiv = document.getElementById('detalhes-forn-endereco');
+    const endTxt = document.getElementById('detalhes-forn-endereco-txt');
+    const endereco = montarEnderecoFornecedor(f);
+    if (endereco) {
+        endDiv.style.display = 'flex';
+        endTxt.textContent = endereco;
+    } else {
+        endDiv.style.display = 'none';
+        endTxt.textContent = '';
+    }
+
+    // Exibir modal
+    const popup = document.getElementById('detalhes-fornecedor-popup');
+    if (popup) {
+        popup.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+function getCategoriasTexto(f) {
+    const map = [
+        ['Camisa', f.camisa],
+        ['Camiseta', f.camiseta],
+        ['Calça', f['calça'] ?? f.calca],
+        ['Bermuda', f.bermuda],
+        ['Vestido', f.vestido],
+        ['Sapato', f.sapato],
+        ['Meia', f.meia],
+    ];
+    return map.filter(([_, v]) => !!v).map(([k]) => k).join(', ');
+}
+
+function montarEnderecoFornecedor(f) {
+    const cep = f.cep ? f.cep : '';
+    const log = f.logradouro || '';
+    const num = f.numero || '';
+    const bai = f.bairro || '';
+    const cid = f.cidade || '';
+    const uf = f.estado || '';
+    const partes = [];
+    if (log) partes.push(log + (num ? `, ${num}` : ''));
+    if (bai) partes.push(bai);
+    if (cid || uf) partes.push([cid, uf].filter(Boolean).join(' - '));
+    if (cep) partes.push(`CEP ${cep}`);
+    return partes.join(' | ');
 }
 function abrirEdicaoFornecedor(id) {
     // TODO: abrir modal de edição
