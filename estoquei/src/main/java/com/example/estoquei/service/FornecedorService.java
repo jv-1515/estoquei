@@ -40,7 +40,7 @@ public class FornecedorService {
             fornecedor.setCamiseta(fornecedorAtualizado.isCamiseta());
             fornecedor.setCalça(fornecedorAtualizado.isCalça());
             fornecedor.setBermuda(fornecedorAtualizado.isBermuda());
-            fornecedor.setShorts(fornecedorAtualizado.isShorts());
+            fornecedor.setVestido(fornecedorAtualizado.isVestido());
             fornecedor.setSapato(fornecedorAtualizado.isSapato());
             fornecedor.setMeia(fornecedorAtualizado.isMeia());
             fornecedor.setNome_responsavel(fornecedorAtualizado.getNome_responsavel());

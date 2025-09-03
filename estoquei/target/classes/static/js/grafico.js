@@ -2,13 +2,13 @@ window.atualizarDetalhesEstoque = function(produtos) {
 
     // 2. Gráfico de categoria
     const categorias = [
-        "CAMISA", "CAMISETA", "BERMUDA", "CALÇA", "SHORTS", "SAPATO", "MEIA"
+        "CAMISA", "CAMISETA", "BERMUDA", "CALÇA", "VESTIDO", "SAPATO", "MEIA"
     ];
     const categoriasTipo = [
-        "Camisa", "Camiseta", "Bermuda", "Calça", "Shorts", "Sapato", "Meia"
+        "Camisa", "Camiseta", "Bermuda", "Calça", "Vestido", "Sapato", "Meia"
     ];
     const categoriasPlural = [
-        "Camisas", "Camisetas", "Bermudas", "Calças", "Shorts", "Sapatos", "Meias"
+        "Camisas", "Camisetas", "Bermudas", "Calças", "Vestidos", "Sapatos", "Meias"
     ];
     const cores = [
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
