@@ -71,7 +71,7 @@ function updateOptions(selectedCategory = null, selectedSize = null) {
         for (let i = 34; i <= 46; i++) {
             options += `<option value="_${i}">${i}</option>`;
         }
-    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'SHORTS') {
+    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'VESTIDO') {
         for (let i = 36; i <= 56; i += 2) {
             options += `<option value="_${i}">${i}</option>`;
         }
