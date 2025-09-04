@@ -16,12 +16,7 @@ function corAvatarFornecedor(str) {
     const h = Math.abs(hash) % 360;
     return `hsl(${h}, 60%, 80%)`;
 }
-function formatarNomeFornecedor(nome) {
-    if (!nome) return '';
-    const partes = nome.trim().split(/\s+/);
-    if (partes.length === 1) return partes[0];
-    return partes[0] + ' ' + partes[partes.length - 1];
-}
+
 function formatarTelefoneExibicao(telefone) {
     if (!telefone) return '';
     telefone = telefone.replace(/\D/g, '');
@@ -128,8 +123,8 @@ function renderizarFornecedores(lista) {
                     </div>
                 </td>
                 <td>${f.codigo}</td>
-                <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome_empresa}">${formatarNomeFornecedor(f.nome_empresa)}</td>
-                <td>${f.cnpj}</td>
+                <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome_empresa}">${f.nome_empresa}</td>
+                <td>${aplicarMascaraCNPJ(f.cnpj)}</td>
                 <td>${f.nome_responsavel || 'Não informado'}</td>
                 <td>${f.email}</td>
                 <td>${formatarTelefoneExibicao(f.telefone) || 'Não informado'}</td>
@@ -270,14 +265,22 @@ function renderDetalhesFornecedor(f) {
     if (iniciaisEl) iniciaisEl.textContent = getIniciaisFornecedor(nome);
 
     // CNPJ e nome
-    document.getElementById('detalhes-forn-cnpj').textContent = `${f.cnpj || '-'}`;
+    const cnpjEl = document.getElementById('detalhes-forn-cnpj');
+    if (cnpjEl) cnpjEl.textContent = `CNPJ: ${f.cnpj ? aplicarMascaraCNPJ(f.cnpj) : '-'}`;
     document.getElementById('detalhes-forn-nome').textContent = f.nome_empresa || '';
 
-    // Categorias
-    document.getElementById('detalhes-forn-categorias-txt').textContent = getCategoriasTexto(f) || '-';
-
     // Responsável
-    document.getElementById('detalhes-forn-responsavel-txt').textContent = f.nome_responsavel || 'Responsável não informado';
+    const respDiv = document.getElementById('detalhes-forn-responsavel');
+    const respTxt = document.getElementById('detalhes-forn-responsavel-txt');
+    if (f.nome_responsavel && f.nome_responsavel.trim()) {
+        respDiv.style.display = 'flex';
+        respTxt.textContent = `Responsável: ${f.nome_responsavel}`;
+    } else {
+        respDiv.style.display = 'none';
+        respTxt.textContent = '';
+    }
+    // Telefone
+    document.getElementById('detalhes-forn-telefone-txt').textContent = formatarTelefoneExibicao(f.telefone) || 'Não informado';
 
     // Email principal
     const email = f.email || '';
@@ -299,11 +302,13 @@ function renderDetalhesFornecedor(f) {
         email2Link.textContent = '';
         email2Link.href = '#';
     }
-
-    // Telefone
-    const tel = formatarTelefoneExibicao(f.telefone) || 'Não informado';
-    document.getElementById('detalhes-forn-telefone-txt').textContent = tel;
-
+    
+    // Categorias como input readonly
+    document.getElementById('detalhes-forn-categorias-input').value = getCategoriasTexto(f) || '-';
+    
+    // Observações
+    document.getElementById('detalhes-forn-observacoes').value = f.observacoes || '';
+    
     // Endereço
     const endDiv = document.getElementById('detalhes-forn-endereco');
     const endTxt = document.getElementById('detalhes-forn-endereco-txt');
@@ -315,14 +320,24 @@ function renderDetalhesFornecedor(f) {
         endDiv.style.display = 'none';
         endTxt.textContent = '';
     }
-
-    // Exibir modal
+    
+    // Inscrição Estadual
+    const inscDiv = document.getElementById('detalhes-forn-inscricao-estadual');
+    const inscTxt = document.getElementById('detalhes-forn-inscricao-estadual-txt');
+    if (f.inscricao_estadual) {
+        inscDiv.style.display = 'flex';
+        inscTxt.textContent = `Inscrição Estadual: ${f.inscricao_estadual}`;
+    } else {
+        inscDiv.style.display = 'none';
+        inscTxt.textContent = '';
+    }    // Exibir modal
     const popup = document.getElementById('detalhes-fornecedor-popup');
     if (popup) {
         popup.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
+
 function getCategoriasTexto(f) {
     const map = [
         ['Camisa', f.camisa],
@@ -676,11 +691,95 @@ document.getElementById('cad-numero').addEventListener('input', function() {
 });
 
 
+// ===== Máscaras/validações CNPJ e Telefone =====
+function aplicarMascaraTelefone(num) {
+    const v = (num || '').replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 10) {
+        // (00) 0000-0000
+        const p1 = v.slice(0, 2);
+        const p2 = v.slice(2, 6);
+        const p3 = v.slice(6, 10);
+        return v.length > 6 ? `(${p1}) ${p2}-${p3}` :
+               v.length > 2 ? `(${p1}) ${p2}` :
+               p1 ? `(${p1}` : '';
+    } else {
+        // (00) 00000-0000
+        const p1 = v.slice(0, 2);
+        const p2 = v.slice(2, 7);
+        const p3 = v.slice(7, 11);
+        return `(${p1}) ${p2}-${p3}`;
+    }
+}
+
+function aplicarMascaraCNPJ(num) {
+    const v = (num || '').replace(/\D/g, '').slice(0, 14);
+    const p1 = v.slice(0, 2);
+    const p2 = v.slice(2, 5);
+    const p3 = v.slice(5, 8);
+    const p4 = v.slice(8, 12);
+    const p5 = v.slice(12, 14);
+    let out = '';
+    if (p1) out = p1;
+    if (p2) out += '.' + p2;
+    if (p3) out += '.' + p3;
+    if (p4) out += '/' + p4;
+    if (p5) out += '-' + p5;
+    return out;
+}
+
+function cnpjValido(cnpjNum) {
+    const c = (cnpjNum || '').replace(/\D/g, '');
+    if (c.length !== 14) return false;
+    if (/^(\d)\1{13}$/.test(c)) return false; // rejeita repetidos
+
+    const calcDV = (base) => {
+        let soma = 0, pos = base.length - 7;
+        for (let i = 0; i < base.length; i++) {
+            soma += parseInt(base[i], 10) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        const res = soma % 11;
+        return res < 2 ? 0 : 11 - res;
+    };
+
+    const nums = c.slice(0, 12);
+    const dv1 = calcDV(nums);
+    const dv2 = calcDV(nums + dv1);
+    return c.endsWith(`${dv1}${dv2}`);
+}
+
+// Troca listener do telefone (com máscara)
+document.getElementById('cad-telefone').removeEventListener?.('input', () => {});
+document.getElementById('cad-telefone').addEventListener('input', function () {
+    this.value = aplicarMascaraTelefone(this.value);
+});
+
+// Máscara do CNPJ + validação ao sair do campo
+document.getElementById('cad-cnpj').addEventListener('input', function () {
+    this.value = aplicarMascaraCNPJ(this.value);
+});
+document.getElementById('cad-cnpj').addEventListener('blur', function () {
+    const c = this.value.replace(/\D/g, '');
+    if (c && !cnpjValido(c)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ inválido!',
+            text: 'Verifique o número digitado',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        this.focus();
+    }
+});
+
 // Validação da etapa 1 (padrão igual funcionários)
 async function validarEtapa1Fornecedor() {
     const codigo = document.getElementById('cad-codigo').value.trim();
     const nome = document.getElementById('cad-nome-empresa').value.trim();
-    const cnpj = document.getElementById('cad-cnpj').value.trim();
+    const cnpjMasked = document.getElementById('cad-cnpj').value.trim();
+    const cnpj = cnpjMasked.replace(/\D/g, '');
     const email = document.getElementById('cad-email').value.trim();
 
     // Código obrigatório
@@ -755,11 +854,23 @@ async function validarEtapa1Fornecedor() {
         return false;
     }
     // CNPJ só números, 14 dígitos
-    if (!/^\d{14}$/.test(cnpj.replace(/\D/g, ''))) {
+    if (cnpj.length !== 14) {
         Swal.fire({
             icon: 'warning',
             title: 'CNPJ inválido!',
             text: 'O CNPJ deve ter 14 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!cnpjValido(cnpj)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ inválido!',
+            text: 'Verifique o número digitado',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -856,7 +967,7 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
     const fornecedor = {
         codigo: document.getElementById('cad-codigo').value,
         nome_empresa: document.getElementById('cad-nome-empresa').value,
-        cnpj: document.getElementById('cad-cnpj').value,
+        cnpj: document.getElementById('cad-cnpj').value.replace(/\D/g, ''),        
         email: document.getElementById('cad-email').value,
         camisa: categorias.includes('CAMISA'),
         camiseta: categorias.includes('CAMISETA'),
