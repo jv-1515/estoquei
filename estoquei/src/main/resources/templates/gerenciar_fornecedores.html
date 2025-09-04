@@ -129,7 +129,7 @@
                     <label for="cad-nome-empresa">Nome da Empresa*</label>
                     <input type="text" id="cad-nome-empresa" name="nome_empresa" required maxlength="50" placeholder="Nome da empresa" />
                     <label for="cad-cnpj">CNPJ*</label>
-                    <input type="text" id="cad-cnpj" name="cnpj" required maxlength="14" placeholder="00.000.000/0000-00" />
+                    <input type="text" id="cad-cnpj" name="cnpj" required maxlength="18" placeholder="00.000.000/0000-00" />
                     <label for="cad-email">Email da Empresa*</label>
                     <input type="email" id="cad-email" name="email" required placeholder="Email da empresa" />
                 </div>
@@ -334,7 +334,6 @@
         </form>
     </div>
 
-        <!-- Detalhes Fornecedor -->
     <div id="detalhes-fornecedor-popup" class="detalhes-modal-bg" style="display:none;">
       <div class="detalhes-modal">
         <div style="display:flex; align-items:center; justify-content:space-between;">
@@ -343,25 +342,27 @@
             <i class="fa-solid fa-xmark" style="font-size: 20px;"></i>
           </button>
         </div>
-        <div style="display:flex; flex-direction:row; gap:20px; margin-top:10px; min-height:120px;">
-          <!-- Avatar -->
-          <div style="display:flex;justify-content:center; min-width:120px; min-height:120px;">
+        <div style="display:flex; flex-direction:row; gap:24px; margin-top:10px; min-height:120px;">
+
+            <div style="display:flex;justify-content:center; min-width:120px; min-height:120px;">
             <div id="detalhes-forn-avatar" style="width:120px; height:120px; border-radius:50%; background:#e0e7ef; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:44px; color:rgb(68, 68, 68, 0.65); user-select:none; position:relative;">
               <span id="detalhes-forn-avatar-iniciais" style="z-index:1; position:relative;"></span>
             </div>
           </div>
-          <!-- Infos -->
-          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-start;">
-            <div id="detalhes-forn-cnpj" style="font-size:12px; color:#757575;">CNPJ: -</div>
-            <div id="detalhes-forn-nome" style="font-size:18px; color:#333; font-weight:bold;">Nome da Empresa</div>
-            <div id="detalhes-forn-responsavel" style="font-size:14px; color:#333; display:flex; align-items:center; gap:6px;">
-              <span id="detalhes-forn-responsavel-txt"></span>
+
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="display:flex; flex-direction:column; gap:2px; min-width:180px;">
+              <div id="detalhes-forn-cnpj" style="font-size:12px; color:#757575;">CNPJ: -</div>
+              <div id="detalhes-forn-nome" style="font-size:18px; color:#333; font-weight:bold;">Nome da Empresa</div>
+              <div id="detalhes-forn-responsavel" style="font-size:12px; color:#757575; display:none; align-items:center; gap:6px;">
+                <span id="detalhes-forn-responsavel-txt"></span>
+              </div>
             </div>
-            <div id="detalhes-forn-categorias" style="font-size:12px; color:#757575; display:flex; align-items:center; gap:6px; margin-top:10px;">
-              <i class="fa-solid fa-tag" style="color:#888;"></i>
-              <span id="detalhes-forn-categorias-txt"></span>
-            </div>
-            <div style="display:flex; flex-direction:row; gap: 8px; margin-top:5px;">
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:18px;">
+              <div id="detalhes-forn-telefone" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#333;">
+                <i class="fa-solid fa-phone" style="color:#1e94a3;"></i>
+                <span id="detalhes-forn-telefone-txt"></span>
+              </div>
               <div id="detalhes-forn-email" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#333;">
                 <i class="fa-solid fa-envelope" style="color:#1e94a3;"></i>
                 <a id="detalhes-forn-email-link" href="#" style="color:#1e94a3; text-decoration:none;" target="_blank"></a>
@@ -370,15 +371,27 @@
                 <i class="fa-solid fa-envelope" style="color:#1e94a3;"></i>
                 <a id="detalhes-forn-email2-link" href="#" style="color:#1e94a3; text-decoration:none;" target="_blank"></a>
               </div>
-                <div id="detalhes-forn-telefone" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#333;">
-                <i class="fa-solid fa-phone" style="color:#1e94a3;"></i>
-                <span id="detalhes-forn-telefone-txt"></span>
-                </div>
             </div>
-            <div id="detalhes-forn-endereco" style="font-size:12px; color:#333; display:none; align-items:center; gap:6px; margin-top:10px;">
-              <i class="fa-solid fa-location-dot" style="color:#1e94a3;"></i>
-              <span id="detalhes-forn-endereco-txt"></span>
-            </div>
+          </div>
+        </div>
+        <div style="margin-top:5px;">
+          <div style="display:flex; flex-direction:column;">
+            <label for="detalhes-forn-categorias-input" style="font-size:12px; color:#333; font-weight:bold; padding:5px 0 5px 0;">Categorias</label>
+            <input id="detalhes-forn-categorias-input" type="text" readonly style="background:#f1f1f1; border:1px solid #aaa; color:#757575; font-size:12px; padding:6px; border-radius:4px;" />
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <label for="detalhes-forn-observacoes" style="font-size:12px; color:#333; font-weight:bold; padding:5px 0 5px 0;">Observações</label>
+            <textarea id="detalhes-forn-observacoes" readonly style="background:#f1f1f1; color:#757575; font-size:12px;"></textarea>
+          </div>
+
+          <div id="detalhes-forn-endereco" style="font-size:12px; color:#333; display:none; align-items:center; gap:6px; margin-top:5px;">
+            <i class="fa-solid fa-location-dot" style="color:#1e94a3;"></i>
+            <span id="detalhes-forn-endereco-txt"></span>
+          </div>
+
+          <div id="detalhes-forn-inscricao-estadual" style="font-size:12px; color:#333; display:none; align-items:center; gap:6px; margin-top:8px;">
+            <i class="fa-solid fa-file-invoice" style="color:#1e94a3;"></i>
+            <span id="detalhes-forn-inscricao-estadual-txt"></span>
           </div>
         </div>
       </div>
