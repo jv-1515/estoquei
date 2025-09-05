@@ -835,13 +835,7 @@ function cnpjValido(cnpjNum) {
     return c.endsWith(`${dv1}${dv2}`);
 }
 
-// Troca listener do telefone (com máscara)
-// document.getElementById('cad-telefone').removeEventListener?.('input', () => {});
-// document.getElementById('cad-telefone').addEventListener('input', function () {
-//     this.value = aplicarMascaraTelefone(this.value);
-// });
-
-// Máscara do CNPJ + validação ao sair do campo
+// máscara do CNPJ
 function mascaraCNPJ(input) {
     function formatarCNPJ(v) {
         v = v.replace(/\D/g, '').slice(0, 14);
@@ -851,24 +845,34 @@ function mascaraCNPJ(input) {
         let charIndex = 0;
         for (let i = 0; i < mask.length; i++) {
             if (mask[i] === '_') {
-                out += chars[charIndex] !== undefined ? chars[charIndex] : '_';
-                charIndex++;
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
             } else {
                 out += mask[i];
             }
         }
         return v.length === 0 ? '' : out;
     }
+
     function setCaret(pos) {
         setTimeout(() => input.setSelectionRange(pos, pos), 0);
     }
+
     input.addEventListener('input', function(e) {
-        let raw = input.value.replace(/\D/g, '').slice(0, 14);
+        let old = input.value;
+        let caret = input.selectionStart;
+        let raw = old.replace(/\D/g, '').slice(0, 14);
+
         input.value = formatarCNPJ(raw);
-        let nextUnderscore = input.value.indexOf('_');
-        if (nextUnderscore === -1) nextUnderscore = input.value.length;
-        setCaret(nextUnderscore);
+
+        let newCaret = caret;
+        if (e.inputType === 'deleteContentBackward') {
+            while (newCaret > 0 && /[^\d_]/.test(input.value[newCaret - 1])) newCaret--;
+        } else if (e.inputType === 'insertText') {
+            while (newCaret < input.value.length && /[^\d_]/.test(input.value[newCaret])) newCaret++;
+        }
+        setCaret(newCaret);
     });
+
     input.value = formatarCNPJ(input.value.replace(/\D/g, ''));
     let pos = input.value.indexOf('_');
     if (pos === -1) pos = input.value.length;
