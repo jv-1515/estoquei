@@ -131,7 +131,7 @@
                     <label for="cad-cnpj">CNPJ*</label>
                     <input type="text" id="cad-cnpj" name="cnpj" required placeholder="00.000.000/0000-00" />
                     <label for="cad-email">Email da Empresa*</label>
-                    <input type="email" id="cad-email" name="email" required placeholder="Email da empresa" />
+                    <input type="email" id="cad-email" maxlength="50" name="email" required placeholder="Email da empresa" />
                 </div>
 
                 <div class="cadastro-bullets" style="padding-left: 147px;">
@@ -164,7 +164,7 @@
                     <label for="cad-nome-responsavel">Nome do Responsável</label>
                     <input type="text" id="cad-nome-responsavel" name="nome_responsavel" maxlength="50" placeholder="Nome do responsável" />
                     <label for="cad-email-responsavel">Email Extra</label>
-                    <input type="email" id="cad-email-responsavel" name="email_responsavel" placeholder="Email extra" />
+                    <input type="email" id="cad-email-responsavel" name="email_responsavel" maxlength="50" placeholder="Email extra" />
                     <label for="cad-telefone">Telefone</label>
                     <input type="text" id="cad-telefone" name="telefone" placeholder="(00) 00000-0000" />
                 </div>
@@ -217,9 +217,10 @@
                 </div>
 
                 <!-- Observações -->
-                <div style="display: flex; flex-direction: column;">
+                <div style="position: relative; width: 100%; display: flex; flex-direction: column;">
                     <label for="cad-observacoes">Observações</label>
-                    <textarea id="cad-observacoes" name="observacoes" rows="2" placeholder="Observações"></textarea>
+                    <textarea id="cad-observacoes" name="observacoes" rows="2" maxlength="200" placeholder="Observações"></textarea>
+                    <span id="contador-observacoes">0/200</span>
                 </div>
                 <div class="cadastro-bullets">
                     <button type="button" id="btn-voltar-3" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar</button>

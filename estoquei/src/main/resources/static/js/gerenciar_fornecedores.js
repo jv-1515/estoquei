@@ -1207,3 +1207,15 @@ function atualizarContadorEtapaFornecedor(etapa) {
         texto.textContent = `${etapa}/${total}`;
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('cad-observacoes');
+    const contador = document.getElementById('contador-observacoes');
+    if (textarea && contador) {
+        const max = textarea.maxLength || 200;
+        contador.textContent = `${textarea.value.length}/${max}`;
+        textarea.addEventListener('input', function() {
+            contador.textContent = `${this.value.length}/${max}`;
+        });
+    }
+});
