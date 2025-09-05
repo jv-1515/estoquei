@@ -670,28 +670,115 @@ document.getElementById('cad-nome-responsavel').addEventListener('input', functi
     this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
 });
 
-document.getElementById('cad-telefone').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
-});
+// document.getElementById('cad-telefone').addEventListener('input', function() {
+//     this.value = this.value.replace(/\D/g, '');
+// });
+function mascaraTelefone(input) {
+    function formatarTel(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        let mask = '(__) _____-____';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += charIndex < chars.length ? chars[charIndex++] : '_';
+            } else {
+                out += mask[i];
+            }
+        }
+        return out;
+    }
 
+    function setCaret(pos) {
+        if (pos < 2) pos = 2;
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+
+    input.addEventListener('input', function(e) {
+        let raw = input.value.replace(/\D/g, '').slice(0, 11);
+        let caret = input.selectionStart;
+
+        // Atualiza valor
+        input.value = formatarTel(raw);
+
+        // Sempre coloca o cursor ANTES do próximo "_"
+        let nextUnderscore = input.value.indexOf('_');
+        if (nextUnderscore === -1) nextUnderscore = input.value.length;
+
+        // Corrige para apagar corretamente ao ficar preso em caractere especial
+        if (e.inputType === 'deleteContentBackward') {
+            while (nextUnderscore > 2 && /[^\d_]/.test(input.value[nextUnderscore - 1])) {
+                nextUnderscore--;
+            }
+        }
+
+        setCaret(nextUnderscore);
+    });
+
+    // Impede o usuário de clicar antes do parêntese
+    input.addEventListener('click', function() {
+        let pos = input.selectionStart;
+        if (pos < 2) setCaret(2);
+    });
+    input.addEventListener('keydown', function(e) {
+        if ((e.key === "ArrowLeft" || e.key === "Home") && input.selectionStart <= 2) {
+            setCaret(2);
+            e.preventDefault();
+        }
+    });
+
+    // Aplica ao carregar
+    input.value = formatarTel(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos < 2) pos = 2;
+    setCaret(pos);
+}
+//mascara cep
 document.getElementById('cad-cep').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '').slice(0, 8);
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) {
+        this.value = v.slice(0,5) + '-' + v.slice(5);
+    } else {
+        this.value = v;
+    }
 });
 
+//mascara inscricao estadual
 document.getElementById('cad-inscricao-estadual').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
+    let v = this.value.replace(/\D/g, '').slice(0, 12);
+    let out = '';
+    if (v.length > 0) out = v.slice(0,3);
+    if (v.length >= 4) out += '.' + v.slice(3,6);
+    if (v.length >= 7) out += '.' + v.slice(6,9);
+    if (v.length >= 10) out += '.' + v.slice(9,12);
+    this.value = out;
 });
 
 document.getElementById('cad-cidade').addEventListener('input', function() {
     this.value = this.value.replace(/[\d]/g, '');
 });
 
-document.getElementById('cad-numero').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
+document.getElementById('cad-telefone').addEventListener('blur', function() {
+    const tel = this.value.replace(/\D/g, '');
+    if (tel && tel.length < 10) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Telefone inválido!',
+            text: 'Informe outro telefone',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        this.focus();
+    }
 });
 
+mascaraTelefone(document.getElementById('cad-telefone'));
 
-// ===== Máscaras/validações CNPJ e Telefone =====
+
+//mascara telefone
 function aplicarMascaraTelefone(num) {
     const v = (num || '').replace(/\D/g, '').slice(0, 11);
     if (v.length <= 10) {
@@ -749,15 +836,48 @@ function cnpjValido(cnpjNum) {
 }
 
 // Troca listener do telefone (com máscara)
-document.getElementById('cad-telefone').removeEventListener?.('input', () => {});
-document.getElementById('cad-telefone').addEventListener('input', function () {
-    this.value = aplicarMascaraTelefone(this.value);
-});
+// document.getElementById('cad-telefone').removeEventListener?.('input', () => {});
+// document.getElementById('cad-telefone').addEventListener('input', function () {
+//     this.value = aplicarMascaraTelefone(this.value);
+// });
 
 // Máscara do CNPJ + validação ao sair do campo
-document.getElementById('cad-cnpj').addEventListener('input', function () {
-    this.value = aplicarMascaraCNPJ(this.value);
-});
+function mascaraCNPJ(input) {
+    function formatarCNPJ(v) {
+        v = v.replace(/\D/g, '').slice(0, 14);
+        let mask = '__.___.___/____-__';
+        let chars = v.split('');
+        let out = '';
+        let charIndex = 0;
+        for (let i = 0; i < mask.length; i++) {
+            if (mask[i] === '_') {
+                out += chars[charIndex] !== undefined ? chars[charIndex] : '_';
+                charIndex++;
+            } else {
+                out += mask[i];
+            }
+        }
+        return v.length === 0 ? '' : out;
+    }
+    function setCaret(pos) {
+        setTimeout(() => input.setSelectionRange(pos, pos), 0);
+    }
+    input.addEventListener('input', function(e) {
+        let raw = input.value.replace(/\D/g, '').slice(0, 14);
+        input.value = formatarCNPJ(raw);
+        let nextUnderscore = input.value.indexOf('_');
+        if (nextUnderscore === -1) nextUnderscore = input.value.length;
+        setCaret(nextUnderscore);
+    });
+    input.value = formatarCNPJ(input.value.replace(/\D/g, ''));
+    let pos = input.value.indexOf('_');
+    if (pos === -1) pos = input.value.length;
+    setCaret(pos);
+}
+mascaraCNPJ(document.getElementById('cad-cnpj'));
+
+
+
 document.getElementById('cad-cnpj').addEventListener('blur', function () {
     const c = this.value.replace(/\D/g, '');
     if (c && !cnpjValido(c)) {
@@ -978,9 +1098,9 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
         meia: categorias.includes('MEIA'),
         nome_responsavel: document.getElementById('cad-nome-responsavel').value,
         email_responsavel: document.getElementById('cad-email-responsavel').value,
-        telefone: document.getElementById('cad-telefone').value,
-        cep: document.getElementById('cad-cep').value,
-        inscricao_estadual: document.getElementById('cad-inscricao-estadual').value,
+        telefone: document.getElementById('cad-telefone').value.replace(/\D/g, ''),
+        cep: document.getElementById('cad-cep').value.replace(/\D/g, ''),
+        inscricao_estadual: document.getElementById('cad-inscricao-estadual').value.replace(/\D/g, ''),
         logradouro: document.getElementById('cad-logradouro').value,
         bairro: document.getElementById('cad-bairro').value,
         cidade: document.getElementById('cad-cidade').value,
