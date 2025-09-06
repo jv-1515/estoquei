@@ -1310,7 +1310,7 @@ function salvarEdicaoFuncionario() {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar alterações',
+        confirmButtonText: 'Sim, salvar',
         cancelButtonText: 'Não, voltar',
         allowOutsideClick: false,
     }).then((result) => {

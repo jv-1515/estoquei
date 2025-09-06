@@ -199,7 +199,8 @@ tbody tr:nth-child(odd) {
 .actions .fa-eye{
     color: inherit;
 }
-.etapa-cadastro label{
+.etapa-cadastro label,
+#form-editar-fornecedor label{
     color: #333;
     font-weight: bold;
     padding: 5px 0;
@@ -530,6 +531,20 @@ textarea {
     min-height: 72px;
     height: 72px;
 }
+
+#contador-observacoes,
+#contador-edit-observacoes {
+    position: absolute;
+    right: 8px;
+    bottom: 2px;
+    font-size: 12px;
+    color: #888;
+    background: white;
+    padding: 5px 2px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
 .etapa-contador {
   position: relative;
   width: 40px;
