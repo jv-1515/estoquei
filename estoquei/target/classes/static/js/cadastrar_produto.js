@@ -330,3 +330,107 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Abrir modal ao clicar no botão de tags
+document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('modal-categorias-bg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+});
+
+// Fechar modal com validação de alterações
+function fecharModalCategorias() {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Descartar alterações?',
+    text: 'As alterações não serão salvas',
+    showCancelButton: true,
+    confirmButtonText: 'Sim, descartar',
+    cancelButtonText: 'Não, voltar',
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('modal-categorias-bg').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+}
+
+// Multiselect Tamanhos
+function abrirTamanhoMulti(idx) {
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => div.style.display = 'none');
+  document.getElementById('checkboxes-tamanho-multi-' + idx).style.display = 'block';
+}
+function marcarOuDesmarcarTodosTamanhos(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const todos = checks[0];
+  checks.forEach(cb => cb.checked = todos.checked);
+  atualizarPlaceholderTamanhoMulti(idx);
+}
+function marcarOuDesmarcarLetras(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const letras = checks[1];
+  letras.checked = !letras.checked;
+  atualizarPlaceholderTamanhoMulti(idx);
+}
+function marcarOuDesmarcarNumericos(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const nums = checks[2];
+  nums.checked = !nums.checked;
+  atualizarPlaceholderTamanhoMulti(idx);
+}
+function atualizarPlaceholderTamanhoMulti(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const todos = checks[0];
+  const letras = checks[1];
+  const nums = checks[2];
+  let texto = 'Todos';
+  if (!todos.checked) {
+    let arr = [];
+    if (letras.checked) arr.push('Letras');
+    if (nums.checked) arr.push('Numéricos');
+    texto = arr.length ? arr.join(', ') : 'Nenhum';
+  }
+  document.getElementById('tamanho_input_' + idx).value = texto;
+}
+
+// Multiselect Genero
+function abrirGeneroMulti(idx) {
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => div.style.display = 'none');
+  document.getElementById('checkboxes-genero-multi-' + idx).style.display = 'block';
+}
+function marcarOuDesmarcarTodosGeneros(idx) {
+  const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  const checks = div.querySelectorAll('.genero-multi-check');
+  const todos = checks[0];
+  checks.forEach(cb => cb.checked = todos.checked);
+  atualizarPlaceholderGeneroMulti(idx);
+}
+function atualizarPlaceholderGeneroMulti(idx) {
+  const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  const checks = div.querySelectorAll('.genero-multi-check');
+  const todos = checks[0];
+  let texto = 'Todos';
+  if (!todos.checked) {
+    let arr = [];
+    if (checks[1].checked) arr.push('Masculino');
+    if (checks[2].checked) arr.push('Feminino');
+    if (checks[3].checked) arr.push('Unissex');
+    texto = arr.length ? arr.join(', ') : 'Selecionar';
+  }
+  document.getElementById('genero_input_' + idx).value = texto;
+}
+
+// Fecha popups ao clicar fora
+document.addEventListener('mousedown', function(e) {
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
+    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+  });
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
+    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+  });
+});
