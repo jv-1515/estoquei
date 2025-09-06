@@ -93,12 +93,12 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-        <form id="form-categorias">
+        <form id="form-categorias" action="#" autocomplete="off">
           <div class="categorias-table">
             <!-- Linha 1 -->
             <div class="categorias-row">
               <div class="categorias-col">
-                <label class="categorias-label" for="categoria_1">Categorias</label>
+                <label class="categorias-label" for="categoria_1">Categoria</label>
                 <input type="text" class="categorias-input" id="categoria_1" value="Camisa" maxlength="30">
               </div>
               <div class="categorias-col">
@@ -107,9 +107,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_1" value="Todos" readonly onclick="abrirTamanhoMulti(1)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-1" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(1)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(1)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(1)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -119,18 +119,18 @@
                   <input type="text" class="categorias-input" id="genero_input_1" value="Todos" readonly onclick="abrirGeneroMulti(1)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-1" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(1)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
-            <!-- Linhas 2 -->
+            <!-- Linha 2 -->
             <div class="categorias-row">
               <div class="categorias-col">
                 <input type="text" class="categorias-input" id="categoria_2" value="Camiseta" maxlength="30">
@@ -140,9 +140,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_2" value="Todos" readonly onclick="abrirTamanhoMulti(2)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-2" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(2)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(2)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(2)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -151,15 +151,15 @@
                   <input type="text" class="categorias-input" id="genero_input_2" value="Todos" readonly onclick="abrirGeneroMulti(2)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-2" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(2)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 3 -->
@@ -172,9 +172,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_3" value="Todos" readonly onclick="abrirTamanhoMulti(3)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-3" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(3)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(3)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(3)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -183,15 +183,15 @@
                   <input type="text" class="categorias-input" id="genero_input_3" value="Todos" readonly onclick="abrirGeneroMulti(3)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-3" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(3)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 4 -->
@@ -204,9 +204,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_4" value="Todos" readonly onclick="abrirTamanhoMulti(4)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-4" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(4)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(4)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(4)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -215,15 +215,15 @@
                   <input type="text" class="categorias-input" id="genero_input_4" value="Todos" readonly onclick="abrirGeneroMulti(4)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-4" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(4)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 5 -->
@@ -236,9 +236,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_5" value="Todos" readonly onclick="abrirTamanhoMulti(5)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-5" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(5)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(5)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(5)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -247,15 +247,15 @@
                   <input type="text" class="categorias-input" id="genero_input_5" value="Todos" readonly onclick="abrirGeneroMulti(5)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-5" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(5)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 6 -->
@@ -268,9 +268,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_6" value="Todos" readonly onclick="abrirTamanhoMulti(6)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-6" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(6)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(6)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(6)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -279,15 +279,15 @@
                   <input type="text" class="categorias-input" id="genero_input_6" value="Todos" readonly onclick="abrirGeneroMulti(6)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-6" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(6)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 7 -->
@@ -300,9 +300,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_7" value="Todos" readonly onclick="abrirTamanhoMulti(7)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-7" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(7)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(7)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(7)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -311,15 +311,15 @@
                   <input type="text" class="categorias-input" id="genero_input_7" value="Todos" readonly onclick="abrirGeneroMulti(7)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-7" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(7)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 8 -->
@@ -332,9 +332,9 @@
                   <input type="text" class="categorias-input" id="tamanho_input_8" value="Todos" readonly onclick="abrirTamanhoMulti(8)">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-8" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(8)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(8)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(8)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
@@ -343,143 +343,143 @@
                   <input type="text" class="categorias-input" id="genero_input_8" value="Todos" readonly onclick="abrirGeneroMulti(8)">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-8" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(8)"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
                     <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
                     <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 9 -->
             <div class="categorias-row">
               <div class="categorias-col">
-                <input type="text" class="categorias-input" value="" placeholder="Criar categoria" id="categoria_9" maxlength="30">
+                <input type="text" class="categorias-input" id="categoria_9" value="" placeholder="Criar categoria" maxlength="30">
               </div>
               <div class="categorias-col">
                 <div class="multiselect-tamanho">
-                  <input type="text" class="categorias-input" id="tamanho_input_9" value="Todos" readonly onclick="abrirTamanhoMulti(9)">
+                  <input type="text" class="categorias-input" id="tamanho_input_9" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(9)" style="color: #757575;">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-9" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(9)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(9)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(9)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
               <div class="categorias-col">
                 <div class="multiselect-genero">
-                  <input type="text" class="categorias-input" id="genero_input_9" value="Todos" readonly onclick="abrirGeneroMulti(9)">
+                  <input type="text" class="categorias-input" id="genero_input_9" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(9)" style="color: #757575;">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-9" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(9)"> Todos</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 10 -->
             <div class="categorias-row">
               <div class="categorias-col">
-                <input type="text" class="categorias-input" value="" placeholder="Criar categoria" id="categoria_10" maxlength="30">
+                <input type="text" class="categorias-input" id="categoria_10" value="" placeholder="Criar categoria" maxlength="30">
               </div>
               <div class="categorias-col">
                 <div class="multiselect-tamanho">
-                  <input type="text" class="categorias-input" id="tamanho_input_10" value="Todos" readonly onclick="abrirTamanhoMulti(10)">
+                  <input type="text" class="categorias-input" id="tamanho_input_10" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(10)" style="color: #757575;">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-10" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(10)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(10)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(10)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
               <div class="categorias-col">
                 <div class="multiselect-genero">
-                  <input type="text" class="categorias-input" id="genero_input_10" value="Todos" readonly onclick="abrirGeneroMulti(10)">
+                  <input type="text" class="categorias-input" id="genero_input_10" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(10)" style="color: #757575;">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-10" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(10)"> Todos</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 11 -->
             <div class="categorias-row">
               <div class="categorias-col">
-                <input type="text" class="categorias-input" value="" placeholder="Criar categoria" id="categoria_11" maxlength="30">
+                <input type="text" class="categorias-input" id="categoria_11" value="" placeholder="Criar categoria" maxlength="30">
               </div>
               <div class="categorias-col">
                 <div class="multiselect-tamanho">
-                  <input type="text" class="categorias-input" id="tamanho_input_11" value="Todos" readonly onclick="abrirTamanhoMulti(11)">
+                  <input type="text" class="categorias-input" id="tamanho_input_11" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(11)" style="color: #757575;">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-11" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(11)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(11)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(11)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
               <div class="categorias-col">
                 <div class="multiselect-genero">
-                  <input type="text" class="categorias-input" id="genero_input_11" value="Todos" readonly onclick="abrirGeneroMulti(11)">
+                  <input type="text" class="categorias-input" id="genero_input_11" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(11)" style="color: #757575;">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-11" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(11)"> Todos</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
             <!-- Linha 12 -->
             <div class="categorias-row">
               <div class="categorias-col">
-                <input type="text" class="categorias-input" value="" placeholder="Criar categoria" id="categoria_12" maxlength="30">
+                <input type="text" class="categorias-input" id="categoria_12" value="" placeholder="Criar categoria" maxlength="30">
               </div>
               <div class="categorias-col">
                 <div class="multiselect-tamanho">
-                  <input type="text" class="categorias-input" id="tamanho_input_12" value="Todos" readonly onclick="abrirTamanhoMulti(12)">
+                  <input type="text" class="categorias-input" id="tamanho_input_12" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(12)" style="color: #757575;">
                   <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-12" style="display:none;">
-                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosTamanhos(12)"> Todos (Numéricos e Letras)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked onclick="marcarOuDesmarcarLetras(12)"> Letras (Único, PP-XXG)</label>
-                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked onclick="marcarOuDesmarcarNumericos(12)"> Numéricos (36-56)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+                    <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
                   </div>
                 </div>
               </div>
               <div class="categorias-col">
                 <div class="multiselect-genero">
-                  <input type="text" class="categorias-input" id="genero_input_12" value="Todos" readonly onclick="abrirGeneroMulti(12)">
+                  <input type="text" class="categorias-input" id="genero_input_12" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(12)" style="color: #757575;">
                   <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
                   <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-12" style="display:none;">
-                    <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked onclick="marcarOuDesmarcarTodosGeneros(12)"> Todos</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+                    <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
                   </div>
                 </div>
               </div>
-              <div class="categorias-col" style="display:flex; justify-content:center;">
-                <button type="button" class="categorias-lixeira" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+              <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+                <button type="button" class="remover" title="Remover"><i class="fa-solid fa-delete-left"></i></button>
               </div>
             </div>
           </div>
