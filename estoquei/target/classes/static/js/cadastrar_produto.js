@@ -331,15 +331,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Abrir modal ao clicar no botão de tags
-document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
-  e.preventDefault();
-  document.getElementById('modal-categorias-bg').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-});
-
-// Fechar modal com validação de alterações
 function fecharModalCategorias() {
+  for(let i=1;i<=12;i++) {
+    atualizarArrayTamanho(i);
+    atualizarArrayGenero(i);
+    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
+  }
+
+  if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+    document.getElementById('modal-categorias-bg').style.display = 'none';
+    document.body.style.overflow = '';
+    return;
+  }
+
   Swal.fire({
     icon: 'warning',
     title: 'Descartar alterações?',
@@ -347,13 +351,64 @@ function fecharModalCategorias() {
     showCancelButton: true,
     confirmButtonText: 'Sim, descartar',
     cancelButtonText: 'Não, voltar',
-    allowOutsideClick: false
+    allowOutsideClick: false,
+    customClass: {
+      confirmButton: 'swal2-cancel-custom'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       document.getElementById('modal-categorias-bg').style.display = 'none';
       document.body.style.overflow = '';
+      // Restaura o array para o snapshot
+      categoriasModal = JSON.parse(categoriasModalSnapshot);
+      preencherCamposCategorias();
     }
   });
+}
+
+// Array de categorias (carrega do localStorage ou começa vazio)
+let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
+// Snapshot para comparação
+let categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+// Ao abrir modal, salva snapshot
+document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('modal-categorias-bg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  categoriasModalSnapshot = JSON.stringify(categoriasModal);
+  preencherCamposCategorias();
+});
+
+// Preenche os campos do modal com o array
+function preencherCamposCategorias() {
+  for(let i=1;i<=12;i++) {
+    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
+    document.getElementById('categoria_'+i).maxLength = 10;
+    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
+    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
+    atualizarPlaceholderTamanhoMulti(i);
+    atualizarPlaceholderGeneroMulti(i);
+  }
+}
+
+// Atualiza checkboxes de tamanho
+function atualizarCheckboxesTamanho(idx, arr) {
+  const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+  checks.forEach(cb => cb.checked = false);
+  if(arr.includes("TODOS")) checks[0].checked = true;
+  if(arr.includes("LETRAS")) checks[1].checked = true;
+  if(arr.includes("NUMERICOS")) checks[2].checked = true;
+}
+
+// Atualiza checkboxes de genero
+function atualizarCheckboxesGenero(idx, arr) {
+  const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
+  checks.forEach(cb => cb.checked = false);
+  if(arr.includes("TODOS")) checks[0].checked = true;
+  if(arr.includes("MASCULINO")) checks[1].checked = true;
+  if(arr.includes("FEMININO")) checks[2].checked = true;
+  if(arr.includes("UNISSEX")) checks[3].checked = true;
 }
 
 // Multiselect Tamanhos
@@ -361,41 +416,57 @@ function abrirTamanhoMulti(idx) {
   document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => div.style.display = 'none');
   document.getElementById('checkboxes-tamanho-multi-' + idx).style.display = 'block';
 }
-function marcarOuDesmarcarTodosTamanhos(idx) {
-  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
-  const checks = div.querySelectorAll('.tamanho-multi-check');
-  const todos = checks[0];
-  checks.forEach(cb => cb.checked = todos.checked);
-  atualizarPlaceholderTamanhoMulti(idx);
-}
-function marcarOuDesmarcarLetras(idx) {
-  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
-  const checks = div.querySelectorAll('.tamanho-multi-check');
-  const letras = checks[1];
-  letras.checked = !letras.checked;
-  atualizarPlaceholderTamanhoMulti(idx);
-}
-function marcarOuDesmarcarNumericos(idx) {
-  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
-  const checks = div.querySelectorAll('.tamanho-multi-check');
-  const nums = checks[2];
-  nums.checked = !nums.checked;
-  atualizarPlaceholderTamanhoMulti(idx);
-}
+document.querySelectorAll('.checkboxes-tamanho-multi').forEach((container, idx) => {
+  container.addEventListener('change', function(e) {
+    if (e.target.classList.contains('tamanho-multi-check')) {
+      const checks = container.querySelectorAll('.tamanho-multi-check');
+      const todos = checks[0];
+      const letras = checks[1];
+      const nums = checks[2];
+      if (e.target.value === "TODOS") {
+        checks.forEach(cb => cb.checked = todos.checked);
+      } else {
+        todos.checked = letras.checked && nums.checked;
+      }
+      atualizarPlaceholderTamanhoMulti(idx + 1);
+      atualizarArrayTamanho(idx + 1);
+    }
+  });
+});
 function atualizarPlaceholderTamanhoMulti(idx) {
   const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
   const checks = div.querySelectorAll('.tamanho-multi-check');
   const todos = checks[0];
   const letras = checks[1];
   const nums = checks[2];
-  let texto = 'Todos';
-  if (!todos.checked) {
+  let texto = 'Selecionar';
+  let color = '#757575';
+  if (todos && todos.checked) {
+    texto = 'Todos';
+    color = '#000';
+  } else {
     let arr = [];
-    if (letras.checked) arr.push('Letras');
-    if (nums.checked) arr.push('Numéricos');
-    texto = arr.length ? arr.join(', ') : 'Nenhum';
+    if (letras && letras.checked) arr.push('Letras');
+    if (nums && nums.checked) arr.push('Numéricos');
+    texto = arr.length ? arr.join(', ') : 'Selecionar';
+    color = arr.length ? '#000' : '#757575';
   }
-  document.getElementById('tamanho_input_' + idx).value = texto;
+  const input = document.getElementById('tamanho_input_' + idx);
+  input.value = texto;
+  input.style.color = color;
+}
+function atualizarArrayTamanho(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const todos = checks[0];
+  const letras = checks[1];
+  const nums = checks[2];
+  categoriasModal[idx-1].tamanhos = [];
+  if (todos && todos.checked) categoriasModal[idx-1].tamanhos = ["TODOS"];
+  else {
+    if (letras && letras.checked) categoriasModal[idx-1].tamanhos.push("LETRAS");
+    if (nums && nums.checked) categoriasModal[idx-1].tamanhos.push("NUMERICOS");
+  }
 }
 
 // Multiselect Genero
@@ -403,26 +474,55 @@ function abrirGeneroMulti(idx) {
   document.querySelectorAll('.checkboxes-genero-multi').forEach(div => div.style.display = 'none');
   document.getElementById('checkboxes-genero-multi-' + idx).style.display = 'block';
 }
-function marcarOuDesmarcarTodosGeneros(idx) {
-  const div = document.getElementById('checkboxes-genero-multi-' + idx);
-  const checks = div.querySelectorAll('.genero-multi-check');
-  const todos = checks[0];
-  checks.forEach(cb => cb.checked = todos.checked);
-  atualizarPlaceholderGeneroMulti(idx);
-}
+document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) => {
+  container.addEventListener('change', function(e) {
+    if (e.target.classList.contains('genero-multi-check')) {
+      const checks = container.querySelectorAll('.genero-multi-check');
+      const todos = checks[0];
+      const masc = checks[1];
+      const fem = checks[2];
+      const uni = checks[3];
+      if (e.target.value === "TODOS") {
+        checks.forEach(cb => cb.checked = todos.checked);
+      } else {
+        todos.checked = masc.checked && fem.checked && uni.checked;
+      }
+      atualizarPlaceholderGeneroMulti(idx + 1);
+      atualizarArrayGenero(idx + 1);
+    }
+  });
+});
 function atualizarPlaceholderGeneroMulti(idx) {
   const div = document.getElementById('checkboxes-genero-multi-' + idx);
   const checks = div.querySelectorAll('.genero-multi-check');
   const todos = checks[0];
-  let texto = 'Todos';
-  if (!todos.checked) {
-    let arr = [];
-    if (checks[1].checked) arr.push('Masculino');
-    if (checks[2].checked) arr.push('Feminino');
-    if (checks[3].checked) arr.push('Unissex');
+  let texto = 'Selecionar';
+  let color = '#757575';
+  let arr = [];
+  if (todos && todos.checked) {
+    texto = 'Todos';
+    color = '#000';
+  } else {
+    if (checks[1] && checks[1].checked) arr.push('Masculino');
+    if (checks[2] && checks[2].checked) arr.push('Feminino');
+    if (checks[3] && checks[3].checked) arr.push('Unissex');
     texto = arr.length ? arr.join(', ') : 'Selecionar';
+    color = arr.length ? '#000' : '#757575';
   }
-  document.getElementById('genero_input_' + idx).value = texto;
+  const input = document.getElementById('genero_input_' + idx);
+  input.value = texto;
+  input.style.color = color;
+}
+function atualizarArrayGenero(idx) {
+  const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  const checks = div.querySelectorAll('.genero-multi-check');
+  categoriasModal[idx-1].generos = [];
+  if (checks[0] && checks[0].checked) categoriasModal[idx-1].generos = ["TODOS"];
+  else {
+    if (checks[1] && checks[1].checked) categoriasModal[idx-1].generos.push("MASCULINO");
+    if (checks[2] && checks[2].checked) categoriasModal[idx-1].generos.push("FEMININO");
+    if (checks[3] && checks[3].checked) categoriasModal[idx-1].generos.push("UNISSEX");
+  }
 }
 
 // Fecha popups ao clicar fora
@@ -433,4 +533,73 @@ document.addEventListener('mousedown', function(e) {
   document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
     if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
   });
+});
+
+// Sincroniza nome da categoria no array
+document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input, idx) => {
+  input.addEventListener('input', function() {
+    categoriasModal[idx].nome = this.value.slice(0,10);
+  });
+});
+
+// Validação dos campos obrigatórios
+function validarCategoriasObrigatorias() {
+  let ok = true;
+  for(let i=0;i<12;i++) {
+    const cat = categoriasModal[i];
+    if(cat.nome.trim() && cat.tamanhos.length && cat.generos.length) continue;
+    // Se algum campo está preenchido, todos devem estar
+    if(cat.nome.trim() || cat.tamanhos.length || cat.generos.length) {
+      ok = false;
+      break;
+    }
+  }
+  return ok;
+}
+
+// Salvar alterações
+document.getElementById('form-categorias').addEventListener('submit', function(e) {
+  e.preventDefault();
+  // Atualiza arrays antes de comparar
+  for(let i=1;i<=12;i++) {
+    atualizarArrayTamanho(i);
+    atualizarArrayGenero(i);
+    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
+  }
+  // Validação obrigatória
+  if(!validarCategoriasObrigatorias()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Preencha todos os campos!',
+      text: 'São obrigatórios para cada categoria',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    return;
+  }
+  // Comparação
+  if(JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Sem alterações',
+      text: 'Nenhuma alteração foi feita.',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    document.getElementById('modal-categorias-bg').style.display = 'none';
+    document.body.style.overflow = '';
+    return;
+  }
+  // Salva no localStorage
+  localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+  categoriasModalSnapshot = JSON.stringify(categoriasModal);
+  Swal.fire({
+    icon: 'success',
+    title: 'Categorias salvas!',
+    text: 'Alterações registradas.',
+    timer: 1500,
+    showConfirmButton: false
+  });
+  document.getElementById('modal-categorias-bg').style.display = 'none';
+  document.body.style.overflow = '';
 });
