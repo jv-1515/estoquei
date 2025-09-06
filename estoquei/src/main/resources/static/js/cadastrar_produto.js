@@ -582,7 +582,7 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     Swal.fire({
       icon: 'info',
       title: 'Sem alterações',
-      text: 'Nenhuma alteração foi feita.',
+      text: 'Nenhuma alteração foi feita',
       timer: 1500,
       showConfirmButton: false
     });

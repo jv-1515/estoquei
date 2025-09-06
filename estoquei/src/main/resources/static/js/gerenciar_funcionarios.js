@@ -1042,6 +1042,35 @@ function fecharEdicaoFuncionario() {
 
 
 function salvarEdicaoFuncionario() {
+
+    const funcionarioAtual = {
+        codigo: document.getElementById('edit-codigo').value.trim(),
+        nome: document.getElementById('edit-nome').value.trim(),
+        cargo: document.getElementById('edit-cargo').value,
+        email: document.getElementById('edit-email').value.trim(),
+        senha: document.getElementById('edit-senha').value,
+        cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
+        dataNascimento: document.getElementById('edit-nascimento').value,
+        telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
+        ativo: document.getElementById('edit-ativo').checked
+    };
+
+    // VALIDAÇÃO SEM ALTERAÇÕES
+    if (JSON.stringify(funcionarioAtual) === JSON.stringify(window.dadosOriginaisEdicaoFuncionario)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: 'Nenhuma alteração foi feita',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        document.getElementById('editar-funcionario').style.display = 'none';
+        document.body.style.overflow = '';
+        return;
+    }
+
     const id = document.getElementById('edit-id').value;
     const codigo = document.getElementById('edit-codigo').value.trim();
     const nome = document.getElementById('edit-nome').value.trim();
