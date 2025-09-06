@@ -45,7 +45,7 @@
             </select>
         </div>
         <button class="btn" style="margin-left: auto;" onclick="abrirCadastroFornecedor()">
-            <i class="fa fa-user-plus" style="margin-right: 4px;"></i> Cadastrar
+            <i class="fa-solid fa-handshake" style="margin-right: 4px;"></i> Novo Fornecedor
         </button>
     </div>
     <div class="main-container">
@@ -129,9 +129,9 @@
                     <label for="cad-nome-empresa">Nome da Empresa*</label>
                     <input type="text" id="cad-nome-empresa" name="nome_empresa" required maxlength="50" placeholder="Nome da empresa" />
                     <label for="cad-cnpj">CNPJ*</label>
-                    <input type="text" id="cad-cnpj" name="cnpj" required maxlength="18" placeholder="00.000.000/0000-00" />
+                    <input type="text" id="cad-cnpj" name="cnpj" required placeholder="00.000.000/0000-00" />
                     <label for="cad-email">Email da Empresa*</label>
-                    <input type="email" id="cad-email" name="email" required placeholder="Email da empresa" />
+                    <input type="email" id="cad-email" maxlength="50" name="email" required placeholder="Email da empresa" />
                 </div>
 
                 <div class="cadastro-bullets" style="padding-left: 147px;">
@@ -164,7 +164,7 @@
                     <label for="cad-nome-responsavel">Nome do Responsável</label>
                     <input type="text" id="cad-nome-responsavel" name="nome_responsavel" maxlength="50" placeholder="Nome do responsável" />
                     <label for="cad-email-responsavel">Email Extra</label>
-                    <input type="email" id="cad-email-responsavel" name="email_responsavel" placeholder="Email extra" />
+                    <input type="email" id="cad-email-responsavel" name="email_responsavel" maxlength="50" placeholder="Email extra" />
                     <label for="cad-telefone">Telefone</label>
                     <input type="text" id="cad-telefone" name="telefone" placeholder="(00) 00000-0000" />
                 </div>
@@ -212,14 +212,15 @@
                     </div>
                     <div style="flex:1; display: flex; flex-direction: column;">
                         <label for="cad-numero">Número</label>
-                        <input type="text" id="cad-numero" name="numero" placeholder="S/N" />
+                        <input type="text" id="cad-numero" maxlength="5" name="numero" placeholder="S/N" />
                     </div>
                 </div>
 
                 <!-- Observações -->
-                <div style="display: flex; flex-direction: column;">
+                <div style="position: relative; width: 100%; display: flex; flex-direction: column;">
                     <label for="cad-observacoes">Observações</label>
-                    <textarea id="cad-observacoes" name="observacoes" rows="2" placeholder="Observações"></textarea>
+                    <textarea id="cad-observacoes" name="observacoes" rows="2" maxlength="200" placeholder="Ex: Fornecedor especializado em roupas casuais, entrega rápida, ótimo atendimento, etc"></textarea>
+                    <span id="contador-observacoes">0/200</span>
                 </div>
                 <div class="cadastro-bullets">
                     <button type="button" id="btn-voltar-3" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
@@ -321,7 +322,7 @@
                         </div>
                         <div style="display: flex; flex-direction: column;">
                             <label for="rev-observacoes">Observações</label>
-                            <textarea id="rev-observacoes" readonly placeholder="Não informado" rows="2" style="min-height: 59px; height: 59px; background-color: #f1f1f1;"></textarea>
+                            <textarea id="rev-observacoes" readonly placeholder="Nenhuma observação" rows="2" style="min-height: 59px; height: 59px; background-color: #f1f1f1;"></textarea>
                         </div>
 
                         <p style="font-size: 12px; color: #757575; margin: 0; margin-top: 8px; font-weight: bold;">
@@ -404,5 +405,109 @@
         </div>
       </div>
     </div>
+
+
+    <!-- MODAL DE EDIÇÃO DE FORNECEDOR -->
+    <div id="editar-fornecedor-bg" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:2000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+        <form id="form-editar-fornecedor" class="form-container" style="margin:auto; position:relative; width:670px; max-width:670px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <h2 style="margin:0; color:#277580; font-size:20px;">Editar Fornecedor</h2>
+                <div class="actions">
+                    <button type="button" onclick="removerFornecedor(window.editarFornecedorId)" title="Remover" style="background:none; border:none; cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <button type="button" onclick="fecharEditarFornecedor()" title="Fechar" style="background:none; border:none; cursor:pointer;">
+                        <i class="fa-solid fa-xmark" style="font-size: 20px;"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 20px;">
+                <!-- COLUNA ESQUERDA -->
+                <div class="form-column" style="flex:1; max-width: 300px;">
+                    <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
+                        <div style="display: flex; flex-direction: column; flex: 1;">
+                            <label for="edit-codigo">Código*</label>
+                            <input type="text" id="edit-codigo" name="codigo" required maxlength="9" placeholder="000000000" />
+                            <label for="edit-categorias">Categorias*</label>
+                            <input type="text" id="edit-categorias" name="categorias" readonly />
+                        </div>
+                        <div style="display: flex; align-items: flex-end; height: 100%;">
+                            <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
+                                <span id="edit-avatar-iniciais"></span>
+                                <i class="fa-solid fa-user" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-nome-empresa">Nome da Empresa*</label>
+                        <input type="text" id="edit-nome-empresa" name="nome_empresa" required maxlength="50" placeholder="Nome da empresa" />
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-cnpj">CNPJ*</label>
+                        <input type="text" id="edit-cnpj" name="cnpj" required placeholder="00.000.000/0000-00" />
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-email">Email da Empresa*</label>
+                        <input type="email" id="edit-email" maxlength="50" name="email" required placeholder="Email da empresa" />
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-nome-responsavel">Nome do Responsável</label>
+                        <input type="text" id="edit-nome-responsavel" name="nome_responsavel" maxlength="50" placeholder="Nome do responsável" />
+                    </div>
+                    <button class="btn" type="submit" style="margin-top: 10px; width: 100%">Salvar Alterações</button>
+                </div>
+                <!-- COLUNA DIREITA -->
+                <div class="form-column" style="flex:1; max-width: 350px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-email-responsavel">Email Extra</label>
+                        <input type="email" id="edit-email-responsavel" maxlength="50" name="email_responsavel" placeholder="Email extra" />
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-telefone">Telefone</label>
+                        <input type="text" id="edit-telefone" name="telefone" placeholder="(00) 00000-0000" />
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 10px;">
+                        <div style="flex:2; display: flex; flex-direction: column;">
+                            <label for="edit-cep">CEP</label>
+                            <input type="text" id="edit-cep" name="cep" placeholder="00000-000" maxlength="9" />
+                        </div>
+                        <div style="flex:1; display: flex; flex-direction: column;">
+                            <label for="edit-inscricao-estadual">Inscrição Estadual</label>
+                            <input type="text" id="edit-inscricao-estadual" name="inscricao_estadual" placeholder="000.000.000.000" />
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="edit-logradouro">Logradouro</label>
+                        <input type="text" id="edit-logradouro" name="logradouro" placeholder="Logradouro" />
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 10px;">
+                        <div style="flex:2; display: flex; flex-direction: column;">
+                            <label for="edit-bairro">Bairro</label>
+                            <input type="text" id="edit-bairro" name="bairro" placeholder="Bairro" />
+                        </div>
+                        <div style="flex:2; display: flex; flex-direction: column;">
+                            <label for="edit-cidade">Cidade</label>
+                            <input type="text" id="edit-cidade" name="cidade" placeholder="Cidade" />
+                        </div>
+                        <div style="flex:1; display: flex; flex-direction: column;">
+                            <label for="edit-estado">Estado</label>
+                            <input type="text" id="edit-estado" name="estado" placeholder="UF" maxlength="2" />
+                        </div>
+                        <div style="flex:1; display: flex; flex-direction: column;">
+                            <label for="edit-numero">Número</label>
+                            <input type="text" id="edit-numero" maxlength="5" name="numero" placeholder="S/N" />
+                        </div>
+                    </div>
+                    <div style="position: relative; width: 100%; display: flex; flex-direction: column;">
+                        <label for="edit-observacoes">Observações</label>
+                        <textarea id="edit-observacoes" name="observacoes" rows="2" maxlength="200" placeholder="Ex: Fornecedor especializado em roupas casuais, entrega rápida, ótimo atendimento, etc" style="min-height: 59px; height: 59px"></textarea>
+                        <span id="contador-edit-observacoes">0/200</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
 </body>
 </html>
