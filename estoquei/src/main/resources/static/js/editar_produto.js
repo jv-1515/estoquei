@@ -188,6 +188,44 @@ function fillFields(product) {
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
+
+    const produtoAtual = {
+        codigo: document.getElementById('codigo').value.trim(),
+        nome: document.getElementById('nome').value.trim(),
+        categoria: document.getElementById('categoria').value,
+        tamanho: document.getElementById('tamanho').value,
+        genero: document.getElementById('genero').value,
+        quantidade: document.getElementById('quantidade').value.trim(),
+        limiteMinimo: document.getElementById('limiteMinimo').value.trim(),
+        preco: document.getElementById('preco').value.replace(/[^\d,]/g, '').replace(',', '.'),
+        descricao: document.getElementById('descricao').value.trim()
+    };
+
+    if (JSON.stringify(produtoAtual) === JSON.stringify(window.dadosOriginaisEdicaoProduto)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: "Selecione uma opção",
+            showCloseButton: true,
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: 'Visualizar Estoque',
+            cancelButtonText: 'Voltar para Início',
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'swal2-confirm-custom',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/estoque";
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                window.location.href = "/inicio";
+            }
+        });
+        event.preventDefault();
+        return;
+    }
+
     const saveBtn = document.getElementById('save');
     saveBtn.disabled = true;
     saveBtn.innerHTML = 'Salvando <i class="fa-solid fa-spinner fa-spin"></i> ';

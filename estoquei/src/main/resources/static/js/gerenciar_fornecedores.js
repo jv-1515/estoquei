@@ -559,6 +559,42 @@ function removerFornecedor(id) {
 // Validações ao salvar edição
 document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
     e.preventDefault();
+
+       const fornecedorAtual = {
+        codigo: document.getElementById('edit-codigo').value.trim(),
+        categorias: document.getElementById('edit-categorias').value.trim(),
+        nome_empresa: document.getElementById('edit-nome-empresa').value.trim(),
+        cnpj: document.getElementById('edit-cnpj').value.replace(/\D/g, ''),
+        email: document.getElementById('edit-email').value.trim(),
+        nome_responsavel: document.getElementById('edit-nome-responsavel').value.trim(),
+        email_responsavel: document.getElementById('edit-email-responsavel').value.trim(),
+        telefone: document.getElementById('edit-telefone').value.replace(/\D/g, ''),
+        cep: document.getElementById('edit-cep').value.replace(/\D/g, ''),
+        inscricao_estadual: document.getElementById('edit-inscricao-estadual').value.replace(/\D/g, ''),
+        logradouro: document.getElementById('edit-logradouro').value.trim(),
+        bairro: document.getElementById('edit-bairro').value.trim(),
+        cidade: document.getElementById('edit-cidade').value.trim(),
+        estado: document.getElementById('edit-estado').value.trim(),
+        numero: document.getElementById('edit-numero').value.trim(),
+        observacoes: document.getElementById('edit-observacoes').value.trim()
+    };
+
+    // VALIDAÇÃO SEM ALTERAÇÕES
+    if (JSON.stringify(fornecedorAtual) === JSON.stringify(window.dadosOriginaisEdicaoFornecedor)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: 'Nenhuma alteração foi feita',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('editar-fornecedor-bg').style.display = 'none';
+        document.body.style.overflow = '';
+        return;
+    }
+
     if (!(await validarFornecedorEdit())) return;
 
     const fornecedor = {
