@@ -247,7 +247,7 @@ select#genero {
   background: #f3f3f3;
   color: black;
 }
-.categorias-lixeira {
+.remover {
   background: none;
   border: none;
   cursor: pointer;
@@ -256,10 +256,10 @@ select#genero {
   align-items: center;
   justify-content: flex-start;
   transition: color 0.2s;
-  margin-bottom: 8px
-
+  margin-bottom: 8px;
+  padding-left: 0;
 }
-.categorias-lixeira:hover {
+.remover:hover {
   color: red;
 }
 
