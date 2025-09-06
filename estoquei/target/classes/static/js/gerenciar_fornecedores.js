@@ -132,7 +132,7 @@ function renderizarFornecedores(lista) {
                     <a href="#" onclick="abrirDetalhesFornecedor('${f.id}')" title="Detalhes">
                         <i class="fa-solid fa-eye"></i>
                     </a>
-                    <a href="#" onclick="abrirEdicaoFornecedor('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
+                    <a href="#" onclick="event.preventDefault(); abrirEdicaoFornecedor('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
                         <i class="fa-solid fa-pen"></i>
                     </a>
                     <button type="button" onclick="removerFornecedor('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}">
@@ -156,10 +156,10 @@ function renderizarPaginacao(totalPaginas) {
     for (let i = 1; i <= totalPaginas; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
-        btn.className = 'btn-paginacao' + (i === paginaAtual ? ' active' : '');
-        btn.onclick = () => {
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
             paginaAtual = i;
-            renderizarFornecedores(fornecedores);
+            filtrarFornecedores();
         };
         paginacaoDiv.appendChild(btn);
     }
@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function abrirDetalhesFornecedor(id) {
+    window.detalhesFornecedorId = id;
     const f = fornecedoresOriginais.find(x => String(x.id) === String(id));
     if (f) {
         renderDetalhesFornecedor(f);
@@ -366,9 +367,169 @@ function montarEnderecoFornecedor(f) {
     return partes.join(' | ');
 }
 function abrirEdicaoFornecedor(id) {
-    // TODO: abrir modal de edição
-    Swal.fire('Editar fornecedor', 'Funcionalidade em construção!', 'info');
+    fecharDetalhesFornecedor();
+    window.editarFornecedorId = id;
+    // Preenche imediatamente do array local
+    const f = fornecedoresOriginais.find(x => String(x.id) === String(id));
+    if (f) {
+        preencherCamposEdicaoFornecedor(f);
+    }
+    // Depois busca do backend para garantir dados atualizados
+    fetch(`/fornecedores/${id}`)
+        .then(res => res.json())
+        .then(f => preencherCamposEdicaoFornecedor(f));
 }
+
+
+function aplicarMascaraCEP(cep) {
+    cep = (cep || '').replace(/\D/g, '').slice(0, 8);
+    if (cep.length > 5) {
+        return cep.slice(0,5) + '-' + cep.slice(5);
+    }
+    return cep;
+}
+function preencherCamposEdicaoFornecedor(f) {
+
+    window.dadosOriginaisEdicaoFornecedor = {
+        codigo: f.codigo || '',
+        categorias: getCategoriasTexto(f) || '',
+        nome_empresa: f.nome_empresa || '',
+        cnpj: f.cnpj || '',
+        email: f.email || '',
+        nome_responsavel: f.nome_responsavel || '',
+        email_responsavel: f.email_responsavel || '',
+        telefone: f.telefone || '',
+        cep: f.cep || '',
+        inscricao_estadual: f.inscricao_estadual || '',
+        logradouro: f.logradouro || '',
+        bairro: f.bairro || '',
+        cidade: f.cidade || '',
+        estado: f.estado || '',
+        numero: f.numero || '',
+        observacoes: f.observacoes || ''
+    };
+
+    // ETAPA 1 - obrigatórios
+    document.getElementById('edit-codigo').value = f.codigo || '';
+    document.getElementById('edit-nome-empresa').value = f.nome_empresa || '';
+    document.getElementById('edit-cnpj').value = f.cnpj ? aplicarMascaraCNPJ(f.cnpj) : '';
+    document.getElementById('edit-email').value = f.email || '';
+
+    // Categorias (pode ser vazio)
+    document.getElementById('edit-categorias').value = getCategoriasTexto(f) || '';
+
+    // ETAPA 2 e 3 - opcionais
+    document.getElementById('edit-nome-responsavel').value = f.nome_responsavel || '';
+    document.getElementById('edit-email-responsavel').value = f.email_responsavel || '';
+    document.getElementById('edit-telefone').value = f.telefone ? aplicarMascaraTelefone(f.telefone) : '';
+    document.getElementById('edit-cep').value = f.cep ? aplicarMascaraCEP(f.cep) : '';
+    document.getElementById('edit-inscricao-estadual').value = f.inscricao_estadual || '';
+    document.getElementById('edit-logradouro').value = f.logradouro || '';
+    document.getElementById('edit-bairro').value = f.bairro || '';
+    document.getElementById('edit-cidade').value = f.cidade || '';
+    document.getElementById('edit-estado').value = f.estado || '';
+    document.getElementById('edit-numero').value = f.numero || '';
+    document.getElementById('edit-observacoes').value = f.observacoes || '';
+
+    // Avatar
+    const avatarDiv = document.getElementById('edit-avatar');
+    const iniciaisSpan = document.getElementById('edit-avatar-iniciais');
+    const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+    const nomeEmpresa = f.nome_empresa || '';
+    if (avatarDiv && iniciaisSpan) {
+        avatarDiv.style.background = corAvatarFornecedor(nomeEmpresa);
+        iniciaisSpan.textContent = getIniciaisFornecedor(nomeEmpresa);
+        if (icon) icon.style.display = nomeEmpresa.trim() ? 'none' : '';
+    }
+    document.getElementById('edit-nome-empresa').addEventListener('input', function() {
+        const nomeEmpresa = this.value || '';
+        avatarDiv.style.background = corAvatarFornecedor(nomeEmpresa);
+        iniciaisSpan.textContent = getIniciaisFornecedor(nomeEmpresa);
+        if (icon) icon.style.display = nomeEmpresa.trim() ? 'none' : '';
+    });
+
+    // Contador observações
+    const obsInput = document.getElementById('edit-observacoes');
+    const obsContador = document.getElementById('contador-edit-observacoes');
+    const maxObs = obsInput.maxLength || 200;
+    obsContador.textContent = `${obsInput.value.length}/${maxObs}`;
+    obsInput.addEventListener('input', function() {
+        obsContador.textContent = `${this.value.length}/${maxObs}`;
+    });
+
+    // Máscaras
+    mascaraCNPJ(document.getElementById('edit-cnpj'));
+    mascaraTelefone(document.getElementById('edit-telefone'));
+    document.getElementById('edit-cep').addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length > 5) {
+            this.value = v.slice(0,5) + '-' + v.slice(5);
+        } else {
+            this.value = v;
+        }
+    });
+    document.getElementById('edit-inscricao-estadual').addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '').slice(0, 12);
+        let out = '';
+        if (v.length > 0) out = v.slice(0,3);
+        if (v.length >= 4) out += '.' + v.slice(3,6);
+        if (v.length >= 7) out += '.' + v.slice(6,9);
+        if (v.length >= 10) out += '.' + v.slice(9,12);
+        this.value = out;
+    });
+
+    document.getElementById('editar-fornecedor-bg').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+// Fechar edição
+function fecharEditarFornecedor() {
+    const orig = window.dadosOriginaisEdicaoFornecedor || {};
+    const codigo = document.getElementById('edit-codigo').value.trim();
+    const nome_empresa = document.getElementById('edit-nome-empresa').value.trim();
+    const cnpj = document.getElementById('edit-cnpj').value.replace(/\D/g, '');
+    const email = document.getElementById('edit-email').value.trim();
+
+    const houveMudanca =
+        document.getElementById('edit-codigo').value.trim() !== (orig.codigo || '') ||
+        document.getElementById('edit-categorias').value.trim() !== (orig.categorias || '') ||
+        document.getElementById('edit-nome-empresa').value.trim() !== (orig.nome_empresa || '') ||
+        document.getElementById('edit-cnpj').value.replace(/\D/g, '') !== (orig.cnpj || '') ||
+        document.getElementById('edit-email').value.trim() !== (orig.email || '') ||
+        document.getElementById('edit-nome-responsavel').value.trim() !== (orig.nome_responsavel || '') ||
+        document.getElementById('edit-email-responsavel').value.trim() !== (orig.email_responsavel || '') ||
+        document.getElementById('edit-telefone').value.replace(/\D/g, '') !== (orig.telefone || '') ||
+        document.getElementById('edit-cep').value.replace(/\D/g, '') !== (orig.cep || '') ||
+        document.getElementById('edit-inscricao-estadual').value.replace(/\D/g, '') !== (orig.inscricao_estadual || '') ||
+        document.getElementById('edit-logradouro').value.trim() !== (orig.logradouro || '') ||
+        document.getElementById('edit-bairro').value.trim() !== (orig.bairro || '') ||
+        document.getElementById('edit-cidade').value.trim() !== (orig.cidade || '') ||
+        document.getElementById('edit-estado').value.trim() !== (orig.estado || '') ||
+        document.getElementById('edit-numero').value.trim() !== (orig.numero || '') ||
+        document.getElementById('edit-observacoes').value.trim() !== (orig.observacoes || '');
+
+
+    if (houveMudanca) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Descartar alterações?',
+            text: 'Você fez alterações não salvas. Deseja sair mesmo assim?',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, descartar',
+            cancelButtonText: 'Não, voltar',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('editar-fornecedor-bg').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    } else {
+        document.getElementById('editar-fornecedor-bg').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Remover fornecedor (já existe)
 function removerFornecedor(id) {
     Swal.fire({
         icon: 'warning',
@@ -386,12 +547,379 @@ function removerFornecedor(id) {
                         fornecedores = fornecedores.filter(f => f.id != id);
                         renderizarFornecedores(fornecedores);
                         Swal.fire('Removido!', 'Fornecedor removido com sucesso.', 'success');
+                        fecharEditarFornecedor();
                     } else {
                         Swal.fire('Erro', 'Não foi possível remover o fornecedor.', 'error');
                     }
                 });
         }
     });
+}
+
+// Validações ao salvar edição
+document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
+    e.preventDefault();
+    if (!(await validarFornecedorEdit())) return;
+
+    const fornecedor = {
+        codigo: document.getElementById('edit-codigo').value,
+        nome_empresa: document.getElementById('edit-nome-empresa').value,
+        cnpj: document.getElementById('edit-cnpj').value.replace(/\D/g, ''),
+        categorias: document.getElementById('edit-categorias').value,
+        email: document.getElementById('edit-email').value,
+        nome_responsavel: document.getElementById('edit-nome-responsavel').value,
+        email_responsavel: document.getElementById('edit-email-responsavel').value,
+        telefone: document.getElementById('edit-telefone').value.replace(/\D/g, ''),
+        cep: document.getElementById('edit-cep').value.replace(/\D/g, ''),
+        inscricao_estadual: document.getElementById('edit-inscricao-estadual').value.replace(/\D/g, ''),
+        logradouro: document.getElementById('edit-logradouro').value,
+        bairro: document.getElementById('edit-bairro').value,
+        cidade: document.getElementById('edit-cidade').value,
+        estado: document.getElementById('edit-estado').value,
+        numero: document.getElementById('edit-numero').value,
+        observacoes: document.getElementById('edit-observacoes').value
+    };
+
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: 'As alterações não poderão ser desfeitas',
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: 'Sim, salvar',
+        cancelButtonText: 'Não, voltar',
+        allowOutsideClick: false,
+        timerProgressBar: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/fornecedores/${window.editarFornecedorId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fornecedor)
+            })
+            .then(res => {
+                if (res.ok) {
+                    Swal.fire({
+                        title: "Alterações salvas!",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    // Atualiza lista e fecha modal igual funcionários
+                    fetch('/fornecedores')
+                        .then(res => res.json())
+                        .then(data => {
+                            fornecedoresOriginais = [...data];
+                            fornecedores = [...data];
+                            renderizarFornecedores(fornecedores);
+                        });
+                    document.getElementById('editar-fornecedor-bg').style.display = 'none';
+                    document.body.style.overflow = '';
+                    window.location.reload();
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: 'Não foi possível salvar as alterações',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                }
+            });
+        }
+    });
+};
+async function validarFornecedorEdit() {
+    // Campos obrigatórios
+    const codigo = document.getElementById('edit-codigo').value.trim();
+    const nome = document.getElementById('edit-nome-empresa').value.trim();
+    const cnpjMasked = document.getElementById('edit-cnpj').value.trim();
+    const cnpj = cnpjMasked.replace(/\D/g, '');
+    const email = document.getElementById('edit-email').value.trim();
+    const categorias = document.getElementById('edit-categorias').value.trim();
+
+    // Campos opcionais
+    const nome_responsavel = document.getElementById('edit-nome-responsavel').value.trim();
+    const email_responsavel = document.getElementById('edit-email-responsavel').value.trim();
+    const telefoneMasked = document.getElementById('edit-telefone').value.trim();
+    const telefone = telefoneMasked.replace(/\D/g, '');
+    const cepMasked = document.getElementById('edit-cep').value.trim();
+    const cep = cepMasked.replace(/\D/g, '');
+    const inscricao_estadual = document.getElementById('edit-inscricao-estadual').value.replace(/\D/g, '');
+    const logradouro = document.getElementById('edit-logradouro').value.trim();
+    const bairro = document.getElementById('edit-bairro').value.trim();
+    const cidade = document.getElementById('edit-cidade').value.trim();
+    const estado = document.getElementById('edit-estado').value.trim();
+    const numero = document.getElementById('edit-numero').value.trim();
+    const observacoes = document.getElementById('edit-observacoes').value.trim();
+
+    // Validações obrigatórias
+    if (!codigo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código obrigatório!',
+            text: 'Preencha o código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!/^\d{9}$/.test(codigo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido!',
+            text: 'O código deve ter 9 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    // Código único (consulta backend)
+    let existeCodigo = false;
+    try {
+        existeCodigo = await fetch(`/fornecedores/codigo-existe?codigo=${encodeURIComponent(codigo)}`).then(r => r.json());
+    } catch {}
+    if (existeCodigo && String(codigo) !== String(window.dadosOriginaisEdicaoFornecedor.codigo)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código já cadastrado!',
+            text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome obrigatório!',
+            text: 'Preencha o nome da empresa',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    if (!cnpj) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ obrigatório!',
+            text: 'Preencha o CNPJ',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (cnpj.length !== 14) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ inválido!',
+            text: 'O CNPJ deve ter 14 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!cnpjValido(cnpj)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ inválido!',
+            text: 'Verifique o número digitado',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    // CNPJ único (consulta backend)
+    let existeCnpj = false;
+    try {
+        existeCnpj = await fetch(`/fornecedores/cnpj-existe?cnpj=${encodeURIComponent(cnpj)}`).then(r => r.json());
+    } catch {}
+    if (existeCnpj && String(cnpj) !== String(window.dadosOriginaisEdicaoFornecedor.cnpj)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CNPJ já cadastrado!',
+            text: 'Informe outro CNPJ',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    if (!email) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email obrigatório!',
+            text: 'Preencha o email',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email inválido!',
+            text: 'Informe um email válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    // Categorias obrigatórias (se for obrigatório)
+    if (!categorias || categorias === 'Nenhuma') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Categorias obrigatórias!',
+            text: 'Selecione pelo menos uma categoria',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    // Email extra (opcional, mas se preenchido deve ser válido)
+    if (email_responsavel && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email_responsavel)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email extra inválido!',
+            text: 'Informe um email válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-email-responsavel').focus();
+        return false;
+    }
+
+    // Telefone (opcional, mas se preenchido deve ter pelo menos 10 dígitos)
+    if (telefone && telefone.length < 10) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Telefone inválido!',
+            text: 'Informe um telefone válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-telefone').focus();
+        return false;
+    }
+
+    // CEP (opcional, mas se preenchido deve ter 8 dígitos)
+    if (cep && cep.length !== 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CEP inválido!',
+            text: 'Informe um CEP válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-cep').focus();
+        return false;
+    }
+
+    // Se CEP preenchido, logradouro, bairro, cidade e estado devem estar preenchidos
+    if (cep && (!logradouro || !bairro || !cidade || !estado)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Endereço incompleto!',
+            text: 'Preencha logradouro, bairro, cidade e estado',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        if (!logradouro) document.getElementById('edit-logradouro').focus();
+        else if (!bairro) document.getElementById('edit-bairro').focus();
+        else if (!cidade) document.getElementById('edit-cidade').focus();
+        else document.getElementById('edit-estado').focus();
+        return false;
+    }
+
+    // Número (se CEP preenchido e número vazio, preenche com S/N)
+    if (cep && !numero) {
+        document.getElementById('edit-numero').value = 'S/N';
+    }
+
+    // Inscrição estadual (opcional, se preenchido deve ter pelo menos 9 dígitos)
+    if (inscricao_estadual && inscricao_estadual.length < 9) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Inscrição Estadual inválida!',
+            text: 'Informe uma inscrição estadual válida',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-inscricao-estadual').focus();
+        return false;
+    }
+
+    // Cidade (opcional, mas se preenchido não pode ter números)
+    if (cidade && /\d/.test(cidade)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cidade inválida!',
+            text: 'A cidade não pode conter números',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-cidade').focus();
+        return false;
+    }
+
+    // Observações (opcional, limite de caracteres)
+    if (observacoes.length > 200) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Observações muito longas!',
+            text: 'Limite de 200 caracteres',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-observacoes').focus();
+        return false;
+    }
+
+    return true;
 }
 
 // MODAL DE CADASTRO DE FORNECEDOR
@@ -881,7 +1409,6 @@ function mascaraCNPJ(input) {
 mascaraCNPJ(document.getElementById('cad-cnpj'));
 
 
-
 document.getElementById('cad-cnpj').addEventListener('blur', function () {
     const c = this.value.replace(/\D/g, '');
     if (c && !cnpjValido(c)) {
@@ -1120,6 +1647,8 @@ document.getElementById('form-cadastro-fornecedor').onsubmit = function(e) {
     })
     .then(res => {
         if (res.ok) {
+            document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';
+            document.body.style.overflow = '';
             fecharCadastroFornecedor();
             Swal.fire({
                 text: `Fornecedor "${fornecedor.nome_empresa}" cadastrado!`,
@@ -1185,6 +1714,39 @@ async function buscarCepFornecedor() {
     }
 }
 
+document.getElementById('edit-cep').addEventListener('blur', async function() {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+    this.style.background = '#e0e7ef';
+    try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+        if (data.erro) throw new Error('CEP não encontrado');
+        document.getElementById('edit-logradouro').value = data.logradouro || '';
+        document.getElementById('edit-bairro').value = data.bairro || '';
+        document.getElementById('edit-cidade').value = data.localidade || '';
+        document.getElementById('edit-estado').value = data.uf || '';
+        setTimeout(() => {
+            document.getElementById('edit-numero').focus();
+        }, 100);
+    } catch {
+        Swal.fire({
+            icon: 'warning',
+            title: 'CEP inválido!',
+            text: 'Não foi possível encontrar o endereço para este CEP',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-logradouro').value = '';
+        document.getElementById('edit-bairro').value = '';
+        document.getElementById('edit-cidade').value = '';
+        document.getElementById('edit-estado').value = '';
+    } finally {
+        this.style.background = '';
+    }
+});
 
 function atualizarContadorEtapaFornecedor(etapa) {
     const total = 4;
