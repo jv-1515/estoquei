@@ -61,5 +61,8 @@
                 </div>
             </div>
         </div>
+        <script th:inline="javascript">
+            window.mensagemErro = /*[[${mensagemErro} != null ? '${mensagemErro}' : '' ]]*/ '';
+        </script>
     </body>
 </html>
