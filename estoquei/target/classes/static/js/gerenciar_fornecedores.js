@@ -135,7 +135,7 @@ function renderizarFornecedores(lista) {
                     <a href="#" onclick="event.preventDefault(); abrirEdicaoFornecedor('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    <button type="button" onclick="removerFornecedor('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}">
+                    <button type="button" onclick="removerFornecedor('${f.id}', '${f.nome_empresa}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}">                        
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
@@ -516,10 +516,6 @@ function fecharEditarFornecedor() {
             showCancelButton: true,
             confirmButtonText: 'Descartar',
             cancelButtonText: 'Voltar',
-            customClass: {
-                confirmButton: 'swal2-remove-custom',
-                cancelButton: 'swal2-cancel-custom'
-                },
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
@@ -533,29 +529,65 @@ function fecharEditarFornecedor() {
     }
 }
 
-// Remover fornecedor (já existe)
-function removerFornecedor(id) {
+// Remover fornecedor
+function removerFornecedor(id, nomeFornecedor) {
     Swal.fire({
         icon: 'warning',
-        title: 'Remover fornecedor?',
-        text: 'Esta ação não pode ser desfeita!',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
-    }).then(result => {
-        if (result.isConfirmed) {
-            fetch(`/fornecedores/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if (res.ok) {
-                        fornecedoresOriginais = fornecedoresOriginais.filter(f => f.id != id);
-                        fornecedores = fornecedores.filter(f => f.id != id);
-                        renderizarFornecedores(fornecedores);
-                        Swal.fire('Removido!', 'Fornecedor removido com sucesso.', 'success');
-                        fecharEditarFornecedor();
-                    } else {
-                        Swal.fire('Erro', 'Não foi possível remover o fornecedor.', 'error');
-                    }
-                });
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+            }
+        }
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: `Excluindo "${nomeFornecedor}"...`,
+                text: 'Aguarde enquanto o fornecedor é excluído',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 1500,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch('/fornecedores/' + id, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                Swal.fire({
+                                    title: 'Erro!',
+                                    text: `Não foi possível excluir ${nomeFornecedor}. Tente novamente`,
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    timer: 1500,
+                                });
+                            }
+                        });
+                }
+            });
         }
     });
 }

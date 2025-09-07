@@ -27,11 +27,17 @@ public class AdminController {
 
     @PostMapping("/login")
     public String processarLogin(@RequestParam String email,
-                                 @RequestParam String senha,
-                                 HttpSession session,
-                                 Model model) {
+                                @RequestParam String senha,
+                                HttpSession session,
+                                Model model) {
         Usuario usuario = usuarioService.autenticar(email, senha);
         if (usuario != null) {
+            if (!usuario.getAtivo()) {
+                model.addAttribute("erro", true);
+                model.addAttribute("mensagemErro", "Acesso negado! Você não tem mais acesso.");
+                model.addAttribute("email", email);
+                return "login";
+            }
             session.setAttribute("isActive", usuario);
             System.out.println("Usuário logado: " + usuario.getNome() + " - Tipo: " + usuario.getTipo());
             return "redirect:/inicio";
