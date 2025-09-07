@@ -188,6 +188,44 @@ function fillFields(product) {
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
+
+    const produtoAtual = {
+        codigo: document.getElementById('codigo').value.trim(),
+        nome: document.getElementById('nome').value.trim(),
+        categoria: document.getElementById('categoria').value,
+        tamanho: document.getElementById('tamanho').value,
+        genero: document.getElementById('genero').value,
+        quantidade: document.getElementById('quantidade').value.trim(),
+        limiteMinimo: document.getElementById('limiteMinimo').value.trim(),
+        preco: document.getElementById('preco').value.replace(/[^\d,]/g, '').replace(',', '.'),
+        descricao: document.getElementById('descricao').value.trim()
+    };
+
+    if (JSON.stringify(produtoAtual) === JSON.stringify(window.dadosOriginaisEdicaoProduto)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: "Selecione uma opção",
+            showCloseButton: true,
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: 'Visualizar Estoque',
+            cancelButtonText: 'Voltar para Início',
+            allowOutsideClick: false,
+            customClass: {
+                confirmButton: 'swal2-confirm-custom',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/estoque";
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                window.location.href = "/inicio";
+            }
+        });
+        event.preventDefault();
+        return;
+    }
+
     const saveBtn = document.getElementById('save');
     saveBtn.disabled = true;
     saveBtn.innerHTML = 'Salvando <i class="fa-solid fa-spinner fa-spin"></i> ';
@@ -198,8 +236,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         customClass: {
             confirmButton: 'swal2-confirm-custom',
@@ -511,13 +549,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Descartar alterações?',
-                    text: 'As alterações não salvas serão perdidas',
+                    text: 'As alterações não serão salvas',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, descartar',
-                    cancelButtonText: 'Não, voltar',
+                    confirmButtonText: 'Descartar',
+                    cancelButtonText: 'Voltar',
                     allowOutsideClick: false,
                     customClass: {
-                        confirmButton: 'swal2-cancel-custom'
+                        confirmButton: 'swal2-remove-custom',
+                        cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {

@@ -315,11 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: 'Descartar informações?',
                     text: 'As informações preenchidas não serão salvas',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, descartar',
-                    cancelButtonText: 'Não, voltar',
+                    confirmButtonText: 'Descartar',
+                    cancelButtonText: 'Voltar',
                     allowOutsideClick: false,
                     customClass: {
-                        confirmButton: 'swal2-cancel-custom'
+                        confirmButton: 'swal2-remove-custom',
+                        cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -330,3 +331,421 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function fecharModalCategorias() {
+  for(let i=1;i<=12;i++) {
+    atualizarArrayTamanho(i);
+    atualizarArrayGenero(i);
+    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
+  }
+
+  if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+    document.getElementById('modal-categorias-bg').style.display = 'none';
+    document.body.style.overflow = '';
+    return;
+  }
+
+  Swal.fire({
+    icon: 'warning',
+    title: 'Descartar alterações?',
+    text: 'As alterações não serão salvas',
+    showCancelButton: true,
+    confirmButtonText: 'Descartar',
+    cancelButtonText: 'Voltar',
+    allowOutsideClick: false,
+    customClass: {
+      confirmButton: 'swal2-remove-custom',
+      cancelButton: 'swal2-cancel-custom'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('modal-categorias-bg').style.display = 'none';
+      document.body.style.overflow = '';
+      // Restaura o array para o snapshot
+      categoriasModal = JSON.parse(categoriasModalSnapshot);
+      preencherCamposCategorias();
+    }
+  });
+}
+
+// Array de categorias (carrega do localStorage ou começa vazio)
+let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
+// Snapshot para comparação
+let categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+// Ao abrir modal, salva snapshot
+document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('modal-categorias-bg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  categoriasModalSnapshot = JSON.stringify(categoriasModal);
+  preencherCamposCategorias();
+});
+
+// Preenche os campos do modal com o array
+function preencherCamposCategorias() {
+  for(let i=1;i<=12;i++) {
+    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
+    document.getElementById('categoria_'+i).maxLength = 10;
+    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
+    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
+    atualizarPlaceholderTamanhoMulti(i);
+    atualizarPlaceholderGeneroMulti(i);
+  }
+}
+
+// Atualiza checkboxes de tamanho
+function atualizarCheckboxesTamanho(idx, arr) {
+  const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+  if(arr.includes("TODOS")) {
+    checks.forEach(cb => cb.checked = true); // Marca todos
+  } else {
+    checks.forEach(cb => cb.checked = false);
+    if(arr.includes("LETRAS")) checks[1].checked = true;
+    if(arr.includes("NUMERICOS")) checks[2].checked = true;
+  }
+}
+
+// Atualiza checkboxes de genero
+function atualizarCheckboxesGenero(idx, arr) {
+  const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
+  if(arr.includes("TODOS")) {
+    checks.forEach(cb => cb.checked = true); // Marca todos
+  } else {
+    checks.forEach(cb => cb.checked = false);
+    if(arr.includes("MASCULINO")) checks[1].checked = true;
+    if(arr.includes("FEMININO")) checks[2].checked = true;
+    if(arr.includes("UNISSEX")) checks[3].checked = true;
+  }
+}
+
+// Multiselect Tamanhos
+function abrirTamanhoMulti(idx) {
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => div.style.display = 'none');
+  document.getElementById('checkboxes-tamanho-multi-' + idx).style.display = 'block';
+}
+document.querySelectorAll('.checkboxes-tamanho-multi').forEach((container, idx) => {
+  container.addEventListener('change', function(e) {
+    if (e.target.classList.contains('tamanho-multi-check')) {
+      const checks = container.querySelectorAll('.tamanho-multi-check');
+      const todos = checks[0];
+      const letras = checks[1];
+      const nums = checks[2];
+      if (e.target.value === "TODOS") {
+        checks.forEach(cb => cb.checked = todos.checked);
+      } else {
+        todos.checked = letras.checked && nums.checked;
+      }
+      atualizarPlaceholderTamanhoMulti(idx + 1);
+      atualizarArrayTamanho(idx + 1);
+    }
+  });
+});
+function atualizarPlaceholderTamanhoMulti(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const todos = checks[0];
+  const letras = checks[1];
+  const nums = checks[2];
+  let texto = 'Selecionar';
+  let color = '#757575';
+  if (todos && todos.checked) {
+    texto = 'Todos';
+    color = '#000';
+  } else {
+    let arr = [];
+    if (letras && letras.checked) arr.push('Letras');
+    if (nums && nums.checked) arr.push('Numéricos');
+    texto = arr.length ? arr.join(', ') : 'Selecionar';
+    color = arr.length ? '#000' : '#757575';
+  }
+  const input = document.getElementById('tamanho_input_' + idx);
+  input.value = texto;
+  input.style.color = color;
+}
+function atualizarArrayTamanho(idx) {
+  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const checks = div.querySelectorAll('.tamanho-multi-check');
+  const todos = checks[0];
+  const letras = checks[1];
+  const nums = checks[2];
+  categoriasModal[idx-1].tamanhos = [];
+  if (todos && todos.checked) categoriasModal[idx-1].tamanhos = ["TODOS"];
+  else {
+    if (letras && letras.checked) categoriasModal[idx-1].tamanhos.push("LETRAS");
+    if (nums && nums.checked) categoriasModal[idx-1].tamanhos.push("NUMERICOS");
+  }
+}
+
+// Multiselect Genero
+function abrirGeneroMulti(idx) {
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => div.style.display = 'none');
+  document.getElementById('checkboxes-genero-multi-' + idx).style.display = 'block';
+}
+document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) => {
+  container.addEventListener('change', function(e) {
+    if (e.target.classList.contains('genero-multi-check')) {
+      const checks = container.querySelectorAll('.genero-multi-check');
+      const todos = checks[0];
+      const masc = checks[1];
+      const fem = checks[2];
+      const uni = checks[3];
+      if (e.target.value === "TODOS") {
+        checks.forEach(cb => cb.checked = todos.checked);
+      } else {
+        todos.checked = masc.checked && fem.checked && uni.checked;
+      }
+      atualizarPlaceholderGeneroMulti(idx + 1);
+      atualizarArrayGenero(idx + 1);
+    }
+  });
+});
+function atualizarPlaceholderGeneroMulti(idx) {
+  const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  const checks = div.querySelectorAll('.genero-multi-check');
+  const todos = checks[0];
+  let texto = 'Selecionar';
+  let color = '#757575';
+  let arr = [];
+  if (todos && todos.checked) {
+    texto = 'Todos';
+    color = '#000';
+  } else {
+    if (checks[1] && checks[1].checked) arr.push('Masculino');
+    if (checks[2] && checks[2].checked) arr.push('Feminino');
+    if (checks[3] && checks[3].checked) arr.push('Unissex');
+    texto = arr.length ? arr.join(', ') : 'Selecionar';
+    color = arr.length ? '#000' : '#757575';
+  }
+  const input = document.getElementById('genero_input_' + idx);
+  input.value = texto;
+  input.style.color = color;
+}
+function atualizarArrayGenero(idx) {
+  const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  const checks = div.querySelectorAll('.genero-multi-check');
+  categoriasModal[idx-1].generos = [];
+  if (checks[0] && checks[0].checked) categoriasModal[idx-1].generos = ["TODOS"];
+  else {
+    if (checks[1] && checks[1].checked) categoriasModal[idx-1].generos.push("MASCULINO");
+    if (checks[2] && checks[2].checked) categoriasModal[idx-1].generos.push("FEMININO");
+    if (checks[3] && checks[3].checked) categoriasModal[idx-1].generos.push("UNISSEX");
+  }
+}
+
+// Fecha popups ao clicar fora
+document.addEventListener('mousedown', function(e) {
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
+    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+  });
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
+    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+  });
+});
+
+// Sincroniza nome da categoria no array
+document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input, idx) => {
+  function verificarDuplicidade() {
+    const nomeAtual = input.value.trim().toLowerCase();
+    if (!nomeAtual) return;
+    const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
+    if (nomes.includes(nomeAtual)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Categoria já criada!',
+        text: 'Escolha outro nome',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      input.value = '';
+      categoriasModal[idx].nome = '';
+      input.focus();
+    }
+  }
+  input.addEventListener('blur', verificarDuplicidade);
+});
+
+// Validação dos campos obrigatórios
+function validarCategoriasObrigatorias() {
+  let ok = true;
+  for(let i=0;i<12;i++) {
+    const cat = categoriasModal[i];
+    if(cat.nome.trim() && cat.tamanhos.length && cat.generos.length) continue;
+    // Se algum campo está preenchido, todos devem estar
+    if(cat.nome.trim() || cat.tamanhos.length || cat.generos.length) {
+      ok = false;
+      break;
+    }
+  }
+  return ok;
+}
+
+// Salvar alterações
+document.getElementById('form-categorias').addEventListener('submit', function(e) {
+  e.preventDefault();
+  // Atualiza arrays antes de comparar
+  for(let i=1;i<=12;i++) {
+    atualizarArrayTamanho(i);
+    atualizarArrayGenero(i);
+    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
+  }
+  // Validação obrigatória
+  if(!validarCategoriasObrigatorias()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Preencha todos os campos!',
+      text: 'São obrigatórios para cada categoria',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    return;
+  }
+  // Comparação
+  if(JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Sem alterações',
+      text: 'Nenhuma alteração foi feita',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    document.getElementById('modal-categorias-bg').style.display = 'none';
+    document.body.style.overflow = '';
+    return;
+  }
+  // Salva no localStorage
+  Swal.fire({
+    icon: 'question',
+    title: 'Tem certeza?',
+    text: 'As alterações não poderão ser desfeitas',
+    showCancelButton: true,
+    confirmButtonText: 'Salvar',
+    cancelButtonText: 'Voltar',
+    allowOutsideClick: false,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+      categoriasModalSnapshot = JSON.stringify(categoriasModal);
+      Swal.fire({
+        icon: 'success',
+        title: 'Categorias salvas!',
+        timer: 1500,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        showConfirmButton: false
+      });
+      document.getElementById('modal-categorias-bg').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+
+// Adiciona listeners aos botões remover
+function adicionarListenersRemoverCategorias() {
+  document.querySelectorAll('.remover').forEach((btn, idx) => {
+    btn.onclick = function(e) {
+      e.preventDefault();
+      // Só permite remover se houver mais de 1 preenchida
+      const preenchidas = categoriasModal.filter(cat => cat.nome.trim());
+      if (preenchidas.length <= 1) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Não é possível remover!',
+          text: 'Deve existir pelo menos 1 categoria',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+
+      // TODO: Verificar se existe produto cadastrado com essa categoria
+      // const nomeCategoria = categoriasModal[idx].nome.trim();
+      // if (existeProdutoComCategoria(nomeCategoria)) {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Não é possível remover',
+      //     text: 'Já existe produto cadastrado com essa categoria!',
+      //     timer: 1800,
+      //     showConfirmButton: false
+      //   });
+      //   return;
+      // }
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Remover categoria?',
+        text: 'Essa ação não pode ser desfeita.',
+        showCancelButton: true,
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Voltar',
+        allowOutsideClick: false,
+        customClass: {
+        confirmButton: 'swal2-remove-custom',
+        cancelButton: 'swal2-cancel-custom'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+            categoriasModal.splice(idx, 1);
+
+            categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
+
+            preencherCamposCategorias();
+
+            adicionarListenersRemoverCategorias();
+
+            categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+            localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+        }
+      });
+    };
+  });
+}
+
+function preencherCamposCategorias() {
+  for(let i=1;i<=12;i++) {
+    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
+    document.getElementById('categoria_'+i).maxLength = 10;
+    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
+    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
+    atualizarPlaceholderTamanhoMulti(i);
+    atualizarPlaceholderGeneroMulti(i);
+  }
+  adicionarListenersRemoverCategorias();
+  aplicarEstiloInputs();
+}
+
+
+function aplicarEstiloInputs() {
+    for (let i = 1; i <= 12; i++) {
+        const nomeInput = document.getElementById('categoria_' + i);
+        const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${i} .tamanho-multi-check`);
+        const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${i} .genero-multi-check`);
+        const tamanhoInput = document.getElementById('tamanho_input_' + i);
+        const generoInput = document.getElementById('genero_input_' + i);
+
+        function atualizarCorLinha() {
+            const nomeValido = nomeInput && nomeInput.value.trim() !== '';
+            const algumTamanho = Array.from(tamanhoChecks).some(cb => cb.checked);
+            const algumGenero = Array.from(generoChecks).some(cb => cb.checked);
+            const linhaValida = nomeValido && algumTamanho && algumGenero;
+            [nomeInput, tamanhoInput, generoInput].forEach(input => {
+                if (input) input.style.backgroundColor = linhaValida ? '#f1f1f1' : 'white';
+            });
+        }
+
+        atualizarCorLinha();
+
+        // Atualiza cor ao digitar no nome
+        if (nomeInput) {
+            nomeInput.addEventListener('input', atualizarCorLinha);
+            nomeInput.addEventListener('blur', atualizarCorLinha);
+        }
+        // Atualiza cor ao marcar/desmarcar tamanhos
+        tamanhoChecks.forEach(cb => cb.addEventListener('change', atualizarCorLinha));
+        // Atualiza cor ao marcar/desmarcar gêneros
+        generoChecks.forEach(cb => cb.addEventListener('change', atualizarCorLinha));
+    }
+}

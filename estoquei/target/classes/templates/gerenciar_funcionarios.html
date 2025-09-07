@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <a th:href="@{/inicio}" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <a th:href="@{/inicio}" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
             <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
         </button>
@@ -24,7 +24,7 @@
     <h2 style="margin-bottom: -10px;">Buscar Funcionários</h2>
     <div class="filters-row">
             <div class="input-group" style="max-width: 100%; flex: 2;">
-                <input type="text" id="busca-funcionario" placeholder="Digite o código ou nome do funcionário" style="font-size:12px; padding:8px 32px 8px 8px; background: #fff;" />
+                <input type="text" id="busca-funcionario" placeholder="Digite o código, nome ou email do funcionário" style="font-size:12px; padding:8px 32px 8px 8px; background: #fff;" />
                 <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
                     <i class="fa fa-search"></i>
                 </span>
@@ -347,7 +347,7 @@
             </table>
             <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
         </div>
-        <a id="btn-topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+        <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
             <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
             <i class="fa-solid fa-arrow-up" style="font-size: 16px; padding-top: 4px;"></i>
         </button>
