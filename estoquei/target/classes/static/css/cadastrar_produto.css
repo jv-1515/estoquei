@@ -332,18 +332,6 @@ select#genero {
     transition: background 0.2s, color 0.2s;
 }
 
-/* Botão de confirmação */
-.swal2-confirm,
-.swal2-styled.swal2-confirm {
-    background-color: #1E94A3;
-    color: #fff;
-}
-.swal2-confirm:hover,
-.swal2-styled.swal2-confirm:hover {
-    background-color: #277580;
-    color: #fff;
-}
-
 /* Botão de cancelar */
 .swal2-cancel,
 .swal2-styled.swal2-cancel {
@@ -357,16 +345,30 @@ select#genero {
     color: #fff;
 }
 
-/* Botão de deletar/cancelar (vermelho padrão SweetAlert2) */
-.swal2-deny,
-.swal2-styled.swal2-deny {
+/* Botão de confirmação/cancelar custom */
+.swal2-confirm,
+.swal2-styled.swal2-confirm,
+.swal2-cancel-custom,
+.swal2-styled.swal2-cancel-custom {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-cancel-custom:hover,
+.swal2-styled.swal2-cancel-custom:hover {
+    background-color: #277580;
+}
+
+/* Botão de deletar (vermelho padrão SweetAlert2) */
+.swal2-remove-custom,
+.swal2-styled.swal2-remove-custom {
     background-color: #d33;
     color: #fff;
 }
-.swal2-deny:hover,
-.swal2-styled.swal2-deny:hover {
-    background-color: #c0392b;
-    color: #fff;
+.swal2-remove-custom:hover,
+.swal2-styled.swal2-remove-custom:hover {
+    background-color: #a52a2a;
 }
 
 /* Ícone de fechar (X) */

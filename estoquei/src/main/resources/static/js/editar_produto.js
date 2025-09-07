@@ -236,8 +236,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         customClass: {
             confirmButton: 'swal2-confirm-custom',
@@ -549,13 +549,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Descartar alterações?',
-                    text: 'As alterações não salvas serão perdidas',
+                    text: 'As alterações não serão salvas',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, descartar',
-                    cancelButtonText: 'Não, voltar',
+                    confirmButtonText: 'Descartar',
+                    cancelButtonText: 'Voltar',
                     allowOutsideClick: false,
                     customClass: {
-                        confirmButton: 'swal2-cancel-custom'
+                        confirmButton: 'swal2-deny'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
