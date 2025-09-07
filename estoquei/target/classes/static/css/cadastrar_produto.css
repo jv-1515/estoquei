@@ -197,6 +197,10 @@ select#genero {
     width: 130px;
 }
 
+.categorias-row .categorias-col:nth-child(3) .categorias-input {
+    padding-right: 25px;
+}
+
 .checkboxes-genero-multi label {
     max-width: 109px;
 }

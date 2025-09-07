@@ -397,20 +397,26 @@ function preencherCamposCategorias() {
 // Atualiza checkboxes de tamanho
 function atualizarCheckboxesTamanho(idx, arr) {
   const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
-  checks.forEach(cb => cb.checked = false);
-  if(arr.includes("TODOS")) checks[0].checked = true;
-  if(arr.includes("LETRAS")) checks[1].checked = true;
-  if(arr.includes("NUMERICOS")) checks[2].checked = true;
+  if(arr.includes("TODOS")) {
+    checks.forEach(cb => cb.checked = true); // Marca todos
+  } else {
+    checks.forEach(cb => cb.checked = false);
+    if(arr.includes("LETRAS")) checks[1].checked = true;
+    if(arr.includes("NUMERICOS")) checks[2].checked = true;
+  }
 }
 
 // Atualiza checkboxes de genero
 function atualizarCheckboxesGenero(idx, arr) {
   const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
-  checks.forEach(cb => cb.checked = false);
-  if(arr.includes("TODOS")) checks[0].checked = true;
-  if(arr.includes("MASCULINO")) checks[1].checked = true;
-  if(arr.includes("FEMININO")) checks[2].checked = true;
-  if(arr.includes("UNISSEX")) checks[3].checked = true;
+  if(arr.includes("TODOS")) {
+    checks.forEach(cb => cb.checked = true); // Marca todos
+  } else {
+    checks.forEach(cb => cb.checked = false);
+    if(arr.includes("MASCULINO")) checks[1].checked = true;
+    if(arr.includes("FEMININO")) checks[2].checked = true;
+    if(arr.includes("UNISSEX")) checks[3].checked = true;
+  }
 }
 
 // Multiselect Tamanhos
@@ -539,9 +545,24 @@ document.addEventListener('mousedown', function(e) {
 
 // Sincroniza nome da categoria no array
 document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input, idx) => {
-  input.addEventListener('input', function() {
-    categoriasModal[idx].nome = this.value.slice(0,10);
-  });
+  function verificarDuplicidade() {
+    const nomeAtual = input.value.trim().toLowerCase();
+    if (!nomeAtual) return;
+    const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
+    if (nomes.includes(nomeAtual)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Categoria já criada!',
+        text: 'Escolha outro nome',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      input.value = '';
+      categoriasModal[idx].nome = '';
+      input.focus();
+    }
+  }
+  input.addEventListener('blur', verificarDuplicidade);
 });
 
 // Validação dos campos obrigatórios
@@ -593,17 +614,30 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     return;
   }
   // Salva no localStorage
-  localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
-  categoriasModalSnapshot = JSON.stringify(categoriasModal);
   Swal.fire({
-    icon: 'success',
-    title: 'Categorias salvas!',
-    text: 'Alterações registradas.',
-    timer: 1500,
-    showConfirmButton: false
+    icon: 'question',
+    title: 'Tem certeza?',
+    text: 'As alterações não poderão ser desfeitas',
+    showCancelButton: true,
+    confirmButtonText: 'Salvar',
+    cancelButtonText: 'Voltar',
+    allowOutsideClick: false,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+      categoriasModalSnapshot = JSON.stringify(categoriasModal);
+      Swal.fire({
+        icon: 'success',
+        title: 'Categorias salvas!',
+        timer: 1500,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        showConfirmButton: false
+      });
+      document.getElementById('modal-categorias-bg').style.display = 'none';
+      document.body.style.overflow = '';
+    }
   });
-  document.getElementById('modal-categorias-bg').style.display = 'none';
-  document.body.style.overflow = '';
 });
 
 
@@ -652,22 +686,24 @@ function adicionarListenersRemoverCategorias() {
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          // Remove do array e reordena
-          categoriasModal.splice(idx, 1);
-          // Adiciona uma categoria vazia ao final para manter 12 linhas
-          categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
-          // Atualiza os campos
-          preencherCamposCategorias();
-          adicionarListenersRemoverCategorias();
-          // Atualiza snapshot para garantir que a alteração será detectada
-          categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+            categoriasModal.splice(idx, 1);
+
+            categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
+
+            preencherCamposCategorias();
+
+            adicionarListenersRemoverCategorias();
+
+            categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+            localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
         }
       });
     };
   });
 }
 
-// Chame após preencher os campos
 function preencherCamposCategorias() {
   for(let i=1;i<=12;i++) {
     document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
@@ -678,4 +714,38 @@ function preencherCamposCategorias() {
     atualizarPlaceholderGeneroMulti(i);
   }
   adicionarListenersRemoverCategorias();
+  aplicarEstiloInputs();
+}
+
+
+function aplicarEstiloInputs() {
+    for (let i = 1; i <= 12; i++) {
+        const nomeInput = document.getElementById('categoria_' + i);
+        const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${i} .tamanho-multi-check`);
+        const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${i} .genero-multi-check`);
+        const tamanhoInput = document.getElementById('tamanho_input_' + i);
+        const generoInput = document.getElementById('genero_input_' + i);
+
+        function atualizarCorLinha() {
+            const nomeValido = nomeInput && nomeInput.value.trim() !== '';
+            const algumTamanho = Array.from(tamanhoChecks).some(cb => cb.checked);
+            const algumGenero = Array.from(generoChecks).some(cb => cb.checked);
+            const linhaValida = nomeValido && algumTamanho && algumGenero;
+            [nomeInput, tamanhoInput, generoInput].forEach(input => {
+                if (input) input.style.backgroundColor = linhaValida ? '#f1f1f1' : 'white';
+            });
+        }
+
+        atualizarCorLinha();
+
+        // Atualiza cor ao digitar no nome
+        if (nomeInput) {
+            nomeInput.addEventListener('input', atualizarCorLinha);
+            nomeInput.addEventListener('blur', atualizarCorLinha);
+        }
+        // Atualiza cor ao marcar/desmarcar tamanhos
+        tamanhoChecks.forEach(cb => cb.addEventListener('change', atualizarCorLinha));
+        // Atualiza cor ao marcar/desmarcar gêneros
+        generoChecks.forEach(cb => cb.addEventListener('change', atualizarCorLinha));
+    }
 }
