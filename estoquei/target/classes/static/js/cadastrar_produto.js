@@ -315,11 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: 'Descartar informações?',
                     text: 'As informações preenchidas não serão salvas',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, descartar',
-                    cancelButtonText: 'Não, voltar',
+                    confirmButtonText: 'Descartar',
+                    cancelButtonText: 'Voltar',
                     allowOutsideClick: false,
                     customClass: {
-                        confirmButton: 'swal2-cancel-custom'
+                        confirmButton: 'swal2-remove-custom',
+                        cancelButton: 'swal2-cancel-custom'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -349,11 +350,12 @@ function fecharModalCategorias() {
     title: 'Descartar alterações?',
     text: 'As alterações não serão salvas',
     showCancelButton: true,
-    confirmButtonText: 'Sim, descartar',
-    cancelButtonText: 'Não, voltar',
+    confirmButtonText: 'Descartar',
+    cancelButtonText: 'Voltar',
     allowOutsideClick: false,
     customClass: {
-      confirmButton: 'swal2-cancel-custom'
+      confirmButton: 'swal2-remove-custom',
+      cancelButton: 'swal2-cancel-custom'
     }
   }).then((result) => {
     if (result.isConfirmed) {
@@ -603,3 +605,77 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
   document.getElementById('modal-categorias-bg').style.display = 'none';
   document.body.style.overflow = '';
 });
+
+
+// Adiciona listeners aos botões remover
+function adicionarListenersRemoverCategorias() {
+  document.querySelectorAll('.remover').forEach((btn, idx) => {
+    btn.onclick = function(e) {
+      e.preventDefault();
+      // Só permite remover se houver mais de 1 preenchida
+      const preenchidas = categoriasModal.filter(cat => cat.nome.trim());
+      if (preenchidas.length <= 1) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Não é possível remover!',
+          text: 'Deve existir pelo menos 1 categoria',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+
+      // TODO: Verificar se existe produto cadastrado com essa categoria
+      // const nomeCategoria = categoriasModal[idx].nome.trim();
+      // if (existeProdutoComCategoria(nomeCategoria)) {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Não é possível remover',
+      //     text: 'Já existe produto cadastrado com essa categoria!',
+      //     timer: 1800,
+      //     showConfirmButton: false
+      //   });
+      //   return;
+      // }
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Remover categoria?',
+        text: 'Essa ação não pode ser desfeita.',
+        showCancelButton: true,
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Voltar',
+        allowOutsideClick: false,
+        customClass: {
+        confirmButton: 'swal2-remove-custom',
+        cancelButton: 'swal2-cancel-custom'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Remove do array e reordena
+          categoriasModal.splice(idx, 1);
+          // Adiciona uma categoria vazia ao final para manter 12 linhas
+          categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
+          // Atualiza os campos
+          preencherCamposCategorias();
+          adicionarListenersRemoverCategorias();
+          // Atualiza snapshot para garantir que a alteração será detectada
+          categoriasModalSnapshot = JSON.stringify(categoriasModal);
+        }
+      });
+    };
+  });
+}
+
+// Chame após preencher os campos
+function preencherCamposCategorias() {
+  for(let i=1;i<=12;i++) {
+    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
+    document.getElementById('categoria_'+i).maxLength = 10;
+    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
+    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
+    atualizarPlaceholderTamanhoMulti(i);
+    atualizarPlaceholderGeneroMulti(i);
+  }
+  adicionarListenersRemoverCategorias();
+}

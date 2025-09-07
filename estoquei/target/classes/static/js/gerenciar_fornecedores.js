@@ -512,10 +512,14 @@ function fecharEditarFornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'Descartar alterações?',
-            text: 'Você fez alterações não salvas. Deseja sair mesmo assim?',
+            text: 'As alterações não serão salvas',
             showCancelButton: true,
-            confirmButtonText: 'Sim, descartar',
-            cancelButtonText: 'Não, voltar',
+            confirmButtonText: 'Descartar',
+            cancelButtonText: 'Voltar',
+            customClass: {
+                confirmButton: 'swal2-remove-custom',
+                cancelButton: 'swal2-cancel-custom'
+                },
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
@@ -621,8 +625,8 @@ document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         timerProgressBar: true
     }).then((result) => {
@@ -997,8 +1001,12 @@ function fecharCadastroFornecedor() {
         title: 'Tem certeza?',
         text: 'As informações preenchidas serão descartadas',
         showCancelButton: true,
-        confirmButtonText: 'Sim, descartar',
-        cancelButtonText: 'Não, voltar'
+        confirmButtonText: 'Descartar',
+        cancelButtonText: 'Voltar',
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';
