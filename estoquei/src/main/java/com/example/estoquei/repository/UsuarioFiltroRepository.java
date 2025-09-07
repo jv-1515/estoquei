@@ -24,12 +24,13 @@ public class UsuarioFiltroRepository {
 
         String nome = filtro.getNome();
         String codigo = filtro.getCodigo();
+        String email = filtro.getEmail();
         CargoUsuario cargo = filtro.getCargo();
 
         whereClause.add("u.ic_excluido = false");
 
-        if ((nome != null && !nome.isEmpty()) || (codigo != null && !codigo.isEmpty())) {
-            whereClause.add("(LOWER(u.nome) LIKE :termo OR LOWER(u.codigo) LIKE :termo)");
+        if ((nome != null && !nome.isEmpty()) || (codigo != null && !codigo.isEmpty()) || (email != null && !email.isEmpty())) {
+            whereClause.add("(LOWER(u.nome) LIKE :termo OR LOWER(u.codigo) LIKE :termo OR LOWER(u.email) LIKE :termo)");
         }
         if (cargo != null) {
             whereClause.add("u.cargo = :cargo");
@@ -41,8 +42,8 @@ public class UsuarioFiltroRepository {
 
         TypedQuery<Usuario> typedQuery = entityManager.createQuery(query, Usuario.class);
 
-        if ((nome != null && !nome.isEmpty()) || (codigo != null && !codigo.isEmpty())) {
-            String termo = nome != null && !nome.isEmpty() ? nome : codigo;
+        if ((nome != null && !nome.isEmpty()) || (codigo != null && !codigo.isEmpty()) || (email != null && !email.isEmpty())) {
+            String termo = nome != null && !nome.isEmpty() ? nome : (codigo != null && !codigo.isEmpty() ? codigo : email);
             typedQuery.setParameter("termo", "%" + termo.toLowerCase() + "%");
         }
         if (cargo != null) {
