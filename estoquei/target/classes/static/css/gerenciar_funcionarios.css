@@ -663,6 +663,34 @@ select#registros-select option {
    color:#277580;
 }
 
+.cargo-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 2px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    background: #f3f3f3;
+    color: #277580;
+    transition: background 0.2s;
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 30px;
+}
+
+.cargo-btn i {
+    font-size: 10px;
+}
+
+.cargo-btn.cargo-1 { background: #1e94a3; color: #fff; }
+.cargo-btn.cargo-2 { background: #277580; color: #fff; }
+.cargo-btn.cargo-3 { background: #bfa100; color: #fff; }
+.cargo-btn.cargo-4 { background: #c0392b; color: #fff; }
+.cargo-btn.cargo-5 { background: #e67e22; color: #fff; }
+.cargo-btn.cargo-6 { background: #8e44ad; color: #fff; }
+.cargo-btn.cargo-7 { background: #16a085; color: #fff; }
+.cargo-btn.extra { background: #f3f3f3; color: #888; }
 
 
 
