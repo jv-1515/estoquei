@@ -135,7 +135,7 @@ function renderizarFornecedores(lista) {
                     <a href="#" onclick="event.preventDefault(); abrirEdicaoFornecedor('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    <button type="button" onclick="removerFornecedor('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}">
+                    <button type="button" onclick="removerFornecedor('${f.id}', '${f.nome_empresa}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}">                        
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
@@ -512,10 +512,10 @@ function fecharEditarFornecedor() {
         Swal.fire({
             icon: 'warning',
             title: 'Descartar alterações?',
-            text: 'Você fez alterações não salvas. Deseja sair mesmo assim?',
+            text: 'As alterações não serão salvas',
             showCancelButton: true,
-            confirmButtonText: 'Sim, descartar',
-            cancelButtonText: 'Não, voltar',
+            confirmButtonText: 'Descartar',
+            cancelButtonText: 'Voltar',
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
@@ -529,29 +529,65 @@ function fecharEditarFornecedor() {
     }
 }
 
-// Remover fornecedor (já existe)
-function removerFornecedor(id) {
+// Remover fornecedor
+function removerFornecedor(id, nomeFornecedor) {
     Swal.fire({
         icon: 'warning',
-        title: 'Remover fornecedor?',
-        text: 'Esta ação não pode ser desfeita!',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar'
-    }).then(result => {
-        if (result.isConfirmed) {
-            fetch(`/fornecedores/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if (res.ok) {
-                        fornecedoresOriginais = fornecedoresOriginais.filter(f => f.id != id);
-                        fornecedores = fornecedores.filter(f => f.id != id);
-                        renderizarFornecedores(fornecedores);
-                        Swal.fire('Removido!', 'Fornecedor removido com sucesso.', 'success');
-                        fecharEditarFornecedor();
-                    } else {
-                        Swal.fire('Erro', 'Não foi possível remover o fornecedor.', 'error');
-                    }
-                });
+        title: `Esta ação é irreversível!`,
+        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        input: 'text',
+        inputPlaceholder: 'EXCLUIR',
+        inputValidator: (value) => {
+            if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
+        },
+        showCloseButton: true,
+        showConfirmButton: true,
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-custom'
+        },
+        didOpen: () => {
+            const input = Swal.getInput();
+            if (input) {
+                input.style.fontSize = '12px';
+                input.style.margin = '10px 20px';
+                input.style.border = 'solid 1px #aaa';
+                input.style.borderRadius = '4px';
+                input.style.background = '#fff';
+            }
+            const btn = Swal.getConfirmButton();
+            if (btn) {
+                btn.style.maxWidth = '80px';
+            }
+        }
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: `Excluindo "${nomeFornecedor}"...`,
+                text: 'Aguarde enquanto o fornecedor é excluído',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 1500,
+                didOpen: () => {
+                    Swal.showLoading();
+                    fetch('/fornecedores/' + id, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                Swal.fire({
+                                    title: 'Erro!',
+                                    text: `Não foi possível excluir ${nomeFornecedor}. Tente novamente`,
+                                    icon: 'error',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    timer: 1500,
+                                });
+                            }
+                        });
+                }
+            });
         }
     });
 }
@@ -559,6 +595,42 @@ function removerFornecedor(id) {
 // Validações ao salvar edição
 document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
     e.preventDefault();
+
+       const fornecedorAtual = {
+        codigo: document.getElementById('edit-codigo').value.trim(),
+        categorias: document.getElementById('edit-categorias').value.trim(),
+        nome_empresa: document.getElementById('edit-nome-empresa').value.trim(),
+        cnpj: document.getElementById('edit-cnpj').value.replace(/\D/g, ''),
+        email: document.getElementById('edit-email').value.trim(),
+        nome_responsavel: document.getElementById('edit-nome-responsavel').value.trim(),
+        email_responsavel: document.getElementById('edit-email-responsavel').value.trim(),
+        telefone: document.getElementById('edit-telefone').value.replace(/\D/g, ''),
+        cep: document.getElementById('edit-cep').value.replace(/\D/g, ''),
+        inscricao_estadual: document.getElementById('edit-inscricao-estadual').value.replace(/\D/g, ''),
+        logradouro: document.getElementById('edit-logradouro').value.trim(),
+        bairro: document.getElementById('edit-bairro').value.trim(),
+        cidade: document.getElementById('edit-cidade').value.trim(),
+        estado: document.getElementById('edit-estado').value.trim(),
+        numero: document.getElementById('edit-numero').value.trim(),
+        observacoes: document.getElementById('edit-observacoes').value.trim()
+    };
+
+    // VALIDAÇÃO SEM ALTERAÇÕES
+    if (JSON.stringify(fornecedorAtual) === JSON.stringify(window.dadosOriginaisEdicaoFornecedor)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: 'Nenhuma alteração foi feita',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('editar-fornecedor-bg').style.display = 'none';
+        document.body.style.overflow = '';
+        return;
+    }
+
     if (!(await validarFornecedorEdit())) return;
 
     const fornecedor = {
@@ -585,8 +657,8 @@ document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         timerProgressBar: true
     }).then((result) => {
@@ -961,8 +1033,12 @@ function fecharCadastroFornecedor() {
         title: 'Tem certeza?',
         text: 'As informações preenchidas serão descartadas',
         showCancelButton: true,
-        confirmButtonText: 'Sim, descartar',
-        cancelButtonText: 'Não, voltar'
+        confirmButtonText: 'Descartar',
+        cancelButtonText: 'Voltar',
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('modal-cadastro-fornecedor-bg').style.display = 'none';

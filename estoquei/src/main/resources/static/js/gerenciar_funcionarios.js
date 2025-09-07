@@ -609,6 +609,7 @@ function filtrarFuncionarios() {
     if (termo) {
         filtro.nome = termo;
         filtro.codigo = termo;
+        filtro.email = termo;
     }
     if (cargos.length === 1) {
         filtro.cargo = cargos[0];
@@ -853,8 +854,12 @@ function fecharCadastroFuncionario() {
                 title: 'Tem certeza?',
                 text: 'As informações preenchidas serão descartadas',
                 showCancelButton: true,
-                confirmButtonText: 'Sim, descartar',
-                cancelButtonText: 'Não, voltar',
+                confirmButtonText: 'Descartar',
+                cancelButtonText: 'Voltar',
+                customClass: {
+                    confirmButton: 'swal2-remove-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                },
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -941,6 +946,27 @@ function cadastrarFuncionario() {
 function abrirEdicaoFuncionario(id) {
     fecharDetalhesFuncionario();
     const funcionario = funcionarios.find(f => f.id == id);
+    
+    const sliderSpan = document.querySelector('.switch');
+    if (sliderSpan) {
+        if (window.usuarioLogadoId && String(id) === String(window.usuarioLogadoId)) {
+            sliderSpan.onclick = function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ação não permitida!',
+                    text: 'Você não pode inativar a si mesmo!',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+            };
+        } else {
+            sliderSpan.onclick = null;
+        }
+    }
+    
     document.getElementById('edit-id').value = funcionario.id;
 
     document.body.style.overflow = 'hidden';
@@ -1020,13 +1046,14 @@ function fecharEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Descartar alterações?',
-            text: 'Você fez alterações não salvas. Deseja sair mesmo assim?',
+            text: 'As alterações não serão salvas',
             showCancelButton: true,
-            confirmButtonText: 'Sim, descartar',
-            cancelButtonText: 'Não, voltar',
+            confirmButtonText: 'Descartar',
+            cancelButtonText: 'Voltar',
             allowOutsideClick: false,
             customClass: {
-                confirmButton: 'swal2-cancel-custom'
+                confirmButton: 'swal2-remove-custom',
+                cancelButton: 'swal2-cancel-custom'
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -1042,6 +1069,35 @@ function fecharEdicaoFuncionario() {
 
 
 function salvarEdicaoFuncionario() {
+
+    const funcionarioAtual = {
+        codigo: document.getElementById('edit-codigo').value.trim(),
+        nome: document.getElementById('edit-nome').value.trim(),
+        cargo: document.getElementById('edit-cargo').value,
+        email: document.getElementById('edit-email').value.trim(),
+        senha: document.getElementById('edit-senha').value,
+        cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
+        dataNascimento: document.getElementById('edit-nascimento').value,
+        telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
+        ativo: document.getElementById('edit-ativo').checked
+    };
+
+    // VALIDAÇÃO SEM ALTERAÇÕES
+    if (JSON.stringify(funcionarioAtual) === JSON.stringify(window.dadosOriginaisEdicaoFuncionario)) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sem alterações',
+            text: 'Nenhuma alteração foi feita',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        });
+        document.getElementById('editar-funcionario').style.display = 'none';
+        document.body.style.overflow = '';
+        return;
+    }
+
     const id = document.getElementById('edit-id').value;
     const codigo = document.getElementById('edit-codigo').value.trim();
     const nome = document.getElementById('edit-nome').value.trim();
@@ -1310,8 +1366,8 @@ function salvarEdicaoFuncionario() {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {

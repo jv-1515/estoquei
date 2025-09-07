@@ -27,3 +27,15 @@ if (typeof window.erro !== "undefined" && window.erro) {
     if (emailInput) emailInput.style.border = '2px solid #f27474';
     if (senhaInput) senhaInput.style.border = '2px solid #f27474';
 }
+
+if (window.mensagemErro && window.mensagemErro.trim()) {
+    Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Acesso negado!',
+        text: "Você não tem permissão para acessar",
+        timer: 1500,
+        timerProgressBar: true,
+        showConfirmButton: false
+    });
+}

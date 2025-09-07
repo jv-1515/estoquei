@@ -1216,8 +1216,8 @@ function salvarEdicaoMovimentacao() {
         text: 'As alterações não poderão ser desfeitas',
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: 'Sim, salvar',
-        cancelButtonText: 'Não, voltar',
+        confirmButtonText: 'Salvar',
+        cancelButtonText: 'Voltar',
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {

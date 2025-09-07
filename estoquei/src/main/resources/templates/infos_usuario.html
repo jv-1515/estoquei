@@ -12,14 +12,14 @@
 
 </head>
 <body>
-    <a href="javascript:history.back()" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <a href="javascript:history.back()" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="1" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
             <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
         </button>
     </a>
 
     <div style="display: flex; gap: 12px; position:fixed; top:20px; right:20px; z-index:1000; align-items:center;">
-        <div id="nots" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+        <div id="nots" title="Baixo estoque" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
                 <span style="display: inline-block; position: relative;">
                     <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
@@ -27,7 +27,7 @@
                 <span class="badge"></span>
             </div>
         </div>
-        <div style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
+        <div title="Sair" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
             <i onclick="confirmarSaida(event)" class="fa-solid fa-arrow-right-from-bracket" style="cursor:pointer;font-size:18px;"></i>
         </div>
     </div>
