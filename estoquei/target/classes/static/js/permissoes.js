@@ -172,27 +172,6 @@ function salvarPermissoes() {
     localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
 }
 
-// function abrirCriarCargo(id) {
-//   Swal.fire({
-//     title: '<h2>Criar cargo</h2>',
-//     input: 'text',
-//     inputPlaceholder: 'Digite o título do cargo',
-//     showCancelButton: true,
-//     confirmButtonText: 'Confirmar',
-//     cancelButtonText: 'Cancelar',
-//     allowOutsideClick: false,
-//     inputValidator: (value) => {
-//       if (!value || value.trim().length < 3) return 'Digite um nome válido!';
-//       const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-//       if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase())) return 'Cargo já existe!';
-//     }
-//   }).then(result => {
-//     if (result.isConfirmed) {
-//       criarCargo(id, result.value.trim());
-//     }
-//   });
-// }
-
 function criarCargo(id, nome) {
     const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
     const novoCargo = {
@@ -249,6 +228,7 @@ Swal.fire({
         // Validação de caracteres especiais
         if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
         if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+        if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
         return null;
     }
 }).then(result => {
@@ -379,6 +359,7 @@ window.abrirCriarCargo = function(id) {
             // Validação de caracteres especiais
             if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
             if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+            if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
             return null;
         }
     }).then(result => {
