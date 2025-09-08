@@ -26,9 +26,12 @@ function renderizarCargos() {
     if (cargo) {
       btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
       btn.onclick = () => { if (i !== 1) abrirEditarCargo(i); };
+      // Remove classe novo-cargo se existir
+      btn.classList.remove('novo-cargo');
     } else {
-      btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo cargo`;
+      btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
       btn.onclick = () => abrirCriarCargo(i);
+      btn.classList.add('novo-cargo');
     }
     container.appendChild(btn);
   }
@@ -69,7 +72,7 @@ function renderizarPermissoes() {
                         <h2 style="margin-bottom: 5px;">
                             ${cargo.nome}
                         <span class="actions" title="Excluir">
-                                <i class="fa-solid fa-trash" style="cursor:pointer;" onclick="removerCargo(${cargo.id})"></i>
+                                <i class="fa-solid fa-delete-left" style="cursor:pointer;" onclick="removerCargo(${cargo.id})"></i>
                             </span>
                         </h2>
                         <div class="permissoes">
@@ -167,26 +170,26 @@ function salvarPermissoes() {
     localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
 }
 
-function abrirCriarCargo(id) {
-  Swal.fire({
-    title: '<h2>Criar cargo</h2>',
-    input: 'text',
-    inputPlaceholder: 'Digite o título do cargo',
-    showCancelButton: true,
-    confirmButtonText: 'Confirmar',
-    cancelButtonText: 'Cancelar',
-    allowOutsideClick: false,
-    inputValidator: (value) => {
-      if (!value || value.trim().length < 3) return 'Digite um nome válido!';
-      const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-      if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase())) return 'Cargo já existe!';
-    }
-  }).then(result => {
-    if (result.isConfirmed) {
-      criarCargo(id, result.value.trim());
-    }
-  });
-}
+// function abrirCriarCargo(id) {
+//   Swal.fire({
+//     title: '<h2>Criar cargo</h2>',
+//     input: 'text',
+//     inputPlaceholder: 'Digite o título do cargo',
+//     showCancelButton: true,
+//     confirmButtonText: 'Confirmar',
+//     cancelButtonText: 'Cancelar',
+//     allowOutsideClick: false,
+//     inputValidator: (value) => {
+//       if (!value || value.trim().length < 3) return 'Digite um nome válido!';
+//       const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+//       if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase())) return 'Cargo já existe!';
+//     }
+//   }).then(result => {
+//     if (result.isConfirmed) {
+//       criarCargo(id, result.value.trim());
+//     }
+//   });
+// }
 
 function criarCargo(id, nome) {
     const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
@@ -206,8 +209,12 @@ function criarCargo(id, nome) {
     renderizarPermissoes();
     setTimeout(() => {
         const div = document.getElementById(`permissoes-cargo-${id}`);
-        if (div) div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+        if (div) {
+            div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            div.classList.add('highlight-cargo'); // opcional: destaque visual
+            setTimeout(() => div.classList.remove('highlight-cargo'), 1200); // remove destaque depois
+        }
+    }, 200);
 }
 
 function abrirEditarCargo(id) {
@@ -227,6 +234,7 @@ Swal.fire({
     didOpen: () => {
         const input = Swal.getInput();
         if (input) {
+            input.maxLength = 12;
             input.style.fontSize = '12px';
             input.style.margin = '0px 20px 10px 20px';
             input.style.border = 'solid 1px #aaa';
@@ -234,8 +242,14 @@ Swal.fire({
         }
     },
     inputValidator: (value) => {
-        if (!value || value.trim().length < 3) return 'Digite um nome válido!';
-        if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase() && c.id !== id)) return 'Cargo já existe!';
+        const nome = (value || '').trim();
+        if (!nome || nome.length < 3) return 'Digite um nome válido!';
+        const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+        if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';
+        // Validação de caracteres especiais
+        if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
+        if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+        return null;
     }
 }).then(result => {
     if (result.isConfirmed) {
@@ -261,14 +275,21 @@ function removerCargo(id) {
     //   });
     //   return;
     // }
+    const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+    const cargo = cargos.find(c => c.id === id);
+    const nomeCargo = cargo ? cargo.nome : 'este cargo';
     Swal.fire({
         icon: 'warning',
-        title: 'Remover cargo?',
-        text: 'Essa ação não pode ser desfeita.',
+        title: `Remover "${nomeCargo}"?`,
+        text: 'Essa ação não pode ser desfeita',
         showCancelButton: true,
         confirmButtonText: 'Remover',
         cancelButtonText: 'Voltar',
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        customClass: {
+            confirmButton: 'swal2-remove-custom',
+            cancelButton: 'swal2-cancel-custom'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             let cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
@@ -333,8 +354,7 @@ function alterarPermissaoCargoCheckbox(id, modulo, nivel, checked) {
 // Função para criar cargo
 window.abrirCriarCargo = function(id) {
     Swal.fire({
-        title: '<h2 style="padding-top:20px; color:#277580; text-align:left;">Criar Cargo</h2>',
-        html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">Novo cargo</p>`,
+        title: '<h2 style="padding-top:20px; margin-bottom: 10px; color:#277580; text-align:left;">Criar Cargo</h2>',
         input: 'text',
         inputPlaceholder: 'Digite o título do cargo',
         showCloseButton: true,
@@ -344,6 +364,7 @@ window.abrirCriarCargo = function(id) {
         didOpen: () => {
             const input = Swal.getInput();
             if (input) {
+                input.maxLength = 12;
                 input.style.fontSize = '12px';
                 input.style.margin = '0px 20px 10px 20px';
                 input.style.border = 'solid 1px #aaa';

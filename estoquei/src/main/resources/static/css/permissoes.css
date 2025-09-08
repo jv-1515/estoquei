@@ -177,9 +177,9 @@ input, select {
     border: none;
     color: #555;
     padding: 0;
-    margin: 0 2px;
+    margin: 0 2px 2px 0;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     vertical-align: middle;
     outline: none;
     text-decoration: none;
@@ -195,17 +195,19 @@ input, select {
     overflow-x: auto;
     flex-wrap: nowrap;
     width: 100%;
+    scrollbar-width: none;
+    cursor: grab;
 }
 
 .cargo-btn {
-    border: none;
+    border: 2px solid transparent;
     border-radius: 8px;
     padding: 2px 15px;
     font-size: 14px;
     cursor: pointer;
     background: #f3f3f3;
     color: #277580;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s, border 0.2s;
     margin-top: 5px;
     display: flex;
     gap: 8px;
@@ -220,14 +222,37 @@ input, select {
     font-size: 10px;
 }
 
-.cargo-btn.cargo-1 { background: #1e94a3; color: #fff; }
-.cargo-btn.cargo-2 { background: #277580; color: #fff; }
-.cargo-btn.cargo-3 { background: #bfa100; color: #fff; }
-.cargo-btn.cargo-4 { background: #c0392b; color: #fff; }
-.cargo-btn.cargo-5 { background: #e67e22; color: #fff; }
-.cargo-btn.cargo-6 { background: #8e44ad; color: #fff; }
-.cargo-btn.cargo-7 { background: #16a085; color: #fff; }
-.cargo-btn.extra { background: #f3f3f3; color: #888; }
+.cargo-btn:hover {
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.cargo-btn.cargo-1,
+.cargo-btn.novo-cargo.cargo-1:hover { background: #1e94a3; color: #fff; border-color: #1e94a3; }
+.cargo-btn.cargo-2,
+.cargo-btn.novo-cargo.cargo-2:hover { background: #277580; color: #fff; border-color: #277580; }
+.cargo-btn.cargo-3,
+.cargo-btn.novo-cargo.cargo-3:hover { background: #bfa100; color: #fff; border-color: #bfa100; }
+.cargo-btn.cargo-4,
+.cargo-btn.novo-cargo.cargo-4:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+.cargo-btn.cargo-5,
+.cargo-btn.novo-cargo.cargo-5:hover { background: #e67e22; color: #fff; border-color: #e67e22; }
+.cargo-btn.cargo-6,
+.cargo-btn.novo-cargo.cargo-6:hover { background: #8e44ad; color: #fff; border-color: #8e44ad; }
+.cargo-btn.cargo-7,
+.cargo-btn.novo-cargo.cargo-7:hover { background: #16a085; color: #fff; border-color: #16a085; }
+
+.cargo-btn.novo-cargo {
+    background: #fff;
+    font-weight: bold;
+}
+
+.cargo-btn.novo-cargo.cargo-1 { color: #1e94a3; border-color: #1e94a3; }
+.cargo-btn.novo-cargo.cargo-2 { color: #277580; border-color: #277580; }
+.cargo-btn.novo-cargo.cargo-3 { color: #bfa100; border-color: #bfa100; }
+.cargo-btn.novo-cargo.cargo-4 { color: #c0392b; border-color: #c0392b; }
+.cargo-btn.novo-cargo.cargo-5 { color: #e67e22; border-color: #e67e22; }
+.cargo-btn.novo-cargo.cargo-6 { color: #8e44ad; border-color: #8e44ad; }
+.cargo-btn.novo-cargo.cargo-7 { color: #16a085; border-color: #16a085; }
 
 .permissoes-table {
     display: flex;
