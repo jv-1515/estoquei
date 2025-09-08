@@ -548,6 +548,21 @@ document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input,
   function verificarDuplicidade() {
     const nomeAtual = input.value.trim().toLowerCase();
     if (!nomeAtual) return;
+        if (/\d/.test(nomeAtual)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Nome inválido!',
+            text: 'O nome da categoria não pode conter números!',
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            showConfirmButton: false
+        });
+        input.value = '';
+        categoriasModal[idx].nome = '';
+        input.focus();
+        return;
+    }
     const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
     if (nomes.includes(nomeAtual)) {
       Swal.fire({
@@ -555,6 +570,8 @@ document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input,
         title: 'Categoria já criada!',
         text: 'Escolha outro nome',
         timer: 1500,
+        timerProgressBar: true,
+        allowOutsideClick: false,
         showConfirmButton: false
       });
       input.value = '';
@@ -607,6 +624,8 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
       title: 'Sem alterações',
       text: 'Nenhuma alteração foi feita',
       timer: 1500,
+      timerProgressBar: true,
+      allowOutsideClick: false,
       showConfirmButton: false
     });
     document.getElementById('modal-categorias-bg').style.display = 'none';
