@@ -6,6 +6,8 @@
     <title>Gerenciar Permissões</title>
     <link rel="stylesheet" href="/css/permissoes.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/permissoes.js" defer></script>
 </head>
 <body>
     <a th:href="@{/gerenciar-funcionarios}" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -24,37 +26,16 @@
         <h2>Cargos</h2>
         <div class="filters-row">
             <div style="flex: 1; overflow: hidden; position: relative;">
-                <div class="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
-                    <button class="cargo-btn cargo-1">
-                        Gerente <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="cargo-btn cargo-2">
-                        Vendedor <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="cargo-btn cargo-3">
-                        Caixa <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="cargo-btn cargo-4">
-                        Estoquista <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <!-- <button class="cargo-btn cargo-5">
-                        Supervisor <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="cargo-btn cargo-6">
-                        Assistente <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="cargo-btn cargo-7">
-                        Auxiliar <i class="fa-solid fa-pen"></i>
-                    </button> -->
+                <div class="cargo-list" id="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
                 </div>
             </div>
-            <button class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
+            <button id="btn-novo-cargo" class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
                 <i class="fa-solid fa-plus"></i> Novo Cargo
             </button>
         </div>
     </div>
 
-    <div class="main-container">
+    <div class="main-container" id="permissoes-cargo-gerente">
         <div style="display:flex; justify-content:space-between; align-items:flex-end;">
             <div>
                 <h2 style="margin-bottom: 5px;">Gerente</h2>
@@ -62,8 +43,8 @@
                     <p style="margin:0;">Produtos</p>
                     <p style="margin:0;">Movimentações</p>
                     <p style="margin:0;">Relatórios</p>
-                    <p style="margin:0;">Fornecedores <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px;"></i></p>
-                    <p style="margin:0;">Funcionários <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px;"></i></p>
+                    <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 0;"></i></p>
+                    <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 5px;"></i></p>
                 </div>
             </div>
             <!-- Colunas de permissões -->
@@ -116,6 +97,6 @@
             </div>
         </div>
     </div>
-    <!-- Repita a div .main-container para cada cargo (Vendedor, Caixa, Estoquista, etc) -->
+    <div id="permissoes-list"></div>
 </body>
 </html>
