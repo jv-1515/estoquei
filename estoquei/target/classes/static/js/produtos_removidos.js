@@ -367,4 +367,20 @@ document.addEventListener('change', function(e) {
             }
         });
     }
+    // function excluirProdutosDefinitivos(ids) {
+    //     Swal.fire({
+    //         title: `Excluir ${ids.length} produto(s) selecionado(s)?`,
+    //         text: 'Esta ação é permanente',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Excluir',
+    //         cancelButtonText: 'Cancelar'
+    //     }).then(result => {
+    //         if (result.isConfirmed) {
+    //             Promise.all(ids.map(id =>
+    //                 fetch(`/produtos/excluir/${id}`, { method: 'DELETE' })
+    //             )).then(() => location.reload());
+    //         }
+    //     });
+    // }
 });
