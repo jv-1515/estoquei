@@ -227,6 +227,17 @@ public class Router {
 
     @GetMapping("/gerar-relatorio")
     public String gerarRelatorioPage() {
-        return "gerar_relatorio"; // nome do arquivo HTML sem extensão
+        return "gerar_relatorio";
+    }
+
+    @GetMapping("/permissoes")
+    public String permissoes(HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("isActive");
+        if (usuario == null) return "redirect:/";
+        if (usuario.getTipo().name().equals("ADMIN") || usuario.getTipo().name().equals("GERENTE")) {
+            model.addAttribute("usuarioLogado", usuario);
+            return "permissoes";
+        }
+        return "redirect:/inicio";
     }
 }

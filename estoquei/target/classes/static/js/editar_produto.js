@@ -555,8 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cancelButtonText: 'Voltar',
                     allowOutsideClick: false,
                     customClass: {
-                        confirmButton: 'swal2-remove-custom',
-                        cancelButton: 'swal2-cancel-custom'
+                        confirmButton: 'swal2-deny'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {

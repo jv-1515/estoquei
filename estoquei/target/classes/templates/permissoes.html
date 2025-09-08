@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerenciar Permissões</title>
+    <link rel="stylesheet" href="/css/permissoes.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/permissoes.js" defer></script>
+</head>
+<body>
+    <a th:href="@{/gerenciar-funcionarios}" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    <a href="/inicio" title="Início" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+        <button tabindex="13" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-house" style="font-size: 16px;"></i>
+        </button>
+    </a>
+
+    <h1>Gerenciar Permissões</h1>
+    <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
+        <h2>Cargos</h2>
+        <div class="filters-row">
+            <div style="flex: 1; overflow: hidden; position: relative;">
+                <div class="cargo-list" id="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
+                </div>
+            </div>
+            <button id="btn-novo-cargo" class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
+                <i class="fa-solid fa-plus"></i> Novo Cargo
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container" id="permissoes-cargo-gerente">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+                <h2 style="margin-bottom: 5px;">Gerente</h2>
+                <div class="permissoes">
+                    <p style="margin:0;">Produtos</p>
+                    <p style="margin:0;">Movimentações</p>
+                    <p style="margin:0;">Relatórios</p>
+                    <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 0;"></i></p>
+                    <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 5px;"></i></p>
+                </div>
+            </div>
+            <!-- Colunas de permissões -->
+            <div style="display:flex; gap:10px;">
+                <!-- Visualizar -->
+                <div class="permissoes-col visualizar">
+                    <span>Visualizar</span>
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                </div>
+                <!-- Criar -->
+                <div class="permissoes-col criar">
+                    <span>Criar</span>
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                </div>
+                <!-- Editar -->
+                <div class="permissoes-col editar">
+                    <span>Editar</span>
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                </div>
+                <!-- Excluir -->
+                <div class="permissoes-col excluir">
+                    <span>Excluir</span>
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                    <input type="checkbox" class="perm-check" />
+                </div>
+                <!-- Marcar linha toda -->
+                <div class="permissoes-col tudo">
+                    <span></span>
+                    <input type="checkbox" class="perm-check-all" />
+                    <input type="checkbox" class="perm-check-all" />
+                    <input type="checkbox" class="perm-check-all" />
+                    <input type="checkbox" class="perm-check-all" />
+                    <input type="checkbox" class="perm-check-all" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="permissoes-list"></div>
+</body>
+</html>

@@ -68,6 +68,45 @@
             </button>
         </div>
     </div>
+
+    <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
+        <h2>Cargos</h2>
+        <div class="filters-row">
+            <div style="flex: 1; overflow: hidden; position: relative;">
+                <div class="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
+                    <button class="cargo-btn cargo-1">
+                      Gerente <span id="cargo-1">0</span>
+                    </button>
+                    <button class="cargo-btn cargo-2">
+                      Vendedor <span id="cargo-2">0</span>
+                    </button>
+                    <button class="cargo-btn cargo-3">
+                      Caixa <span id="cargo-3">0</span>
+                    </button>
+                    <button class="cargo-btn cargo-4">
+                      Estoquista <span id="cargo-4">0</span>
+                    </button>
+                    <!--
+                    <button class="cargo-btn cargo-5">
+                      Supervisor <span id="cargo-5">0</span>
+                    </button>
+                    <button class="cargo-btn cargo-6">
+                      Assistente <span id="cargo-6">0</span>
+                    </button>
+                    <button class="cargo-btn cargo-7">
+                      Auxiliar <span id="cargo-7">0</span>
+                    </button>
+                    -->
+                </div>
+            </div>
+            <button class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
+                <a href="/permissoes" style="text-decoration: none; color: inherit;">
+                  <i class="fa-solid fa-address-card"></i> Permissões
+                </a>
+            </button>
+        </div>
+    </div>
+
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 20px;">
         <div id="registros-pagina" style="display: flex; align-items: center; gap: 5px;">
             <label for="registros-select">Mostrando</label>

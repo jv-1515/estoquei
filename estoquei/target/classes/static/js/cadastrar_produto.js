@@ -717,6 +717,20 @@ function preencherCamposCategorias() {
   aplicarEstiloInputs();
 }
 
+const coresCategorias = [
+    "30,148,163",   // #1e94a3
+    "39,117,128",   // #277580
+    "191,161,0",    // #bfa100
+    "192,57,43",    // #c0392b
+    "230,103,34",   // #e67e22
+    "142,68,173",   // #8e44ad
+    "22,160,133",   // #16a085
+    "63,106,179",   // #3f6ab3
+    "59,69,138",    // #3b458a
+    "190,148,84",   // #be9454
+    "242,109,141",  // #f26d8d
+    "255,152,86",   // #ff9856
+];
 
 function aplicarEstiloInputs() {
     for (let i = 1; i <= 12; i++) {
@@ -731,7 +745,21 @@ function aplicarEstiloInputs() {
             const algumTamanho = Array.from(tamanhoChecks).some(cb => cb.checked);
             const algumGenero = Array.from(generoChecks).some(cb => cb.checked);
             const linhaValida = nomeValido && algumTamanho && algumGenero;
-            [nomeInput, tamanhoInput, generoInput].forEach(input => {
+
+            // Input de nome da categoria: cor personalizada
+            if (nomeInput) {
+                const corRgb = coresCategorias[i - 1] || "204,204,204";
+                const bgColor = linhaValida ? `rgb(${corRgb})` : `rgba(${corRgb},0.5)`;
+                const borderColor = linhaValida ? `rgb(${corRgb})` : `rgba(${corRgb},0.5)`;
+                nomeInput.style.backgroundColor = bgColor;
+                nomeInput.style.border = `1px solid ${borderColor}`;
+                nomeInput.style.color = linhaValida ? "#fff" : "#000";
+                nomeInput.style.opacity = "1";
+                nomeInput.placeholder = "Criar categoria";
+            }
+
+            // Inputs de tamanho/gênero: cinza quando válidos, branco quando inválidos
+            [tamanhoInput, generoInput].forEach(input => {
                 if (input) input.style.backgroundColor = linhaValida ? '#f1f1f1' : 'white';
             });
         }
