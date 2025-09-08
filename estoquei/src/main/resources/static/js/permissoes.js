@@ -277,6 +277,14 @@ function removerCargo(id) {
             localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
             renderizarCargos();
             renderizarPermissoes();
+            Swal.fire({
+                icon: 'success',
+                title: 'Cargo removido!',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
         }
     });
 }
