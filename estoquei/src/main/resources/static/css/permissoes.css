@@ -265,6 +265,10 @@ input:focus[readonly] {
 
 .cargo-list {
     display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
 .cargo-btn {
@@ -278,11 +282,12 @@ input:focus[readonly] {
     transition: background 0.2s;
     margin-top: 5px;
     display: flex;
-    gap: 5px;
+    gap: 8px;
     align-items: center;
     height: 30px;
-    min-width: 120px;
-    max-width: 150px;
+    width: auto;
+    max-width: 220px;
+    white-space: nowrap;
 }
 
 .cargo-btn i {
@@ -348,8 +353,8 @@ input:focus[readonly] {
 
 .permissoes-col.visualizar input { accent-color: #4c9f52; }
 .permissoes-col.criar input { accent-color: #bc8620; }
-.permissoes-col.editar input { accent-color: #c05e08; }
-.permissoes-col.excluir input { accent-color: #be1a09; }
+.permissoes-col.editar input { accent-color: #dc7820; }
+.permissoes-col.excluir input { accent-color: #c0392b; }
 .permissoes-col.tudo input { accent-color: #1e94a3; border-radius: 50%; }
 .fa-circle-info { margin-left: 4px; color: #888; font-size: 12px; }
 
