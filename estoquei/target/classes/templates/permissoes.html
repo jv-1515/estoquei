@@ -26,12 +26,8 @@
         <h2>Cargos</h2>
         <div class="filters-row">
             <div style="flex: 1; overflow: hidden; position: relative;">
-                <div class="cargo-list" id="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
-                </div>
+                <div class="cargo-list" id="cargo-list"></div>
             </div>
-            <button id="btn-novo-cargo" class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
-                <i class="fa-solid fa-plus"></i> Novo Cargo
-            </button>
         </div>
     </div>
 
@@ -43,13 +39,12 @@
                     <p style="margin:0;">Produtos</p>
                     <p style="margin:0;">Movimentações</p>
                     <p style="margin:0;">Relatórios</p>
-                    <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 0;"></i></p>
-                    <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 5px;"></i></p>
+                    <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 0;"></i></p>
+                    <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 5px;"></i></p>
                 </div>
             </div>
             <!-- Colunas de permissões -->
             <div style="display:flex; gap:10px;">
-                <!-- Visualizar -->
                 <div class="permissoes-col visualizar">
                     <span>Visualizar</span>
                     <input type="checkbox" class="perm-check" />
@@ -58,7 +53,6 @@
                     <input type="checkbox" class="perm-check" />
                     <input type="checkbox" class="perm-check" />
                 </div>
-                <!-- Criar -->
                 <div class="permissoes-col criar">
                     <span>Criar</span>
                     <input type="checkbox" class="perm-check" />
@@ -67,7 +61,6 @@
                     <input type="checkbox" class="perm-check" />
                     <input type="checkbox" class="perm-check" />
                 </div>
-                <!-- Editar -->
                 <div class="permissoes-col editar">
                     <span>Editar</span>
                     <input type="checkbox" class="perm-check" />
@@ -76,7 +69,6 @@
                     <input type="checkbox" class="perm-check" />
                     <input type="checkbox" class="perm-check" />
                 </div>
-                <!-- Excluir -->
                 <div class="permissoes-col excluir">
                     <span>Excluir</span>
                     <input type="checkbox" class="perm-check" />
@@ -85,7 +77,6 @@
                     <input type="checkbox" class="perm-check" />
                     <input type="checkbox" class="perm-check" />
                 </div>
-                <!-- Marcar linha toda -->
                 <div class="permissoes-col tudo">
                     <span></span>
                     <input type="checkbox" class="perm-check-all" />
