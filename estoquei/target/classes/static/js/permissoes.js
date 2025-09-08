@@ -26,11 +26,13 @@ function renderizarCargos() {
     if (cargo) {
       btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
       btn.onclick = () => { if (i !== 1) abrirEditarCargo(i); };
-      // Remove classe novo-cargo se existir
       btn.classList.remove('novo-cargo');
     } else {
       btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
-      btn.onclick = () => abrirCriarCargo(i);
+      btn.onclick = () => {
+        const menorId = proximoIdCargo();
+        if (menorId) abrirCriarCargo(menorId);
+      };
       btn.classList.add('novo-cargo');
     }
     container.appendChild(btn);
@@ -79,8 +81,8 @@ function renderizarPermissoes() {
                             <p style="margin:0;">Produtos</p>
                             <p style="margin:0;">Movimentações</p>
                             <p style="margin:0;">Relatórios</p>
-                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 0;"></i></p>
-                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 5px;"></i></p>
+                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="left: 0;"></i></p>
+                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível"></i></p>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -170,27 +172,6 @@ function salvarPermissoes() {
     localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
 }
 
-// function abrirCriarCargo(id) {
-//   Swal.fire({
-//     title: '<h2>Criar cargo</h2>',
-//     input: 'text',
-//     inputPlaceholder: 'Digite o título do cargo',
-//     showCancelButton: true,
-//     confirmButtonText: 'Confirmar',
-//     cancelButtonText: 'Cancelar',
-//     allowOutsideClick: false,
-//     inputValidator: (value) => {
-//       if (!value || value.trim().length < 3) return 'Digite um nome válido!';
-//       const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-//       if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase())) return 'Cargo já existe!';
-//     }
-//   }).then(result => {
-//     if (result.isConfirmed) {
-//       criarCargo(id, result.value.trim());
-//     }
-//   });
-// }
-
 function criarCargo(id, nome) {
     const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
     const novoCargo = {
@@ -211,8 +192,6 @@ function criarCargo(id, nome) {
         const div = document.getElementById(`permissoes-cargo-${id}`);
         if (div) {
             div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            div.classList.add('highlight-cargo'); // opcional: destaque visual
-            setTimeout(() => div.classList.remove('highlight-cargo'), 1200); // remove destaque depois
         }
     }, 200);
 }
@@ -249,6 +228,7 @@ Swal.fire({
         // Validação de caracteres especiais
         if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
         if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+        if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
         return null;
     }
 }).then(result => {
@@ -379,6 +359,7 @@ window.abrirCriarCargo = function(id) {
             // Validação de caracteres especiais
             if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
             if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+            if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
             return null;
         }
     }).then(result => {
