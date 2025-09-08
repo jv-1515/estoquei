@@ -26,11 +26,13 @@ function renderizarCargos() {
     if (cargo) {
       btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
       btn.onclick = () => { if (i !== 1) abrirEditarCargo(i); };
-      // Remove classe novo-cargo se existir
       btn.classList.remove('novo-cargo');
     } else {
       btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
-      btn.onclick = () => abrirCriarCargo(i);
+      btn.onclick = () => {
+        const menorId = proximoIdCargo();
+        if (menorId) abrirCriarCargo(menorId);
+      };
       btn.classList.add('novo-cargo');
     }
     container.appendChild(btn);
@@ -79,8 +81,8 @@ function renderizarPermissoes() {
                             <p style="margin:0;">Produtos</p>
                             <p style="margin:0;">Movimentações</p>
                             <p style="margin:0;">Relatórios</p>
-                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 0;"></i></p>
-                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 5px;"></i></p>
+                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="left: 0;"></i></p>
+                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível"></i></p>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -211,8 +213,6 @@ function criarCargo(id, nome) {
         const div = document.getElementById(`permissoes-cargo-${id}`);
         if (div) {
             div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            div.classList.add('highlight-cargo'); // opcional: destaque visual
-            setTimeout(() => div.classList.remove('highlight-cargo'), 1200); // remove destaque depois
         }
     }, 200);
 }
