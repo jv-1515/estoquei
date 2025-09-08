@@ -167,33 +167,47 @@ function criarCargo(id, nome) {
     localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
     renderizarCargos();
     renderizarPermissoes();
+    setTimeout(() => {
+        const div = document.getElementById(`permissoes-cargo-${id}`);
+        if (div) div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
 }
 
 function abrirEditarCargo(id) {
   const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
   const cargo = cargos.find(c => c.id === id);
   if (!cargo) return;
-  Swal.fire({
-    title: '<h2>Renomear cargo</h2>',
+Swal.fire({
+    title: `<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear cargo</h2>`,
+    html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">${cargo.nome}</p>`,
     input: 'text',
-    inputValue: cargo.nome,
+    inputValue: '',
     inputPlaceholder: 'Digite o título do cargo',
     showCancelButton: true,
     confirmButtonText: 'Confirmar',
     cancelButtonText: 'Cancelar',
     allowOutsideClick: false,
+    didOpen: () => {
+        const input = Swal.getInput();
+        if (input) {
+            input.style.fontSize = '12px';
+            input.style.margin = '0px 20px 10px 20px';
+            input.style.border = 'solid 1px #aaa';
+            input.style.borderRadius = '4px';
+        }
+    },
     inputValidator: (value) => {
-      if (!value || value.trim().length < 3) return 'Digite um nome válido!';
-      if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase() && c.id !== id)) return 'Cargo já existe!';
+        if (!value || value.trim().length < 3) return 'Digite um nome válido!';
+        if (cargos.some(c => c.nome.toLowerCase() === value.trim().toLowerCase() && c.id !== id)) return 'Cargo já existe!';
     }
-  }).then(result => {
+}).then(result => {
     if (result.isConfirmed) {
       cargo.nome = result.value.trim();
       localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
       renderizarCargos();
       renderizarPermissoes();
     }
-  });
+});
 }
 
 function removerCargo(id) {
