@@ -693,7 +693,7 @@ function adicionarListenersRemoverCategorias() {
       Swal.fire({
         icon: 'warning',
         title: 'Remover categoria?',
-        text: 'Essa ação não pode ser desfeita.',
+        text: 'Essa ação não pode ser desfeita',
         showCancelButton: true,
         confirmButtonText: 'Remover',
         cancelButtonText: 'Voltar',
@@ -757,6 +757,7 @@ function aplicarEstiloInputs() {
         const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${i} .genero-multi-check`);
         const tamanhoInput = document.getElementById('tamanho_input_' + i);
         const generoInput = document.getElementById('genero_input_' + i);
+        const btnRemover = document.querySelector(`.remover[data-idx="${i}"]`);
 
         function atualizarCorLinha() {
             const nomeValido = nomeInput && nomeInput.value.trim() !== '';
@@ -780,6 +781,10 @@ function aplicarEstiloInputs() {
             [tamanhoInput, generoInput].forEach(input => {
                 if (input) input.style.backgroundColor = linhaValida ? '#f1f1f1' : 'white';
             });
+
+            if (btnRemover) {
+                btnRemover.disabled = !linhaValida;
+            }
         }
 
         atualizarCorLinha();
