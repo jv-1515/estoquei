@@ -60,7 +60,7 @@ h2 {
     background: #f3f3f3;
     border-radius: 6px;
 }
-.fa-trash:hover {
+.fa-delete-left:hover {
     color: red;
 }
 
@@ -309,7 +309,14 @@ input, select {
 .permissoes-col.editar input { accent-color: #dc7820; }
 .permissoes-col.excluir input { accent-color: #c0392b; }
 .permissoes-col.tudo input { accent-color: #1e94a3; border-radius: 50%; }
-.fa-circle-info { margin-left: 4px; color: #888; font-size: 12px; }
+
+.fa-circle-info { 
+    color: #333;
+    font-size: 12px;
+    position: relative;
+    left: 5px;
+    margin-left: 4px;
+}
 
 
 
