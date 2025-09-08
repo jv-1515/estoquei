@@ -659,7 +659,6 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
   });
 });
 
-
 // Adiciona listeners aos botões remover
 function adicionarListenersRemoverCategorias() {
   document.querySelectorAll('.remover').forEach((btn, idx) => {
