@@ -60,75 +60,112 @@ function renderizarPermissoes() {
         .filter(cargo => cargo.id !== 1)
         .sort((a, b) => a.id - b.id)
         .forEach(cargo => {
-        const div = document.createElement('div');
-        div.className = 'main-container';
-        div.id = `permissoes-cargo-${cargo.id === 1 ? 'gerente' : cargo.id}`;
-        div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                <div>
-                    <h2 style="margin-bottom: 5px;">
-                        ${cargo.nome}
+            const div = document.createElement('div');
+            div.className = 'main-container';
+            div.id = `permissoes-cargo-${cargo.id === 1 ? 'gerente' : cargo.id}`;
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div>
+                        <h2 style="margin-bottom: 5px;">
+                            ${cargo.nome}
                         <span class="actions" title="Excluir">
-                            <i class="fa-solid fa-trash" style="cursor:pointer;" onclick="removerCargo(${cargo.id})"></i>
-                        </span>
-                    </h2>                    
-                    <div class="permissoes">
-                        <p style="margin:0;">Produtos</p>
-                        <p style="margin:0;">Movimentações</p>
-                        <p style="margin:0;">Relatórios</p>
-                        <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 0;"></i></p>
-                        <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" style="color:#888; font-size:12px; position: relative; left: 5px;"></i></p>
+                                <i class="fa-solid fa-trash" style="cursor:pointer;" onclick="removerCargo(${cargo.id})"></i>
+                            </span>
+                        </h2>
+                        <div class="permissoes">
+                            <p style="margin:0;">Produtos</p>
+                            <p style="margin:0;">Movimentações</p>
+                            <p style="margin:0;">Relatórios</p>
+                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 0;"></i></p>
+                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível" style="color:#333; font-size:12px; position: relative; left: 5px;"></i></p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        ${['visualizar','criar','editar','excluir','tudo'].map((tipo, idx) => `
+                            <div class="permissoes-col ${tipo}">
+                                ${tipo !== 'tudo' ? `<span>${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</span>` : ''}
+                                ${MODULOS.map((mod, mIdx) => {
+                                    if (tipo === 'tudo') {
+                                        return `<input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''}/>`;
+                                    } else {
+                                        return `<input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="${idx+1}" data-cargo="${cargo.id}" ${cargo[mod] >= idx+1 ? 'checked' : ''}/>`;
+                                    }
+                                }).join('')}
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <!-- Visualizar -->
-                    <div class="permissoes-col visualizar">
-                        <span>Visualizar</span>
-                        ${MODULOS.map(mod => `<input type="checkbox" class="perm-check" ${cargo[mod] >= 1 ? 'checked' : ''} />`).join('')}
-                    </div>
-                    <!-- Criar -->
-                    <div class="permissoes-col criar">
-                        <span>Criar</span>
-                        ${MODULOS.map(mod => `<input type="checkbox" class="perm-check" ${cargo[mod] >= 2 ? 'checked' : ''} />`).join('')}
-                    </div>
-                    <!-- Editar -->
-                    <div class="permissoes-col editar">
-                        <span>Editar</span>
-                        ${MODULOS.map(mod => `<input type="checkbox" class="perm-check" ${cargo[mod] >= 3 ? 'checked' : ''} />`).join('')}
-                    </div>
-                    <!-- Excluir -->
-                    <div class="permissoes-col excluir">
-                        <span>Excluir</span>
-                        ${MODULOS.map(mod => `<input type="checkbox" class="perm-check" ${cargo[mod] >= 4 ? 'checked' : ''} />`).join('')}
-                    </div>
-                    <div class="permissoes-col tudo">
-                        <span></span>
-                        ${MODULOS.map(() => `<input type="checkbox" class="perm-check-all" />`).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    });
+            `;
+            container.appendChild(div);
 
-    div.querySelectorAll('.perm-check').forEach(cb => {
-        cb.addEventListener('change', function() {
-            const modulo = cb.getAttribute('data-modulo');
-            const nivel = parseInt(cb.getAttribute('data-nivel'));
-            alterarPermissaoCargoCheckbox(cargo.id, modulo, nivel, cb.checked);
+            // Listeners progressivos
+            MODULOS.forEach(mod => {
+                // Colunas Visualizar, Criar, Editar, Excluir
+                [1,2,3,4].forEach(nivel => {
+                    const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${nivel}"]`);
+                    if (cb) {
+                        cb.addEventListener('change', function() {
+                            const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                            if (cb.checked) {
+                                // Marca todos anteriores
+                                for (let i = 0; i < nivel; i++) checks[i].checked = true;
+                                cargo[mod] = nivel;
+                            } else {
+                                // Desmarca todos posteriores
+                                for (let i = nivel-1; i < 4; i++) checks[i].checked = false;
+                                // Define novo nível
+                                let novoNivel = 0;
+                                for (let i = 0; i < 4; i++) if (checks[i].checked) novoNivel = i+1;
+                                cargo[mod] = novoNivel;
+                            }
+                            // Atualiza "tudo"
+                            const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                            tudoCb.checked = cargo[mod] === 4;
+                            salvarPermissoes();
+                        });
+                    }
+                });
+                // Coluna "Tudo" (linha toda)
+                const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                if (tudoCb) {
+                    tudoCb.addEventListener('change', function() {
+                        const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                        if (tudoCb.checked) {
+                            checks.forEach(cb => cb.checked = true);
+                            cargo[mod] = 4;
+                        } else {
+                            checks.forEach(cb => cb.checked = false);
+                            cargo[mod] = 0;
+                        }
+                        salvarPermissoes();
+                    });
+                }
+            });
         });
-    });
-    
-    document.querySelectorAll('.btn-remove-cargo').forEach(btn => {
-        btn.onclick = function() {
-            const id = parseInt(btn.dataset.id);
-            removerCargo(id);
-        };
-    });
 }
-
 document.addEventListener('DOMContentLoaded', renderizarPermissoes);
 
+function salvarPermissoes() {
+    const cargos = [];
+    document.querySelectorAll('#permissoes-list .main-container').forEach(div => {
+        const id = parseInt(div.id.replace('permissoes-cargo-',''));
+        const nome = div.querySelector('h2').childNodes[0].textContent.trim();
+        const cargo = { id, nome };
+        MODULOS.forEach(mod => {
+            let nivel = 0;
+            [1,2,3,4].forEach(n => {
+                const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
+                if (cb && cb.checked) nivel = n;
+            });
+            cargo[mod] = nivel;
+        });
+        cargos.push(cargo);
+    });
+    // Mantém gerente
+    const gerente = JSON.parse(localStorage.getItem('cargosPermissoes')).find(c => c.id === 1);
+    if (gerente) cargos.unshift(gerente);
+    localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
+}
 
 function abrirCriarCargo(id) {
   Swal.fire({
@@ -178,7 +215,7 @@ function abrirEditarCargo(id) {
   const cargo = cargos.find(c => c.id === id);
   if (!cargo) return;
 Swal.fire({
-    title: `<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear cargo</h2>`,
+    title: `<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear Cargo</h2>`,
     html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">${cargo.nome}</p>`,
     input: 'text',
     inputValue: '',
