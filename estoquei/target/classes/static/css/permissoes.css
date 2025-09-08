@@ -158,85 +158,11 @@ input, select {
     margin: 0;
 }
 
-input[type=radio] {
-    margin: 0;
-    accent-color: #1e94a3;
-}
-.tipo-movimentacao {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 15px;
-    padding: 0 5px 0 0;
-}
-
-#select-produtos {
-    padding-left: 3px;
-    padding-right: 1px;
-}
-
-#select-produtos option[disabled][hidden] {
-    display: none;
-}
-
 .filters-group {
     display: flex;
     flex-wrap: wrap;
     gap: 0 10px;
     max-width: 620px;
-}
-
-.right-column {
-display: flex;
-flex-direction: column;
-}
-
-.swal2-confirm-custom {
-    background-color: #1E94A3 !important;
-    color: #fff !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-confirm-custom:hover {
-    background-color: #277580 !important;
-}
-.swal2-cancel-custom {
-    background-color: #ccc !important;
-    color: #000 !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
-}
-.swal2-cancel-custom:hover {
-    background-color: #aaa !important;
-}
-#data-compra,
-#data-venda {
-    color: #757575;
-}
-
-#data-compra:valid,
-#data-venda:valid {
-    color: #000;
-}
-#filter-genero,
-#filter-categoria,
-#filter-tamanho {
-  color: #757575;
-}
-
-input[readonly] {
-    cursor: default !important;
-}
-
-input:focus[readonly] {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-#movimentacao-tipo-container label {
-    font-weight: normal;
-    color: black;
-    margin: 5px 0px 0 5px;
 }
 
 .fa-arrow-left:hover,
@@ -251,9 +177,9 @@ input:focus[readonly] {
     border: none;
     color: #555;
     padding: 0;
-    margin: 0 2px;
+    margin: 0 2px 2px 0;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     vertical-align: middle;
     outline: none;
     text-decoration: none;
@@ -265,38 +191,68 @@ input:focus[readonly] {
 
 .cargo-list {
     display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    width: 100%;
+    scrollbar-width: none;
+    cursor: grab;
 }
 
 .cargo-btn {
-    border: none;
+    border: 2px solid transparent;
     border-radius: 8px;
     padding: 2px 15px;
     font-size: 14px;
     cursor: pointer;
     background: #f3f3f3;
     color: #277580;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s, border 0.2s;
     margin-top: 5px;
     display: flex;
-    gap: 5px;
+    gap: 8px;
     align-items: center;
     height: 30px;
-    min-width: 120px;
-    max-width: 150px;
+    width: auto;
+    max-width: 220px;
+    white-space: nowrap;
 }
 
 .cargo-btn i {
     font-size: 10px;
 }
 
-.cargo-btn.cargo-1 { background: #1e94a3; color: #fff; }
-.cargo-btn.cargo-2 { background: #277580; color: #fff; }
-.cargo-btn.cargo-3 { background: #bfa100; color: #fff; }
-.cargo-btn.cargo-4 { background: #c0392b; color: #fff; }
-.cargo-btn.cargo-5 { background: #e67e22; color: #fff; }
-.cargo-btn.cargo-6 { background: #8e44ad; color: #fff; }
-.cargo-btn.cargo-7 { background: #16a085; color: #fff; }
-.cargo-btn.extra { background: #f3f3f3; color: #888; }
+.cargo-btn:hover {
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.cargo-btn.cargo-1,
+.cargo-btn.novo-cargo.cargo-1:hover { background: #1e94a3; color: #fff; border-color: #1e94a3; }
+.cargo-btn.cargo-2,
+.cargo-btn.novo-cargo.cargo-2:hover { background: #277580; color: #fff; border-color: #277580; }
+.cargo-btn.cargo-3,
+.cargo-btn.novo-cargo.cargo-3:hover { background: #bfa100; color: #fff; border-color: #bfa100; }
+.cargo-btn.cargo-4,
+.cargo-btn.novo-cargo.cargo-4:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+.cargo-btn.cargo-5,
+.cargo-btn.novo-cargo.cargo-5:hover { background: #e67e22; color: #fff; border-color: #e67e22; }
+.cargo-btn.cargo-6,
+.cargo-btn.novo-cargo.cargo-6:hover { background: #8e44ad; color: #fff; border-color: #8e44ad; }
+.cargo-btn.cargo-7,
+.cargo-btn.novo-cargo.cargo-7:hover { background: #16a085; color: #fff; border-color: #16a085; }
+
+.cargo-btn.novo-cargo {
+    background: #fff;
+    font-weight: bold;
+}
+
+.cargo-btn.novo-cargo.cargo-1 { color: #1e94a3; border-color: #1e94a3; }
+.cargo-btn.novo-cargo.cargo-2 { color: #277580; border-color: #277580; }
+.cargo-btn.novo-cargo.cargo-3 { color: #bfa100; border-color: #bfa100; }
+.cargo-btn.novo-cargo.cargo-4 { color: #c0392b; border-color: #c0392b; }
+.cargo-btn.novo-cargo.cargo-5 { color: #e67e22; border-color: #e67e22; }
+.cargo-btn.novo-cargo.cargo-6 { color: #8e44ad; border-color: #8e44ad; }
+.cargo-btn.novo-cargo.cargo-7 { color: #16a085; border-color: #16a085; }
 
 .permissoes-table {
     display: flex;
@@ -334,6 +290,8 @@ input:focus[readonly] {
 .permissoes-col input[type="checkbox"] {
     cursor: pointer;
     margin-bottom: 10px;
+    width: 12px;
+    height: 12px;
 }
 .permissoes-col input[type="checkbox"]:last-child {
     margin-bottom: 0;
@@ -348,8 +306,8 @@ input:focus[readonly] {
 
 .permissoes-col.visualizar input { accent-color: #4c9f52; }
 .permissoes-col.criar input { accent-color: #bc8620; }
-.permissoes-col.editar input { accent-color: #c05e08; }
-.permissoes-col.excluir input { accent-color: #be1a09; }
+.permissoes-col.editar input { accent-color: #dc7820; }
+.permissoes-col.excluir input { accent-color: #c0392b; }
 .permissoes-col.tudo input { accent-color: #1e94a3; border-radius: 50%; }
 .fa-circle-info { margin-left: 4px; color: #888; font-size: 12px; }
 
@@ -455,4 +413,12 @@ input:focus[readonly] {
 .swal2-html-container {
     padding: 10px;
     font-size: 16px;
+}
+
+.swal2-validation-message {
+    color: #f27474;
+    font-size: 12px;
+    background: white;
+    margin: 0;
+    padding-top: 0;
 }
