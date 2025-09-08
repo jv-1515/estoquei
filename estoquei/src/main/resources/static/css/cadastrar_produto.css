@@ -191,6 +191,9 @@ select#genero {
     width: 200px;
 }
 
+.categorias-row .categorias-col:first-child .categorias-input::placeholder {
+    color: #000;
+}
 .categorias-row .categorias-col:first-child .categorias-input,
 .categorias-row .categorias-col:nth-child(3) .categorias-input {
     max-width: 130px;
