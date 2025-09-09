@@ -343,7 +343,7 @@
             <button type="button" onclick="abrirEdicaoFornecedor(window.detalhesFornecedorId)" title="Editar" style="background:none; border:none; cursor:pointer;">
               <i class="fa-solid fa-pen"></i>
             </button>
-            <button type="button" onclick="removerFornecedor(window.detalhesFornecedorId)" title="Remover" style="background:none; border:none; cursor:pointer;">
+            <button type="button" onclick="removerFornecedor(window.detalhesFornecedorId, window.detalhesFornecedorNome)" title="Remover" style="background:none; border:none; cursor:pointer;">
               <i class="fa-solid fa-trash"></i>
             </button>
             <button type="button" onclick="fecharDetalhesFornecedor()" title="Fechar" style="background:none; border:none; cursor:pointer;">
@@ -413,7 +413,7 @@
             <div style="display:flex; align-items:center; justify-content:space-between;">
                 <h2 style="margin:0; color:#277580; font-size:20px;">Editar Fornecedor</h2>
                 <div class="actions">
-                    <button type="button" onclick="removerFornecedor(window.editarFornecedorId)" title="Remover" style="background:none; border:none; cursor:pointer;">
+                    <button type="button" onclick="removerFornecedor(window.editarFornecedorId, window.detalhesFornecedorNome)" title="Remover" style="background:none; border:none; cursor:pointer;">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                     <button type="button" onclick="fecharEditarFornecedor()" title="Fechar" style="background:none; border:none; cursor:pointer;">
