@@ -116,7 +116,7 @@ function renderizarFornecedores(lista) {
                         font-weight:bold;font-size:12px;
                         color: rgba(0,0,0,0.65);
                         cursor:pointer;"
-                        onclick="abrirDetalhesFornecedor('${f.id}')"
+                        onclick="abrirDetalhesFornecedor('${f.id}', '${f.nome_empresa}')"
                         title="Ver detalhes"
                     >
                         ${getIniciaisFornecedor(f.nome_empresa)}
@@ -129,7 +129,7 @@ function renderizarFornecedores(lista) {
                 <td>${f.email}</td>
                 <td>${formatarTelefoneExibicao(f.telefone) || 'Não informado'}</td>
                 <td class="actions">
-                    <a href="#" onclick="abrirDetalhesFornecedor('${f.id}')" title="Detalhes">
+                    <a href="#" onclick="abrirDetalhesFornecedor('${f.id}', '${f.nome_empresa}')" title="Detalhes">
                         <i class="fa-solid fa-eye"></i>
                     </a>
                     <a href="#" onclick="event.preventDefault(); abrirEdicaoFornecedor('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
@@ -238,8 +238,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function abrirDetalhesFornecedor(id) {
+function abrirDetalhesFornecedor(id, nomeEmpresa) {
     window.detalhesFornecedorId = id;
+    window.detalhesFornecedorNome = nomeEmpresa || '';
     const f = fornecedoresOriginais.find(x => String(x.id) === String(id));
     if (f) {
         renderDetalhesFornecedor(f);
