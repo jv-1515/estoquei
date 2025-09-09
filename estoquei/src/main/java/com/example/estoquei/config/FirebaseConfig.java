@@ -15,7 +15,6 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
-
     @Value("${firebase.config.path}")
     private Resource serviceAccountResource;
 
