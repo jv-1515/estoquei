@@ -42,7 +42,7 @@
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;overflow: hidden;">
                     <span id="avatar-nome" style="font-size:18px;font-weight:600;color:#333;white-space:nowrap; overflow: hidden; text-overflow: ellipsis;" th:text="${usuarioLogado.nome}">Nome do Usuário</span>
-                    <span id="avatar-cargo" style="font-size:14px;color:#757575;" th:text="${usuarioLogado.cargo != null ? #strings.capitalize(usuarioLogado.cargo.name().toLowerCase()) : #strings.capitalize(usuarioLogado.tipo.name().toLowerCase())}">Cargo</span>
+                    <span id="avatar-cargo" style="font-size:14px;color:#757575;" th:text="${usuarioLogado.cargo != null ? usuarioLogado.cargo.nome : 'Sem cargo'}">Cargo</span>                
                 </div>
             </div>
             
