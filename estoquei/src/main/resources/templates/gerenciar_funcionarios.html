@@ -40,11 +40,6 @@
                     <div class="overSelect" onclick="showCheckboxesCargoMulti()"></div>
                 </div>
                 <div id="checkboxes-cargo-multi" style="display:none;">
-                    <label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked /> Todos</label>
-                    <label><input type="checkbox" class="cargo-multi-check" value="GERENTE" checked /> Gerente</label>
-                    <label><input type="checkbox" class="cargo-multi-check" value="VENDEDOR" checked /> Vendedor</label>
-                    <label><input type="checkbox" class="cargo-multi-check" value="CAIXA" checked /> Caixa</label>
-                    <label><input type="checkbox" class="cargo-multi-check" value="ESTOQUISTA" checked /> Estoquista</label>
                 </div>
             </div>
             <!-- Multi-select Status -->
@@ -153,10 +148,6 @@
                   <label for="cad-cargo">Cargo*</label>
                   <select id="cad-cargo" name="cargo" required tabindex="2">
                     <option value="" selected disabled hidden>Selecionar</option>
-                    <option value="GERENTE">Gerente</option>
-                    <option value="VENDEDOR">Vendedor</option>
-                    <option value="CAIXA">Caixa</option>
-                    <option value="ESTOQUISTA">Estoquista</option>
                   </select>
                 </div>
               </div>
@@ -324,12 +315,8 @@
                             </div>
                         </div>
                     <label for="edit-cargo">Cargo*</label>
-                    <select id="edit-cargo" name="cargo" required th:disabled="${usuarioLogado.tipo.name() == 'FUNCIONARIO'}">
-                        <option value="" selected disabled hidden>Cargo</option>
-                        <option value="GERENTE">Gerente</option>
-                        <option value="VENDEDOR">Vendedor</option>
-                        <option value="CAIXA">Caixa</option>
-                        <option value="ESTOQUISTA">Estoquista</option>
+                    <select id="edit-cargo" name="cargo" required>
+                      <option value="" selected disabled hidden>Cargo</option>
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end; height: 100%;">

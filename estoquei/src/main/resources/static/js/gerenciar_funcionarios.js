@@ -27,6 +27,43 @@ function formatarNome(nome) {
 
 // Atualiza avatar ao digitar o nome no cadastro e na edição
 document.addEventListener('DOMContentLoaded', function() {
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        const container = document.getElementById('checkboxes-cargo-multi');
+        container.innerHTML = `<label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked> Todos</label>`;
+        cargos.forEach(cargo => {
+          container.innerHTML += `<label><input type="checkbox" class="cargo-multi-check" value="${cargo.id}" checked> ${cargo.nome}</label>`;
+        });
+        document.querySelectorAll('.cargo-multi-check').forEach(cb => {
+            cb.addEventListener('change', function() {
+                atualizarPlaceholderCargoMulti();
+                filtrarFuncionarios();
+            });
+        });
+        atualizarPlaceholderCargoMulti();
+    });
+    
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        const select = document.getElementById('cad-cargo');
+        select.innerHTML = '<option value="">Selecione o cargo</option>';
+        cargos.forEach(cargo => {
+          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+        });
+      });
+    
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        const select = document.getElementById('edit-cargo');
+        select.innerHTML = '<option value="">Selecione o cargo</option>';
+        cargos.forEach(cargo => {
+          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+        });
+      });
+    
     // Cadastro
     const nomeInput = document.getElementById('cad-nome');
     const avatarDiv = document.getElementById('cad-avatar');
@@ -270,6 +307,32 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarAvatarEdicao();
     }
     window.atualizarAvatarEdicao = atualizarAvatarEdicao;
+
+    // Carregar cargos do backend e preencher o select
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        const select = document.getElementById('cad-cargo');
+        select.innerHTML = '<option value="">Selecione o cargo</option>';
+        cargos.forEach(cargo => {
+          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+        });
+      });
+    function preencherSelectEdicao(funcionario) {
+        fetch('/cargos')
+          .then(res => res.json())
+          .then(cargos => {
+            const select = document.getElementById('edit-cargo');
+            select.innerHTML = '<option value="">Selecione o cargo</option>';
+            cargos.forEach(cargo => {
+              select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+            });
+            // Seleciona o cargo atual do funcionário
+            if (funcionario && funcionario.cargo && funcionario.cargo.id) {
+              select.value = funcionario.cargo.id;
+            }
+          });
+    }
 });
 
 // Renderização da tabela
@@ -326,7 +389,7 @@ function renderizarFuncionarios(lista) {
     }
 
     tbody.innerHTML = pagina
-        .filter(f => f.tipo !== "ADMIN")
+        .filter(f => f.tipo !== "Admin")
         .map(
             (f, idx) => `
             <tr tabindex="${idx + 1}">
@@ -379,8 +442,7 @@ function renderizarFuncionarios(lista) {
                     }
                 </td>
                 <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome}">${formatarNome(f.nome)}</td>
-                <td>${f.cargo.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())}
-                </td>
+                <td>${f.cargo && f.cargo.nome ? f.cargo.nome : ''}</td>
                 <td>${f.email}</td>
                 <td>
                     <span style="
@@ -455,6 +517,7 @@ function showCheckboxesCargoMulti() {
 
 function atualizarPlaceholderCargoMulti() {
     const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+    if (checks.length === 0) return;
     const todas = checks[0];
     const input = document.getElementById('filter-cargo');
     const individuais = checks.slice(1);
@@ -596,23 +659,30 @@ buscaInput.addEventListener('input', filtrarFuncionarios);
 
 function filtrarFuncionarios() {
     const termo = buscaInput.value.trim();
+
+    // Pega os ids dos cargos selecionados (checkboxes dinâmicos)
     const cargos = Array.from(document.querySelectorAll('.cargo-multi-check'))
-        .slice(1)
+        .slice(1) // Ignora o "Todos"
         .filter(cb => cb.checked && cb.value)
         .map(cb => cb.value);
+
     const status = Array.from(document.querySelectorAll('.status-multi-check'))
         .slice(1)
         .filter(cb => cb.checked && cb.value)
         .map(cb => cb.value);
 
     const filtro = {};
+    if (cargos.length === 1) {
+    filtro.cargo = { id: cargos[0] };
+    }
     if (termo) {
         filtro.nome = termo;
         filtro.codigo = termo;
         filtro.email = termo;
     }
+    // Se só um cargo está selecionado, envie o id para o backend
     if (cargos.length === 1) {
-        filtro.cargo = cargos[0];
+        filtro.cargo = { id: cargos[0] };
     }
 
     fetch('/usuarios/filtrar', {
@@ -885,11 +955,10 @@ function cadastrarFuncionario() {
     const cpf = document.getElementById('cad-cpf').value;
 
 
-    //monta o objeto e envia
     const funcionario = {
         codigo: codigo,
         nome: nome,
-        cargo: document.getElementById('cad-cargo').value,
+        cargo: { id: document.getElementById('cad-cargo').value }, // Envia como objeto
         email: email,
         senha: senha,
         cpf: document.getElementById('cad-cpf').value.replace(/\D/g, '') || null,
@@ -978,9 +1047,9 @@ function abrirEdicaoFuncionario(id) {
     })
     .then(res => res.json())
     .then(funcionario => {
+        preencherSelectEdicao(funcionario);
         document.getElementById('edit-codigo').value = funcionario.codigo;
         document.getElementById('edit-nome').value = funcionario.nome;
-        document.getElementById('edit-cargo').value = funcionario.cargo;
         document.getElementById('edit-email').value = funcionario.email;
         document.getElementById('edit-senha').value = funcionario.senha;
         document.getElementById('edit-cpf').value = funcionario.cpf;
@@ -1976,6 +2045,7 @@ document.getElementById('btn-voltar-3').onclick = function() {
 
 // Sempre começa na etapa 1 ao abrir
 function abrirCadastroFuncionario() {
+
     document.getElementById('cadastro-funcionario').style.display = 'flex';
     document.body.style.overflow = 'hidden';
         gerarSenhaProvisoria();
