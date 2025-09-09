@@ -1,0 +1,307 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #277580;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    background-image: image-set(
+        url('/images/background.png') type('image/png') 1x
+    );
+    background-size: cover;
+    background-attachment: fixed;
+    scrollbar-gutter: stable;
+}
+.login-main-container {
+    display: flex;
+    flex-direction: row;
+    width: 640px;
+    max-width: 640px;
+    min-height: 300px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.13);
+    margin: 60px auto;
+    align-items: center;
+    overflow: hidden;
+}
+.form-container {
+    flex: 1 1 0;
+    padding: 30px;
+    min-width: 300px;
+    width: 300px;
+    max-width: 300px;
+}
+
+
+.input-group {
+    position: relative;
+}
+.input-group input {
+    height: 30px;
+    width: 100%;
+    padding: 2px 8px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box;
+}
+.input-group .lock-open {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #757575;
+}
+h1 {
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    margin: 70px auto 5px auto;
+}
+label {
+    color: #333;
+    font-weight: bold;
+    margin: 5px 0;
+    display: block;
+}
+
+button {
+    background-color: #1E94A3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 12px;
+    height: 30px;
+    width: 100%;
+    margin-top: 10px;
+}
+button:hover {
+    background-color: #277580;
+}
+.register-link {
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
+.register-link a {
+    color: #1E94A3;
+    text-decoration: none;
+}
+.register-link a:hover {
+    text-decoration: underline;
+    color:#277580;
+}
+input:focus {
+    border: 2px solid black;
+}
+.swal2-container {
+    position: fixed !important;
+    z-index: 9999 !important;
+    backdrop-filter: blur(2px) !important;
+
+}
+
+.login-logo-box {
+    height: 300px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #277580;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.login-logo-img {
+    height: 325px;
+    display: block;
+    margin: 0 auto;
+}
+
+.login-logo-overlay {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.login-logo-link {
+    color: #fff;
+    text-decoration: underline;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.redes-sociais-projeto {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.redes-sociais-projeto a {
+    text-decoration: none;
+}
+
+.redes-sociais-btn {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    color: #277580;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s;
+    font-size: 18px;
+}
+
+.redes-sociais-btn{
+    background: white !important;
+}
+
+.fa-brands:hover {
+    transform: scale(1.15);
+    transition: transform 0.2s;
+}
+
+.redes-sociais-btn.instagram {
+    font-size: 20px;
+    padding-top: 2px
+}
+.redes-sociais-btn.instagram:hover {
+    color: #E1306C;
+}
+
+.redes-sociais-btn.linkedin {
+    padding-top: 4px;
+}
+.redes-sociais-btn.linkedin:hover {
+    color: #0077b5;
+}
+
+.redes-sociais-btn.facebook:hover {
+    color: #1877f3;
+}
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de confirmação/cancelar custom */
+.swal2-confirm,
+.swal2-styled.swal2-confirm,
+.swal2-cancel-custom,
+.swal2-styled.swal2-cancel-custom {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-cancel-custom:hover,
+.swal2-styled.swal2-cancel-custom:hover {
+    background-color: #277580;
+}
+
+/* Botão de deletar (vermelho padrão SweetAlert2) */
+.swal2-remove-custom,
+.swal2-styled.swal2-remove-custom {
+    background-color: #d33;
+    color: #fff;
+}
+.swal2-remove-custom:hover,
+.swal2-styled.swal2-remove-custom:hover {
+    background-color: #a52a2a;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+    font-size: 20px;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
+    font-size: 16px;
+}
