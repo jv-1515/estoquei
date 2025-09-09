@@ -8,6 +8,9 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/inicio.css"/>
+    <script th:inline="javascript">
+        window.cargoUsuario = [[${cargo}]];
+    </script>
     <script src="/js/inicio.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -20,7 +23,7 @@
             </div>
             <div style="display:flex;flex-direction:column; margin-top: 3px;">
                 <span id="avatar-nome" style="font-size:12px;font-weight:bold;color:#333;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-                <span id="avatar-tipo" style="font-size:10px;color:#757575;margin-top: 1px;" th:text="${tipo == 'FUNCIONARIO' ? 'Funcionário' : (tipo == 'ADMIN' ? 'Administrador' : tipo)}"></span>
+                <span id="avatar-tipo" style="font-size:10px;color:#757575;margin-top: 1px;" th:text="${cargo.nome}"></span>            
             </div>
         </a>
     </div>
@@ -45,8 +48,8 @@
 
     <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
         <div class="container">
-        <!-- Acesso limitado ao Gerente -->
-        <div class="card" id="card-fornecedores" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+
+        <div class="card" id="card-fornecedores">
             <a th:href="@{/gerenciar-fornecedores}">
                 <div class="icon-container"><i class="fa-regular fa-handshake"></i></div>
                 <div class="text-container">
@@ -54,7 +57,7 @@
                 </div>
             </a>
         </div>
-        <div class="card" id="card-funcionarios" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+        <div class="card" id="card-funcionarios">
             <a th:href="@{/gerenciar-funcionarios}">
                 <div class="icon-container"><i class="fa-solid fa-users"></i></div>
                 <div class="text-container">
@@ -62,7 +65,7 @@
                 </div>
             </a>
         </div>
-        <div class="card" id="card-relatorios" th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+        <div class="card" id="card-relatorios">
             <a th:href="@{/gerenciar-relatorios}">
                 <div class="icon-container"><i class="fa-solid fa-chart-line"></i></div>
                 <div class="text-container">
