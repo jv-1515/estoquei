@@ -341,3 +341,31 @@ document.querySelectorAll('.card').forEach(card => {
         }, 1200);
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Para fornecedores
+    if (!window.cargoUsuario || window.cargoUsuario.fornecedores < 1) {
+        document.getElementById('card-fornecedores').style.display = 'none';
+    }
+    // Para funcionários
+    if (!window.cargoUsuario || window.cargoUsuario.funcionarios < 1) {
+        document.getElementById('card-funcionarios').style.display = 'none';
+    }
+    // Para relatórios
+    if (!window.cargoUsuario || window.cargoUsuario.relatorios < 1) {
+        document.getElementById('card-relatorios').style.display = 'none';
+    }
+    // Para cadastrar produto
+    if (!window.cargoUsuario || window.cargoUsuario.produtos < 2) {
+        document.getElementById('card-produtos-cadastrados').style.display = 'none';
+    }
+    // Para acessar estoque
+    if (!window.cargoUsuario || window.cargoUsuario.produtos < 1) {
+        document.getElementById('card-total-produtos').style.display = 'none';
+    }
+    // Para movimentações
+    if (!window.cargoUsuario || window.cargoUsuario.movimentacoes < 1) {
+        document.getElementById('card-movimentacoes').style.display = 'none';
+    }
+});
