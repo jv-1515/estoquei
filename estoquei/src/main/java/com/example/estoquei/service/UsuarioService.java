@@ -74,4 +74,9 @@ public class UsuarioService {
     public List<Usuario> filtrar(Usuario filtro) {
         return usuarioFiltroRepository.findAndFilter(filtro);
     }
+
+    public boolean existeFuncionarioComCargo(Long cargoId) {
+        return usuarioRepository.existsByCargo_Id(cargoId);
+    }
+
 }
