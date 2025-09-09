@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.example.estoquei.model.CargoUsuario;
+import com.example.estoquei.model.Cargo;
 import com.example.estoquei.model.Usuario;
 
 import jakarta.persistence.EntityManager;
@@ -25,7 +25,7 @@ public class UsuarioFiltroRepository {
         String nome = filtro.getNome();
         String codigo = filtro.getCodigo();
         String email = filtro.getEmail();
-        CargoUsuario cargo = filtro.getCargo();
+        Cargo cargo = filtro.getCargo();
 
         whereClause.add("u.ic_excluido = false");
 

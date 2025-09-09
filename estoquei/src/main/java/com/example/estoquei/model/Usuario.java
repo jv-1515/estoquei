@@ -4,11 +4,11 @@ import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -23,9 +23,6 @@ public class Usuario {
     private String codigo;
     private String nome;
 
-    @Enumerated(EnumType.STRING)
-    private TipoUsuario tipo;
-
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -35,8 +32,9 @@ public class Usuario {
     private String telefone;
     private String cpf;
 
-    @Enumerated(EnumType.STRING)
-    private CargoUsuario cargo;
+    @ManyToOne
+    @JoinColumn(name = "cargo_id")
+    private Cargo cargo;
 
     private Date dataNascimento;
     private Date createdAt;
@@ -53,9 +51,6 @@ public class Usuario {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public TipoUsuario getTipo() { return tipo; }
-    public void setTipo(TipoUsuario tipo) { this.tipo = tipo; }
-
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
@@ -68,8 +63,8 @@ public class Usuario {
     public String getCpf() { return cpf; }
     public void setCpf(String cpf) { this.cpf = cpf; }
 
-    public CargoUsuario getCargo() { return cargo; }
-    public void setCargo(CargoUsuario cargo) { this.cargo = cargo; }
+    public Cargo getCargo() { return cargo; }
+    public void setCargo(Cargo cargo) { this.cargo = cargo; }
 
     public Date getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(Date dataNascimento) { this.dataNascimento = dataNascimento; }
