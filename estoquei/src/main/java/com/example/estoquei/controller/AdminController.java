@@ -39,7 +39,7 @@ public class AdminController {
                 return "login";
             }
             session.setAttribute("isActive", usuario);
-            System.out.println("Usuário logado: " + usuario.getNome() + " - Tipo: " + usuario.getTipo());
+            System.out.println("Usuário logado: " + usuario.getNome() + " - Cargo: " + (usuario.getCargo() != null ? usuario.getCargo().getNome() : "Nenhum"));            
             return "redirect:/inicio";
         } else {
             model.addAttribute("erro", "Email ou senha inválidos.");
