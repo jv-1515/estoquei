@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.estoquei.model.CargoUsuario;
-import com.example.estoquei.model.TipoUsuario;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.UsuarioFiltroRepository;
 import com.example.estoquei.repository.UsuarioRepository;
@@ -41,14 +39,6 @@ public class UsuarioService {
     }
 
     public Usuario salvar(Usuario usuario) {
-        // Define tipo automaticamente pelo cargo
-        if (usuario.getCargo() == CargoUsuario.GERENTE) {
-            usuario.setTipo(TipoUsuario.GERENTE);
-        } else if (usuario.getCargo() == CargoUsuario.ADMIN) {
-            usuario.setTipo(TipoUsuario.ADMIN);
-        } else {
-            usuario.setTipo(TipoUsuario.FUNCIONARIO);
-        }
         if (usuario.getTelefone() == null) {
         usuario.setTelefone("");
         }
@@ -62,13 +52,7 @@ public class UsuarioService {
         usuario.setNome(usuarioAtualizado.getNome());
         usuario.setEmail(usuarioAtualizado.getEmail());
         usuario.setCargo(usuarioAtualizado.getCargo());
-        if (usuario.getCargo() == CargoUsuario.GERENTE) {
-            usuario.setTipo(TipoUsuario.GERENTE);
-        } else if (usuario.getCargo() == CargoUsuario.ADMIN) {
-            usuario.setTipo(TipoUsuario.ADMIN);
-        } else {
-            usuario.setTipo(TipoUsuario.FUNCIONARIO);
-        }
+
         usuario.setTelefone(usuarioAtualizado.getTelefone());
         usuario.setCpf(usuarioAtualizado.getCpf());
         usuario.setDataNascimento(usuarioAtualizado.getDataNascimento());

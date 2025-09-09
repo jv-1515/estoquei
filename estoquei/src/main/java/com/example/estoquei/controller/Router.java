@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.estoquei.model.TipoUsuario;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 
@@ -36,57 +35,55 @@ public class Router {
     @GetMapping("/inicio")
     public String inicio(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         model.addAttribute("nome", usuario.getNome());
-        model.addAttribute("tipo", usuario.getTipo().name());
+        model.addAttribute("cargo", usuario.getCargo()); // Adiciona o cargo do usuário
         return "inicio";
     }
-
 
     //estoque
     @GetMapping("/estoque")
     public String estoque(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-        model.addAttribute("tipo", usuario.getTipo().name());
+        if (usuario == null) return "redirect:/";
+        model.addAttribute("cargo", usuario.getCargo());
         return "estoque";
     }
 
     @GetMapping("/baixo-estoque")
     public String baixoEstoque(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "baixo_estoque";
     }
-
 
     //produto
     @GetMapping("/cadastrar-produto")
     public String cadastro(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "cadastrar_produto";
     }
 
     @GetMapping("/editar-produto")
     public String editarProduto(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-        model.addAttribute("tipo", usuario.getTipo().name());
+        if (usuario == null) return "redirect:/";
+        model.addAttribute("cargo", usuario.getCargo());
         return "editar_produto";
     }
 
     @GetMapping("/movimentar-produto")
     public String movimentarProduto(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "movimentar_produto";
     }
 
     @GetMapping("/produtos-removidos")
     public String produtosRemovidos(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "produtos_removidos";
     }
 
@@ -94,26 +91,20 @@ public class Router {
     @GetMapping("/cadastrar-funcionario")
     public String cadastrarFuncionario(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-            
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 1) {
             return "cadastrar_funcionario";
         }
-
         return "redirect:/inicio";
     }
 
     @GetMapping("/editar-funcionario")
     public String editarFuncionario(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 2) { // Exemplo: nível 2 para editar
             return "editar_funcionario";
         }
-
         return "redirect:/inicio";
     }
 
@@ -121,9 +112,7 @@ public class Router {
     public String gerenciarFuncionarios(Model model, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
         if (usuarioLogado == null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuarioLogado.getNome() + " | Tipo: " + usuarioLogado.getTipo());
-        if (usuarioLogado.getTipo() == TipoUsuario.ADMIN || usuarioLogado.getTipo() == TipoUsuario.GERENTE) {
+        if (usuarioLogado.getCargo() != null && usuarioLogado.getCargo().getFuncionarios() >= 1) {
             model.addAttribute("usuarioLogado", usuarioLogado);
             return "gerenciar_funcionarios";
         }
@@ -134,65 +123,31 @@ public class Router {
     @GetMapping("/infos-usuario")
     public String infosUsuario(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
+        if (usuario == null) return "redirect:/";
         model.addAttribute("usuarioLogado", usuario);
-        model.addAttribute("tipo", usuario.getTipo().name());
+        model.addAttribute("cargo", usuario.getCargo());
         return "infos_usuario";
     }
 
     //fornecedor
-    // @GetMapping("/gerenciar-fornecedores")
-    // public String cadastrarFornecedor(HttpSession session) {
-    //     Usuario usuario = getUsuarioOuRedireciona(session);
-    //     if (usuario==null) return "redirect:/";
-
-    //     System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-    //     if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
-    //         return "cadastrar_fornecedor";
-    //     }
-
-    //     return "redirect:/gerenciar_fornecedores";
-    // }
-
-    // @GetMapping("/editar-fornecedor")
-    // public String editarFornecedor(HttpSession session) {
-    //     Usuario usuario = getUsuarioOuRedireciona(session);
-    //     if (usuario==null) return "redirect:/";
-
-    //     System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-    //     if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
-    //         return "editar_fornecedor";
-    //     }
-
-    //     return "redirect:/inicio";
-    // }
-
     @GetMapping("/gerenciar-fornecedores")
     public String gerenciarFornecedor(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() != null && usuario.getCargo().getFornecedores() >= 1) {
             return "gerenciar_fornecedores";
         }
-
-        return "redirect:/gerenciar_fornecedores";
+        return "redirect:/inicio";
     }
 
     //gerenciar relatorios
     @GetMapping("/gerenciar-relatorios")
     public String gerenciarRelatorios(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
-
-        System.out.println("Usuário na sessão: " + usuario.getNome() + " | Tipo: " + usuario.getTipo());
-        if (usuario.getTipo() == TipoUsuario.ADMIN || usuario.getTipo() == TipoUsuario.GERENTE) {
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() != null && usuario.getCargo().getRelatorios() >= 1) {
             return "gerenciar_relatorios";
         }
-
         return "redirect:/inicio";
     }
 
@@ -200,14 +155,14 @@ public class Router {
     @GetMapping("/andamento")
     public String andamento(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "andamento";
     }
 
     @GetMapping("/movimentacoes")
     public String movimentacoes(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario==null) return "redirect:/";
+        if (usuario == null) return "redirect:/";
         return "movimentacoes";
     }
 
@@ -234,7 +189,7 @@ public class Router {
     public String permissoes(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("isActive");
         if (usuario == null) return "redirect:/";
-        if (usuario.getTipo().name().equals("ADMIN") || usuario.getTipo().name().equals("GERENTE")) {
+        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 4) { // Exemplo: só gerente/admin pode editar permissões
             model.addAttribute("usuarioLogado", usuario);
             return "permissoes";
         }
