@@ -90,4 +90,5 @@ public class UsuarioResource {
         boolean existe = usuarioService.existeFuncionarioComCargo(cargoId);
         return ResponseEntity.ok(existe);
     }
+
 }

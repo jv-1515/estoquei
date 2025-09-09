@@ -15,7 +15,8 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${firebase.service-account-file}")
+
+    @Value("${firebase.config.path}")
     private Resource serviceAccountResource;
 
     @Value("${firebase.bucket-name}")
@@ -37,6 +38,7 @@ public class FirebaseConfig {
 
                 FirebaseApp.initializeApp(options);
                 System.out.println("Firebase Application Initialized");
+
             } catch (IOException e) {
                 System.err.println("Error initializing Firebase Admin SDK: " + e.getMessage());
                 throw e;

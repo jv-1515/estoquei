@@ -25,7 +25,7 @@ public class ProdutoService {
 
     public Produto salvar(Produto produto, MultipartFile foto) throws IOException {
         if (foto != null && !foto.isEmpty()) {
-            String imageUrl = firebaseStorageService.uploadFile(foto, "produtos");
+            String imageUrl = firebaseStorageService.uploadFile(foto, "imagens");
             produto.setUrl_imagem(imageUrl);
         }
         return produtoRepository.save(produto);

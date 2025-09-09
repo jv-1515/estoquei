@@ -3,3 +3,5 @@ src/main/resources/firebase/stokmais-firebase-adminsdk-fbsvc-fec139251f.json
 
 # Firebase keys
 *.json
+
+/target/

@@ -78,4 +78,5 @@ public class UsuarioService {
     public boolean existeFuncionarioComCargo(Long cargoId) {
         return usuarioRepository.existsByCargo_Id(cargoId);
     }
+
 }
