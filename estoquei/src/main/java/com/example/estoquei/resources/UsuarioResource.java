@@ -84,11 +84,4 @@ public class UsuarioResource {
         List<Usuario> usuarios = usuarioService.filtrar(filtro);
         return ResponseEntity.ok(usuarios);
     }
-
-    @GetMapping("/cargo-funcionario/{cargoId}")
-    public ResponseEntity<Boolean> existeFuncionarioComCargo(@PathVariable Long cargoId) {
-        boolean existe = usuarioService.existeFuncionarioComCargo(cargoId);
-        return ResponseEntity.ok(existe);
-    }
-
 }
