@@ -1,5 +1,5 @@
-package com.example.estoquei.model;
+// package com.example.estoquei.model;
 
-public enum CargoUsuario {
-    ADMIN, GERENTE, VENDEDOR, CAIXA, ESTOQUISTA
-}
+// public enum CargoUsuario {
+//     ADMIN, GERENTE, VENDEDOR, CAIXA, ESTOQUISTA
+// }

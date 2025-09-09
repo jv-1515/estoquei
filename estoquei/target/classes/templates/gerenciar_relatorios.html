@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerenciar Relatórios de Desempenho</title>
+    <link rel="icon" type="image/png" href="/images/logo_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/css/gerenciar_relatorios.css" />
+    <script src="/js/gerenciar_relatorios.js" defer></script>
+    <script src="/js/gerar_relatorio.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <a href="/inicio" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    <div>
+        <h1>Gerenciar Relatórios de Desempenho</h1>
+    </div>
+    <div class="filters-container">
+        <div class="filters" style="gap: 0;">
+            <h2 style="margin-bottom: -10px; gap: 10px;">Buscar Relatórios</h2>
+            <div class="filters-row">
+                <div class="input-group">
+                    <div style="position:relative; display:flex;align-items: flex-end;">
+                        <input type="text" id="busca-relatorio" placeholder="Digite o título do relatório" style="flex:1; font-size:12px; padding:8px 32px 8px 8px;"/>
+                        <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-search"></i>
+                        </span>
+                        <div id="busca-sugestoes-relatorio"></div>
+                    </div>
+                </div>
+                <div class="input-group" style="flex: unset;">
+                    <label for="filter-data-criacao-busca">Data Criação</label>
+                    <input type="date" id="filter-data-criacao-busca" />
+                </div>
+                <div class="input-group" style="flex: unset;">
+                    <label for="filter-data-inicio-busca">Data Início</label>
+                    <input type="date" id="filter-data-inicio-busca" />
+                </div>
+                <div class="input-group" style="flex: unset;">
+                    <label for="filter-data-fim-busca">Data Fim</label>
+                    <input type="date" id="filter-data-fim-busca" />
+                </div>
+                <button id="btn-limpar-filtros-busca" class="btn">
+                    <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar Filtros
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+        <div id="registros-pagina" style="display: flex; align-items: center; gap: 5px;">
+            <label for="registros-select">Mostrando</label>
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; font-size: 12px; width: 55px;">
+                <option value=""> Todos</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+
+        <button id="btn-gerar-busca" class="btn" style="margin-bottom: 0; margin-left: auto;" onclick="window.location.href='/gerar-relatorio'">
+            <i class="fa-solid fa-file-lines" style="margin-right: 6px;"></i>Novo Relatório
+        </button>
+    </div>
+    <div class="main-container">
+        <div class="table-space"></div>
+        <table id="product-list">
+            <thead id="relatorios-thead">
+                <tr>
+                    <th class="ordenar">Título <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Data Criação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Período <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th style="width: 55px; max-width: 55px; padding-right: 20px"></th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+            </tbody>
+        </table>
+        <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
+    </div>
+    <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+        <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            <i class="fa-solid fa-arrow-up" style="font-size: 16px; padding-top: 4px;"></i>
+        </button>
+    </a>
+</body>
+</html>

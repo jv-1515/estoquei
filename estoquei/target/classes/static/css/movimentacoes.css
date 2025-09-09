@@ -1,0 +1,550 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ccc;
+    margin: 0;
+    padding: 20px;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 40px;
+    color: #277580;
+    text-align: center;
+    margin: 40px 0 20px 0;
+}
+
+h2 {
+    font-size: 20px;
+    color: #277580;
+    text-align: left;
+    margin: 0;
+}
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+.filters-row {
+    display: flex;
+    gap: 10px;
+    /* flex-wrap: wrap; */
+    align-items: flex-end;
+}
+
+.input-group {
+    position: relative;
+    flex: 1 1 90px;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+.input-group label {
+    font-size: 12px;
+    color: #333;
+    padding: 5px 5px 5px 0px;
+    font-weight: bold;
+    pointer-events: none;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.quantidade-check-label {
+    display: flex;
+    align-items: center;
+    font-size: 12px !important;
+    color: #757575 !important;
+    font-weight: normal !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    padding: 2px 10px;
+    gap: 8px;
+}
+.quantidade-check-label input[type="checkbox"] {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.filters-container {
+    width: 1300px;
+    min-width: 1300px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#busca-movimentacao {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    height: 30px;
+    font-size: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.btn {
+    min-height: 30px;
+    height: 30px;
+    max-height: 30px;
+    background-color: #1e94a3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: #277580;
+}
+
+.main-container {
+    background: white;
+    border-radius: 10px;
+    width: 1300px;
+    min-width: 1300px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+table {
+    width: 100%;
+    background-color: white;
+    border-collapse: collapse;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    font-size: 12px;
+    margin: 0;
+}
+
+th, td {
+    padding: 10px 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    color: #333;
+    font-weight: bold;
+}
+
+tbody tr:hover,
+tbody tr:nth-child(odd):hover {
+    background-color: #e0e0e0;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+
+th.ordenar {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+th.ordenar .sort-icon {
+    position: absolute;
+    top: 50%;
+    padding-left: 2px;
+    transform: translateY(-50%);
+    display: none;
+    pointer-events: none;
+    font-size: 10px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+th.ordenar:hover .sort-icon,
+th.ordenar.sorted .sort-icon {
+    display: inline-block;
+    color: #1E94A3;
+}
+
+#paginacao button {
+    margin: 0 3px 9px 3px;
+    padding: 5px 8px;
+    border: 1px solid #1E94A3;
+    background: #fff;
+    color: #1E94A3;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    height: 24px;
+    width: 24px;
+    transition: background 0.2s, color 0.2s;
+}
+#paginacao button.pagina-ativa {
+    background: #1E94A3;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #1E94A3;
+}
+
+#paginacao button.pagina-ativa:hover {
+    background: #277580;
+    border: 1px solid #277580;
+}
+#paginacao button:hover:not(.pagina-ativa) {
+    background: #1E94A3;
+    color: #fff;
+}
+
+select#registros-select {
+    color: #1E94A3;
+    border: #1e94a3 2px solid;
+}
+
+select#registros-select option {
+    color: #757575;
+}
+
+#busca-sugestoes {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: auto;
+    background: #fff;
+    border-radius: 4px 0 0 4px;
+    width: 100%;
+    z-index: 1000;
+    border: 1px solid #aaa;
+    display: none;
+    max-height: 90px;
+    overflow-y: auto;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#busca-sugestoes .sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #333;
+}
+
+#busca-sugestoes div:hover {
+    background-color: #e0e0e0;
+}
+
+.fa-arrow-left:hover,
+.fa-house:hover,
+.fa-arrow-up:hover {
+    color: #1E94A3;
+    transition: color 0.2s;
+}
+
+.fa-trash:hover {
+    color: red;
+}
+
+/* Tipo de movimentação */
+.tipo-entrada,
+.tipo-saida {
+    font-size: 12px;
+    color: #fff;
+    background: #43b04a;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.tipo-saida {
+    background-color: #ff5722;;
+    padding: 4px 13px;
+}
+
+.actions a, .actions button {
+    background: none;
+    border: none;
+    color: #555;
+    padding: 0;
+    margin: 0 2px;
+    cursor: pointer;
+    font-size: 12px;
+    vertical-align: middle;
+    outline: none;
+    text-decoration: none;
+}
+.actions a:hover, .actions button:hover {
+    color: #1e94a3;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    height: 30px;
+    max-height: 30px;
+    min-height: 30px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    padding: 2px 8px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+#swal2-input.swal2-input {
+    width: unset;
+}
+
+label {
+    font-size: 12px;
+    color: #333;
+    font-weight: bold;
+    display: block;
+    padding: 5px 0;
+}
+
+.filters-row label {
+    padding: 2px 0;
+}
+
+/* input[readonly] {
+    cursor: default !important;
+    color: #999 !important;
+    background: #f9f9f9;
+} */
+input:focus[readonly] {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.multiselect,
+.multiselect-tipo {
+    min-width: 120px;
+    position: relative;
+}
+
+#checkboxes-categorias-multi,
+#checkboxes-produto-multi,
+#checkboxes-responsavel-multi,
+#checkboxes-tipo-mov,
+#checkboxes-categoria-multi,
+#checkboxes-tamanho-multi,
+#checkboxes-genero-multi {
+    display: none;
+    border: 1px #aaa solid;
+    border-radius: 4px;
+    background: #fff;
+    position: absolute;
+    top: 100% !important;
+    z-index: 1000;
+    width: 100%;
+    max-height: 90px;
+    overflow-y: auto;
+}
+#checkboxes-genero-multi {
+    border-radius: 4px;
+}
+
+#checkboxes-categorias-multi label,
+#checkboxes-produto-multi label,
+#checkboxes-responsavel-multi label,
+#checkboxes-tipo-mov label,
+#checkboxes-categoria-multi label,
+#checkboxes-tamanho-multi label,
+#checkboxes-genero-multi label {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    font-size: 12px !important;
+    color: #757575 !important;
+    font-weight: normal !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    padding: 2px 0px 2px 10px;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+#checkboxes-tipo-mov label,
+#checkboxes-genero-multi label {
+    padding: 2px 10px;
+}
+
+#checkboxes-categorias-multi input[type="checkbox"],
+#checkboxes-produto-multi input[type="checkbox"],
+#checkboxes-responsavel-multi input[type="checkbox"],
+#checkboxes-tipo-mov input[type="checkbox"],
+#checkboxes-categoria-multi input[type="checkbox"],
+#checkboxes-tamanho-multi input[type="checkbox"],
+#checkboxes-genero-multi input[type="checkbox"] {
+    margin: 0 0 0 8px !important;
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.overSelect {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+#checkboxes-categorias-multi label:hover,
+#checkboxes-produto-multi label:hover,
+#checkboxes-responsavel-multi label:hover,
+#checkboxes-categoria-multi label:hover,
+#checkboxes-tamanho-multi label:hover,
+#checkboxes-genero-multi label:hover,
+#checkboxes-tipo-mov label:hover,
+.quantidade-check-label:hover {
+    background-color: #f3f3f3;
+    color: black !important;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    margin-top: 0;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 7px;
+    color: #757575;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+.faixa-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius:4px;
+    gap: 2px;
+    padding: 10px;
+    z-index: 10;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #757575;
+}
+.faixa-popup input {
+    height: 25px;
+}
+
+#registros-pagina {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+.fa-xmark:hover {
+    color: #f27474; 
+}
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de confirmação/cancelar custom */
+.swal2-confirm,
+.swal2-styled.swal2-confirm,
+.swal2-cancel-custom,
+.swal2-styled.swal2-cancel-custom {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-cancel-custom:hover,
+.swal2-styled.swal2-cancel-custom:hover {
+    background-color: #277580;
+}
+
+/* Botão de deletar (vermelho padrão SweetAlert2) */
+.swal2-remove-custom,
+.swal2-styled.swal2-remove-custom {
+    background-color: #d33;
+    color: #fff;
+}
+.swal2-remove-custom:hover,
+.swal2-styled.swal2-remove-custom:hover {
+    background-color: #a52a2a;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+    font-size: 20px;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
+    font-size: 16px;
+}

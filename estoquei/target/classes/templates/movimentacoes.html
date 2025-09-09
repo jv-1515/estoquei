@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movimentações do Estoque</title>
+    <link rel="icon" type="image/png" href="/images/logo_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/css/movimentacoes.css" />
+    <script src="/js/movimentacoes.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/grafico.js" defer></script>
+</head>
+<body>
+    <a href="javascript:history.back()" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    <a href="/inicio" title="Início" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+        <button tabindex="13" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-house" style="font-size: 16px;"></i>
+        </button>
+    </a>
+    
+    <div>
+        <h1>Movimentações do Estoque</h1>
+    </div>
+    <div class="filters-container" style="display: flex; flex-direction: column;width: 1300px;">
+        <h2 style="margin-bottom: -10px;">Buscar Movimentações</h2>
+        <div class="filters-row">
+            <div class="input-group" style="min-width: 625px; position:relative;">
+                <input type="text" id="filter-parte-envolvida" placeholder="Digite o nome da parte ou código da movimentação" style="padding-right:32px; color: black;" />
+                <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div id="parte-sugestoes" style="position: absolute; z-index: 10;"></div>
+            </div>
+            <div class="input-group" style="min-width: 160px; position:relative;">
+                <label for="filter-periodo">Período</label>
+                <div style="position:relative;">
+                    <input type="text" id="filter-periodo" placeholder="Todo o período" readonly style="cursor:pointer;width: 160px;" />
+                    <span class="chevron-periodo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                        <i class="fa fa-chevron-down"></i>
+                    </span>
+                </div>
+                <div id="periodo-popup" class="faixa-popup" style="display:none;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div>
+                            <span>Data Início:</span>
+                            <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-inicio" />
+                        </div>
+                        <div>
+                            <span>Data Fim:</span>
+                            <input style="height: 25px; margin-top: 2px;" type="date" id="periodo-data-fim" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="multiselect multiselect-tipo input-group" >
+                    <label for="filter-tipo-mov">Movimentação</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-tipo-mov" placeholder="Todas" style="cursor:pointer; padding-right: 20px;" />
+                        <span class="chevron-tipo" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                        <div class="overSelect" onclick="showCheckboxesTipoMov()"></div>
+                        <div id="checkboxes-tipo-mov" style="display:none;">
+                            <label>
+                                <input type="checkbox" id="tipo-mov-todas" class="tipo-mov-check" value="" checked onclick="marcarOuDesmarcarTodosTipos()" /> Todas
+                            </label>
+                            <label>
+                                <input type="checkbox" class="tipo-mov-check" value="ENTRADA" checked /> Entrada
+                            </label>
+                            <label>
+                                <input type="checkbox" class="tipo-mov-check" value="SAIDA" checked /> Saída
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            <button id="btn-filtros-avancados" class="btn" style="font-size:12px; width: 105px; max-width: 105px;">
+                <i class="fa-solid fa-filter-circle-xmark" style="margin-right:4px;"></i>Mais Filtros
+            </button>
+            
+            <button id="btn-limpar-filtros" class="btn limpar" style="font-size:12px;">
+                <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar
+            </button>
+
+            <button id="btn-exibir-detalhes" class="btn" style="font-size:12px;width: 92px; max-width: 92px;">
+                <i class="fa-solid fa-eye" style="margin-right:4px;"></i>Detalhes
+            </button>
+        </div>
+    </div>
+
+        <!-- Filtros Extras -->
+        <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; width:1300px;">
+            <h2>Filtros Extras</h2>
+            <div class="filters-row">
+                <!-- Quantidade -->
+                <div class="input-group">
+                    <label for="filter-quantidade">Quantidades</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer; padding-right: 20px;" />
+                        <span class="chevron-quantidade" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="quantidade-faixa-popup" class="faixa-popup" style="padding: 0;">
+                        <div style="display: flex; flex-direction: column; align-items: stretch;">
+                            <div style="display: flex; align-items: center; margin:10px;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="quantidade-min" maxlength="3" placeholder="0" style="text-align:right;">
+                            </div>
+                            <div style="display: flex; align-items: center; margin: 0 10px 10px 10px;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="quantidade-max" maxlength="3" placeholder="999" style="text-align:right;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Valor -->
+                <div class="input-group">
+                    <label for="filter-valor">Valor (R$)</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-valor" placeholder="Todos" readonly style="padding-right: 20px;" />
+                        <span class="chevron-valor" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="valor-faixa-popup" class="faixa-popup">
+                        <div style="flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">de:</span>
+                                <input type="text" id="valor-min" placeholder="R$ 0,00" style="margin-bottom: 8px;">
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span style="min-width: 28px;">até:</span>
+                                <input type="text" id="valor-max" placeholder="R$ 999.999,99">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- Responsável -->
+            <div class="multiselect multiselect-responsavel input-group">
+                <label for="filter-responsavel-multi">Responsável</label>
+                <div style="position:relative;">
+                    <input type="text" id="filter-responsavel" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+                    <span class="chevron-responsavel" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                        <i class="fa fa-chevron-down"></i>
+                    </span>
+                    <div class="overSelect" onclick="showCheckboxesResponsavelMulti()"></div>
+                </div>
+                <div id="checkboxes-responsavel-multi" style="display:none;">
+                </div>
+            </div>
+          <!-- Produtos -->
+            <div class="input-group multiselect" style="position:relative;">
+                <label for="filter-produto">Produtos</label>
+                <div style="position:relative;">
+                <input type="text" id="filter-produto" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-chevron-down"></i>
+                </span>
+                </div>
+                <div id="checkboxes-produto-multi" class="checkboxes-popup"></div>
+            </div>
+                <!-- Categoria -->
+                <div class="multiselect multiselect-categoria input-group">
+                    <label for="filter-categoria">Categorias</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; padding-right: 20px;" />
+                        <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="checkboxes-categoria-multi" style="display:none;">
+                </div>
+                </div>
+                <!-- Tamanhos -->
+                <div class="multiselect multiselect-tamanho input-group">
+                    <label for="filter-tamanho">Tamanhos</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+                        <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="checkboxes-tamanho-multi" style="display:none;"></div>
+                </div>
+                
+                <!-- Gêneros -->
+                <div class="multiselect multiselect-genero input-group">
+                    <label for="filter-genero">Gêneros</label>
+                    <div style="position:relative;">
+                        <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
+                        <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                            <i class="fa fa-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div id="checkboxes-genero-multi" style="display:none;"></div>
+                </div>
+                    <button id="btn-limpar-filtros-extras" class="btn limpar" style="font-size:12px; width: 80px;">
+                    <i class="fa-solid fa-eraser" style="margin-right:4px;"></i>Limpar
+                </button>
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- Detalhes -->
+            <div id="detalhes-estoque"
+            style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-start;">
+            
+            <!-- Coluna Esquerda - Cards de Detalhes -->
+            <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
+                <div style="display: flex; align-items: flex-end; height: 28px;">
+                    <h2 style="margin: 0; font-size: 20px;">Detalhes das Movimentações</h2>
+                </div>
+                <div style="height: 8px;"></div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; flex-direction: row; gap: 10px; height: 55px;">
+                        <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas Hoje</div>
+                            <div id="detalhe-entradas-hoje" style="font-size: 22px; font-weight: bold; color: #2e7d32;">0</div>
+                        </div>
+                        <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas Hoje</div>
+                            <div id="detalhe-saidas-hoje" style="font-size: 22px; font-weight: bold; color: #e65100;">0</div>
+                        </div>
+                        <div class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="color: #18404a; font-size: 12px; font-weight: bold;">Movimentações</div>
+                            <div id="detalhe-total-movimentacoes" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                        <a href="/estoque" style="flex:1; text-decoration: none;">
+                            <button id="estoque-atual" class="detalhe-card" style="background: #e0f2f1; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                                <div style="color: #00695c; font-size: 12px; font-weight: bold;">Produtos<br>Cadastrados</div>
+                                <div id="detalhe-produtos-cadastrados" style="font-size: 22px; font-weight: bold; color: #00695c;">0</div>
+                            </button>
+                        </a>
+                        <a href="/baixo-estoque" style="flex:1; text-decoration: none;">
+                            <button id="baixo-estoque" class="detalhe-card" style="background: #fffbe7; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                                <div style="color: #bfa100; font-size: 12px; font-weight: bold;">Baixo<br>Estoque</div>
+                                <div id="detalhe-baixo-estoque" style="font-size: 22px; font-weight: bold; color: #bfa100;">0</div>
+                            </button>
+                        </a>
+                        <a href="/movimentar-produto" style="flex:1; text-decoration: none;">
+                            <button id="movimentar-produto" class="detalhe-card" style="background: #fff0f0; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
+                                <div style="color: #c0392b; font-size: 12px; font-weight: bold;">Produtos Zerados</div>
+                                <div id="detalhe-estoque-zerado" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; height: 165px; justify-content: flex-end;">
+
+            <!-- Linha de categorias (7 em cima) -->
+            <div style="display: flex; flex-direction: row; gap: 10px; height: 72px;">
+                <!-- Camisa -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Camisa</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #1e94a3;">
+                        <span style="color: #1e94a3; font-weight: bold;">Estoque</span>
+                        <div id="camisa-estoque" style="font-size: 22px; font-weight: bold; color: #1e94a3;">0</div>
+                    </div>
+                </div>
+                <!-- Camiseta -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Camiseta</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #277580;">
+                        <span style="color: #277580; font-weight: bold;">Estoque</span>
+                        <div id="camiseta-estoque" style="font-size: 22px; font-weight: bold; color: #277580;">0</div>
+                    </div>
+                </div>
+                <!-- Bermuda -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Bermuda</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #bfa100;">
+                        <span style="color: #bfa100; font-weight: bold;">Estoque</span>
+                        <div id="bermuda-estoque" style="font-size: 22px; font-weight: bold; color: #bfa100;">0</div>
+                    </div>
+                </div>
+                <!-- Calça -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Calça</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #c0392b;">
+                        <span style="color: #c0392b; font-weight: bold;">Estoque</span>
+                        <div id="calca-estoque" style="font-size: 22px; font-weight: bold; color: #c0392b;">0</div>
+                    </div>
+                </div>
+                <!-- Vestido -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Vestido</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #e67e22;">
+                        <span style="color: #e67e22; font-weight: bold;">Estoque</span>
+                        <div id="vestido-estoque" style="font-size: 22px; font-weight: bold; color: #e67e22;">0</div>
+                    </div>
+                </div>
+                <!-- Sapato -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Sapato</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #8e44ad;">
+                        <span style="color: #8e44ad; font-weight: bold;">Estoque</span>
+                        <div id="sapato-estoque" style="font-size: 22px; font-weight: bold; color: #8e44ad;">0</div>
+                    </div>
+                </div>
+                <!-- Meia -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: bold; color: #333; text-align: center;">Meia</span>
+                    <div class="detalhe-card" style="border-radius: 8px; padding: 8px 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 35px; border: 2px solid #16a085;">
+                        <span style="color: #16a085; font-weight: bold;">Estoque</span>
+                        <div id="meia-estoque" style="font-size: 22px; font-weight: bold; color: #16a085;">0</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Linha de entradas/saídas (cards maiores embaixo) -->
+            <div style="display: flex; flex-direction: row; gap: 10px; height: 65px;">
+                <!-- Camisa -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="camisa-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="camisa-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Camiseta -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="camiseta-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="camiseta-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Bermuda -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="bermuda-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="bermuda-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Calça -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="calca-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="calca-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Vestido -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="vestido-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="vestido-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Sapato -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="sapato-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="sapato-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+                <!-- Meia -->
+                <div style="flex:1; display: flex; flex-direction: column; gap: 6px; height: 65px">
+                    <div class="detalhe-card" style="background: #e8f5e8; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #2e7d32; font-size: 12px; font-weight: bold;">Entradas</span>
+                        <span id="meia-entradas" style="font-weight: bold; color: #2e7d32;">0</span>
+                    </div>
+                    <div class="detalhe-card" style="background: #fff3e0; border-radius: 8px; padding: 0 8px; text-align: left;height: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <span style="color: #e65100; font-size: 12px; font-weight: bold;">Saídas</span>
+                        <span id="meia-saidas" style="font-weight: bold; color: #e65100;">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles da tabela -->
+    <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
+        <div id="registros-pagina" style="display: flex; align-items: center; gap: 5px;">
+            <label style="font-weight: normal; color: black" for="registros-select">Mostrando</label>
+            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; font-size: 12px; height:30px; width: 55px;">
+                <option value="">Todos</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <button class="btn" style="margin-left: auto; height:30px;" onclick="window.location.href='/movimentar-produto'">
+            <i class="fa-solid fa-money-bill-transfer" style="margin-right: 4px;"></i> Nova Movimentação
+        </button>
+    </div>
+
+    <!-- Main container -->
+    <div class="main-container">
+        <div class="table-space"></div>
+        <table id="movimentacao-list">
+            <thead>
+                <tr>
+                    <th style="padding-left:10px;width:80px" class="ordenar">Data <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Movimentação <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Quantidade <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Estoque Final <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Valor (R$) <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Parte Envolvida <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Responsável <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th style="width:95px" class="ordenar">Código Produto <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Categoria <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Tamanho <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar">Gênero <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th style="width: 35px; min-width: 35px; padding-right:20px"></th>
+                </tr>
+            </thead>
+            <tbody id="movimentacao-table-body">
+                <tr>
+                    <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+                        <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
+                            <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
+                        </span>
+                        <span id="loading-text">Carregando movimentações</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
+    </div>
+
+<span id="editar-movimentacao" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+    <div style="background:white; border-radius:10px; width:650px; margin:auto; position:relative; overflow:hidden;">
+
+        <button title="Remover movimentação" type="button" onclick="removerMovimentacao(document.getElementById('editar-movimentacao').dataset.movimentacaoId)" 
+            style="position:absolute; top:22px; right:35px; background:none; border:none; font-size:12px; cursor:pointer; z-index:10; color:#555;">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+        <button title="Fechar edição" type="button" onclick="fecharEdicaoMovimentacao()" 
+            style="position:absolute; top:20px; right:15px; background:none; border:none; font-size:18px; cursor:pointer; z-index:10; color:#333;">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <div style="padding:20px; padding-bottom:0;">
+            <h2>Editar Movimentação</h2>
+        </div>
+        <form onsubmit="event.preventDefault(); salvarEdicaoMovimentacao();" style="display:flex; padding:0 20px 20px; gap:20px;">
+            <!-- Coluna Esquerda - Campos -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+                <div style="border-radius:8px;">                    
+                    <div>
+                        <label>Código da Movimentação*</label>
+                        <input type="text" id="edit-codigo-movimentacao" required maxlength="9" minlength="9" pattern="\d{9}" placeholder="000000000" />
+                    </div>
+
+                    <div>
+                        <label id="edit-label-valor">Valor (R$)*</label>
+                        <input type="text" id="edit-valor" required placeholder="R$1.000,00" />
+                    </div>
+
+                    <div>
+                        <label id="edit-label-parte-envolvida">Parte Envolvida*</label>
+                        <input type="text" id="edit-parte-envolvida" required placeholder="Nome do fornecedor ou cliente" />
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:3;">
+                            <label>Quantidade*</label>
+                            <input type="number" id="edit-quantidade" required placeholder="10" min="1" max="999" />
+                        </div>
+                        <div style="flex:2;">
+                            <label>Estoque Final:</label>
+                            <input type="number" id="edit-estoque-final" readonly style="padding:7px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; background:#f9f9f9; color:#666;" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label id="edit-label-data">Data*</label>
+                        <input type="date" id="edit-data" required style="padding:7px; border:1px solid #aaa; border-radius:4px; width:100%; box-sizing:border-box; font-family: Arial, sans-serif;" />
+                    </div>
+
+                    <button type="submit" id="edit-btn-confirmar" style="padding:8px; border:none; border-radius:4px; background-color:#1E94A3; color:white; font-size:12px; cursor:pointer; width:100%; margin-top:10px">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coluna Direita - Imagem -->
+            <div style="display:flex; flex-direction:column; justify-content: flex-end;">
+                <label>Produto</label>
+                <div id="edit-image-preview" style="width:282px; height:282px; display:flex; justify-content:center; color:#777; align-items:center; border:solid 2px #aaa; background-color:#f9f9f9; overflow:hidden;">
+                    <i class="fa-regular fa-image" style="font-size:30px"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</span>
+
+    <!-- Botão voltar ao topo -->
+    <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+        <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            <i class="fa-solid fa-arrow-up" style="font-size: 16px; padding-top: 4px;"></i>
+        </button>
+    </a>
+</body>
+</html>
