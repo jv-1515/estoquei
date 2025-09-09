@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Informações de Cadastro</title>
+    <link rel="icon" type="image/png" href="/images/logo_icon.png">
+    <link rel="stylesheet" href="/css/infos_usuario.css"/>
+    <script src="/js/infos_usuario.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <a href="javascript:history.back()" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+        <button tabindex="1" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
+            <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
+        </button>
+    </a>
+
+    <div style="display: flex; gap: 12px; position:fixed; top:20px; right:20px; z-index:1000; align-items:center;">
+        <div id="nots" title="Baixo estoque" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+            <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
+                <span style="display: inline-block; position: relative;">
+                    <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
+                </span>
+                <span class="badge"></span>
+            </div>
+        </div>
+        <div title="Sair" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; padding:0 11px; height:40px; min-height:40px;">
+            <i onclick="confirmarSaida(event)" class="fa-solid fa-arrow-right-from-bracket" style="cursor:pointer;font-size:18px;"></i>
+        </div>
+    </div>
+
+    <h1>Informações de Cadastro</h1>
+    <form class="form-container" action="/usuarios" method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="usuario-id" th:value="${usuarioLogado.id}" />
+        <div class="form-column">
+            <div style="display:flex;align-items:center;gap:15px;margin-bottom:10px;" data-usuario-id="[[${usuarioLogado.id}]]">
+                <div id="avatar-user-info">
+                    <span th:text="${usuarioLogado.nome != null} ? ${#strings.toUpperCase(usuarioLogado.nome.split(' ')[0].substring(0,1) + usuarioLogado.nome.split(' ')[usuarioLogado.nome.split(' ').length-1].substring(0,1))} : 'U'">U</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;overflow: hidden;">
+                    <span id="avatar-nome" style="font-size:18px;font-weight:600;color:#333;white-space:nowrap; overflow: hidden; text-overflow: ellipsis;" th:text="${usuarioLogado.nome}">Nome do Usuário</span>
+                    <span id="avatar-cargo" style="font-size:14px;color:#757575;" th:text="${usuarioLogado.cargo != null ? #strings.capitalize(usuarioLogado.cargo.name().toLowerCase()) : #strings.capitalize(usuarioLogado.tipo.name().toLowerCase())}">Cargo</span>
+                </div>
+            </div>
+            
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required readonly placeholder="seu@email.com" tabindex="1" th:value="${usuarioLogado.email}" style="color: #757575;">
+
+            <label for="Senha">Senha</label>
+            <div style="display: flex; gap: 10px; height: 30px;">
+                <input type="password" id="senha" name="senha" readonly placeholder="Digite sua senha" minlength="8" autocomplete="current-password" tabindex="2" th:value="${usuarioLogado.senha}" style="flex: 2; color: #757575;">
+                <button type="button" id="btn-redefinir-senha" style="flex: 1; margin-top: 0; padding: 0;">Redefinir</button>
+            </div>
+
+            <div id="senha-fields" style="display:none;flex-direction:column;">
+                <h2>Redefinir Senha</h2>           
+                <label for="senha-atual">Senha atual*</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="senha-atual" name="senha-atual" placeholder="Digite sua senha atual" minlength="8" autocomplete="current-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('senha-atual')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-senha-atual"></i>
+                    </span>
+                </div>
+
+                <label for="nova-senha">Nova senha*</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="nova-senha" name="nova-senha" placeholder="Digite a nova senha" minlength="8" autocomplete="new-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-nova-senha"></i>
+                    </span>
+                </div>
+
+                <label for="confirmar-nova-senha">Confirmar nova senha*</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" autocomplete="new-password" style="padding-right: 36px; flex: 1;">
+                    <span class="lock-open" onclick="togglePassword('confirmar-nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                        <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
+                    </span>
+                </div>
+                <button type="submit" id="save" tabindex="8">Confirmar Alterações</button>
+                <a href="/andamento" class="register-link">Esqueceu sua senha? Clique aqui</a>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
