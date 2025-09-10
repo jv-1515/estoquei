@@ -84,4 +84,9 @@ public class UsuarioResource {
         List<Usuario> usuarios = usuarioService.filtrar(filtro);
         return ResponseEntity.ok(usuarios);
     }
+
+    @GetMapping("/cargo/{cargoId}")
+    public List<Usuario> listarPorCargo(@PathVariable Long cargoId) {
+        return usuarioService.listarPorCargoId(cargoId);
+    }
 }

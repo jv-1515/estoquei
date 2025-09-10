@@ -74,4 +74,8 @@ public class UsuarioService {
     public List<Usuario> filtrar(Usuario filtro) {
         return usuarioFiltroRepository.findAndFilter(filtro);
     }
+
+    public List<Usuario> listarPorCargoId(Long cargoId) {
+        return usuarioRepository.findByCargoId(cargoId);
+    }
 }
