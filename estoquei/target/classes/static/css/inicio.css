@@ -46,6 +46,101 @@ h2 {
     max-height: 320px;
 }
 
+
+/* 1 card: centralizado na linha superior */
+.container.cards-1 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px 21px;
+    justify-items: center;
+    align-items: start;
+    height: 320px;
+}
+.container.cards-1 .card {
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+    margin: 0;
+}
+
+/* 2 cards: centralizados na linha superior */
+.container.cards-2 {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 150px;
+    height: 150px;
+    min-height: 150px;
+    max-width: 300px;
+    min-width: 300px;
+}
+.container.cards-2 .card {
+    margin: auto;
+}
+
+/* 3 cards: grid padrão */
+.container.cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 21px;
+    justify-items: center;
+    height: 170px;
+}
+
+/* 4 cards: 2 em cima, 2 embaixo, centralizados */
+.container.cards-4 {
+display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px 20px;
+    justify-items: center;
+    height: 320px;
+    max-width: 300PX;
+    min-width: 300px;
+    justify-content: center;
+}
+
+/* 5 cards: 3 em cima, 2 embaixo, centralizados */
+.container.cards-5 {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    height: 320px;
+    max-width: 900px;
+    width: 900px;
+    min-width: 900px;
+    gap: 0 20px;
+}
+
+.container.cards-5 .card {
+    flex: 0 0 286px;
+    max-width: 286px;
+    min-width: 286px;
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.container.cards-5 .card:nth-child(-n+3) {
+    margin-top: 0;
+}
+
+.container.cards-5 .card:nth-child(5) {
+    margin-left: 20px;
+}
+
+
+/* 6 cards: grid padrão */
+.container.cards-6 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px 21px;
+    justify-items: center;
+    height: 320px;
+}
+
 .card {
     position: relative;
     overflow: hidden;
