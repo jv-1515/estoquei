@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let tipo = avatarTipo.textContent;
         avatarTipo.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
     }
+    ajustarLayoutCards();
 });
 
 
@@ -374,3 +375,38 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('card-movimentacoes').style.display = 'none';
     }
 });
+
+
+function ajustarLayoutCards() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    const total = Array.from(container.querySelectorAll('.card'))
+        .filter(card => card.style.display !== 'none').length;
+    container.classList.remove(
+        'cards-1', 'cards-2', 'cards-3', 'cards-4', 'cards-5', 'cards-6'
+    );
+    container.classList.add(`cards-${total}`);
+}
+
+document.addEventListener('DOMContentLoaded', ajustarLayoutCards);
+
+
+function montarCards5(cards) {
+    const container = document.querySelector('.container');
+    container.innerHTML = '';
+    container.className = 'container cards-5';
+
+    const row1 = document.createElement('div');
+    row1.className = 'cards-row top';
+    row1.appendChild(cards[0]);
+    row1.appendChild(cards[1]);
+    row1.appendChild(cards[2]);
+
+    const row2 = document.createElement('div');
+    row2.className = 'cards-row bottom';
+    row2.appendChild(cards[3]);
+    row2.appendChild(cards[4]);
+
+    container.appendChild(row1);
+    container.appendChild(row2);
+}
