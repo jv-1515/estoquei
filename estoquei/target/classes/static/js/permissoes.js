@@ -29,29 +29,40 @@ function carregarCargosBackend() {
 document.addEventListener('DOMContentLoaded', carregarCargosBackend);
 
 function renderizarCargos() {
-  const cargos = cargosBackend;
   const container = document.getElementById('cargo-list');
   container.innerHTML = '';
-    const maxCargos = 7;
-    for (let i = 1; i <= maxCargos; i++) {
-    const cargo = cargos.find(c => c.id === i);
+  const maxCargos = 7;
+
+  // Filtra cargos reais (exceto admin) e ordena por id crescente
+  const cargos = cargosBackend
+    .filter(c => c.nome.toLowerCase() !== 'admin')
+    .sort((a, b) => a.id - b.id);
+
+  const idsOcupados = cargos.map(c => c.id);
+
+  for (let i = 1; i <= maxCargos; i++) {
+
+    const cargo = cargos.find((c, idx) => idx === i - 1);
     const btn = document.createElement('button');
     btn.className = `cargo-btn cargo-${i}`;
-    if (cargo && cargo.nome.toLowerCase() !== 'admin') {
-        btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
-        btn.onclick = () => { if (i !== 1) abrirEditarCargo(i); };
-        btn.classList.remove('novo-cargo');
-    } else if (!cargo) {
-        btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
+
+    if (cargo) {
+      btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
         btn.onclick = () => {
-        const menorId = proximoIdCargo();
-        if (menorId) abrirCriarCargo(menorId);
+        if (cargo.id !== 1) abrirEditarCargo(cargo.id);
         };
-        btn.classList.add('novo-cargo');
+      btn.classList.remove('novo-cargo');
+    } else {
+      btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
+      btn.onclick = () => {
+        abrirCriarCargo();
+      };
+      btn.classList.add('novo-cargo');
     }
     container.appendChild(btn);
-    }
+  }
 }
+
 document.addEventListener('DOMContentLoaded', renderizarCargos);
 
 const permissoes = [
@@ -293,6 +304,7 @@ Swal.fire({
 }
 
 function removerCargo(id) {
+    const cargo = cargosBackend.find(c => c.id === id);
     fetch(`/usuarios/cargo/${id}`)
       .then(res => res.json())
       .then(funcionarios => {
@@ -314,7 +326,7 @@ function removerCargo(id) {
                 renderizarPermissoes();
                 Swal.fire({
                     icon: 'success',
-                    text: `"${cargo.nome}" removido com sucesso!`,
+                    title: `"${cargo ? cargo.nome : 'Cargo'}" removido com sucesso!`,
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
@@ -324,7 +336,6 @@ function removerCargo(id) {
         }
     });
 }
-
 function alterarPermissaoCargo(id, modulo, nivel) {
   const cargos = cargosBackend;
   const idx = cargos.findIndex(c => c.id === id);
