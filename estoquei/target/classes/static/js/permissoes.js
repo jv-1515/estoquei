@@ -239,7 +239,7 @@ function abrirEditarCargo(id) {
   const cargos = cargosBackend;
   const cargo = cargos.find(c => c.id === id);
   if (!cargo) return;
-Swal.fire({
+  Swal.fire({
     title: `<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear Cargo</h2>`,
     html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">${cargo.nome}</p>`,
     input: 'text',
@@ -250,59 +250,71 @@ Swal.fire({
     cancelButtonText: 'Cancelar',
     allowOutsideClick: false,
     didOpen: () => {
-        const input = Swal.getInput();
-        if (input) {
-            input.maxLength = 12;
-            input.style.fontSize = '12px';
-            input.style.margin = '0px 20px 10px 20px';
-            input.style.border = 'solid 1px #aaa';
-            input.style.borderRadius = '4px';
-        }
+      const input = Swal.getInput();
+      if (input) {
+        input.maxLength = 12;
+        input.style.fontSize = '12px';
+        input.style.margin = '0px 20px 10px 20px';
+        input.style.border = 'solid 1px #aaa';
+        input.style.borderRadius = '4px';
+      }
     },
     inputValidator: (value) => {
-        const nome = (value || '').trim();
-        if (!nome || nome.length < 3) return 'Digite um nome válido!';
-        const cargos = cargosBackend;
-        if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';        
-        // Validação de caracteres especiais
-        if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
-        if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
-        if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
-        return null;
+      const nome = (value || '').trim();
+      if (!nome || nome.length < 3) return 'Digite um nome válido!';
+      const cargos = cargosBackend;
+      if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';
+      if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
+      if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+      if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
+      return null;
     }
-}).then(result => {
+  }).then(result => {
     if (result.isConfirmed) {
-    fetch(`/usuarios?cargoId=${cargo.id}`)
-      .then(res => res.json())
-      .then(funcionarios => {
-        if (funcionarios.length > 0) {
+      fetch(`/usuarios/cargo/${cargo.id}`)
+        .then(res => res.json())
+        .then(funcionarios => {
+          if (funcionarios.length > 0) {
             Swal.fire({
-                icon: 'error',
-                title: 'Não é possível renomear',
-                text: 'Já existe funcionário cadastrado com esse cargo!',
-                timer: 1800,
-                showConfirmButton: false,
-                timerProgressBar: true,
-                allowOutsideClick: false,
+              icon: 'error',
+              title: 'Não é possível renomear',
+              text: 'Já existe funcionário cadastrado com esse cargo!',
+              timer: 1800,
+              showConfirmButton: false,
+              timerProgressBar: true,
+              allowOutsideClick: false,
             });
-        } else {
+          } else {
             cargo.nome = result.value.trim();
             fetch(`/cargos/${cargo.id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cargo)
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(cargo)
             })
             .then(() => {
-                carregarCargosBackend();
-                renderizarCargos();
-                renderizarPermissoes();
+              carregarCargosBackend();
+              renderizarCargos();
+              renderizarPermissoes();
+              Swal.fire({
+                icon: 'success',
+                title: 'Renomeado com sucesso!',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                allowOutsideClick: false
+              });
+              setTimeout(() => {
+                const div = document.getElementById(`permissoes-cargo-${cargo.id}`);
+                if (div) {
+                  div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 300);
             });
-        }
-      });
+          }
+        });
     }
-});
+  });
 }
-
 function removerCargo(id) {
     const cargo = cargosBackend.find(c => c.id === id);
     fetch(`/usuarios/cargo/${id}`)
