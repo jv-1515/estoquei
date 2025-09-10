@@ -1,43 +1,68 @@
 const MODULOS = ["produtos", "movimentacoes", "relatorios", "fornecedores", "funcionarios"];
-const CARGOS_PADRAO = [
-  {
-    id: 1,
-    nome: "Gerente",
-    produtos: 4,
-    movimentacoes: 4,
-    relatorios: 4,
-    fornecedores: 4,
-    funcionarios: 4
-  }
-];
+// const CARGOS_PADRAO = [
+//   {
+//     id: 1,
+//     nome: "Gerente",
+//     produtos: 4,
+//     movimentacoes: 4,
+//     relatorios: 4,
+//     fornecedores: 4,
+//     funcionarios: 4
+//   }
+// ];
 
-if (!localStorage.getItem('cargosPermissoes')) {
-  localStorage.setItem('cargosPermissoes', JSON.stringify(CARGOS_PADRAO));
+// if (!localStorage.getItem('cargosPermissoes')) {
+//   localStorage.setItem('cargosPermissoes', JSON.stringify(CARGOS_PADRAO));
+// }
+
+let cargosBackend = [];
+
+function carregarCargosBackend() {
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        cargosBackend = cargos;
+        renderizarCargos();
+        renderizarPermissoes();
+      });
 }
+document.addEventListener('DOMContentLoaded', carregarCargosBackend);
 
 function renderizarCargos() {
-  const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
   const container = document.getElementById('cargo-list');
   container.innerHTML = '';
-  for (let i = 1; i <= 7; i++) {
-    const cargo = cargos.find(c => c.id === i);
+  const maxCargos = 7;
+
+  // Filtra cargos reais (exceto admin) e ordena por id crescente
+  const cargos = cargosBackend
+    .filter(c => c.nome.toLowerCase() !== 'admin')
+    .sort((a, b) => a.id - b.id);
+
+  const idsOcupados = cargos.map(c => c.id);
+
+  for (let i = 1; i <= maxCargos; i++) {
+
+    const cargo = cargos.find((c, idx) => idx === i - 1);
     const btn = document.createElement('button');
     btn.className = `cargo-btn cargo-${i}`;
+
     if (cargo) {
       btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
-      btn.onclick = () => { if (i !== 1) abrirEditarCargo(i); };
+        btn.onclick = () => {
+        if (cargo.id !== 1) abrirEditarCargo(cargo.id);
+        };
       btn.classList.remove('novo-cargo');
     } else {
       btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
       btn.onclick = () => {
-        const menorId = proximoIdCargo();
-        if (menorId) abrirCriarCargo(menorId);
+        abrirCriarCargo();
       };
       btn.classList.add('novo-cargo');
     }
     container.appendChild(btn);
   }
 }
+
 document.addEventListener('DOMContentLoaded', renderizarCargos);
 
 const permissoes = [
@@ -58,7 +83,7 @@ const tiposPerm = [
 
 // Renderiza todos os cargos
 function renderizarPermissoes() {
-    const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+    const cargos = cargosBackend;
     const container = document.getElementById('permissoes-list');
     container.innerHTML = '';
     cargos
@@ -67,7 +92,11 @@ function renderizarPermissoes() {
         .forEach(cargo => {
             const div = document.createElement('div');
             div.className = 'main-container';
-            div.id = `permissoes-cargo-${cargo.id === 1 ? 'gerente' : cargo.id}`;
+            if (cargo.id >= 2) {
+                div.id = `permissoes-cargo-${cargo.id}`;
+            } else {
+                return;
+            }
             div.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <div>
@@ -166,16 +195,19 @@ function salvarPermissoes() {
         });
         cargos.push(cargo);
     });
-    // Mantém gerente
-    const gerente = JSON.parse(localStorage.getItem('cargosPermissoes')).find(c => c.id === 1);
+    const gerente = cargosBackend.find(c => c.id === 1);
     if (gerente) cargos.unshift(gerente);
-    localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
-}
 
+    cargos.forEach(cargo => {
+        fetch(`/cargos/${cargo.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cargo)
+        });
+    });
+}
 function criarCargo(id, nome) {
-    const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
     const novoCargo = {
-        id,
         nome,
         produtos: 0,
         movimentacoes: 0,
@@ -183,24 +215,31 @@ function criarCargo(id, nome) {
         fornecedores: 0,
         funcionarios: 0
     };
-    cargos.push(novoCargo);
-    cargos.sort((a, b) => a.id - b.id);
-    localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
-    renderizarCargos();
-    renderizarPermissoes();
-    setTimeout(() => {
-        const div = document.getElementById(`permissoes-cargo-${id}`);
-        if (div) {
-            div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, 200);
+    fetch('/cargos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novoCargo)
+    })
+    .then(() => {
+        carregarCargosBackend();
+        setTimeout(() => {
+            const cargos = cargosBackend;
+            const cargo = cargos.find(c => c.nome === nome);
+            if (cargo) {
+                const div = document.getElementById(`permissoes-cargo-${cargo.id}`);
+                if (div) {
+                    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 200);
+    });
 }
 
 function abrirEditarCargo(id) {
-  const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+  const cargos = cargosBackend;
   const cargo = cargos.find(c => c.id === id);
   if (!cargo) return;
-Swal.fire({
+  Swal.fire({
     title: `<h2 style="padding-top:20px; color:#277580; text-align:left;">Renomear Cargo</h2>`,
     html: `<p style="text-align:left; padding: 0px 20px 0px 10px; margin: 0;">${cargo.nome}</p>`,
     input: 'text',
@@ -211,97 +250,120 @@ Swal.fire({
     cancelButtonText: 'Cancelar',
     allowOutsideClick: false,
     didOpen: () => {
-        const input = Swal.getInput();
-        if (input) {
-            input.maxLength = 12;
-            input.style.fontSize = '12px';
-            input.style.margin = '0px 20px 10px 20px';
-            input.style.border = 'solid 1px #aaa';
-            input.style.borderRadius = '4px';
-        }
+      const input = Swal.getInput();
+      if (input) {
+        input.maxLength = 12;
+        input.style.fontSize = '12px';
+        input.style.margin = '0px 20px 10px 20px';
+        input.style.border = 'solid 1px #aaa';
+        input.style.borderRadius = '4px';
+      }
     },
     inputValidator: (value) => {
-        const nome = (value || '').trim();
-        if (!nome || nome.length < 3) return 'Digite um nome válido!';
-        const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-        if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';
-        // Validação de caracteres especiais
-        if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
-        if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
-        if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
-        return null;
+      const nome = (value || '').trim();
+      if (!nome || nome.length < 3) return 'Digite um nome válido!';
+      const cargos = cargosBackend;
+      if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';
+      if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
+      if (/[_\-]$/.test(nome)) return 'Não pode terminar com _ ou -';
+      if (/\d/.test(nome)) return 'O nome do cargo não pode conter números!';
+      return null;
     }
-}).then(result => {
+  }).then(result => {
     if (result.isConfirmed) {
-      cargo.nome = result.value.trim();
-      localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
-      renderizarCargos();
-      renderizarPermissoes();
-    }
-});
-}
-
-function removerCargo(id) {
-    // TODO: Verificar se existe funcionário com esse cargo antes de remover
-    // if (existeFuncionarioComCargo(id)) {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Não é possível remover',
-    //     text: 'Já existe funcionário cadastrado com esse cargo!',
-    //     timer: 1800,
-    //     showConfirmButton: false,
-    //     timerProgressBar: true,
-    //     allowOutsideClick: false,
-    //   });
-    //   return;
-    // }
-    const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-    const cargo = cargos.find(c => c.id === id);
-    const nomeCargo = cargo ? cargo.nome : 'este cargo';
-    Swal.fire({
-        icon: 'warning',
-        title: `Remover "${nomeCargo}"?`,
-        text: 'Essa ação não pode ser desfeita',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Voltar',
-        allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            let cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
-            cargos = cargos.filter(c => c.id !== id);
-            localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
-            renderizarCargos();
-            renderizarPermissoes();
+      fetch(`/usuarios/cargo/${cargo.id}`)
+        .then(res => res.json())
+        .then(funcionarios => {
+          if (funcionarios.length > 0) {
             Swal.fire({
+              icon: 'error',
+              title: 'Não é possível renomear',
+              text: 'Já existe funcionário cadastrado com esse cargo!',
+              timer: 1800,
+              showConfirmButton: false,
+              timerProgressBar: true,
+              allowOutsideClick: false,
+            });
+          } else {
+            cargo.nome = result.value.trim();
+            fetch(`/cargos/${cargo.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(cargo)
+            })
+            .then(() => {
+              carregarCargosBackend();
+              renderizarCargos();
+              renderizarPermissoes();
+              Swal.fire({
                 icon: 'success',
-                title: 'Cargo removido!',
+                title: 'Renomeado com sucesso!',
                 showConfirmButton: false,
                 timer: 1500,
                 timerProgressBar: true,
                 allowOutsideClick: false
+              });
+              setTimeout(() => {
+                const div = document.getElementById(`permissoes-cargo-${cargo.id}`);
+                if (div) {
+                  div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 300);
             });
+          }
+        });
+    }
+  });
+}
+function removerCargo(id) {
+    const cargo = cargosBackend.find(c => c.id === id);
+    fetch(`/usuarios/cargo/${id}`)
+      .then(res => res.json())
+      .then(funcionarios => {
+        if (funcionarios.length > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Não é possível remover',
+                text: 'Já existe funcionário cadastrado com esse cargo!',
+                timer: 1800,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+            });
+        } else {
+            fetch(`/cargos/${id}`, { method: 'DELETE' })
+              .then(() => {
+                carregarCargosBackend();
+                renderizarCargos();
+                renderizarPermissoes();
+                Swal.fire({
+                    icon: 'success',
+                    title: `"${cargo ? cargo.nome : 'Cargo'}" removido com sucesso!`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+              });
         }
     });
 }
-
-
 function alterarPermissaoCargo(id, modulo, nivel) {
-  const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+  const cargos = cargosBackend;
   const idx = cargos.findIndex(c => c.id === id);
   if (idx !== -1) {
     cargos[idx][modulo] = nivel;
-    localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
+    fetch(`/cargos/${cargos[idx].id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cargos[idx])
+    });
     renderizarPermissoes();
   }
 }
 
 function proximoIdCargo() {
-  const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+  const cargos = cargosBackend;
   for (let i = 1; i <= 7; i++) {
     if (!cargos.find(c => c.id === i)) return i;
   }
@@ -317,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function alterarPermissaoCargoCheckbox(id, modulo, nivel, checked) {
-    const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+    const cargos = cargosBackend;
     const idx = cargos.findIndex(c => c.id === id);
     if (idx !== -1) {
         if (checked) {
@@ -334,7 +396,7 @@ function alterarPermissaoCargoCheckbox(id, modulo, nivel, checked) {
             });
             cargos[idx][modulo] = novoNivel;
         }
-        localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
+        // localStorage.setItem('cargosPermissoes', JSON.stringify(cargos));
         renderizarPermissoes();
     }
 }
@@ -362,7 +424,7 @@ window.abrirCriarCargo = function(id) {
         inputValidator: (value) => {
             const nome = (value || '').trim();
             if (!nome || nome.length < 3) return 'Digite um nome válido!';
-            const cargos = JSON.parse(localStorage.getItem('cargosPermissoes')) || [];
+            const cargos = cargosBackend;
             if (cargos.some(c => c.nome.toLowerCase() === nome.toLowerCase())) return 'Cargo já existe!';
             // Validação de caracteres especiais
             if (/[^a-zA-Z0-9_\- áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]/.test(nome)) return 'Não pode conter caracteres especiais!';
