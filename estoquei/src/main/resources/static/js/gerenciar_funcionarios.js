@@ -44,25 +44,25 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarPlaceholderCargoMulti();
     });
     
-    fetch('/cargos')
-      .then(res => res.json())
-      .then(cargos => {
-        const select = document.getElementById('cad-cargo');
-        select.innerHTML = '<option value="">Selecione o cargo</option>';
-        cargos.forEach(cargo => {
-          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
-        });
-      });
+    // fetch('/cargos')
+    //   .then(res => res.json())
+    //   .then(cargos => {
+    //     const select = document.getElementById('cad-cargo');
+    //     select.innerHTML = '<option value="">Selecione o cargo</option>';
+    //     cargos.forEach(cargo => {
+    //       select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+    //     });
+    //   });
     
-    fetch('/cargos')
-      .then(res => res.json())
-      .then(cargos => {
-        const select = document.getElementById('edit-cargo');
-        select.innerHTML = '<option value="">Selecione o cargo</option>';
-        cargos.forEach(cargo => {
-          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
-        });
-      });
+    // fetch('/cargos')
+    //   .then(res => res.json())
+    //   .then(cargos => {
+    //     const select = document.getElementById('edit-cargo');
+    //     select.innerHTML = '<option value="">Selecione o cargo</option>';
+    //     cargos.forEach(cargo => {
+    //       select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+    //     });
+    //   });
     
     // Cadastro
     const nomeInput = document.getElementById('cad-nome');
@@ -313,28 +313,27 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(res => res.json())
       .then(cargos => {
         const select = document.getElementById('cad-cargo');
-        select.innerHTML = '<option value="">Selecione o cargo</option>';
+        select.innerHTML = '<option value="">Selecionar</option>';
         cargos.forEach(cargo => {
           select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
         });
       });
-    function preencherSelectEdicao(funcionario) {
-        fetch('/cargos')
-          .then(res => res.json())
-          .then(cargos => {
-            const select = document.getElementById('edit-cargo');
-            select.innerHTML = '<option value="">Selecione o cargo</option>';
-            cargos.forEach(cargo => {
-              select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
-            });
-            // Seleciona o cargo atual do funcionário
-            if (funcionario && funcionario.cargo && funcionario.cargo.id) {
-              select.value = funcionario.cargo.id;
-            }
-          });
-    }
 });
 
+function preencherSelectEdicao(funcionario) {
+    fetch('/cargos')
+        .then(res => res.json())
+        .then(cargos => {
+        const select = document.getElementById('edit-cargo');
+        select.innerHTML = '<option value="">Selecionar</option>';
+        cargos.forEach(cargo => {
+            select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+        });
+        if (funcionario && funcionario.cargo && funcionario.cargo.id) {
+            select.value = funcionario.cargo.id;
+        }
+    });
+}
 // Renderização da tabela
 function renderizarFuncionarios(lista) {
     const select = document.getElementById('registros-select');
@@ -1142,7 +1141,7 @@ function salvarEdicaoFuncionario() {
     const funcionarioAtual = {
         codigo: document.getElementById('edit-codigo').value.trim(),
         nome: document.getElementById('edit-nome').value.trim(),
-        cargo: document.getElementById('edit-cargo').value,
+        cargo: { id: document.getElementById('edit-cargo').value },
         email: document.getElementById('edit-email').value.trim(),
         senha: document.getElementById('edit-senha').value,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
@@ -1421,7 +1420,7 @@ function salvarEdicaoFuncionario() {
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,
-        cargo: document.getElementById('edit-cargo').value,
+        cargo: { id: document.getElementById('edit-cargo').value },
         email: document.getElementById('edit-email').value,
         senha: senha,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
