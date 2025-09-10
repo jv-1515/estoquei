@@ -95,6 +95,17 @@ if (bellIcon) {
     });
 }
 
+function atualizarCardFornecedores() {
+    fetch('/fornecedores')
+        .then(res => res.json())
+        .then(lista => {
+            document.getElementById('valor-fornecedores').textContent = (Array.isArray(lista) && lista.length) ? lista.length : 0;
+        })
+        .catch(() => {
+            document.getElementById('valor-fornecedores').textContent = 0;
+        });
+}
+
 function atualizarCardFuncionarios() {
     fetch('/usuarios')
         .then(res => res.json())
@@ -157,9 +168,6 @@ function atualizarCardMovimentacoes() {
 }
 
 function atualizarCardsInfo() {
-    const tipoUser = document.getElementById('avatar-tipo');
-    const tipo = tipoUser ? tipoUser.textContent.trim() : '';
-
     if (document.getElementById('valor-produtos-cadastrados')) {
         atualizarCardProdutos();
     }
@@ -170,17 +178,14 @@ function atualizarCardsInfo() {
         atualizarCardMovimentacoes();
     }
 
-    // Só gerente ou admin
-    if (tipo === 'Gerente' || tipo === 'Administrador') {
-        if (document.getElementById('valor-fornecedores')) {
-            document.getElementById('valor-fornecedores').textContent = 0;
-        }
-        if (document.getElementById('valor-funcionarios')) {
-            atualizarCardFuncionarios();
-        }
-        if (document.getElementById('valor-relatorios')) {
-            atualizarCardRelatorios();
-        }
+    if (document.getElementById('valor-fornecedores')) {
+        atualizarCardFornecedores();
+    }
+    if (document.getElementById('valor-funcionarios')) {
+        atualizarCardFuncionarios();
+    }
+    if (document.getElementById('valor-relatorios')) {
+        atualizarCardRelatorios();
     }
 }
 window.addEventListener('pageshow', function() {
