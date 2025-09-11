@@ -393,7 +393,7 @@ function renderizarFuncionarios(lista) {
     }
 
     tbody.innerHTML = pagina
-        .filter(f => f.tipo !== "Admin")
+        .filter(f => f.cargo && f.cargo.nome.toLowerCase() !== "admin")
         .map(
             (f, idx) => `
             <tr tabindex="${idx + 1}">
