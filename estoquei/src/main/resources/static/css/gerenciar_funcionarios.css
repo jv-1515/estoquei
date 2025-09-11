@@ -51,6 +51,7 @@ h3 {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: flex-end;
 }
 
 .input-group {
@@ -534,12 +535,6 @@ select#registros-select option {
     width: 12px !important;
     height: 12px !important;
 }
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-}
 
 .input-group label {
     font-size: 12px;
@@ -692,32 +687,33 @@ select#registros-select option {
 .cargo-btn.cargo-7 { background: #16a085; color: #fff; }
 .cargo-btn.extra { background: #f3f3f3; color: #888; }
 
-
-.filters-row {
-    position: relative;
-    width: 100%;
-    /* min-height: 44px; */
-    align-items: center;
-}
-
 .cargo-list {
     display: flex;
     gap: 10px;
     overflow-x: auto;
     scrollbar-width: none;
-    /* padding-bottom: 2px; */
     width: 100%;
-    /* max-height: 44px; */
+    position: relative;
 }
 
 .btn-permissoes {
     position: absolute;
-    /* right: 0;
-    top: 0; */
-    z-index: 2;
-    /* display: flex;
+    right: 0;
+    z-index: 3;
+    display: flex;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07); */
+    background: #1e94a3;
+}
+
+.cargo-gradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 130px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(to left, rgb(255 255 255) 88%, rgba(255, 255, 255, 0.0) 100%);
 }
 
 /* sweetAlert */
