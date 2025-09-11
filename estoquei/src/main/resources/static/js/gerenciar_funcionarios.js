@@ -1782,8 +1782,8 @@ function abrirDetalhesFuncionario(id) {
     
     // Cargo + idade na mesma linha
     const cargoIdadeDiv = document.getElementById('detalhes-cargo-idade');
-    let cargo = funcionario.cargo
-        ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
+    let cargo = funcionario.cargo && funcionario.cargo.nome
+        ? funcionario.cargo.nome.charAt(0) + funcionario.cargo.nome.slice(1).toLowerCase()
         : '';
     let idadeStr = '';
     if (funcionario.dataNascimento) {
