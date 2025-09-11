@@ -2121,3 +2121,38 @@ function atualizarContadorEtapaFuncionario(etapa) {
         texto.textContent = `${etapa}/${total}`;
     }
 }
+
+function renderizarCargosFuncionarios() {
+    const container = document.querySelector('.cargo-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        // Filtra e ordena os cargos reais (exceto admin)
+        const cargosVisiveis = cargos
+            .filter(c => c.nome.toLowerCase() !== 'admin')
+            .sort((a, b) => a.id - b.id);
+
+        cargosVisiveis.forEach((cargo, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `cargo-btn cargo-${idx + 1}`;
+            btn.innerHTML = `
+                ${cargo.nome} <span id="cargo-count-${cargo.id}">0</span>
+            `;
+            container.appendChild(btn);
+
+            // Busca o número de funcionários para este cargo
+            fetch(`/usuarios/cargo/${cargo.id}`)
+                .then(res => res.json())
+                .then(funcionarios => {
+                    const span = btn.querySelector(`#cargo-count-${cargo.id}`);
+                    if (span) span.textContent = funcionarios.length;
+                });
+        });
+      });
+}
+
+// Chama ao carregar a página
+document.addEventListener('DOMContentLoaded', renderizarCargosFuncionarios);
