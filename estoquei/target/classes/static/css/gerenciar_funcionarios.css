@@ -54,6 +54,42 @@ h3 {
     align-items: flex-end;
 }
 
+.cargo-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    width: 100%;
+    position: relative;
+    padding-right: 120px;
+    box-sizing: border-box;
+}
+
+/* .btn-permissoes {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    background: #1e94a3;
+    padding: 0 24px;
+    border-radius: 8px;
+    width: 130px;
+} */
+
+.cargo-gradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 120px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(to left, rgb(255 255 255) 92%, rgba(255, 255, 255, 0.0) 100%);
+}
+
 .input-group {
     position: relative;
     flex: 1 1 100px;
@@ -687,14 +723,14 @@ select#registros-select option {
 .cargo-btn.cargo-7 { background: #16a085; color: #fff; }
 .cargo-btn.extra { background: #f3f3f3; color: #888; }
 
-.cargo-list {
+/* .cargo-list {
     display: flex;
     gap: 10px;
     overflow-x: auto;
     scrollbar-width: none;
     width: 100%;
     position: relative;
-}
+} */
 
 .btn-permissoes {
     position: absolute;
@@ -703,17 +739,6 @@ select#registros-select option {
     display: flex;
     align-items: center;
     background: #1e94a3;
-}
-
-.cargo-gradient {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 130px;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
-    background: linear-gradient(to left, rgb(255 255 255) 88%, rgba(255, 255, 255, 0.0) 100%);
 }
 
 /* sweetAlert */

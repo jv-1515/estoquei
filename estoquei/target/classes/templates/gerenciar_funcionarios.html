@@ -29,8 +29,7 @@
                     <i class="fa fa-search"></i>
                 </span>
             </div>
-            <!-- Multi-select Cargo -->
-            <div class="multiselect input-group">
+            <div class="multiselect input-group" style="min-width: 120px">
                 <label for="filter-cargo">Cargo</label>
                 <div style="position:relative;">
                     <input type="text" id="filter-cargo" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
@@ -42,7 +41,6 @@
                 <div id="checkboxes-cargo-multi" style="display:none;">
                 </div>
             </div>
-            <!-- Multi-select Status -->
             <div class="multiselect input-group">
                 <label for="filter-status">Status</label>
                 <div style="position:relative;">
@@ -67,15 +65,14 @@
     <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
         <h2>Cargos</h2>
         <div class="filters-row" style="position: relative;">
-          <div style="display: flex; justify-content: flex-end; align-items: flex-end; width: 100%; gap: 16px;">
-            <div class="cargo-list" id="cargo-list"></div>
-            <button class="btn btn-permissoes">
-              <a href="/permissoes" style="text-decoration: none; color: inherit;">
-                <i class="fa-solid fa-address-card"></i> Permissões
-              </a>
-            </button>
-              <div class="cargo-gradient"></div>
-          </div>
+          <div class="cargo-list" id="cargo-list"></div>
+          <button class="btn btn-permissoes">
+            <a href="/permissoes" style="text-decoration: none; color: inherit;">
+              <i class="fa-solid fa-address-card"></i> Permissões
+            </a>
+          </button>
+            <div class="cargo-gradient"></div>
+        </div>
         </div>
         </div>
     </div>
