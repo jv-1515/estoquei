@@ -51,6 +51,43 @@ h3 {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.cargo-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    width: 100%;
+    position: relative;
+    padding-right: 120px;
+    box-sizing: border-box;
+}
+
+/* .btn-permissoes {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    background: #1e94a3;
+    padding: 0 24px;
+    border-radius: 8px;
+    width: 130px;
+} */
+
+.cargo-gradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 120px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(to left, rgb(255 255 255) 92%, rgba(255, 255, 255, 0.0) 100%);
 }
 
 .input-group {
@@ -130,6 +167,7 @@ h3 {
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
+    height: 30px;
 }
 
 .btn:hover {
@@ -533,12 +571,6 @@ select#registros-select option {
     width: 12px !important;
     height: 12px !important;
 }
-.filters-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-}
 
 .input-group label {
     font-size: 12px;
@@ -668,7 +700,6 @@ select#registros-select option {
     border-radius: 8px;
     padding: 2px 15px;
     font-size: 14px;
-    cursor: pointer;
     background: #f3f3f3;
     color: #277580;
     transition: background 0.2s;
@@ -692,8 +723,23 @@ select#registros-select option {
 .cargo-btn.cargo-7 { background: #16a085; color: #fff; }
 .cargo-btn.extra { background: #f3f3f3; color: #888; }
 
+/* .cargo-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    width: 100%;
+    position: relative;
+} */
 
-
+.btn-permissoes {
+    position: absolute;
+    right: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background: #1e94a3;
+}
 
 /* sweetAlert */
 .swal2-popup {

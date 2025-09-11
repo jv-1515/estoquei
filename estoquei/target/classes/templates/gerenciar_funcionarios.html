@@ -29,8 +29,7 @@
                     <i class="fa fa-search"></i>
                 </span>
             </div>
-            <!-- Multi-select Cargo -->
-            <div class="multiselect input-group">
+            <div class="multiselect input-group" style="min-width: 120px">
                 <label for="filter-cargo">Cargo</label>
                 <div style="position:relative;">
                     <input type="text" id="filter-cargo" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
@@ -42,7 +41,6 @@
                 <div id="checkboxes-cargo-multi" style="display:none;">
                 </div>
             </div>
-            <!-- Multi-select Status -->
             <div class="multiselect input-group">
                 <label for="filter-status">Status</label>
                 <div style="position:relative;">
@@ -66,39 +64,16 @@
 
     <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
         <h2>Cargos</h2>
-        <div class="filters-row">
-            <div style="flex: 1; overflow: hidden; position: relative;">
-                <div class="cargo-list" style="display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; cursor: grab;">
-                    <button class="cargo-btn cargo-1">
-                      Gerente <span id="cargo-1">0</span>
-                    </button>
-                    <button class="cargo-btn cargo-2">
-                      Vendedor <span id="cargo-2">0</span>
-                    </button>
-                    <button class="cargo-btn cargo-3">
-                      Caixa <span id="cargo-3">0</span>
-                    </button>
-                    <button class="cargo-btn cargo-4">
-                      Estoquista <span id="cargo-4">0</span>
-                    </button>
-                    <!--
-                    <button class="cargo-btn cargo-5">
-                      Supervisor <span id="cargo-5">0</span>
-                    </button>
-                    <button class="cargo-btn cargo-6">
-                      Assistente <span id="cargo-6">0</span>
-                    </button>
-                    <button class="cargo-btn cargo-7">
-                      Auxiliar <span id="cargo-7">0</span>
-                    </button>
-                    -->
-                </div>
-            </div>
-            <button class="btn" style="margin-left: 10px; z-index: 2; position: relative;">
-                <a href="/permissoes" style="text-decoration: none; color: inherit;">
-                  <i class="fa-solid fa-address-card"></i> Permissões
-                </a>
-            </button>
+        <div class="filters-row" style="position: relative;">
+          <div class="cargo-list" id="cargo-list"></div>
+          <button class="btn btn-permissoes">
+            <a href="/permissoes" style="text-decoration: none; color: inherit;">
+              <i class="fa-solid fa-address-card"></i> Permissões
+            </a>
+          </button>
+            <div class="cargo-gradient"></div>
+        </div>
+        </div>
         </div>
     </div>
 

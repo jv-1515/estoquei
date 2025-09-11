@@ -322,25 +322,20 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 });
 
-
 function preencherSelectEdicao(funcionario) {
-        fetch('/cargos')
-          .then(res => res.json())
-          .then(cargos => {
-            const select = document.getElementById('edit-cargo');
-            select.innerHTML = '<option value="">Selecionar</option>';
-            cargos.forEach(cargo => {
-              if (cargo.id > 0) {
-                select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
-              }
-            });
-            // Seleciona o cargo atual do funcionário
-            if (funcionario && funcionario.cargo && funcionario.cargo.id) {
-              select.value = funcionario.cargo.id;
-            }
-          });
-    }
-
+    fetch('/cargos')
+        .then(res => res.json())
+        .then(cargos => {
+        const select = document.getElementById('edit-cargo');
+        select.innerHTML = '<option value="">Selecionar</option>';
+        cargos.forEach(cargo => {
+            select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+        });
+        if (funcionario && funcionario.cargo && funcionario.cargo.id) {
+            select.value = funcionario.cargo.id;
+        }
+    });
+}
 // Renderização da tabela
 function renderizarFuncionarios(lista) {
     const select = document.getElementById('registros-select');
@@ -1148,7 +1143,7 @@ function salvarEdicaoFuncionario() {
     const funcionarioAtual = {
         codigo: document.getElementById('edit-codigo').value.trim(),
         nome: document.getElementById('edit-nome').value.trim(),
-        cargo: document.getElementById('edit-cargo').value,
+        cargo: { id: document.getElementById('edit-cargo').value },
         email: document.getElementById('edit-email').value.trim(),
         senha: document.getElementById('edit-senha').value,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
@@ -1427,7 +1422,7 @@ function salvarEdicaoFuncionario() {
     const funcionarioObj = {
         codigo: document.getElementById('edit-codigo').value,
         nome: nome,
-        cargo: document.getElementById('edit-cargo').value,
+        cargo: { id: document.getElementById('edit-cargo').value },
         email: document.getElementById('edit-email').value,
         senha: senha,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
@@ -2128,3 +2123,38 @@ function atualizarContadorEtapaFuncionario(etapa) {
         texto.textContent = `${etapa}/${total}`;
     }
 }
+
+function renderizarCargosFuncionarios() {
+    const container = document.querySelector('.cargo-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    fetch('/cargos')
+      .then(res => res.json())
+      .then(cargos => {
+        // Filtra e ordena os cargos reais (exceto admin)
+        const cargosVisiveis = cargos
+            .filter(c => c.nome.toLowerCase() !== 'admin')
+            .sort((a, b) => a.id - b.id);
+
+        cargosVisiveis.forEach((cargo, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `cargo-btn cargo-${idx + 1}`;
+            btn.innerHTML = `
+                ${cargo.nome} <span id="cargo-count-${cargo.id}">0</span>
+            `;
+            container.appendChild(btn);
+
+            // Busca o número de funcionários para este cargo
+            fetch(`/usuarios/cargo/${cargo.id}`)
+                .then(res => res.json())
+                .then(funcionarios => {
+                    const span = btn.querySelector(`#cargo-count-${cargo.id}`);
+                    if (span) span.textContent = funcionarios.length;
+                });
+        });
+      });
+}
+
+// Chama ao carregar a página
+document.addEventListener('DOMContentLoaded', renderizarCargosFuncionarios);
