@@ -315,7 +315,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('cad-cargo');
         select.innerHTML = '<option value="">Selecionar</option>';
         cargos.forEach(cargo => {
-          select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+          if (cargo.id > 0) {
+            select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
+          }
         });
       });
 });
@@ -1777,8 +1779,8 @@ function abrirDetalhesFuncionario(id) {
     
     // Cargo + idade na mesma linha
     const cargoIdadeDiv = document.getElementById('detalhes-cargo-idade');
-    let cargo = funcionario.cargo
-        ? funcionario.cargo.charAt(0) + funcionario.cargo.slice(1).toLowerCase()
+    let cargo = funcionario.cargo && funcionario.cargo.nome
+        ? funcionario.cargo.nome.charAt(0) + funcionario.cargo.nome.slice(1).toLowerCase()
         : '';
     let idadeStr = '';
     if (funcionario.dataNascimento) {
