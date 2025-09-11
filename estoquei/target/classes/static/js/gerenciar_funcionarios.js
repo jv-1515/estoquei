@@ -32,7 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(cargos => {
         const container = document.getElementById('checkboxes-cargo-multi');
         container.innerHTML = `<label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked> Todos</label>`;
-        cargos.forEach(cargo => {
+        cargos
+        .filter(cargo => cargo.nome.toLowerCase() !== 'admin')
+        .forEach(cargo => {
           container.innerHTML += `<label><input type="checkbox" class="cargo-multi-check" value="${cargo.id}" checked> ${cargo.nome}</label>`;
         });
         document.querySelectorAll('.cargo-multi-check').forEach(cb => {
@@ -308,16 +310,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.atualizarAvatarEdicao = atualizarAvatarEdicao;
 
-    // Carregar cargos do backend e preencher o select
     fetch('/cargos')
       .then(res => res.json())
       .then(cargos => {
         const select = document.getElementById('cad-cargo');
-        select.innerHTML = '<option value="">Selecionar</option>';
-        cargos.forEach(cargo => {
+        select.innerHTML = '<option value="" selected disabled hidden>Selecionar</option>';
+        cargos
+          .filter(cargo => cargo.nome.toLowerCase() !== 'admin')
+          .forEach(cargo => {
           select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
         });
-      });
+    });
 });
 
 function preencherSelectEdicao(funcionario) {
@@ -325,10 +328,12 @@ function preencherSelectEdicao(funcionario) {
         .then(res => res.json())
         .then(cargos => {
         const select = document.getElementById('edit-cargo');
-        select.innerHTML = '<option value="">Selecionar</option>';
-        cargos.forEach(cargo => {
+        select.innerHTML = '<option value="" selected disabled hidden>Selecionar</option>';
+        cargos
+            .filter(cargo => cargo.nome.toLowerCase() !== 'admin')
+            .forEach(cargo => {
             select.innerHTML += `<option value="${cargo.id}">${cargo.nome}</option>`;
-        });
+            });
         if (funcionario && funcionario.cargo && funcionario.cargo.id) {
             select.value = funcionario.cargo.id;
         }

@@ -193,10 +193,11 @@ input, select {
     display: flex;
     gap: 10px;
     overflow-x: auto;
-    flex-wrap: nowrap;
-    width: 100%;
     scrollbar-width: none;
-    cursor: grab;
+    width: 100%;
+    position: relative;
+    padding-right: 120px;
+    box-sizing: border-box;
 }
 
 .cargo-btn {
@@ -253,6 +254,17 @@ input, select {
 .cargo-btn.novo-cargo.cargo-5 { color: #e67e22; border-color: #e67e22; }
 .cargo-btn.novo-cargo.cargo-6 { color: #8e44ad; border-color: #8e44ad; }
 .cargo-btn.novo-cargo.cargo-7 { color: #16a085; border-color: #16a085; }
+
+.cargo-gradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(to left, rgb(255 255 255) 10%, rgba(255, 255, 255, 0.0) 50%);
+}
 
 .permissoes-table {
     display: flex;
