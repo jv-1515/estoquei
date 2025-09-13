@@ -173,7 +173,7 @@ public class ProdutoResource {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> atualizar(
             @PathVariable Long id,
             @ModelAttribute Produto produtoAtualizado,

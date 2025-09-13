@@ -260,7 +260,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             }
 
             fetch(`/produtos/${id}`, {
-                method: 'PUT',
+                method: 'POST',
                 body: formData
             })
             .then(response => {
