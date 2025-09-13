@@ -82,7 +82,9 @@ window.addEventListener('DOMContentLoaded', function() {
             <label for="valor-compra">Valor da Compra*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
             <label for="fornecedor">Fornecedor*</label>
-            <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
+            <select id="fornecedor" name="fornecedor" required>
+                <option value="" disabled selected hidden>Selecione o fornecedor</option>
+            </select>
             ` : `
             <label for="valor-venda">Valor da Venda*</label>
             <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
@@ -224,7 +226,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         nome: produtoSelecionado.nome,
                         codigoCompra: document.getElementById('codigo-compra').value,
                         dataEntrada: document.getElementById('data-compra').value,
-                        fornecedor: document.getElementById('fornecedor').value,
+                        fornecedorId: document.getElementById('fornecedor').value,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
                     };
@@ -313,9 +315,15 @@ window.addEventListener('DOMContentLoaded', function() {
             });
         }
         setTimeout(atualizarQuantidadeFinal, 0);
+        
+        if (tipo === 'ENTRADA' && produto && produto.categoria) {
+        preencherFornecedoresPorCategoria(produto.categoria);
+        }
     }
 
-    // Função para preencher os campos do produto (robusta)
+
+
+    // Função para preencher os campos do produto
     function preencherCampos(produto) {
         const precoFormatado = produto.preco !== undefined
             ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',')
@@ -601,19 +609,29 @@ function validarDatasMovimentacao() {
     return true;
 }
 
+function preencherFornecedoresPorCategoria(categoria) {
+    fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
+        .then(res => res.json())
+        .then(fornecedores => {
+            const select = document.getElementById('fornecedor');
+            select.innerHTML = '<option value="" disabled selected hidden>Selecione o fornecedor</option>';
+            fornecedores.forEach(f => {
+                select.innerHTML += `<option value="${f.id}">${f.codigo} - ${f.nome_empresa}</option>`;
+            });
+        });
+}
+
+preencherFornecedoresPorCategoria(produto.categoria);
 
 
 function aplicarEstiloInputs() {
-        // Seleciona só os inputs dentro de .filters-group
         const inputs = document.querySelectorAll('.filters-group input');
         inputs.forEach(input => {
-            // Aplica cor inicial ao carregar
             if (input.value.trim() === '') {
                 input.style.backgroundColor = 'white';
             } else {
                 input.style.backgroundColor = '#f1f1f1';
             }
-            // Ao perder o foco, alterna cor
             input.addEventListener('blur', () => {
                 if (input.value.trim() === '') {
                     input.style.backgroundColor = 'white';
@@ -624,5 +642,4 @@ function aplicarEstiloInputs() {
         });
     }
     
-    // Chame ao carregar a página
     document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);
