@@ -233,7 +233,11 @@ function filtrarFornecedores() {
 
 // Limpar filtros
 function limpar() {
-    buscaInput.value = '';
+    document.getElementById('busca-fornecedor').value = '';
+    document.getElementById('filter-cnpj').value = '';
+    todasFiltro.checked = false;
+    checksFiltro.forEach(cb => cb.checked = false);
+    atualizarPlaceholderCategoriaMulti();
     filtrarFornecedores();
 }
 
@@ -1915,4 +1919,30 @@ document.getElementById('busca-fornecedor').addEventListener('input', filtrarFor
 document.getElementById('filter-cnpj').addEventListener('input', filtrarFornecedores);
 document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
     cb.addEventListener('change', filtrarFornecedores);
+});
+
+const todasFiltro = document.getElementById('categoria-multi-todas-filtro');
+const checksFiltro = Array.from(document.querySelectorAll('.categoria-multi-check-filtro')).slice(1);
+
+todasFiltro.addEventListener('change', function() {
+    checksFiltro.forEach(cb => cb.checked = todasFiltro.checked);
+    atualizarPlaceholderCategoriaMulti();
+    filtrarFornecedores();
+});
+
+checksFiltro.forEach(cb => {
+    cb.addEventListener('change', function() {
+        todasFiltro.checked = checksFiltro.every(c => c.checked);
+        atualizarPlaceholderCategoriaMulti();
+        filtrarFornecedores();
+    });
+});
+
+document.getElementById('filter-cnpj').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+    e.target.value = v.slice(0, 18);
 });
