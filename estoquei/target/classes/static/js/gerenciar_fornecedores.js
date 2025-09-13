@@ -165,17 +165,51 @@ function renderizarPaginacao(totalPaginas) {
     }
 }
 
+function getCategoriasArrayTexto(f) {
+    const map = [
+        ['Camisa', f.camisa],
+        ['Camiseta', f.camiseta],
+        ['Calça', f['calça'] ?? f.calca],
+        ['Bermuda', f.bermuda],
+        ['Vestido', f.vestido],
+        ['Sapato', f.sapato],
+        ['Meia', f.meia],
+    ];
+    return map.filter(([_, v]) => !!v).map(([k]) => k);
+}
+
+function normalizarCategoria(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+}
 // Busca e filtro
 const buscaInput = document.getElementById('busca-fornecedor');
 buscaInput.addEventListener('input', filtrarFornecedores);
 
 function filtrarFornecedores() {
-    const termo = buscaInput.value.trim().toLowerCase();
-    let filtrados = fornecedoresOriginais.filter(f =>
-        (!termo ||
-            (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
-            (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)))
-    );
+    const termo = document.getElementById('busca-fornecedor').value.trim().toLowerCase();
+    const cnpj = document.getElementById('filter-cnpj').value.trim().replace(/\D/g, '');
+    const categoriasSelecionadas = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'))
+        .slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    let filtrados = fornecedoresOriginais.filter(f => {
+        const categoriasFornecedor = getCategoriasArrayTexto(f).map(normalizarCategoria);
+        return (
+            (!termo ||
+                (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
+                (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)) ||
+                (f.email && f.email.toLowerCase().includes(termo))
+            ) &&
+            (!cnpj || (f.cnpj && f.cnpj.replace(/\D/g, '').includes(cnpj))) &&
+            (
+                categoriasSelecionadas.length === 0 ||
+                categoriasSelecionadas
+                    .map(normalizarCategoria)
+                    .every(cat => categoriasFornecedor.includes(cat))
+            )
+        );
+    });
 
     // Ordenação
     if (indiceOrdenacaoAtual !== -1) {
@@ -679,7 +713,6 @@ document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
                         timerProgressBar: true,
                         allowOutsideClick: false
                     });
-                    // Atualiza lista e fecha modal igual funcionários
                     fetch('/fornecedores')
                         .then(res => res.json())
                         .then(data => {
@@ -755,7 +788,7 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
-    // Código único (consulta backend)
+    // Código único
     let existeCodigo = false;
     try {
         existeCodigo = await fetch(`/fornecedores/codigo-existe?codigo=${encodeURIComponent(codigo)}`).then(r => r.json());
@@ -822,7 +855,7 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
-    // CNPJ único (consulta backend)
+    // CNPJ único
     let existeCnpj = false;
     try {
         existeCnpj = await fetch(`/fornecedores/cnpj-existe?cnpj=${encodeURIComponent(cnpj)}`).then(r => r.json());
@@ -865,7 +898,7 @@ async function validarFornecedorEdit() {
         return false;
     }
 
-    // Categorias obrigatórias (se for obrigatório)
+    // Categorias
     if (!categorias || categorias === 'Nenhuma') {
         Swal.fire({
             icon: 'warning',
@@ -995,8 +1028,7 @@ async function validarFornecedorEdit() {
     return true;
 }
 
-// MODAL DE CADASTRO DE FORNECEDOR
-
+// Cadastro novo fornecedor
 let etapaCadastroFornecedor = 1;
 const totalEtapasFornecedor = 4;
 
@@ -1011,7 +1043,7 @@ function abrirCadastroFornecedor() {
 }
 
 function fecharCadastroFornecedor() {
-    //na etapa um se tiver algo valida, se nao ja fecha
+
     if (etapaCadastroFornecedor === 1) {
         const campos = [
             'cad-codigo',
@@ -1275,9 +1307,6 @@ document.getElementById('cad-nome-responsavel').addEventListener('input', functi
     this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
 });
 
-// document.getElementById('cad-telefone').addEventListener('input', function() {
-//     this.value = this.value.replace(/\D/g, '');
-// });
 function mascaraTelefone(input) {
     function formatarTel(v) {
         v = v.replace(/\D/g, '').slice(0, 11);
@@ -1857,4 +1886,33 @@ document.addEventListener('DOMContentLoaded', function() {
             contador.textContent = `${this.value.length}/${max}`;
         });
     }
+});
+
+function showCheckboxesCategoriaMultiFiltro() {
+    const checkboxes = document.getElementById("checkboxes-categoria-multi-filtro");
+    checkboxes.style.display = checkboxes.style.display === 'block' ? 'none' : 'block';
+}
+document.getElementById('filter-categoria').addEventListener('click', showCheckboxesCategoriaMultiFiltro);
+document.addEventListener('mousedown', function(e) {
+    const checkboxes = document.getElementById("checkboxes-categoria-multi-filtro");
+    if (checkboxes && !checkboxes.contains(e.target) && e.target.id !== 'filter-categoria') {
+        checkboxes.style.display = 'none';
+    }
+});
+
+function atualizarPlaceholderCategoriaMulti() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check-filtro')).slice(1);
+    const input = document.getElementById('filter-categoria');
+    const selecionados = checks.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    input.value = selecionados.length === 0 ? 'Selecionar' : selecionados.join(', ');
+}
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+});
+atualizarPlaceholderCategoriaMulti();
+
+document.getElementById('busca-fornecedor').addEventListener('input', filtrarFornecedores);
+document.getElementById('filter-cnpj').addEventListener('input', filtrarFornecedores);
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', filtrarFornecedores);
 });

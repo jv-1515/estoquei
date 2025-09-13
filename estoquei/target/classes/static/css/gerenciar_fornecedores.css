@@ -471,7 +471,7 @@ select#registros-select option {
   cursor: pointer;
 }
 #checkboxes-categoria-multi,
-#checkboxes-status-multi {
+#checkboxes-categoria-multi-filtro {
     display: none;
     border: 1px #aaa solid;
     border-radius: 4px;
@@ -484,7 +484,7 @@ select#registros-select option {
     overflow-y: auto;
 }
 #checkboxes-categoria-multi label,
-#checkboxes-status-multi label {
+#checkboxes-categoria-multi-filtro label {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -496,13 +496,13 @@ select#registros-select option {
 }
 
 #checkboxes-categoria-multi label:hover,
-#checkboxes-status-multi label:hover {
+#checkboxes-categoria-multi-filtro label:hover {
     background-color: #f3f3f3;
     color: black !important;
 }
 
 #checkboxes-categoria-multi input[type="checkbox"],
-#checkboxes-status-multi input[type="checkbox"] {
+#checkboxes-categoria-multi-filtro input[type="checkbox"] {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
