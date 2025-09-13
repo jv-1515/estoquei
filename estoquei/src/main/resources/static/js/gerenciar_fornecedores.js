@@ -165,17 +165,51 @@ function renderizarPaginacao(totalPaginas) {
     }
 }
 
+function getCategoriasArrayTexto(f) {
+    const map = [
+        ['Camisa', f.camisa],
+        ['Camiseta', f.camiseta],
+        ['Calça', f['calça'] ?? f.calca],
+        ['Bermuda', f.bermuda],
+        ['Vestido', f.vestido],
+        ['Sapato', f.sapato],
+        ['Meia', f.meia],
+    ];
+    return map.filter(([_, v]) => !!v).map(([k]) => k);
+}
+
+function normalizarCategoria(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+}
 // Busca e filtro
 const buscaInput = document.getElementById('busca-fornecedor');
 buscaInput.addEventListener('input', filtrarFornecedores);
 
 function filtrarFornecedores() {
-    const termo = buscaInput.value.trim().toLowerCase();
-    let filtrados = fornecedoresOriginais.filter(f =>
-        (!termo ||
-            (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
-            (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)))
-    );
+    const termo = document.getElementById('busca-fornecedor').value.trim().toLowerCase();
+    const cnpj = document.getElementById('filter-cnpj').value.trim().replace(/\D/g, '');
+    const categoriasSelecionadas = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'))
+        .slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+
+    let filtrados = fornecedoresOriginais.filter(f => {
+        const categoriasFornecedor = getCategoriasArrayTexto(f).map(normalizarCategoria);
+        return (
+            (!termo ||
+                (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
+                (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)) ||
+                (f.email && f.email.toLowerCase().includes(termo))
+            ) &&
+            (!cnpj || (f.cnpj && f.cnpj.replace(/\D/g, '').includes(cnpj))) &&
+            (
+                categoriasSelecionadas.length === 0 ||
+                categoriasSelecionadas
+                    .map(normalizarCategoria)
+                    .every(cat => categoriasFornecedor.includes(cat))
+            )
+        );
+    });
 
     // Ordenação
     if (indiceOrdenacaoAtual !== -1) {
@@ -199,7 +233,12 @@ function filtrarFornecedores() {
 
 // Limpar filtros
 function limpar() {
-    buscaInput.value = '';
+    document.getElementById('busca-fornecedor').value = '';
+    document.getElementById('filter-cnpj').value = '';
+    todasFiltro.checked = false;
+    checksFiltro.forEach(cb => cb.checked = false);
+    atualizarPlaceholderCategoriaMulti();
+    atualizarEstiloCnpjFiltro();
     filtrarFornecedores();
 }
 
@@ -679,7 +718,6 @@ document.getElementById('form-editar-fornecedor').onsubmit = async function(e) {
                         timerProgressBar: true,
                         allowOutsideClick: false
                     });
-                    // Atualiza lista e fecha modal igual funcionários
                     fetch('/fornecedores')
                         .then(res => res.json())
                         .then(data => {
@@ -755,7 +793,7 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
-    // Código único (consulta backend)
+    // Código único
     let existeCodigo = false;
     try {
         existeCodigo = await fetch(`/fornecedores/codigo-existe?codigo=${encodeURIComponent(codigo)}`).then(r => r.json());
@@ -822,7 +860,7 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
-    // CNPJ único (consulta backend)
+    // CNPJ único
     let existeCnpj = false;
     try {
         existeCnpj = await fetch(`/fornecedores/cnpj-existe?cnpj=${encodeURIComponent(cnpj)}`).then(r => r.json());
@@ -865,7 +903,7 @@ async function validarFornecedorEdit() {
         return false;
     }
 
-    // Categorias obrigatórias (se for obrigatório)
+    // Categorias
     if (!categorias || categorias === 'Nenhuma') {
         Swal.fire({
             icon: 'warning',
@@ -995,8 +1033,7 @@ async function validarFornecedorEdit() {
     return true;
 }
 
-// MODAL DE CADASTRO DE FORNECEDOR
-
+// Cadastro novo fornecedor
 let etapaCadastroFornecedor = 1;
 const totalEtapasFornecedor = 4;
 
@@ -1011,7 +1048,7 @@ function abrirCadastroFornecedor() {
 }
 
 function fecharCadastroFornecedor() {
-    //na etapa um se tiver algo valida, se nao ja fecha
+
     if (etapaCadastroFornecedor === 1) {
         const campos = [
             'cad-codigo',
@@ -1275,9 +1312,6 @@ document.getElementById('cad-nome-responsavel').addEventListener('input', functi
     this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
 });
 
-// document.getElementById('cad-telefone').addEventListener('input', function() {
-//     this.value = this.value.replace(/\D/g, '');
-// });
 function mascaraTelefone(input) {
     function formatarTel(v) {
         v = v.replace(/\D/g, '').slice(0, 11);
@@ -1857,4 +1891,96 @@ document.addEventListener('DOMContentLoaded', function() {
             contador.textContent = `${this.value.length}/${max}`;
         });
     }
+});
+
+function showCheckboxesCategoriaMultiFiltro() {
+    const checkboxes = document.getElementById("checkboxes-categoria-multi-filtro");
+    checkboxes.style.display = checkboxes.style.display === 'block' ? 'none' : 'block';
+}
+document.getElementById('filter-categoria').addEventListener('click', showCheckboxesCategoriaMultiFiltro);
+document.addEventListener('mousedown', function(e) {
+    const checkboxes = document.getElementById("checkboxes-categoria-multi-filtro");
+    if (checkboxes && !checkboxes.contains(e.target) && e.target.id !== 'filter-categoria') {
+        checkboxes.style.display = 'none';
+    }
+});
+
+function atualizarPlaceholderCategoriaMulti() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'));
+    const todas = checks[0];
+    const input = document.getElementById('filter-categoria');
+    const chevron = input.parentNode.querySelector('.chevron-categoria');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = selecionados.length > 0;
+
+    input.value = selecionados.length === 0 ? 'Selecionar' : selecionados.join(', ');
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
+}
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+});
+atualizarPlaceholderCategoriaMulti();
+
+document.getElementById('busca-fornecedor').addEventListener('input', filtrarFornecedores);
+document.getElementById('filter-cnpj').addEventListener('input', filtrarFornecedores);
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', filtrarFornecedores);
+});
+
+const todasFiltro = document.getElementById('categoria-multi-todas-filtro');
+const checksFiltro = Array.from(document.querySelectorAll('.categoria-multi-check-filtro')).slice(1);
+
+todasFiltro.addEventListener('change', function() {
+    checksFiltro.forEach(cb => cb.checked = todasFiltro.checked);
+    atualizarPlaceholderCategoriaMulti();
+    filtrarFornecedores();
+});
+
+checksFiltro.forEach(cb => {
+    cb.addEventListener('change', function() {
+        todasFiltro.checked = checksFiltro.every(c => c.checked);
+        atualizarPlaceholderCategoriaMulti();
+        filtrarFornecedores();
+    });
+});
+
+
+function atualizarEstiloCnpjFiltro() {
+    const cnpjInput = document.getElementById('filter-cnpj');
+    let ativo = !!cnpjInput.value.trim();
+    if (ativo) {
+        cnpjInput.style.border = '2px solid #1e94a3';
+        cnpjInput.style.color = '#1e94a3';
+    } else {
+        cnpjInput.style.border = '';
+        cnpjInput.style.color = '';
+    }
+}
+
+document.getElementById('filter-cnpj').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+    e.target.value = v.slice(0, 18);
+});
+
+document.getElementById('filter-cnpj').addEventListener('input', atualizarEstiloCnpjFiltro);
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+});
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarPlaceholderCategoriaMulti();
+    atualizarEstiloCnpjFiltro();
 });
