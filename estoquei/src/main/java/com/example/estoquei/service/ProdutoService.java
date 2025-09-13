@@ -101,7 +101,7 @@ public class ProdutoService {
                         System.err.println("Falha ao deletar imagem antiga do Firebase: " + e.getMessage());
                     }
                 }
-                String novaImageUrl = firebaseStorageService.uploadFile(foto, "produtos");
+                String novaImageUrl = firebaseStorageService.uploadFile(foto, "imagens");
                 p.setUrl_imagem(novaImageUrl);
             } else if (novoProduto.getUrl_imagem() == null || novoProduto.getUrl_imagem().isEmpty()) {
                 // Se quiser remover a imagem caso o campo venha vazio, descomente abaixo:

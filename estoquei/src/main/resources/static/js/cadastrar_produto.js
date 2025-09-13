@@ -116,8 +116,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
         if (descricaoInput) descricaoInput.value = '';
 
         Swal.fire({
-            title: "Sucesso!",
-            text: "Produto cadastrado no estoque!",
+            title: `Produto "${produto.nome}" cadastrado!`,
+            text: "Selecione uma opção",
             icon: "success",
             showCloseButton: true,
             showCancelButton: true,
@@ -125,14 +125,14 @@ document.querySelector('form').addEventListener('submit', function(event) {
             cancelButtonText: 'Abastecer Produto',
             allowOutsideClick: false,
             customClass: {
-                confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
+              confirmButton: 'swal2-confirm-custom',
+              cancelButton: 'swal2-cancel'
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "/estoque";
+          window.location.href = "/estoque";
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                window.location.href = `/movimentar-produto?id=${idProduto}`;
+          window.location.href = `/movimentar-produto?id=${idProduto}`;
             }
         });
     }).catch(error => {
