@@ -20,13 +20,12 @@
     </a>
     <div style="display: flex; gap: 12px; position:absolute; top:20px; right:20px; z-index:10; align-items:center;">
         <div
-          style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;"
-          th:if="${tipo == 'ADMIN' || tipo == 'GERENTE'}">
+          style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/produtos-removidos'" style="cursor:pointer;">
-                <span style="display: inline-block; position: relative;">
-                    <i class="fa-regular fa-trash-can" tabindex="14" style="font-size: 18px; padding: 8px 0 0 11px;"></i>
-                </span>
-                <span class="badge badge-lixeira"></span>
+            <span style="display: inline-block; position: relative;">
+                <i class="fa-regular fa-trash-can" tabindex="14" style="font-size: 18px; padding: 8px 0 0 11px;"></i>
+            </span>
+            <span class="badge badge-lixeira"></span>
             </div>
         </div>
         <div id="nots" title="Baixo estoque" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">

@@ -77,8 +77,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const saveBtn = document.getElementById('save');
     saveBtn.disabled = true;
     Swal.fire({
-        title: '<span style="margin-top:20px;padding-top: 20px;display:block;">Cadastrando produto</span>',
-        text: 'Aguarde...',
+        icon: 'info',
+        title: 'Cadastrando produto...',
+        text: 'Aguarde',
         allowOutsideClick: false,
         showConfirmButton: false,
         didOpen: () => {
