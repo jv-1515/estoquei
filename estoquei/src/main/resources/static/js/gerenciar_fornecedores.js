@@ -238,6 +238,7 @@ function limpar() {
     todasFiltro.checked = false;
     checksFiltro.forEach(cb => cb.checked = false);
     atualizarPlaceholderCategoriaMulti();
+    atualizarEstiloCnpjFiltro();
     filtrarFornecedores();
 }
 
@@ -1905,10 +1906,25 @@ document.addEventListener('mousedown', function(e) {
 });
 
 function atualizarPlaceholderCategoriaMulti() {
-    const checks = Array.from(document.querySelectorAll('.categoria-multi-check-filtro')).slice(1);
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'));
+    const todas = checks[0];
     const input = document.getElementById('filter-categoria');
-    const selecionados = checks.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    const chevron = input.parentNode.querySelector('.chevron-categoria');
+    const individuais = checks.slice(1);
+    const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+    let ativo = selecionados.length > 0;
+
     input.value = selecionados.length === 0 ? 'Selecionar' : selecionados.join(', ');
+
+    if (ativo) {
+        input.style.border = '2px solid #1e94a3';
+        input.style.color = '#1e94a3';
+        if (chevron) chevron.style.color = '#1e94a3';
+    } else {
+        input.style.border = '';
+        input.style.color = '';
+        if (chevron) chevron.style.color = '#888';
+    }
 }
 document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
     cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
@@ -1938,6 +1954,19 @@ checksFiltro.forEach(cb => {
     });
 });
 
+
+function atualizarEstiloCnpjFiltro() {
+    const cnpjInput = document.getElementById('filter-cnpj');
+    let ativo = !!cnpjInput.value.trim();
+    if (ativo) {
+        cnpjInput.style.border = '2px solid #1e94a3';
+        cnpjInput.style.color = '#1e94a3';
+    } else {
+        cnpjInput.style.border = '';
+        cnpjInput.style.color = '';
+    }
+}
+
 document.getElementById('filter-cnpj').addEventListener('input', function(e) {
     let v = e.target.value.replace(/\D/g, '');
     v = v.replace(/^(\d{2})(\d)/, '$1.$2');
@@ -1945,4 +1974,13 @@ document.getElementById('filter-cnpj').addEventListener('input', function(e) {
     v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
     v = v.replace(/(\d{4})(\d)/, '$1-$2');
     e.target.value = v.slice(0, 18);
+});
+
+document.getElementById('filter-cnpj').addEventListener('input', atualizarEstiloCnpjFiltro);
+document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+});
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarPlaceholderCategoriaMulti();
+    atualizarEstiloCnpjFiltro();
 });
