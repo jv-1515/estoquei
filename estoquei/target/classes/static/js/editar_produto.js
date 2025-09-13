@@ -244,6 +244,17 @@ document.querySelector('form').addEventListener('submit', function(event) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Salvando alterações...',
+                text: 'Aguarde',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             let rawValue = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
             precoInput.value = rawValue;
 
@@ -264,6 +275,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 body: formData
             })
             .then(response => {
+                Swal.close(); // Fecha o loading
                 if (!response.ok) {
                     throw new Error('Erro ao salvar alterações: ' + response.status);
                 }
@@ -294,6 +306,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
                 });
             })
             .catch(error => {
+                Swal.close();
                 console.error('Erro ao salvar alterações:', error);
                 Swal.fire({
                     title: 'Erro!',
@@ -559,6 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        restaurarImagemOriginal();
                         history.back();
                     }
                 });
