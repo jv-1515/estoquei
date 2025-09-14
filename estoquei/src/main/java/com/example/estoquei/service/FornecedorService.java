@@ -85,4 +85,21 @@ public class FornecedorService {
                       && (filtro.getCnpj() == null || f.getCnpj().equals(filtro.getCnpj())))
             .toList();
     }
+
+    public List<Fornecedor> listarPorCategoria(String categoria) {
+        return fornecedorRepository.findAll().stream()
+            .filter(f -> {
+                switch (categoria.toLowerCase()) {
+                    case "camisa": return f.isCamisa();
+                    case "camiseta": return f.isCamiseta();
+                    case "calça": return f.isCalça();
+                    case "bermuda": return f.isBermuda();
+                    case "vestido": return f.isVestido();
+                    case "sapato": return f.isSapato();
+                    case "meia": return f.isMeia();
+                    default: return false;
+                }
+            })
+            .toList();
+    }
 }

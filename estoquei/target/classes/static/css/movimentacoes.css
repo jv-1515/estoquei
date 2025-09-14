@@ -311,11 +311,7 @@ label {
     padding: 2px 0;
 }
 
-/* input[readonly] {
-    cursor: default !important;
-    color: #999 !important;
-    background: #f9f9f9;
-} */
+
 input:focus[readonly] {
     outline: none !important;
     box-shadow: none !important;

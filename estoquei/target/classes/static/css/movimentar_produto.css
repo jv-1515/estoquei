@@ -96,7 +96,7 @@ label{
     font-weight: bold;
 }
 
-input[readonly] {
+input[readonly]:not(#fornecedor-multi) {
     cursor: default !important;
     color: #999 !important;
 }
@@ -154,6 +154,7 @@ input, select {
     height: 30px;
     max-height: 30px;
     font-family: Arial, sans-serif;
+    width: 100%;
 }
 
 input[type=radio] {
@@ -226,13 +227,6 @@ input[readonly] {
     cursor: default !important;
 }
 
-input:focus[readonly] {
-    outline: none !important;
-    box-shadow: none !important;
-}
-.swal2-container {
-    backdrop-filter: blur(2px) !important;
-}
 #movimentacao-tipo-container label {
     font-weight: normal;
     color: black;
@@ -246,6 +240,102 @@ input:focus[readonly] {
     transition: color 0.2s;
 }
 
+
+.multiselect.input-group {
+    min-width: 180px;
+    position: relative;
+}
+
+#filter-codigo,
+#produto-multi-group {
+    min-width: 300px;
+    width: 300px;
+}
+
+#radios-fornecedor-multi,
+#radios-produto-multi {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #fff;
+    z-index: 1000;
+    max-height: 52px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#radios-fornecedor-multi label,
+#radios-produto-multi label {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: normal;
+    color: #757575;
+    cursor: pointer;
+    padding: 5px 10px;
+    gap: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+#radios-fornecedor-multi label:hover,
+#radios-fornecedor-multi label.selecionado,
+#radios-produto-multi label:hover,
+#radios-produto-multi label.selecionado {
+    background-color: #f3f3f3;
+    color: black;
+}
+#radios-fornecedor-multi input[type="radio"],
+#radios-produto-multi input[type="radio"] {
+    display: none;
+}
+
+.chevron-fornecedor {
+    color: #888;
+    transition: color 0.2s;
+}
+
+
+/* #radios-produto-multi {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #fff;
+    z-index: 1000;
+    max-height: 110px;
+    overflow-y: auto;
+}
+
+#radios-produto-multi label {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: normal;
+    color: #757575;
+    cursor: pointer;
+    padding: 5px 10px;
+    gap: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+#radios-produto-multi label:hover,
+#radios-produto-multi label.selecionado {
+    background-color: #f3f3f3;
+    color: black;
+} */
+/* #radios-produto-multi input[type="radio"] {
+    display: none;
+} */
+
+/* .chevron-produto {
+    color: #888;
+    transition: color 0.2s;
+} */
 
 
 /* sweetAlert */

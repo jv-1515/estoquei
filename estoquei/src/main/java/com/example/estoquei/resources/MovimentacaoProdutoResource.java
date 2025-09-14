@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.estoquei.model.Fornecedor;
 import com.example.estoquei.model.MovimentacaoProduto;
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.repository.ProdutoRepository;
+import com.example.estoquei.service.FornecedorService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -36,6 +38,9 @@ public class MovimentacaoProdutoResource {
 
     @Autowired
     private ProdutoRepository produtoRepo;
+
+    @Autowired
+    private FornecedorService fornecedorService;
 
     @GetMapping
     public List<MovimentacaoProduto> listarMovimentacoes() {
@@ -105,7 +110,13 @@ public class MovimentacaoProdutoResource {
             String codigo = (String) dadosEntrada.get("codigo");
             String codigoCompra = (String) dadosEntrada.get("codigoCompra");
             String dataEntrada = (String) dadosEntrada.get("dataEntrada");
-            String fornecedor = (String) dadosEntrada.get("fornecedor");
+            Long fornecedorId = Long.valueOf(dadosEntrada.get("fornecedorId").toString());
+
+            Fornecedor fornecedor = fornecedorService.buscarPorId(fornecedorId);
+            if (fornecedor == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
             int quantidade = Integer.parseInt(dadosEntrada.get("quantidade").toString());
             double valorCompra = Double.parseDouble(dadosEntrada.get("valorCompra").toString());
 
@@ -137,7 +148,7 @@ public class MovimentacaoProdutoResource {
             movimentacao.setQuantidadeMovimentada(quantidade);
             movimentacao.setEstoqueFinal(produto.getQuantidade());
             movimentacao.setValorMovimentacao(BigDecimal.valueOf(valorCompra));
-            movimentacao.setParteEnvolvida(fornecedor);
+            movimentacao.setParteEnvolvida(fornecedor.getNome_empresa());
 
             Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
             String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";

@@ -56,10 +56,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const id = urlParams.get('id');
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
     const codigoInput = document.getElementById('filter-codigo');
-    let selectProdutos = null;
     let produtoSelecionado = {};
-    // Se não houver produto selecionado, mostra o select SEMPRE e oculta o input
-    // (não adiciona blur nem lógica para esconder o select)
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
@@ -79,10 +76,20 @@ window.addEventListener('DOMContentLoaded', function() {
             <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra">Valor da Compra*</label>
+            <label for="valor-compra" style="display:block;">Valor da Compra*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
-            <label for="fornecedor">Fornecedor*</label>
-            <input type="text" id="fornecedor" name="fornecedor" required placeholder="Fornecedor">
+            <div class="multiselect input-group">
+            <label for="fornecedor-multi" style="display:block;">Fornecedor*</label>
+            <div style="position:relative;">
+            <input type="text" id="fornecedor-multi" placeholder="Selecionar" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+            <span class="chevron-fornecedor" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+            <i class="fa fa-chevron-down"></i>
+            </span>
+            <div class="overSelect"></div>
+            </div>
+            <div id="radios-fornecedor-multi" style="display:none;">
+            </div>
+            </div>
             ` : `
             <label for="valor-venda">Valor da Venda*</label>
             <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
@@ -106,8 +113,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <div class="right-column">
             <label for="foto">Produto</label>
             <div id="image-preview" class="image-box">
-            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
-            <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;" loading="lazy">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
             </div>
             </div>
             </div>
@@ -224,7 +230,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         nome: produtoSelecionado.nome,
                         codigoCompra: document.getElementById('codigo-compra').value,
                         dataEntrada: document.getElementById('data-compra').value,
-                        fornecedor: document.getElementById('fornecedor').value,
+                        fornecedorId: document.getElementById('fornecedor-multi').dataset.id,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
                     };
@@ -313,9 +319,46 @@ window.addEventListener('DOMContentLoaded', function() {
             });
         }
         setTimeout(atualizarQuantidadeFinal, 0);
+        
+        if (tipo === 'ENTRADA' && produto && produto.categoria) {
+        preencherRadiosFornecedorMulti(produto.categoria);
+        }
+
+        setTimeout(() => {
+            const fornecedorInput = document.getElementById('fornecedor-multi');
+            const radiosDiv = document.getElementById('radios-fornecedor-multi');
+            if (fornecedorInput && radiosDiv) {
+                fornecedorInput.addEventListener('click', function() {
+                    radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+                });
+                radiosDiv.addEventListener('click', function(e) {
+                    const label = e.target.closest('label');
+                    if (!label) return;
+                    radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+                    label.classList.add('selecionado');
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                    fornecedorInput.value = label.textContent.trim();
+                    fornecedorInput.dataset.id = radio.value;
+                    radiosDiv.style.display = 'none';
+                });
+            }
+        }, 0);
     }
 
-    // Função para preencher os campos do produto (robusta)
+    
+    document.addEventListener('mousedown', function(e) {
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+        const produtoMultiDiv = document.getElementById('produto-multi-group');
+        if (radiosDivProduto && produtoMultiDiv && radiosDivProduto.style.display === 'block') {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        }
+    });
+
+
+    // Função para preencher os campos do produto
     function preencherCampos(produto) {
         const precoFormatado = produto.preco !== undefined
             ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',')
@@ -328,8 +371,8 @@ window.addEventListener('DOMContentLoaded', function() {
             ? produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1).toLowerCase()
             : '';
 
-        document.getElementById('filter-codigo').value = produto.codigo || '';
-        document.getElementById('filter-nome').value = produto.nome || '';
+        document.getElementById('filter-codigo').value = produto.codigo && produto.nome ? `${produto.codigo} - ${produto.nome}` : (produto.codigo || '');
+        // document.getElementById('filter-nome').value = produto.nome || '';
         document.getElementById('filter-categoria').value = categoriaFormatada;
         document.getElementById('filter-tamanho').value = tamanhoExibido;
         document.getElementById('filter-genero').value = generoFormatado;
@@ -450,43 +493,102 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Função para mostrar o select de produtos como padrão
     function mostrarSelectProdutosDefault() {
-        if (selectProdutos) {
-            selectProdutos.style.display = '';
-            codigoInput.style.display = 'none';
-            return;
-        }
+        // Remove antigo se existir
+        const antigo = document.getElementById('produto-multi-group');
+        if (antigo) antigo.remove();
+    
+        // Cria o campo de busca + radios
+        const produtoMultiDiv = document.createElement('div');
+        produtoMultiDiv.className = 'multiselect input-group';
+        produtoMultiDiv.id = 'produto-multi-group';
+        produtoMultiDiv.innerHTML = `
+            <div style="position:relative;">
+                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
+                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div class="overSelect"></div>
+            </div>
+            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
+        `;
+        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
+        codigoInput.style.display = 'none';
+    
+        const produtoInput = document.getElementById('produto-multi');
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+
+        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        }  
+        // produtoInput.addEventListener('mouseleave', function() {
+        //     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+        //         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        //     }
+        //     radiosDivProduto.style.display = 'none';
+        // });
+
+        let todosProdutos = [];
+    
+        // Busca todos os produtos uma vez
         fetch('/produtos')
             .then(response => response.json())
             .then(produtos => {
-                selectProdutos = document.createElement('select');
-                selectProdutos.id = 'select-produtos';
-                selectProdutos.className = 'filter-select';
-                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.id}" 
-                        data-codigo="${prod.codigo}" 
-                        data-nome="${prod.nome}" 
-                        data-categoria="${prod.categoria}" 
-                        data-tamanho="${prod.tamanho}" 
-                        data-genero="${prod.genero}" 
-                        data-quantidade="${prod.quantidade}" 
-                        data-limite="${prod.limiteMinimo}" 
-                        data-preco="${prod.preco}" 
-                        data-url_imagem="${prod.url_imagem || ''}"
-                    >${prod.codigo} - ${prod.nome}</option>`;
-                });
-                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-                codigoInput.style.display = 'none';
-
-                selectProdutos.addEventListener('change', function() {
-                    const opt = this.selectedOptions[0];
-                    if (!opt.value) return;
-                    window.location.search = '?id=' + opt.value;
-                });
+                todosProdutos = produtos;
             });
-    }
-
-    // Troca tipo de movimentação (sempre adiciona listeners)
+    
+        // Mostra radios ao digitar
+        produtoInput.addEventListener('input', function() {
+            const termo = produtoInput.value.trim().toLowerCase();
+            let filtrados = todosProdutos.filter(p =>
+                p.codigo.includes(termo) ||
+                p.nome.toLowerCase().includes(termo)
+            );
+            if (filtrados.length === 0) {
+                radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
+            } else {
+                radiosDivProduto.innerHTML = filtrados.map(prod => `
+                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                        <input type="radio" name="produto-radio" value="${prod.id}">
+                        ${prod.codigo} - ${prod.nome}
+                    </label>
+                `).join('');
+            }
+            radiosDivProduto.style.display = 'block';
+        });
+    
+        // Mostra todos ao focar se vazio
+        produtoInput.addEventListener('focus', function() {
+            if (!produtoInput.value.trim()) {
+                radiosDivProduto.innerHTML = todosProdutos.map(prod => `
+                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                        <input type="radio" name="produto-radio" value="${prod.id}">
+                        ${prod.codigo} - ${prod.nome}
+                    </label>
+                `).join('');
+                radiosDivProduto.style.display = 'block';
+            }
+        });
+    
+        // Seleciona produto e redireciona
+        radiosDivProduto.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            produtoInput.value = label.textContent.trim();
+            radiosDivProduto.style.display = 'none';
+            window.location.search = '?id=' + radio.value;
+        });
+    
+        // Fecha radios ao clicar fora
+        document.addEventListener('mousedown', function(e) {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        });
+    }    // Troca tipo de movimentação (sempre adiciona listeners)
     document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
         radio.addEventListener('change', function() {
             if (!produtoSelecionado) produtoSelecionado = {};
@@ -506,48 +608,93 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Se tem id, input de código aparece normalmente e select só aparece ao mouseover
     codigoInput.addEventListener('mouseover', function() {
-        if (selectProdutos) {
-            selectProdutos.style.display = '';
-            codigoInput.style.display = 'none';
-            return;
-        }
+        // Remove antigo se existir
+        const antigo = document.getElementById('produto-multi-group');
+        if (antigo) antigo.remove();
+    
+        // Cria o campo de busca + radios
+        const produtoMultiDiv = document.createElement('div');
+        produtoMultiDiv.className = 'multiselect input-group';
+        produtoMultiDiv.id = 'produto-multi-group';
+        produtoMultiDiv.innerHTML = `
+            <div style="position:relative;">
+                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
+                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div class="overSelect"></div>
+            </div>
+            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
+        `;
+        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
+        codigoInput.style.display = 'none';
+    
+        const produtoInput = document.getElementById('produto-multi');
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+        
+        
+        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        }  
+        let todosProdutos = [];
+    
         fetch('/produtos')
             .then(response => response.json())
             .then(produtos => {
-                selectProdutos = document.createElement('select');
-                selectProdutos.id = 'select-produtos';
-                selectProdutos.className = 'filter-select';
-                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.id}" 
-                        data-codigo="${prod.codigo}" 
-                        data-nome="${prod.nome}" 
-                        data-categoria="${prod.categoria}" 
-                        data-tamanho="${prod.tamanho}" 
-                        data-genero="${prod.genero}" 
-                        data-quantidade="${prod.quantidade}" 
-                        data-limite="${prod.limiteMinimo}" 
-                        data-preco="${prod.preco}" 
-                        data-url_imagem="${prod.url_imagem || ''}"
-                    >${prod.codigo} - ${prod.nome}</option>`;
+                todosProdutos = produtos;
+                // Mostra todos ao focar se vazio
+                produtoInput.addEventListener('focus', function() {
+                    if (!produtoInput.value.trim()) {
+                        radiosDivProduto.innerHTML = todosProdutos.map(prod => `
+                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                                <input type="radio" name="produto-radio" value="${prod.id}">
+                                ${prod.codigo} - ${prod.nome}
+                            </label>
+                        `).join('');
+                        radiosDivProduto.style.display = 'block';
+                    }
                 });
-                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-                codigoInput.style.display = 'none';
-
-                selectProdutos.addEventListener('change', function() {
-                    const opt = this.selectedOptions[0];
-                    if (!opt.value) return;
-                    // Sempre redireciona para ?id=ID ao selecionar
-                    window.location.search = '?id=' + opt.value;
-                });
-
-                selectProdutos.addEventListener('blur', function() {
-                    selectProdutos.style.display = 'none';
-                    codigoInput.style.display = '';
+                // Mostra radios ao digitar
+                produtoInput.addEventListener('input', function() {
+                    const termo = produtoInput.value.trim().toLowerCase();
+                    let filtrados = todosProdutos.filter(p =>
+                        p.codigo.includes(termo) ||
+                        p.nome.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
+                    } else {
+                        radiosDivProduto.innerHTML = filtrados.map(prod => `
+                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                                <input type="radio" name="produto-radio" value="${prod.id}">
+                                ${prod.codigo} - ${prod.nome}
+                            </label>
+                        `).join('');
+                    }
+                    radiosDivProduto.style.display = 'block';
                 });
             });
+    
+        // Seleciona produto e redireciona
+        radiosDivProduto.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            produtoInput.value = label.textContent.trim();
+            radiosDivProduto.style.display = 'none';
+            window.location.search = '?id=' + radio.value;
+        });
+    
+        // Fecha radios ao clicar fora
+        document.addEventListener('mousedown', function(e) {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        });
     });
-
     // Busca o produto
     if (id) {
         fetch(`/produtos/${id}`)
@@ -566,6 +713,31 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     // Máscara de preço para filtros
     formatarPrecoInput(document.getElementById('filter-preco'));
+
+    const fornecedorInput = document.getElementById('fornecedor-multi');
+    const radiosDiv = document.getElementById('radios-fornecedor-multi');
+
+    if (fornecedorInput && radiosDiv) {
+        fornecedorInput.addEventListener('click', function() {
+            radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+        });
+
+        radiosDiv.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            // Remove seleção visual de todos
+            radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            // Marca o clicado
+            label.classList.add('selecionado');
+            // Marca o radio (mesmo oculto)
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            // Atualiza input
+            fornecedorInput.value = label.textContent.trim();
+            fornecedorInput.dataset.id = radio.value;
+            radiosDiv.style.display = 'none';
+        });
+    }
 });
 
 
@@ -601,19 +773,62 @@ function validarDatasMovimentacao() {
     return true;
 }
 
+// const fornecedorInput = document.getElementById('fornecedor-multi');
+// if (fornecedorInput) fornecedorInput.value = ''; // Limpa ao trocar produto
 
+// document.getElementById('select-produtos').addEventListener('change', function() {
+//     const categoria = this.selectedOptions[0].getAttribute('data-categoria');
+//     preencherRadiosFornecedorMulti(categoria);
+//     if (fornecedorInput) fornecedorInput.value = '';
+// });
+
+function preencherRadiosFornecedorMulti(categoria) {
+  fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
+    .then(res => res.json())
+    .then(fornecedores => {
+      const radiosDiv = document.getElementById('radios-fornecedor-multi');
+      radiosDiv.innerHTML = fornecedores.map(f =>
+        `<label class="fornecedor-radio-label">
+          <input type="radio" name="fornecedor-radio" value="${f.id}">
+          ${f.codigo} - ${f.nome_empresa}
+        </label>`
+      ).join('');
+    });
+}
+
+// Seleção visual
+document.getElementById('radios-fornecedor-multi').addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (!label) return;
+  // Remove seleção de todos
+  this.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+  // Marca o clicado
+  label.classList.add('selecionado');
+  // Marca o radio (mesmo oculto)
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+  // Atualiza input
+  const fornecedorInput = document.getElementById('fornecedor-multi');
+  fornecedorInput.value = label.textContent.trim();
+  fornecedorInput.dataset.id = radio.value;
+  this.style.display = 'none';
+});
+
+// produtoInput.addEventListener('blur', function() {
+//     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+//         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+//     }
+//     radiosDivProduto.style.display = 'none';
+// });
 
 function aplicarEstiloInputs() {
-        // Seleciona só os inputs dentro de .filters-group
         const inputs = document.querySelectorAll('.filters-group input');
         inputs.forEach(input => {
-            // Aplica cor inicial ao carregar
             if (input.value.trim() === '') {
                 input.style.backgroundColor = 'white';
             } else {
                 input.style.backgroundColor = '#f1f1f1';
             }
-            // Ao perder o foco, alterna cor
             input.addEventListener('blur', () => {
                 if (input.value.trim() === '') {
                     input.style.backgroundColor = 'white';
@@ -623,6 +838,6 @@ function aplicarEstiloInputs() {
             });
         });
     }
+
     
-    // Chame ao carregar a página
     document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);
