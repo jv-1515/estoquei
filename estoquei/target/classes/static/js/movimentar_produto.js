@@ -56,10 +56,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const id = urlParams.get('id');
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
     const codigoInput = document.getElementById('filter-codigo');
-    let selectProdutos = null;
     let produtoSelecionado = {};
-    // Se não houver produto selecionado, mostra o select SEMPRE e oculta o input
-    // (não adiciona blur nem lógica para esconder o select)
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
@@ -349,6 +346,16 @@ window.addEventListener('DOMContentLoaded', function() {
         }, 0);
     }
 
+    
+    document.addEventListener('mousedown', function(e) {
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+        const produtoMultiDiv = document.getElementById('produto-multi-group');
+        if (radiosDivProduto && produtoMultiDiv && radiosDivProduto.style.display === 'block') {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        }
+    });
 
 
     // Função para preencher os campos do produto
@@ -364,8 +371,8 @@ window.addEventListener('DOMContentLoaded', function() {
             ? produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1).toLowerCase()
             : '';
 
-        document.getElementById('filter-codigo').value = produto.codigo || '';
-        document.getElementById('filter-nome').value = produto.nome || '';
+        document.getElementById('filter-codigo').value = produto.codigo && produto.nome ? `${produto.codigo} - ${produto.nome}` : (produto.codigo || '');
+        // document.getElementById('filter-nome').value = produto.nome || '';
         document.getElementById('filter-categoria').value = categoriaFormatada;
         document.getElementById('filter-tamanho').value = tamanhoExibido;
         document.getElementById('filter-genero').value = generoFormatado;
@@ -486,43 +493,102 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Função para mostrar o select de produtos como padrão
     function mostrarSelectProdutosDefault() {
-        if (selectProdutos) {
-            selectProdutos.style.display = '';
-            codigoInput.style.display = 'none';
-            return;
-        }
+        // Remove antigo se existir
+        const antigo = document.getElementById('produto-multi-group');
+        if (antigo) antigo.remove();
+    
+        // Cria o campo de busca + radios
+        const produtoMultiDiv = document.createElement('div');
+        produtoMultiDiv.className = 'multiselect input-group';
+        produtoMultiDiv.id = 'produto-multi-group';
+        produtoMultiDiv.innerHTML = `
+            <div style="position:relative;">
+                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
+                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div class="overSelect"></div>
+            </div>
+            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
+        `;
+        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
+        codigoInput.style.display = 'none';
+    
+        const produtoInput = document.getElementById('produto-multi');
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+
+        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        }  
+        // produtoInput.addEventListener('mouseleave', function() {
+        //     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+        //         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        //     }
+        //     radiosDivProduto.style.display = 'none';
+        // });
+
+        let todosProdutos = [];
+    
+        // Busca todos os produtos uma vez
         fetch('/produtos')
             .then(response => response.json())
             .then(produtos => {
-                selectProdutos = document.createElement('select');
-                selectProdutos.id = 'select-produtos';
-                selectProdutos.className = 'filter-select';
-                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.id}" 
-                        data-codigo="${prod.codigo}" 
-                        data-nome="${prod.nome}" 
-                        data-categoria="${prod.categoria}" 
-                        data-tamanho="${prod.tamanho}" 
-                        data-genero="${prod.genero}" 
-                        data-quantidade="${prod.quantidade}" 
-                        data-limite="${prod.limiteMinimo}" 
-                        data-preco="${prod.preco}" 
-                        data-url_imagem="${prod.url_imagem || ''}"
-                    >${prod.codigo} - ${prod.nome}</option>`;
-                });
-                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-                codigoInput.style.display = 'none';
-
-                selectProdutos.addEventListener('change', function() {
-                    const opt = this.selectedOptions[0];
-                    if (!opt.value) return;
-                    window.location.search = '?id=' + opt.value;
-                });
+                todosProdutos = produtos;
             });
-    }
-
-    // Troca tipo de movimentação (sempre adiciona listeners)
+    
+        // Mostra radios ao digitar
+        produtoInput.addEventListener('input', function() {
+            const termo = produtoInput.value.trim().toLowerCase();
+            let filtrados = todosProdutos.filter(p =>
+                p.codigo.includes(termo) ||
+                p.nome.toLowerCase().includes(termo)
+            );
+            if (filtrados.length === 0) {
+                radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
+            } else {
+                radiosDivProduto.innerHTML = filtrados.map(prod => `
+                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                        <input type="radio" name="produto-radio" value="${prod.id}">
+                        ${prod.codigo} - ${prod.nome}
+                    </label>
+                `).join('');
+            }
+            radiosDivProduto.style.display = 'block';
+        });
+    
+        // Mostra todos ao focar se vazio
+        produtoInput.addEventListener('focus', function() {
+            if (!produtoInput.value.trim()) {
+                radiosDivProduto.innerHTML = todosProdutos.map(prod => `
+                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                        <input type="radio" name="produto-radio" value="${prod.id}">
+                        ${prod.codigo} - ${prod.nome}
+                    </label>
+                `).join('');
+                radiosDivProduto.style.display = 'block';
+            }
+        });
+    
+        // Seleciona produto e redireciona
+        radiosDivProduto.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            produtoInput.value = label.textContent.trim();
+            radiosDivProduto.style.display = 'none';
+            window.location.search = '?id=' + radio.value;
+        });
+    
+        // Fecha radios ao clicar fora
+        document.addEventListener('mousedown', function(e) {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        });
+    }    // Troca tipo de movimentação (sempre adiciona listeners)
     document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
         radio.addEventListener('change', function() {
             if (!produtoSelecionado) produtoSelecionado = {};
@@ -542,48 +608,93 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Se tem id, input de código aparece normalmente e select só aparece ao mouseover
     codigoInput.addEventListener('mouseover', function() {
-        if (selectProdutos) {
-            selectProdutos.style.display = '';
-            codigoInput.style.display = 'none';
-            return;
-        }
+        // Remove antigo se existir
+        const antigo = document.getElementById('produto-multi-group');
+        if (antigo) antigo.remove();
+    
+        // Cria o campo de busca + radios
+        const produtoMultiDiv = document.createElement('div');
+        produtoMultiDiv.className = 'multiselect input-group';
+        produtoMultiDiv.id = 'produto-multi-group';
+        produtoMultiDiv.innerHTML = `
+            <div style="position:relative;">
+                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
+                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                    <i class="fa fa-search"></i>
+                </span>
+                <div class="overSelect"></div>
+            </div>
+            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
+        `;
+        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
+        codigoInput.style.display = 'none';
+    
+        const produtoInput = document.getElementById('produto-multi');
+        const radiosDivProduto = document.getElementById('radios-produto-multi');
+        
+        
+        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+        }  
+        let todosProdutos = [];
+    
         fetch('/produtos')
             .then(response => response.json())
             .then(produtos => {
-                selectProdutos = document.createElement('select');
-                selectProdutos.id = 'select-produtos';
-                selectProdutos.className = 'filter-select';
-                selectProdutos.innerHTML = '<option value="" disabled hidden selected>Selecionar Produto</option>';
-                produtos.forEach(prod => {
-                    selectProdutos.innerHTML += `<option value="${prod.id}" 
-                        data-codigo="${prod.codigo}" 
-                        data-nome="${prod.nome}" 
-                        data-categoria="${prod.categoria}" 
-                        data-tamanho="${prod.tamanho}" 
-                        data-genero="${prod.genero}" 
-                        data-quantidade="${prod.quantidade}" 
-                        data-limite="${prod.limiteMinimo}" 
-                        data-preco="${prod.preco}" 
-                        data-url_imagem="${prod.url_imagem || ''}"
-                    >${prod.codigo} - ${prod.nome}</option>`;
+                todosProdutos = produtos;
+                // Mostra todos ao focar se vazio
+                produtoInput.addEventListener('focus', function() {
+                    if (!produtoInput.value.trim()) {
+                        radiosDivProduto.innerHTML = todosProdutos.map(prod => `
+                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                                <input type="radio" name="produto-radio" value="${prod.id}">
+                                ${prod.codigo} - ${prod.nome}
+                            </label>
+                        `).join('');
+                        radiosDivProduto.style.display = 'block';
+                    }
                 });
-                codigoInput.parentNode.insertBefore(selectProdutos, codigoInput.nextSibling);
-                codigoInput.style.display = 'none';
-
-                selectProdutos.addEventListener('change', function() {
-                    const opt = this.selectedOptions[0];
-                    if (!opt.value) return;
-                    // Sempre redireciona para ?id=ID ao selecionar
-                    window.location.search = '?id=' + opt.value;
-                });
-
-                selectProdutos.addEventListener('blur', function() {
-                    selectProdutos.style.display = 'none';
-                    codigoInput.style.display = '';
+                // Mostra radios ao digitar
+                produtoInput.addEventListener('input', function() {
+                    const termo = produtoInput.value.trim().toLowerCase();
+                    let filtrados = todosProdutos.filter(p =>
+                        p.codigo.includes(termo) ||
+                        p.nome.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
+                    } else {
+                        radiosDivProduto.innerHTML = filtrados.map(prod => `
+                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
+                                <input type="radio" name="produto-radio" value="${prod.id}">
+                                ${prod.codigo} - ${prod.nome}
+                            </label>
+                        `).join('');
+                    }
+                    radiosDivProduto.style.display = 'block';
                 });
             });
+    
+        // Seleciona produto e redireciona
+        radiosDivProduto.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            produtoInput.value = label.textContent.trim();
+            radiosDivProduto.style.display = 'none';
+            window.location.search = '?id=' + radio.value;
+        });
+    
+        // Fecha radios ao clicar fora
+        document.addEventListener('mousedown', function(e) {
+            if (!produtoMultiDiv.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        });
     });
-
     // Busca o produto
     if (id) {
         fetch(`/produtos/${id}`)
@@ -702,6 +813,13 @@ document.getElementById('radios-fornecedor-multi').addEventListener('click', fun
   fornecedorInput.dataset.id = radio.value;
   this.style.display = 'none';
 });
+
+// produtoInput.addEventListener('blur', function() {
+//     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
+//         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
+//     }
+//     radiosDivProduto.style.display = 'none';
+// });
 
 function aplicarEstiloInputs() {
         const inputs = document.querySelectorAll('.filters-group input');
