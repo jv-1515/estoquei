@@ -1,5 +1,39 @@
 let filtradas = [];
 
+function atualizarBadgeBaixoEstoque() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/baixo-estoque')
+        .then(res => res.json())
+        .then(produtos => {
+            const qtd = produtos.length;
+            if (qtd <= 0) {
+                badge.style.display = 'none';
+                return;
+            }
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.style.display = 'inline-block';
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+            const bellIcon = document.querySelector('.fa-bell');
+            if (bellIcon) {
+                bellIcon.classList.add('fa-shake');
+                setTimeout(() => {
+                    bellIcon.classList.remove('fa-shake');
+                }, 2500);
+            }
+        });
+}
+
+document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
