@@ -79,12 +79,20 @@ window.addEventListener('DOMContentLoaded', function() {
             <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
             <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
             ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra">Valor da Compra*</label>
+            <label for="valor-compra" style="display:block;">Valor da Compra*</label>
             <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
-            <label for="fornecedor">Fornecedor*</label>
-            <select id="fornecedor" name="fornecedor" required>
-                <option value="" disabled selected hidden>Selecione o fornecedor</option>
-            </select>
+            <div class="multiselect input-group">
+            <label for="fornecedor-multi" style="display:block;">Fornecedor*</label>
+            <div style="position:relative;">
+            <input type="text" id="fornecedor-multi" placeholder="Selecionar" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+            <span class="chevron-fornecedor" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+            <i class="fa fa-chevron-down"></i>
+            </span>
+            <div class="overSelect"></div>
+            </div>
+            <div id="radios-fornecedor-multi" style="display:none;">
+            </div>
+            </div>
             ` : `
             <label for="valor-venda">Valor da Venda*</label>
             <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
@@ -108,8 +116,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <div class="right-column">
             <label for="foto">Produto</label>
             <div id="image-preview" class="image-box">
-            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
-            <input type="file" id="foto" name="foto" accept="image/*" style="display:none">
+            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;" loading="lazy">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
             </div>
             </div>
             </div>
@@ -226,7 +233,7 @@ window.addEventListener('DOMContentLoaded', function() {
                         nome: produtoSelecionado.nome,
                         codigoCompra: document.getElementById('codigo-compra').value,
                         dataEntrada: document.getElementById('data-compra').value,
-                        fornecedorId: document.getElementById('fornecedor').value,
+                        fornecedorId: document.getElementById('fornecedor-multi').dataset.id,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorCompra: parseFloat(document.getElementById('valor-compra').value.replace(/[^\d,]/g, '').replace(',', '.'))
                     };
@@ -317,8 +324,29 @@ window.addEventListener('DOMContentLoaded', function() {
         setTimeout(atualizarQuantidadeFinal, 0);
         
         if (tipo === 'ENTRADA' && produto && produto.categoria) {
-        preencherFornecedoresPorCategoria(produto.categoria);
+        preencherRadiosFornecedorMulti(produto.categoria);
         }
+
+        setTimeout(() => {
+            const fornecedorInput = document.getElementById('fornecedor-multi');
+            const radiosDiv = document.getElementById('radios-fornecedor-multi');
+            if (fornecedorInput && radiosDiv) {
+                fornecedorInput.addEventListener('click', function() {
+                    radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+                });
+                radiosDiv.addEventListener('click', function(e) {
+                    const label = e.target.closest('label');
+                    if (!label) return;
+                    radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+                    label.classList.add('selecionado');
+                    const radio = label.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                    fornecedorInput.value = label.textContent.trim();
+                    fornecedorInput.dataset.id = radio.value;
+                    radiosDiv.style.display = 'none';
+                });
+            }
+        }, 0);
     }
 
 
@@ -574,6 +602,31 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     // Máscara de preço para filtros
     formatarPrecoInput(document.getElementById('filter-preco'));
+
+    const fornecedorInput = document.getElementById('fornecedor-multi');
+    const radiosDiv = document.getElementById('radios-fornecedor-multi');
+
+    if (fornecedorInput && radiosDiv) {
+        fornecedorInput.addEventListener('click', function() {
+            radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+        });
+
+        radiosDiv.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            // Remove seleção visual de todos
+            radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            // Marca o clicado
+            label.classList.add('selecionado');
+            // Marca o radio (mesmo oculto)
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            // Atualiza input
+            fornecedorInput.value = label.textContent.trim();
+            fornecedorInput.dataset.id = radio.value;
+            radiosDiv.style.display = 'none';
+        });
+    }
 });
 
 
@@ -609,20 +662,46 @@ function validarDatasMovimentacao() {
     return true;
 }
 
-function preencherFornecedoresPorCategoria(categoria) {
-    fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
-        .then(res => res.json())
-        .then(fornecedores => {
-            const select = document.getElementById('fornecedor');
-            select.innerHTML = '<option value="" disabled selected hidden>Selecione o fornecedor</option>';
-            fornecedores.forEach(f => {
-                select.innerHTML += `<option value="${f.id}">${f.codigo} - ${f.nome_empresa}</option>`;
-            });
-        });
+// const fornecedorInput = document.getElementById('fornecedor-multi');
+// if (fornecedorInput) fornecedorInput.value = ''; // Limpa ao trocar produto
+
+// document.getElementById('select-produtos').addEventListener('change', function() {
+//     const categoria = this.selectedOptions[0].getAttribute('data-categoria');
+//     preencherRadiosFornecedorMulti(categoria);
+//     if (fornecedorInput) fornecedorInput.value = '';
+// });
+
+function preencherRadiosFornecedorMulti(categoria) {
+  fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
+    .then(res => res.json())
+    .then(fornecedores => {
+      const radiosDiv = document.getElementById('radios-fornecedor-multi');
+      radiosDiv.innerHTML = fornecedores.map(f =>
+        `<label class="fornecedor-radio-label">
+          <input type="radio" name="fornecedor-radio" value="${f.id}">
+          ${f.codigo} - ${f.nome_empresa}
+        </label>`
+      ).join('');
+    });
 }
 
-preencherFornecedoresPorCategoria(produto.categoria);
-
+// Seleção visual
+document.getElementById('radios-fornecedor-multi').addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (!label) return;
+  // Remove seleção de todos
+  this.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+  // Marca o clicado
+  label.classList.add('selecionado');
+  // Marca o radio (mesmo oculto)
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+  // Atualiza input
+  const fornecedorInput = document.getElementById('fornecedor-multi');
+  fornecedorInput.value = label.textContent.trim();
+  fornecedorInput.dataset.id = radio.value;
+  this.style.display = 'none';
+});
 
 function aplicarEstiloInputs() {
         const inputs = document.querySelectorAll('.filters-group input');
@@ -641,5 +720,6 @@ function aplicarEstiloInputs() {
             });
         });
     }
+
     
     document.addEventListener('DOMContentLoaded', aplicarEstiloInputs);
