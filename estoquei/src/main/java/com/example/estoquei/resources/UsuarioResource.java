@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.service.UsuarioService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioResource {
@@ -89,4 +91,14 @@ public class UsuarioResource {
     public List<Usuario> listarPorCargo(@PathVariable Long cargoId) {
         return usuarioService.listarPorCargoId(cargoId);
     }
+
+    @GetMapping("/usuario-logado")
+    public ResponseEntity<Usuario> usuarioLogado(HttpSession session) {
+        Usuario usuario = (Usuario) session.getAttribute("isActive");
+        if (usuario != null && usuario.getCargo() != null) {
+            return ResponseEntity.ok(usuario);
+        }
+        return ResponseEntity.status(401).build();
+    }
+
 }

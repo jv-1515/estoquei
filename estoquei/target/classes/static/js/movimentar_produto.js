@@ -17,6 +17,41 @@ function formatarPrecoInput(input) {
     });
 }
 
+function atualizarBadgeBaixoEstoque() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+
+    badge.style.display = 'none';
+
+    fetch('/produtos/baixo-estoque')
+        .then(res => res.json())
+        .then(produtos => {
+            const qtd = produtos.length;
+            if (qtd <= 0) {
+                badge.style.display = 'none';
+                return;
+            }
+            badge.textContent = qtd > 99 ? '99+' : qtd;
+            badge.style.display = 'inline-block';
+            if (qtd < 10) {
+                badge.style.padding = '3px 6px';
+            } else if (qtd < 99) {
+                badge.style.padding = '3px';
+            } else if (qtd > 99) {
+                badge.style.padding = '5px 0px 3px 2px';
+            }
+            const bellIcon = document.querySelector('.fa-bell');
+            if (bellIcon) {
+                bellIcon.classList.add('fa-shake');
+                setTimeout(() => {
+                    bellIcon.classList.remove('fa-shake');
+                }, 2500);
+            }
+        });
+}
+
+document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);
+
 // Crie o aviso acima do campo quantidade-final
 function criarAvisoLimite() {
     let avisoLimite = document.createElement('div');
@@ -72,50 +107,50 @@ window.addEventListener('DOMContentLoaded', function() {
         mainContainerPlaceholder.innerHTML = `
             <form id="movimentacao-form">
             <div class="main-container">
-            <div class="form-column">
-            <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
-            <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
-            ${tipo === 'ENTRADA' ? `
-            <label for="valor-compra" style="display:block;">Valor da Compra*</label>
-            <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
-            <div class="multiselect input-group">
-            <label for="fornecedor-multi" style="display:block;">Fornecedor*</label>
-            <div style="position:relative;">
-            <input type="text" id="fornecedor-multi" placeholder="Selecionar" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
-            <span class="chevron-fornecedor" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-            <i class="fa fa-chevron-down"></i>
-            </span>
-            <div class="overSelect"></div>
-            </div>
-            <div id="radios-fornecedor-multi" style="display:none;">
-            </div>
-            </div>
-            ` : `
-            <label for="valor-venda">Valor da Venda*</label>
-            <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
-            <label for="comprador">Comprador*</label>
-            <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
-            `}
-            <div style="display: flex; gap: 10px;">
-            <div style="display: flex; flex-direction: column; flex: 3;">
-            <label for="quantidade">Quantidade*</label>
-            <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
-            </div>
-            <div style="display: flex; flex-direction: column; flex: 2;">
-            <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final</label>
-            <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f1f1f1" readonly>
-            </div>
-            </div>
-            <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
-            <input type="date" id="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" name="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" required>
-            <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
-            </div>
-            <div class="right-column">
-            <label for="foto">Produto</label>
-            <div id="image-preview" class="image-box">
-            ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;" loading="lazy">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
-            </div>
-            </div>
+                <div class="form-column">
+                <label for="codigo-compra">${tipo === 'ENTRADA' ? 'Código da Compra*' : 'Código da Venda*'}</label>
+                <input type="text" id="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" name="${tipo === 'ENTRADA' ? 'codigo-compra' : 'codigo-venda'}" required placeholder="000000000" maxlength="9" minlength="9" pattern="\\d{9}">
+                ${tipo === 'ENTRADA' ? `
+                    <label for="valor-compra" style="display:block;">Valor da Compra*</label>
+                    <input type="text" id="valor-compra" name="valor-compra" required placeholder="R$ 1.000,00" min="1">
+                    <div class="multiselect input-group">
+                    <label for="fornecedor-multi" style="display:block;">Fornecedor*</label>
+                    <div style="position:relative;">
+                        <input type="text" id="fornecedor-multi" placeholder="Selecionar" readonly style="cursor:pointer; padding-right: 20px; background: #fff;" />
+                        <span class="chevron-fornecedor" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                        <i class="fa fa-chevron-down"></i>
+                        </span>
+                        <div class="overSelect"></div>
+                    </div>
+                    <div id="radios-fornecedor-multi" style="display:none;">
+                    </div>
+                    </div>
+                ` : `
+                    <label for="valor-venda">Valor da Venda*</label>
+                    <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
+                    <label for="comprador">Comprador*</label>
+                    <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
+                `}
+                <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; flex-direction: column; flex: 3;">
+                    <label for="quantidade">Quantidade*</label>
+                    <input type="number" id="quantidade" name="quantidade" required placeholder="10" min="1" max="${maxQuantidade}">
+                    </div>
+                    <div style="display: flex; flex-direction: column; flex: 2;">
+                    <label for="quantidade-final" style="font-weight: bold; color: #333;">Quantidade Final</label>
+                    <input type="number" id="quantidade-final" name="quantidade-final" placeholder="100" style="background:#f1f1f1" readonly>
+                    </div>
+                </div>
+                <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
+                <input type="date" id="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" name="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" required>
+                <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
+                </div>
+                <div class="right-column">
+                <label for="foto">Produto</label>
+                <div id="image-preview" class="image-box">
+                    ${produto.url_imagem ? `<img src="${produto.url_imagem}" alt="Imagem do produto" style="max-width:100%;height:auto;" loading="lazy">` : `<i class="fa-regular fa-image" style="font-size: 32px"></i>`}
+                </div>
+                </div>
             </div>
             </form>
         `;
@@ -509,7 +544,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 </span>
                 <div class="overSelect"></div>
             </div>
-            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
+            <div id="radios-produto-multi" style="display:none;"></div>
         `;
         codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
         codigoInput.style.display = 'none';
@@ -520,12 +555,6 @@ window.addEventListener('DOMContentLoaded', function() {
         if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
             produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
         }  
-        // produtoInput.addEventListener('mouseleave', function() {
-        //     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
-        //         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
-        //     }
-        //     radiosDivProduto.style.display = 'none';
-        // });
 
         let todosProdutos = [];
     
@@ -773,14 +802,6 @@ function validarDatasMovimentacao() {
     return true;
 }
 
-// const fornecedorInput = document.getElementById('fornecedor-multi');
-// if (fornecedorInput) fornecedorInput.value = ''; // Limpa ao trocar produto
-
-// document.getElementById('select-produtos').addEventListener('change', function() {
-//     const categoria = this.selectedOptions[0].getAttribute('data-categoria');
-//     preencherRadiosFornecedorMulti(categoria);
-//     if (fornecedorInput) fornecedorInput.value = '';
-// });
 
 function preencherRadiosFornecedorMulti(categoria) {
   fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
@@ -813,13 +834,6 @@ document.getElementById('radios-fornecedor-multi').addEventListener('click', fun
   fornecedorInput.dataset.id = radio.value;
   this.style.display = 'none';
 });
-
-// produtoInput.addEventListener('blur', function() {
-//     if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
-//         produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
-//     }
-//     radiosDivProduto.style.display = 'none';
-// });
 
 function aplicarEstiloInputs() {
         const inputs = document.querySelectorAll('.filters-group input');

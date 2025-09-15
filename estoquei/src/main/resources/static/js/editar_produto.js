@@ -11,6 +11,10 @@ precoInput.addEventListener('input', function(e) {
     }
 });
 
+if (document.referrer && document.referrer.includes(window.location.origin)) {
+    sessionStorage.setItem('paginaAnteriorEditarProduto', document.referrer);
+}
+
 function upload() {
     document.getElementById('foto').click();
 }
@@ -572,12 +576,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        restaurarImagemOriginal();
-                        history.back();
+                        const anterior = sessionStorage.getItem('paginaAnteriorEditarProduto');
+                        if (anterior) {
+                            window.location.href = anterior;
+                        } else {
+                            window.location.href = '/inicio';
+                        }
                     }
                 });
             }
-            // Se não houve alteração, deixa o link funcionar normalmente
         });
     }
 });

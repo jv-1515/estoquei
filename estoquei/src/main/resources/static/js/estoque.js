@@ -1064,6 +1064,7 @@ function renderizarProdutos(produtos) {
             tbody.innerHTML += rowHtml;
         });
 
+        if (window.aplicarPermissoesEstoque) window.aplicarPermissoesEstoque();
         renderizarPaginacao(totalPaginas);
     });
 }
@@ -1174,6 +1175,8 @@ function parseDataQualquerFormato(dataStr) {
     // fallback
     return new Date(dataStr);
 }
+
+let btnFiltrarProdutos;
 
 window.onload = function() {
     const select = document.getElementById('registros-select');
@@ -1604,9 +1607,9 @@ document.addEventListener('mousedown', function(e) {
 });
 
 // Botão "Filtrar Produtos" mostra filtros avançados
-btnFiltrarProdutos.addEventListener('click', function() {
-    filtrosAvancados.style.display = 'flex';
-});
+// btnFiltrarProdutos.addEventListener('click', function() {
+//     filtrosAvancados.style.display = 'flex';
+// });
 
 // Botão "Limpar Filtros" limpa só os filtros avançados e esconde a div
 btnLimparFiltros.addEventListener('click', function(e) {
@@ -2212,3 +2215,7 @@ function formatarData(data) {
     const ano = dataObj.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.aplicarPermissoesEstoque) window.aplicarPermissoesEstoque();
+});

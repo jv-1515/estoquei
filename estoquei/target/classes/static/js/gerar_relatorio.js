@@ -393,9 +393,9 @@ async function gerarRelatorio() {
         text: 'Aguarde...',
         allowOutsideClick: false,
         showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        timer: 1500,
+        timerProgressBar: true,
+
     });
     const filtros = getFiltrosSelecionados();
 

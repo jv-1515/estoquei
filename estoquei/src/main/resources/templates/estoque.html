@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/estoque.css" />
     <script src="/js/estoque.js" defer></script>
+    <script src="/js/controle_acessos.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/grafico.js" defer></script>
 </head>
@@ -113,7 +114,7 @@
               </div>
               <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
-                        <div class="multiselect multiselect-genero input-group">
+            <div class="multiselect multiselect-genero input-group">
               <label for="filter-genero-multi">Gêneros</label>
               <div style="position:relative;">
                 <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
@@ -312,7 +313,7 @@
                 <option value="100">100</option>
             </select>
         </div>
-        <button class="btn" style="margin-left: auto;" onclick="window.location.href='/cadastrar-produto'">
+        <button id="btn-cadastrar-produto" class="btn" style="margin-left: auto;" onclick="window.location.href='/cadastrar-produto'">
             <i class="fa-solid fa-clipboard-list" style="margin-right: 4px;"></i> Cadastrar
         </button>
     </div>
