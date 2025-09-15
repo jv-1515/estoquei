@@ -39,20 +39,29 @@ async function aplicarPermissoesEstoque() {
     }
 
     // Editar produto (editar = 3)
+    const editLink = document.getElementById('detalhes-edit-link');
+    if (editLink) {
+        editLink.href = `/editar-produto?id=${editLink.dataset.produtoId}`;
+        if (!temPermissao(cargo, 'produtos', 2)) {
+            editLink.disabled = true;
+            editLink.title = 'Sem permissão';
+            editLink.style.cursor = 'not-allowed';
+        }
+    }
     document.querySelectorAll('a[title="Editar"], .edit-icon, .btn-editar-produto').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 3)) {
-        btn.disabled = true;
-        btn.title = 'Sem permissão';
-        btn.style.cursor = 'not-allowed';
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
         }
     });
 
     // Remover produto (excluir = 4)
-    document.querySelectorAll('.trash-icon, .btn-remover-produto').forEach(btn => {
+    document.querySelectorAll('button.btn-remover-produto, button.trash-icon, button[title="Remover"]').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 4)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
+            btn.disabled = true;
             btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
         }
     });
 
@@ -60,7 +69,6 @@ async function aplicarPermissoesEstoque() {
     const btnMovimentar = document.getElementById('movimentar-produto');
     if (btnMovimentar && !temPermissao(cargo, 'movimentacoes', 2)) {
         btnMovimentar.style.pointerEvents = 'none';
-        btnMovimentar.style.opacity = '0.5';
         btnMovimentar.title = 'Sem permissão';
     }
 
@@ -68,7 +76,6 @@ async function aplicarPermissoesEstoque() {
     document.querySelectorAll('.detalhes-historico-link').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 1)) {
             link.style.pointerEvents = 'none';
-            link.style.opacity = '0.5';
             link.title = 'Sem permissão';
         }
     });

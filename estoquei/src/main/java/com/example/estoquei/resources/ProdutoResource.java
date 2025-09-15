@@ -203,12 +203,15 @@ public class ProdutoResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("isActive");
-        String codigoUsuario = usuarioLogado != null ? usuarioLogado.getCodigo() : "desconhecido";
-        String nomeUsuario = usuarioLogado != null ? usuarioLogado.getNome() : "desconhecido";
+        if (usuarioLogado == null || usuarioLogado.getCargo() == null || usuarioLogado.getCargo().getProdutos() < 4) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String codigoUsuario = usuarioLogado.getCodigo();
+        String nomeUsuario = usuarioLogado.getNome();
         String[] nomes = nomeUsuario.trim().split("\\s+");
         String nomeFormatado = nomes.length == 1 ? nomes[0] : nomes[0] + " " + nomes[nomes.length - 1];
         String responsavel = codigoUsuario + " - " + nomeFormatado;
-    
+
         boolean removido = produtoService.deletar(id, responsavel);
         if (removido) {
             return ResponseEntity.noContent().build();

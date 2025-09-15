@@ -39,11 +39,20 @@ async function aplicarPermissoesEstoque() {
     }
 
     // Editar produto (editar = 3)
+    const editLink = document.getElementById('detalhes-edit-link');
+    if (editLink) {
+        editLink.href = `/editar-produto?id=${editLink.dataset.produtoId}`;
+        if (!temPermissao(cargo, 'produtos', 2)) {
+            editLink.disabled = true;
+            editLink.title = 'Sem permissão';
+            editLink.style.cursor = 'not-allowed';
+        }
+    }
     document.querySelectorAll('a[title="Editar"], .edit-icon, .btn-editar-produto').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 3)) {
-        btn.disabled = true;
-        btn.title = 'Sem permissão';
-        btn.style.cursor = 'not-allowed';
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
         }
     });
 
