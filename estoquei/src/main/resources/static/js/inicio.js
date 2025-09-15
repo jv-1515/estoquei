@@ -13,17 +13,13 @@ function confirmarSaida(event) {
         if (result.isConfirmed) {
             Swal.fire({
                 icon: 'info',
-                title: 'Desconectando sua conta...',
-                text: 'Aguarde',
+                title: 'Desconectando sua conta',
+                text: 'Aguarde...',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 timer: 1500,
                 timerProgressBar: true,
                 showConfirmButton: false,
-                titleText: undefined,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
             });
             setTimeout(() => {
                 window.location.href = '/admin/logout';

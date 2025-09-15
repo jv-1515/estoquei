@@ -37,7 +37,7 @@ public class Router {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
         model.addAttribute("nome", usuario.getNome());
-        model.addAttribute("cargo", usuario.getCargo()); // Adiciona o cargo do usuário
+        model.addAttribute("cargo", usuario.getCargo());
         return "inicio";
     }
 
@@ -62,6 +62,9 @@ public class Router {
     public String cadastro(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getProdutos() < 2) {
+            return "redirect:/inicio";
+        }
         return "cadastrar_produto";
     }
 
@@ -69,6 +72,9 @@ public class Router {
     public String editarProduto(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getProdutos() < 3) {
+            return "redirect:/inicio";
+        }
         model.addAttribute("cargo", usuario.getCargo());
         return "editar_produto";
     }
@@ -88,25 +94,25 @@ public class Router {
     }
 
     //funcionario
-    @GetMapping("/cadastrar-funcionario")
-    public String cadastrarFuncionario(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario == null) return "redirect:/";
-        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 1) {
-            return "cadastrar_funcionario";
-        }
-        return "redirect:/inicio";
-    }
+    // @GetMapping("/cadastrar-funcionario")
+    // public String cadastrarFuncionario(HttpSession session) {
+    //     Usuario usuario = getUsuarioOuRedireciona(session);
+    //     if (usuario == null) return "redirect:/";
+    //     if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 1) {
+    //         return "cadastrar_funcionario";
+    //     }
+    //     return "redirect:/inicio";
+    // }
 
-    @GetMapping("/editar-funcionario")
-    public String editarFuncionario(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario == null) return "redirect:/";
-        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 2) { // Exemplo: nível 2 para editar
-            return "editar_funcionario";
-        }
-        return "redirect:/inicio";
-    }
+    // @GetMapping("/editar-funcionario")
+    // public String editarFuncionario(HttpSession session) {
+    //     Usuario usuario = getUsuarioOuRedireciona(session);
+    //     if (usuario == null) return "redirect:/";
+    //     if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 2) {
+    //         return "editar_funcionario";
+    //     }
+    //     return "redirect:/inicio";
+    // }
 
     @GetMapping("/gerenciar-funcionarios")
     public String gerenciarFuncionarios(Model model, HttpSession session) {
@@ -189,7 +195,7 @@ public class Router {
     public String permissoes(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("isActive");
         if (usuario == null) return "redirect:/";
-        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 4) { // Exemplo: só gerente/admin pode editar permissões
+        if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 4) {
             model.addAttribute("usuarioLogado", usuario);
             return "permissoes";
         }
