@@ -169,6 +169,9 @@ public class Router {
     public String movimentacoes(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getMovimentacoes() < 1) {
+            return "redirect:/inicio";
+        }
         return "movimentacoes";
     }
 
