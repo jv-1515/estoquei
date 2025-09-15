@@ -36,6 +36,7 @@ async function aplicarPermissoesEstoque() {
         btnCadastrar.disabled = true;
         btnCadastrar.title = 'Sem permissão';
         btnCadastrar.style.cursor = 'not-allowed';
+        btnCadastrar.style.backgroundColor = '#aaa'
     }
 
     // Editar produto (editar = 3)
@@ -46,6 +47,7 @@ async function aplicarPermissoesEstoque() {
             editLink.disabled = true;
             editLink.title = 'Sem permissão';
             editLink.style.cursor = 'not-allowed';
+            editLink.style.opacity = '0.6';
         }
     }
     document.querySelectorAll('a[title="Editar"], .edit-icon, .btn-editar-produto').forEach(btn => {
@@ -53,32 +55,45 @@ async function aplicarPermissoesEstoque() {
             btn.disabled = true;
             btn.title = 'Sem permissão';
             btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
         }
     });
 
     // Remover produto (excluir = 4)
-    document.querySelectorAll('.trash-icon, .btn-remover-produto').forEach(btn => {
+    document.querySelectorAll('button.btn-remover-produto, button.trash-icon, button[title="Remover"]').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 4)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
+            btn.disabled = true;
             btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
         }
     });
 
     // Movimentar produto (criar movimentação = 2)
+    document.querySelectorAll('a[href="/movimentacoes"], a[href="/baixo-estoque"], a[href="/movimentar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
+
     const btnMovimentar = document.getElementById('movimentar-produto');
     if (btnMovimentar && !temPermissao(cargo, 'movimentacoes', 2)) {
         btnMovimentar.style.pointerEvents = 'none';
-        btnMovimentar.style.opacity = '0.5';
         btnMovimentar.title = 'Sem permissão';
     }
 
     // Detalhes/histórico (visualizar movimentações = 1)
     document.querySelectorAll('.detalhes-historico-link').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 1)) {
-            link.style.pointerEvents = 'none';
-            link.style.opacity = '0.5';
             link.title = 'Sem permissão';
+            link.style.pointerEvents = 'unset';
+            link.style.cursor = 'not-allowed';
+            link.style.color = '#757575';
+            const icon = link.previousElementSibling;
+            if (icon && icon.classList.contains('fa-clock-rotate-left')) {
+                icon.style.color = '#757575';
+            }
         }
     });
 }
