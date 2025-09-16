@@ -2,6 +2,7 @@ package com.example.estoquei.resources;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Tamanho;
+import com.example.estoquei.model.Genero;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
@@ -250,5 +253,21 @@ public class ProdutoResource {
         resultado.put("entradasHoje", movimentacaoRepo.somaMovimentacaoHojePorCodigo(codigo, "ENTRADA", hoje));
         resultado.put("saidasHoje", movimentacaoRepo.somaMovimentacaoHojePorCodigo(codigo, "SAIDA", hoje));
         return resultado;
+    }
+
+    @GetMapping("/tamanhos")
+    public ResponseEntity<List<String>> getTamanhos() {
+        List<String> tamanhos = Arrays.stream(Tamanho.values())
+            .map(Enum::name)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(tamanhos);
+    }
+
+    @GetMapping("/generos")
+    public ResponseEntity<List<String>> getGeneros() {
+        List<String> generos = Arrays.stream(Genero.values())
+            .map(Enum::name)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(generos);
     }
 }
