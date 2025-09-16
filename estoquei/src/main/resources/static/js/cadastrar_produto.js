@@ -1,3 +1,33 @@
+let generosEnum = [];
+
+fetch('/produtos/generos')
+    .then(res => res.json())
+    .then(generos => {
+        generosEnum = generos;
+    });
+
+
+let tamanhosLetra = [];
+let tamanhosNumero = [];
+
+fetch('/produtos/tamanhos')
+    .then(res => res.json())
+    .then(tamanhos => {
+        tamanhosLetra = tamanhos.filter(t => !t.startsWith('_'));
+        tamanhosNumero = tamanhos.filter(t => t.startsWith('_'));
+    });
+
+
+function formatarGeneroVisual(gen) {
+  return gen.charAt(0) + gen.slice(1).toLowerCase();
+}
+
+function formatarTamanhoVisual(tam) {
+    if (tam === "ÚNICO" || tam === "UNICO") return "Único";
+    if (tam.startsWith("_")) return tam.slice(1);
+    return tam;
+}
+
 const precoInput = document.getElementById('preco');
 
 precoInput.addEventListener('input', function(e) {
@@ -25,27 +55,6 @@ form.addEventListener('submit', function(e) {
 });
 
 
-// Enums do backend
-const tamanhosLetra = ["ÚNICO", "PP", "P", "M", "G", "GG", "XG", "XGG", "XXG"];
-const tamanhosNumero = ["_36", "_37", "_38", "_39", "_40", "_41", "_42", "_43", "_44", "_45", "_46", "_47", "_48", "_49", "_50", "_51", "_52", "_53", "_54", "_55", "_56"];
-
-// Função para atualizar tamanhos ao selecionar categoria
-// function atualizarTamanhosPorCategoria(categoriaNome) {
-//   const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
-//   let tamanhosPermitidos = [];
-//   if (categoriaObj) {
-//     if (categoriaObj.tipoTamanho === 2) {
-//       tamanhosPermitidos = tamanhosNumero;
-//     } else {
-//       tamanhosPermitidos = tamanhosLetra;
-//     }
-//   }
-//   const tamanhoSelect = document.getElementById('tamanho');
-//   tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-//   tamanhosPermitidos.forEach(tam => {
-//     tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
-//   });
-// }
 
 // Array de categorias cadastrado no modal (com nível de tamanhos)
 let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
@@ -129,6 +138,12 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
     formData.set('preco', precoLimpo);
+    
+    const generoInput = document.getElementById('genero-multi');
+    const tamanhoInput = document.getElementById('tamanho-multi');
+    
+    formData.set('genero', generoInput.dataset.value || '');
+    formData.set('tamanho', tamanhoInput.dataset.value || '');
 
     fetch(this.action, {
         method: this.method,
@@ -888,13 +903,13 @@ document.addEventListener('DOMContentLoaded', preencherRadiosCategoria);
 
 // Array de categorias provisório
 const categorias = [
-  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: "T" },   // Todos
-  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: "T" }, // Masculino e Feminino
-  { id: 3, nome: "CALÇA", tipoTamanho: 2, tipoGenero: "T" },     // Masculino
-  { id: 4, nome: "BERMUDA", tipoTamanho: 2, tipoGenero: "T" },   // Feminino
-  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: "F" },   // Feminino
-  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: "T" },    // Unissex
-  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: "T" }       // Todos
+  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 3, nome: "CALÇA", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 4, nome: "BERMUDA", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: "F" },
+  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: "T" }
 ];
 
 // tipoTamanho: 0 = todos, 1 = letras, 2 = numéricos
@@ -947,67 +962,160 @@ document.getElementById('radios-categoria-multi').addEventListener('click', func
   }
 });
 
+// Função para abrir/fechar multiselect tamanho
+function abrirFecharTamanhoMulti() {
+  const radiosDiv = document.getElementById('radios-tamanho-multi');
+  radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+}
+document.getElementById('tamanho-multi').addEventListener('click', abrirFecharTamanhoMulti);
+document.querySelector('.chevron-tamanho').addEventListener('click', abrirFecharTamanhoMulti);
+
+// Função para abrir/fechar multiselect genero
+function abrirFecharGeneroMulti() {
+  const radiosDiv = document.getElementById('radios-genero-multi');
+  radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+}
+document.getElementById('genero-multi').addEventListener('click', abrirFecharGeneroMulti);
+document.querySelector('.chevron-genero').addEventListener('click', abrirFecharGeneroMulti);
+
+// Fecha popups ao clicar fora
+document.addEventListener('mousedown', function(e) {
+  const radiosTamanho = document.getElementById('radios-tamanho-multi');
+  const radiosGenero = document.getElementById('radios-genero-multi');
+  if (radiosTamanho.style.display === 'block' && !radiosTamanho.contains(e.target) && e.target.id !== 'tamanho-multi') {
+    radiosTamanho.style.display = 'none';
+  }
+  if (radiosGenero.style.display === 'block' && !radiosGenero.contains(e.target) && e.target.id !== 'genero-multi') {
+    radiosGenero.style.display = 'none';
+  }
+});
+
+// Função para atualizar tamanhos e gêneros customizados
 function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
-    const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
+  const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
 
-    // Tamanhos
-    const tamanhoSelect = document.getElementById('tamanho');
-    tamanhoSelect.innerHTML = '';
-    if (!categoriaObj) {
-        tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-        tamanhoSelect.disabled = true;
-    } else {
-        let tamanhosPermitidos = [];
-        if (categoriaObj.tipoTamanho === 2) {
-            tamanhosPermitidos = tamanhosNumero;
-        } else if (categoriaObj.tipoTamanho === 1) {
-            tamanhosPermitidos = tamanhosLetra;
-        } else {
-            tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
-        }
-        tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-        tamanhosPermitidos.forEach(tam => {
-            tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
-        });
-        tamanhoSelect.disabled = false;
-    }
+  // Tamanhos
+  const tamanhoInput = document.getElementById('tamanho-multi');
+  const radiosTamanhoDiv = document.getElementById('radios-tamanho-multi');
+  radiosTamanhoDiv.innerHTML = '';
+  tamanhoInput.value = '';
+  tamanhoInput.style.color = '#757575';
+  tamanhoInput.disabled = !categoriaObj;
 
-    // Gêneros
-    const generoSelect = document.getElementById('genero');
-    generoSelect.innerHTML = '';
-    if (!categoriaObj) {
-        generoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-        generoSelect.disabled = true;
+  let tamanhosPermitidos = [];
+  if (categoriaObj) {
+    if (categoriaObj.tipoTamanho === 2) {
+      tamanhosPermitidos = tamanhosNumero;
+    } else if (categoriaObj.tipoTamanho === 1) {
+      tamanhosPermitidos = tamanhosLetra;
     } else {
-        let generosPermitidos = [];
-        switch (categoriaObj.tipoGenero) {
-            case "T":
-                generosPermitidos = ["MASCULINO", "FEMININO", "UNISSEX"];
-                break;
-            case "F":
-                generosPermitidos = ["FEMININO"];
-                break;
-            case "M":
-                generosPermitidos = ["MASCULINO"];
-                break;
-            case "U":
-                generosPermitidos = ["UNISSEX"];
-                break;
-            case "FM":
-                generosPermitidos = ["MASCULINO", "FEMININO"];
-                break;
-            default:
-                generosPermitidos = ["MASCULINO", "FEMININO", "UNISSEX"];
-        }
-        generoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
-        generosPermitidos.forEach(gen => {
-            generoSelect.innerHTML += `<option value="${gen}">${gen.charAt(0) + gen.slice(1).toLowerCase()}</option>`;
-        });
-        generoSelect.disabled = false;
+      tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
     }
+    tamanhosPermitidos.forEach(tam => {
+      const label = document.createElement('label');
+      label.className = 'tamanho-multi-label';
+            // Formata visualmente o tamanho
+      function formatarTamanhoVisual(tam) {
+          if (tam === "ÚNICO") return "Único";
+          if (tam.startsWith("_")) return tam.slice(1);
+          return tam;
+      }
+      
+      label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
+      radiosTamanhoDiv.appendChild(label);
+    });
+    // Se só tem uma opção, já seleciona
+  if (tamanhosPermitidos.length === 1) {
+    tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
+    tamanhoInput.style.color = '#000';
+    tamanhoInput.dataset.value = tamanhosPermitidos[0];
+    radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
+  }
+  } else {
+    radiosTamanhoDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
+    tamanhoInput.value = '';
+  }
+
+  // Evento para atualizar input ao selecionar tamanho
+  radiosTamanhoDiv.addEventListener('click', function(e) {
+      const radio = e.target.closest('input[type="radio"]');
+      if (radio) {
+          tamanhoInput.value = formatarTamanhoVisual(radio.value);
+          tamanhoInput.style.color = '#000';
+          tamanhoInput.dataset.value = radio.value;
+          radiosTamanhoDiv.style.display = 'none';
+      }
+  });
+
+  // Gêneros
+  const generoInput = document.getElementById('genero-multi');
+  const radiosGeneroDiv = document.getElementById('radios-genero-multi');
+  radiosGeneroDiv.innerHTML = '';
+  generoInput.value = '';
+  generoInput.style.color = '#757575';
+  generoInput.disabled = !categoriaObj;
+
+  let generosPermitidos = [];
+  if (categoriaObj) {
+    switch (categoriaObj.tipoGenero) {
+      case "T":
+        generosPermitidos = generosEnum;
+        break;
+      case "F":
+        generosPermitidos = generosEnum.filter(g => g === "FEMININO");
+        break;
+      case "M":
+        generosPermitidos = generosEnum.filter(g => g === "MASCULINO");
+        break;
+      case "U":
+        generosPermitidos = generosEnum.filter(g => g === "UNISSEX");
+        break;
+      case "FM":
+        generosPermitidos = generosEnum.filter(g => g === "MASCULINO" || g === "FEMININO");
+        break;
+      default:
+        generosPermitidos = generosEnum;
+    }
+    generosPermitidos.forEach(gen => {
+      const label = document.createElement('label');
+      label.className = 'genero-multi-label';
+      
+      label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
+      radiosGeneroDiv.appendChild(label);
+    });
+    // Se só tem uma opção, já seleciona
+    if (generosPermitidos.length === 1) {
+      generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
+      generoInput.style.color = '#000';
+      generoInput.dataset.value = generosPermitidos[0];
+      radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
+    }
+  } else {
+    radiosGeneroDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
+    generoInput.value = '';
+  }
+
+  // Evento para atualizar input ao selecionar gênero
+  radiosGeneroDiv.addEventListener('click', function(e) {
+      const radio = e.target.closest('input[type="radio"]');
+      if (radio) {
+          generoInput.value = formatarGeneroVisual(radio.value);
+          generoInput.style.color = '#000';
+          generoInput.dataset.value = radio.value; 
+          radiosGeneroDiv.style.display = 'none';
+      }
+  });
 }
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    atualizarTamanhosEGenerosPorCategoria(null);
+// Chame ao selecionar categoria
+document.getElementById('radios-categoria-multi').addEventListener('click', function(e) {
+  if (e.target && e.target.type === 'radio') {
+    atualizarTamanhosEGenerosPorCategoria(e.target.value);
+  }
 });
+
+// Inicialize desabilitado
+document.addEventListener('DOMContentLoaded', function() {
+  atualizarTamanhosEGenerosPorCategoria(null);
+});
+
