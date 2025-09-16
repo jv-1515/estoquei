@@ -17,6 +17,17 @@ fetch('/produtos/tamanhos')
         tamanhosNumero = tamanhos.filter(t => t.startsWith('_'));
     });
 
+
+function formatarGeneroVisual(gen) {
+  return gen.charAt(0) + gen.slice(1).toLowerCase();
+}
+
+function formatarTamanhoVisual(tam) {
+    if (tam === "ÚNICO" || tam === "UNICO") return "Único";
+    if (tam.startsWith("_")) return tam.slice(1);
+    return tam;
+}
+
 const precoInput = document.getElementById('preco');
 
 precoInput.addEventListener('input', function(e) {
@@ -127,6 +138,12 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
     formData.set('preco', precoLimpo);
+    
+    const generoInput = document.getElementById('genero-multi');
+    const tamanhoInput = document.getElementById('tamanho-multi');
+    
+    formData.set('genero', generoInput.dataset.value || '');
+    formData.set('tamanho', tamanhoInput.dataset.value || '');
 
     fetch(this.action, {
         method: this.method,
@@ -886,13 +903,13 @@ document.addEventListener('DOMContentLoaded', preencherRadiosCategoria);
 
 // Array de categorias provisório
 const categorias = [
-  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: "T" },   // Todos
-  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: "T" }, // Masculino e Feminino
-  { id: 3, nome: "CALÇA", tipoTamanho: 2, tipoGenero: "T" },     // Masculino
-  { id: 4, nome: "BERMUDA", tipoTamanho: 2, tipoGenero: "T" },   // Feminino
-  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: "F" },   // Feminino
-  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: "T" },    // Unissex
-  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: "T" }       // Todos
+  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 3, nome: "CALÇA", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 4, nome: "BERMUDA", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: "F" },
+  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: "T" }
 ];
 
 // tipoTamanho: 0 = todos, 1 = letras, 2 = numéricos
@@ -997,28 +1014,37 @@ function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
     tamanhosPermitidos.forEach(tam => {
       const label = document.createElement('label');
       label.className = 'tamanho-multi-label';
-      label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${tam}`;
+            // Formata visualmente o tamanho
+      function formatarTamanhoVisual(tam) {
+          if (tam === "ÚNICO") return "Único";
+          if (tam.startsWith("_")) return tam.slice(1);
+          return tam;
+      }
+      
+      label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
       radiosTamanhoDiv.appendChild(label);
     });
     // Se só tem uma opção, já seleciona
-    if (tamanhosPermitidos.length === 1) {
-      tamanhoInput.value = tamanhosPermitidos[0];
-      tamanhoInput.style.color = '#000';
-      radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
-    }
+  if (tamanhosPermitidos.length === 1) {
+    tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
+    tamanhoInput.style.color = '#000';
+    tamanhoInput.dataset.value = tamanhosPermitidos[0];
+    radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
+  }
   } else {
-    radiosTamanhoDiv.innerHTML = '<span style="color:#757575;">Selecione a categoria primeiro</span>';
+    radiosTamanhoDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
     tamanhoInput.value = '';
   }
 
   // Evento para atualizar input ao selecionar tamanho
   radiosTamanhoDiv.addEventListener('click', function(e) {
-    const radio = e.target.closest('input[type="radio"]');
-    if (radio) {
-      tamanhoInput.value = radio.value;
-      tamanhoInput.style.color = '#000';
-      radiosTamanhoDiv.style.display = 'none';
-    }
+      const radio = e.target.closest('input[type="radio"]');
+      if (radio) {
+          tamanhoInput.value = formatarTamanhoVisual(radio.value);
+          tamanhoInput.style.color = '#000';
+          tamanhoInput.dataset.value = radio.value;
+          radiosTamanhoDiv.style.display = 'none';
+      }
   });
 
   // Gêneros
@@ -1053,28 +1079,31 @@ function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
     generosPermitidos.forEach(gen => {
       const label = document.createElement('label');
       label.className = 'genero-multi-label';
-      label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${gen.charAt(0) + gen.slice(1).toLowerCase()}`;
+      
+      label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
       radiosGeneroDiv.appendChild(label);
     });
     // Se só tem uma opção, já seleciona
     if (generosPermitidos.length === 1) {
-      generoInput.value = generosPermitidos[0];
+      generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
       generoInput.style.color = '#000';
+      generoInput.dataset.value = generosPermitidos[0];
       radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
     }
   } else {
-    radiosGeneroDiv.innerHTML = '<span style="color:#757575;">Selecione a categoria primeiro</span>';
+    radiosGeneroDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
     generoInput.value = '';
   }
 
   // Evento para atualizar input ao selecionar gênero
   radiosGeneroDiv.addEventListener('click', function(e) {
-    const radio = e.target.closest('input[type="radio"]');
-    if (radio) {
-      generoInput.value = radio.value;
-      generoInput.style.color = '#000';
-      radiosGeneroDiv.style.display = 'none';
-    }
+      const radio = e.target.closest('input[type="radio"]');
+      if (radio) {
+          generoInput.value = formatarGeneroVisual(radio.value);
+          generoInput.style.color = '#000';
+          generoInput.dataset.value = radio.value; 
+          radiosGeneroDiv.style.display = 'none';
+      }
   });
 }
 
