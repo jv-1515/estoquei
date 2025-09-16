@@ -25,52 +25,59 @@ form.addEventListener('submit', function(e) {
 });
 
 
+// Enums do backend
+const tamanhosLetra = ["ÚNICO", "PP", "P", "M", "G", "GG", "XG", "XGG", "XXG"];
+const tamanhosNumero = ["_36", "_37", "_38", "_39", "_40", "_41", "_42", "_43", "_44", "_45", "_46", "_47", "_48", "_49", "_50", "_51", "_52", "_53", "_54", "_55", "_56"];
 
-function updateOptions() {
-    const categoria = document.getElementById('categoria').value;
-    const tamanho = document.getElementById('tamanho');
-    let options = '<option value="" disabled selected hidden>Selecionar</option>';
-
-    const tamLetra = [
-        { value: 'ÚNICO', label: 'Único' },
-        { value: 'PP', label: 'PP' },
-        { value: 'P', label: 'P' },
-        { value: 'M', label: 'M' },
-        { value: 'G', label: 'G' },
-        { value: 'GG', label: 'GG' },
-        { value: 'XG', label: 'XG' },
-        { value: 'XGG', label: 'XGG' },
-        { value: 'XXG', label: 'XXG' }
-    ];
-
-    if (!categoria) {
-        tamanho.innerHTML = options;
-        return;
-    }
-
-    if (categoria === 'SAPATO' || categoria === 'MEIA') {
-        for (let i = 36; i <= 44; i++) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
-    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'VESTIDO') {
-        for (let i = 36; i <= 56; i += 2) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
-    } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
-        tamLetra.forEach(t => {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        });
+// Função para atualizar tamanhos ao selecionar categoria
+function atualizarTamanhosPorCategoria(categoriaNome) {
+  const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
+  let tamanhosPermitidos = [];
+  if (categoriaObj) {
+    if (categoriaObj.tipoTamanho === 2) {
+      tamanhosPermitidos = tamanhosNumero;
     } else {
-        tamLetra.forEach(t => {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        });
-        for (let i = 36; i <= 56; i++) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
+      tamanhosPermitidos = tamanhosLetra;
     }
-
-    tamanho.innerHTML = options;
+  }
+  const tamanhoSelect = document.getElementById('tamanho');
+  tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
+  tamanhosPermitidos.forEach(tam => {
+    tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
+  });
 }
+
+// Array de categorias cadastrado no modal (com nível de tamanhos)
+let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
+
+// Evento de clique do radio da categoria
+document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
+    radio.addEventListener('click', function(e) {
+        const categoriaSelecionada = e.target.value; // Ex: "CAMISA", "SAPATO", etc.
+
+        // Busca a categoria no array cadastrado
+        const categoriaObj = categoriasModal.find(cat => cat.nome === categoriaSelecionada);
+
+        // Decide os tamanhos permitidos conforme cadastrado
+        let tamanhosPermitidos = [];
+        if (categoriaObj && categoriaObj.tamanhos && categoriaObj.tamanhos.length > 0) {
+            // Se tem tamanhos cadastrados, usa eles
+            tamanhosPermitidos = categoriaObj.tamanhos;
+        } else if (categoriaSelecionada === "SAPATO" || categoriaSelecionada === "MEIA") {
+            // Se não tem, usa enum padrão do backend
+            tamanhosPermitidos = tamanhosNumero;
+        } else {
+            tamanhosPermitidos = tamanhosLetra;
+        }
+
+        // Atualiza o select de tamanhos
+        const tamanhoSelect = document.getElementById('tamanho');
+        tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
+        tamanhosPermitidos.forEach(tam => {
+            tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
+        });
+    });
+});
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
@@ -370,9 +377,33 @@ function fecharModalCategorias() {
 }
 
 // Array de categorias (carrega do localStorage ou começa vazio)
-let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
+// let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
 // Snapshot para comparação
 let categoriasModalSnapshot = JSON.stringify(categoriasModal);
+
+// Evento de clique dos radios de categoria para atualizar tamanhos
+document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
+  radio.addEventListener('click', function(e) {
+    const categoriaSelecionada = e.target.value;
+    // Busca a categoria no array cadastrado
+    const categoriaObj = categoriasModal.find(cat => cat.nome === categoriaSelecionada);
+    // Decide os tamanhos permitidos conforme cadastrado
+    let tamanhosPermitidos = [];
+    if (categoriaObj && categoriaObj.tamanhos && categoriaObj.tamanhos.length > 0) {
+      tamanhosPermitidos = categoriaObj.tamanhos;
+    } else if (categoriaSelecionada === "SAPATO" || categoriaSelecionada === "MEIA") {
+      tamanhosPermitidos = tamanhosNumero;
+    } else {
+      tamanhosPermitidos = tamanhosLetra;
+    }
+    // Atualiza o select de tamanhos
+    const tamanhoSelect = document.getElementById('tamanho');
+    tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
+    tamanhosPermitidos.forEach(tam => {
+      tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
+    });
+  });
+});
 
 // Ao abrir modal, salva snapshot
 document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
@@ -801,3 +832,87 @@ function aplicarEstiloInputs() {
         generoChecks.forEach(cb => cb.addEventListener('change', atualizarCorLinha));
     }
 }
+
+
+// Função para preencher radios do multiselect categoria
+function preencherRadiosCategoria() {
+  const radiosDiv = document.getElementById('radios-categoria-multi');
+  if (!radiosDiv) return;
+  radiosDiv.innerHTML = '';
+  categorias.forEach((cat, idx) => {
+    const label = document.createElement('label');
+    label.setAttribute('for', `categoria_radio_${cat.id}`);
+    label.textContent = cat.nome;
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'categoria_radio';
+    radio.id = `categoria_radio_${cat.id}`;
+    radio.value = cat.nome;
+    label.appendChild(radio);
+    radiosDiv.appendChild(label);
+  });
+}
+
+// função ao carregar
+document.addEventListener('DOMContentLoaded', preencherRadiosCategoria);
+
+// Array de categorias provisório
+const categorias = [
+  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: 0 },
+  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: 0 },
+  { id: 3, nome: "CALÇA", tipoTamanho: 1, tipoGenero: 0 },
+  { id: 4, nome: "BERMUDA", tipoTamanho: 1, tipoGenero: 0 },
+  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: 1 },
+  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: 0 },
+  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: 0 }
+];
+
+// tipoTamanho: 0 = todos, 1 = letras, 2 = numéricos
+// tipoGenero: 0 = todos, 1 = feminino, 2 = masculino, 3 = unissex
+
+const categoriaInput = document.getElementById('categoria-multi');
+const radiosDiv = document.getElementById('radios-categoria-multi');
+const chevron = document.querySelector('.chevron-categoria');
+
+function preencherRadiosCategoria() {
+  radiosDiv.innerHTML = '';
+  categorias.forEach(cat => {
+    const label = document.createElement('label');
+    label.className = 'categoria-multi-label';
+    label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome}" style="display:none;">${cat.nome}`;
+    radiosDiv.appendChild(label);
+  });
+}
+preencherRadiosCategoria();
+
+function abrirFecharCategoriaMulti() {
+  radiosDiv.style.display = radiosDiv.style.display === 'block' ? 'none' : 'block';
+}
+categoriaInput.addEventListener('click', abrirFecharCategoriaMulti);
+chevron.addEventListener('click', abrirFecharCategoriaMulti);
+
+document.addEventListener('mousedown', function(e) {
+  if (radiosDiv.style.display === 'block') {
+    if (!radiosDiv.contains(e.target) && e.target !== categoriaInput && e.target !== chevron) {
+      radiosDiv.style.display = 'none';
+    }
+  }
+});
+
+radiosDiv.addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (!label) return;
+  this.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+  label.classList.add('selecionado');
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+  categoriaInput.value = label.textContent.trim();
+  categoriaInput.dataset.value = radio.value;
+  this.style.display = 'none';
+});
+
+document.getElementById('radios-categoria-multi').addEventListener('click', function(e) {
+  if (e.target && e.target.type === 'radio') {
+    atualizarTamanhosPorCategoria(e.target.value);
+  }
+});
