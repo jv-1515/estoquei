@@ -127,7 +127,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     </div>
                 ` : `
                     <label for="valor-venda">Valor da Venda*</label>
-                    <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1000,00" min="1">
+                    <input type="text" id="valor-venda" name="valor-venda" required placeholder="R$ 1.000,00" min="1">
                     <label for="comprador">Comprador*</label>
                     <input type="text" id="comprador" name="comprador" required placeholder="Comprador">
                 `}

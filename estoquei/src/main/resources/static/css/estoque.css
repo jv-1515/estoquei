@@ -465,6 +465,7 @@ select#registros-select option {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
+    accent-color: #1E94A3 !important;
 }
 
 .fa-trash-can:hover,
@@ -492,6 +493,7 @@ select#registros-select option {
 .quantidade-check-label input[type="checkbox"] {
     width: 12px !important;
     height: 12px !important;
+    accent-color: #1E94A3 !important;
 }
 
 .detalhes-modal-bg {

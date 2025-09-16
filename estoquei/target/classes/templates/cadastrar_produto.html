@@ -34,17 +34,15 @@
                 <label for="nome">Nome*</label>
                 <input type="text" id="nome" name="nome" required placeholder="Nome do produto" maxlength="50" tabindex="2">
 
-                <label for="categoria">Categoria*</label>
-                <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3">
-                    <option value="" disabled selected hidden>Selecionar</option>
-                    <option value="CAMISA">Camisa</option>
-                    <option value="CAMISETA">Camiseta</option>
-                    <option value="BERMUDA">Bermuda</option>
-                    <option value="CALÇA">Calça</option>
-                    <option value="VESTIDO">Vestido</option>
-                    <option value="SAPATO">Sapato</option>
-                    <option value="MEIA">Meia</option>
-                </select>
+                <label for="categoria-multi">Categoria*</label>
+                <div class="multiselect-categoria input-group" style="position: relative; width: 100%;">
+                  <input type="text" id="categoria-multi" name="categoria" readonly placeholder="Selecionar" required tabindex="3" style="width: 100%;" />
+                  <span class="chevron-categoria" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </span>
+                  <div id="radios-categoria-multi" class="checkboxes-categoria-multi"></div>
+                </div>
+
 
                 <label for="tamanho">Tamanho*</label>
                 <select id="tamanho" name="tamanho" required tabindex="4">
