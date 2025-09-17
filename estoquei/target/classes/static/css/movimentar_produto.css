@@ -281,6 +281,8 @@ input[readonly] {
     max-height: 52px;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 
 #radios-fornecedor-multi label,
@@ -291,7 +293,7 @@ input[readonly] {
     font-weight: normal;
     color: #757575;
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 5px 8px;
     gap: 8px;
     transition: background 0.2s, color 0.2s;
 }

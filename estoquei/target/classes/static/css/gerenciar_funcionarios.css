@@ -65,20 +65,6 @@ h3 {
     box-sizing: border-box;
 }
 
-/* .btn-permissoes {
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 3;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    background: #1e94a3;
-    padding: 0 24px;
-    border-radius: 8px;
-    width: 130px;
-} */
-
 .cargo-gradient {
     position: absolute;
     right: 0;
@@ -544,8 +530,10 @@ select#registros-select option {
     top: 100% !important;
     z-index: 1000;
     width: 100%;
-    max-height: 90px;
+    max-height: 72px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 #checkboxes-cargo-multi label,
 #checkboxes-status-multi label {
@@ -557,6 +545,10 @@ select#registros-select option {
     font-weight: normal !important;
     pointer-events: auto !important;
     padding: 2px 8px;
+}
+
+#checkboxes-cargo-multi label {
+    padding: 2px 0 2px 8px;
 }
 
 #checkboxes-cargo-multi label:hover,
