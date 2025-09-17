@@ -138,7 +138,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
     formData.set('preco', precoLimpo);
-    
+
+    formData.set('categoria', document.getElementById('categoria-multi').dataset.value.toUpperCase() || '');
+
     const generoInput = document.getElementById('genero-multi');
     const tamanhoInput = document.getElementById('tamanho-multi');
     
@@ -903,13 +905,13 @@ document.addEventListener('DOMContentLoaded', preencherRadiosCategoria);
 
 // Array de categorias provisório
 const categorias = [
-  { id: 1, nome: "CAMISA", tipoTamanho: 1, tipoGenero: "T" },
-  { id: 2, nome: "CAMISETA", tipoTamanho: 1, tipoGenero: "T" },
-  { id: 3, nome: "CALÇA", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 4, nome: "BERMUDA", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 5, nome: "VESTIDO", tipoTamanho: 1, tipoGenero: "F" },
-  { id: 6, nome: "SAPATO", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 7, nome: "MEIA", tipoTamanho: 2, tipoGenero: "T" }
+  { id: 1, nome: "Camisa", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 2, nome: "Camiseta", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 3, nome: "Calça", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 4, nome: "Bermuda", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 5, nome: "Vestido", tipoTamanho: 1, tipoGenero: "F" },
+  { id: 6, nome: "Sapato", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 7, nome: "Meia", tipoTamanho: 2, tipoGenero: "T" }
 ];
 
 // tipoTamanho: 0 = todos, 1 = letras, 2 = numéricos

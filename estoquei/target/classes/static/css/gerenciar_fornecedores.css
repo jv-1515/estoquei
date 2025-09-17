@@ -483,7 +483,7 @@ select#registros-select option {
     max-height: 90px;
     overflow-y: auto;
 }
-#checkboxes-categoria-multi label,
+
 #checkboxes-categoria-multi-filtro label {
     display: flex;
     align-items: center;
@@ -492,7 +492,7 @@ select#registros-select option {
     color: #757575 !important;
     font-weight: normal !important;
     pointer-events: auto !important;
-    padding: 2px 8px;
+    padding: 2px 0 2px 8px;
 }
 
 #checkboxes-categoria-multi label:hover,

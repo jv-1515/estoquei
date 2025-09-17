@@ -293,6 +293,8 @@ th.ordenar.sorted .sort-icon {
     transition: color 0.2s;
 }
 
+
+
 /* estoque */
 #busca-produto {
     border: 1px solid #aaa;
@@ -378,7 +380,7 @@ tbody tr:nth-child(odd) {
 .actions a:hover, .actions button:hover {
     color: #1e94a3;
 }
-
+/* 
 .produto-img {
     width: 30px;
     height: 30px;
@@ -398,12 +400,12 @@ tbody tr:nth-child(odd) {
     background: #f3f3f3;
     border-radius: 6px;
     vertical-align: middle;
-}
+} */
 .fa-trash:hover {
     color: red;
 }
 
-#filter-genero option[disabled][hidden],
+/* #filter-genero option[disabled][hidden],
 #filter-categoria option[disabled][hidden],
 #filter-tamanho option[disabled][hidden] {
     display: none;
@@ -423,7 +425,7 @@ tbody tr:nth-child(odd) {
 #filter-quantidade.quantidade-ativa::placeholder {
     color: #1e94a3 !important;
     transition: color 0.2s;
-}
+} */
 
 select#registros-select {
     color: #1E94A3;
@@ -472,7 +474,7 @@ button:hover,
     transition: background-color 0.2s, color 0.2s;
 }
 
-.swal2-container {
+/* .swal2-container {
     backdrop-filter: blur(2px) !important;
 }
 
@@ -498,26 +500,11 @@ button:hover,
     height: 25px;
 }
 
-#codigo-sugestoes {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #aaa;
-    border-radius: 4px 0 0 4px;
-    z-index: 1000;
-    overflow-y: auto;
-    display: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    font-size: 12px;
-    left: 0;
-    top: 100%;
-    min-width: 299px;
-    max-height: 299px;
-}
 select#filter-categoria,
 select#filter-tamanho,
 select#filter-genero {
     padding-left: 1px;
-}
+} */
 
 select#registros-select {
     color: #1E94A3;
@@ -555,7 +542,7 @@ select#registros-select option {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 /* Multi-select categoria novo */
-.multiselect {
+/* .multiselect {
   width: 200px;
   position: relative;
 }
@@ -571,8 +558,8 @@ select#registros-select option {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
   cursor: pointer;
-}
-#checkboxes-categoria-multi,
+} */
+/* #checkboxes-categoria-multi,
 #checkboxes-tamanho-multi,
 #checkboxes-genero-multi,
 #checkboxes-codigo-multi {
@@ -620,7 +607,7 @@ select#registros-select option {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
-}
+} */
 
 .fa-arrow-left:hover,
 .fa-house:hover,
