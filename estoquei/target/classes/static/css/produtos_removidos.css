@@ -579,6 +579,8 @@ select#registros-select option {
     color: #757575;
     min-height: 82px;
     height: 82px;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 
 .detalhes-historico-link {
@@ -624,7 +626,7 @@ select#registros-select option {
     color: #f27474;
 }
 
-
+/* 
 
 .notification {
     position: relative;
@@ -639,7 +641,7 @@ select#registros-select option {
     background-color: red;
     color: white;
     border-radius: 100%;
-}
+} */
 
 /* Alinha os checkboxes centralizados na célula */
 td input[type="checkbox"].check-produto,

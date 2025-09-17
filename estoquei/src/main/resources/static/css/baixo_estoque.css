@@ -384,21 +384,21 @@ select#registros-select option {
     scrollbar-color: #aaa #fff;
 }
 .multiselect {
-  width: 200px;
-  position: relative;
+    width: 200px;
+    position: relative;
 }
 .selectBox {
-  position: relative;
+    position: relative;
 }
 .selectBox select {
-  width: 100%;
-  font-weight: bold;
-  cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
 }
 .overSelect {
-  position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
-  cursor: pointer;
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    cursor: pointer;
 }
 #checkboxes-categoria-multi,
 #checkboxes-tamanho-multi,
@@ -509,8 +509,8 @@ select#registros-select option {
     min-width: 0;
     max-width: none;
     background: none;
-    min-width: 240px; 
-    width: 240px; 
+    min-width: 240px;
+    width: 240px;
     max-width: 240px;
 }
 
@@ -562,6 +562,8 @@ select#registros-select option {
     color: #757575;
     min-height: 82px;
     height: 82px;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 
 .detalhes-historico-link {
