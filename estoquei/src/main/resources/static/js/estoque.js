@@ -63,7 +63,7 @@ function atualizarBadgeLixeira() {
             badge.style.display = 'inline-block';
 
             if (qtd < 10) {
-                badge.style.padding = '3px 6px';
+                badge.style.padding = '4px 6px';
             } else if (qtd < 99) {
                 badge.style.padding = '3px';
             } else if (qtd > 99) {
@@ -102,7 +102,7 @@ function atualizarBadgeBaixoEstoque() {
             if (qtd < 10) {
                 badge.style.padding = '3px 6px';
             } else if (qtd < 99) {
-                badge.style.padding = '3px';
+                badge.style.padding = '4px 3px';
             } else if (qtd > 99) {
                 badge.style.padding = '5px 0px 3px 2px';
             }
