@@ -23,8 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
 // lixeira
-function verificarLixeira() {
+async function verificarLixeira() {
     const notificationLixeira = document.querySelector('.notification[onclick*="/produtos-removidos"]');
     if (!notificationLixeira) return;
     const containerLixeira = notificationLixeira.parentElement;
@@ -40,15 +41,23 @@ function verificarLixeira() {
         });
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    verificarLixeira();
-});
+if (window.aplicarPermissoesEstoque) {
+    window.aplicarPermissoesEstoque().then(() => {
+        verificarLixeira();
+    });
+}
 
-function atualizarBadgeLixeira() {
+
+
+async function atualizarBadgeLixeira() {
     const badge = document.querySelector('.badge-lixeira');
     if (!badge) return;
 
     badge.style.display = 'none';
+
+    if (window.aplicarPermissoesEstoque) {
+        await window.aplicarPermissoesEstoque();
+    }
 
     fetch('/produtos/removidos')
         .then(res => res.json())
@@ -63,7 +72,7 @@ function atualizarBadgeLixeira() {
             badge.style.display = 'inline-block';
 
             if (qtd < 10) {
-                badge.style.padding = '3px 6px';
+                badge.style.padding = '4px 6px';
             } else if (qtd < 99) {
                 badge.style.padding = '3px';
             } else if (qtd > 99) {
@@ -81,11 +90,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 // notificacao
-function atualizarBadgeBaixoEstoque() {
+async function atualizarBadgeBaixoEstoque() {
     const badge = document.querySelector('.badge-baixo-estoque');
     if (!badge) return;
 
     badge.style.display = 'none';
+
+    if (window.aplicarPermissoesEstoque) {
+        await window.aplicarPermissoesEstoque();
+    }
 
     fetch('/produtos/baixo-estoque')
         .then(res => res.json())
@@ -102,7 +115,7 @@ function atualizarBadgeBaixoEstoque() {
             if (qtd < 10) {
                 badge.style.padding = '3px 6px';
             } else if (qtd < 99) {
-                badge.style.padding = '3px';
+                badge.style.padding = '4px 3px';
             } else if (qtd > 99) {
                 badge.style.padding = '5px 0px 3px 2px';
             }

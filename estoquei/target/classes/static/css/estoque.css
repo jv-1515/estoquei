@@ -576,6 +576,8 @@ select#registros-select option {
     color: #757575;
     min-height: 82px;
     height: 82px;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 
 .detalhes-historico-link {

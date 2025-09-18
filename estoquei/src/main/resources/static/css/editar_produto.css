@@ -41,7 +41,7 @@ h1 {
     min-height: 30px;
     max-height: 30px;
     box-sizing: border-box;
-    padding: 2px 8px;    
+    padding: 2px 8px;
     border: 1px solid #aaa;
     border-radius: 4px;
 }
@@ -107,6 +107,8 @@ textarea {
     padding: 5px 8px;
     font-family: Arial, sans-serif;
     background-color: #f1f1f1;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
 }
 
 #contador-descricao {
@@ -137,19 +139,19 @@ textarea {
 #genero option[disabled][hidden],
 #categoria option[disabled][hidden],
 #tamanho option[disabled][hidden] {
-  display: none;
+    display: none;
 }
 
 #genero,
 #categoria,
 #tamanho {
-  color: #757575;
+    color: #757575;
 }
 
 #genero:valid,
 #categoria:valid,
 #tamanho:valid {
-  color: #000;
+    color: #000;
 }
 
 .fa-arrow-left:hover {

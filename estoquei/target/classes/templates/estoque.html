@@ -20,8 +20,7 @@
         </button>
     </a>
     <div style="display: flex; gap: 12px; position:absolute; top:20px; right:20px; z-index:10; align-items:center;">
-        <div
-          style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+        <div id="lixeira" title="Produtos Removidos" style="font-size:20px; display:none; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/produtos-removidos'" style="cursor:pointer;">
             <span style="display: inline-block; position: relative;">
                 <i class="fa-regular fa-trash-can" tabindex="14" style="font-size: 18px; padding: 8px 0 0 11px;"></i>
@@ -29,7 +28,7 @@
             <span class="badge badge-lixeira"></span>
             </div>
         </div>
-        <div id="nots" title="Baixo estoque" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+        <div id="nots" title="Baixo Estoque" style="font-size:20px; display:none; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
                 <span style="display: inline-block; position: relative;">
                     <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>
@@ -237,7 +236,7 @@
                         <div id="detalhe-saidas-hoje" style="font-size: 22px; font-weight: bold; color: #e65100;">0</div>
                     </button>
                 </a>
-                <a href="" style="flex:1; text-decoration: none;">
+                <a href="" style="flex:1; text-decoration: none; pointer-events: none;">
                     <button id="estoque-atual" class="detalhe-card" style="background: #e7ecee; border-radius: 8px; padding: 10px 8px; text-align: left; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border: none; cursor: pointer;">
                         <div style="color: #18404a; font-size: 12px; font-weight: bold;">Estoque Atual</div>
                         <div id="detalhe-total-produtos" style="font-size: 22px; font-weight: bold; color: #18404a;">0</div>
