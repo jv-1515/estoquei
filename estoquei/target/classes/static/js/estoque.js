@@ -879,12 +879,16 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
 
-    tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-            </span>
-            <span id="loading-text">Carregando produtos</span>
+    tbody.innerHTML = `
+    <tr>
+        <td colspan="14" style="padding:0;">
+            <div class="skeleton-table">
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
+            </div>
         </td>
     </tr>`;
 
@@ -952,7 +956,7 @@ function renderizarProdutos(produtos) {
         tbody.innerHTML = ''; // Limpa o loading
         produtosPagina.forEach(p => {
             const imageUrl = p.url_imagem;
-            const precoFormatado = p.preco.toFixed(2).replace('.', ',');        
+            const precoFormatado = p.preco.toFixed(2).replace('.', ',');
             const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
             const tamanhoExibido = exibirTamanho(p.tamanho);
             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
@@ -1101,11 +1105,23 @@ function renderizarPaginacao(totalPaginas) {
 
 
 function carregarProdutos(top) {
+    const tbody = document.getElementById('product-table-body');
+    
+    tbody.innerHTML = `
+    <tr>
+        <td colspan="12" style="padding:0;">
+            <div class="skeleton-table">
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
+                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
+            </div>
+        </td>
+    </tr>`;
+
     let url = '/produtos';
     if (top && top !== "") {
         url += `?top=${top}`;
     }
-    
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -1116,17 +1132,17 @@ function carregarProdutos(top) {
         .then(data => {
             produtos = data;
             produtosOriginais = [...produtos];
-            produtosFiltrados = [...produtos]; 
-        
+            produtosFiltrados = [...produtos];
+
             produtos.sort((a, b) => {
                 const valorA = (a.codigo || '').toString().toLowerCase();
                 const valorB = (b.codigo || '').toString().toLowerCase();
                 return valorA.localeCompare(valorB, undefined, { numeric: true });
             });
-            renderizarProdutos(produtosFiltrados); 
+            renderizarProdutos(produtosFiltrados);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
-            
+
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -1201,15 +1217,15 @@ window.onload = function() {
     });
 
     const campos = [
-        null,               
-        'codigo',          
-        'nome',            
-        'categoria',       
-        'tamanho',         
-        'genero',          
-        'preco',           
-        'quantidade',      
-        'limiteMinimo',    
+        null,
+        'codigo',
+        'nome',
+        'categoria',
+        'tamanho',
+        'genero',
+        'preco',
+        'quantidade',
+        'limiteMinimo',
         'entradasHoje',    
         'saidasHoje',      
         'dtUltimaEntrada', 
