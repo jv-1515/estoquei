@@ -23,8 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
 // lixeira
-function verificarLixeira() {
+async function verificarLixeira() {
     const notificationLixeira = document.querySelector('.notification[onclick*="/produtos-removidos"]');
     if (!notificationLixeira) return;
     const containerLixeira = notificationLixeira.parentElement;
@@ -40,15 +41,23 @@ function verificarLixeira() {
         });
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    verificarLixeira();
-});
+if (window.aplicarPermissoesEstoque) {
+    window.aplicarPermissoesEstoque().then(() => {
+        verificarLixeira();
+    });
+}
 
-function atualizarBadgeLixeira() {
+
+
+async function atualizarBadgeLixeira() {
     const badge = document.querySelector('.badge-lixeira');
     if (!badge) return;
 
     badge.style.display = 'none';
+
+    if (window.aplicarPermissoesEstoque) {
+        await window.aplicarPermissoesEstoque();
+    }
 
     fetch('/produtos/removidos')
         .then(res => res.json())
@@ -81,11 +90,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 // notificacao
-function atualizarBadgeBaixoEstoque() {
+async function atualizarBadgeBaixoEstoque() {
     const badge = document.querySelector('.badge-baixo-estoque');
     if (!badge) return;
 
     badge.style.display = 'none';
+
+    if (window.aplicarPermissoesEstoque) {
+        await window.aplicarPermissoesEstoque();
+    }
 
     fetch('/produtos/baixo-estoque')
         .then(res => res.json())

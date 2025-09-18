@@ -54,6 +54,9 @@ public class Router {
     public String baixoEstoque(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getMovimentacoes() < 2) {
+            return "redirect:/inicio";
+        }
         return "baixo_estoque";
     }
 
@@ -79,12 +82,6 @@ public class Router {
         return "editar_produto";
     }
 
-    @GetMapping("/movimentar-produto")
-    public String movimentarProduto(HttpSession session) {
-        Usuario usuario = getUsuarioOuRedireciona(session);
-        if (usuario == null) return "redirect:/";
-        return "movimentar_produto";
-    }
 
     @GetMapping("/produtos-removidos")
     public String produtosRemovidos(HttpSession session) {
@@ -165,6 +162,7 @@ public class Router {
         return "andamento";
     }
 
+    //movimentações
     @GetMapping("/movimentacoes")
     public String movimentacoes(HttpSession session) {
         Usuario usuario = getUsuarioOuRedireciona(session);
@@ -173,6 +171,16 @@ public class Router {
             return "redirect:/inicio";
         }
         return "movimentacoes";
+    }
+
+    @GetMapping("/movimentar-produto")
+    public String movimentarProduto(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getMovimentacoes() < 2) {
+            return "redirect:/inicio";
+        }
+        return "movimentar_produto";
     }
 
     @GetMapping("/entradas/total-hoje")

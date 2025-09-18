@@ -69,9 +69,18 @@ async function aplicarPermissoesEstoque() {
         }
     });
 
-    // Movimentar produto (criar movimentação = 2)
+
+    // Links de movimentações, baixo-estoque, movimentar-produto (cards)
     document.querySelectorAll('a[href="/movimentacoes"], a[href="/baixo-estoque"], a[href="/movimentar-produto"]').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
+
+    // Link de cadastrar produto (card)
+    document.querySelectorAll('a[href="/cadastrar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'produtos', 2)) {
             link.style.pointerEvents = 'none';
             link.title = 'Sem permissão';
         }
@@ -96,6 +105,27 @@ async function aplicarPermissoesEstoque() {
             }
         }
     });
+
+
+    // Tcontrole movimentar o produto
+    document.querySelectorAll('a[title="Abastecer produto"]').forEach(triangulo => {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            triangulo.removeAttribute('href');
+            triangulo.removeAttribute('title');
+            triangulo.style.cursor = 'default';
+        }
+    });
+
+    // sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
+        const notsDiv = document.getElementById('nots');
+        if (notsDiv && temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'flex';
+        }
+
+        const lixeiraDiv = document.getElementById('lixeira');
+        if (lixeiraDiv && (temPermissao(cargo, 'produtos', 4) && cargo.id < 2)) {
+            lixeiraDiv.style.display = 'flex';
+        }
 }
 
 // -------- MOVIMENTACOES --------
@@ -143,3 +173,4 @@ async function aplicarPermissoesMovimentarProduto() {
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
+
