@@ -685,12 +685,7 @@ select#registros-select option {
     width: 30px;
     min-width: 30px;
     max-width: 30px;
-    height: 30px;
     aspect-ratio: 1 / 1;
-    border-radius: 4px;
-    margin-left: 20px;
-    margin-right: 0;
-    background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
     vertical-align: middle;
 }
 .skeleton-table-row .skeleton-cell:first-child {

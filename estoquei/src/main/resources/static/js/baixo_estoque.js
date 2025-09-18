@@ -587,14 +587,31 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
     // Mostra o loading imediatamente
-    tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-            </span>
-            <span id="loading-text">Carregando produtos</span>
-        </td>
-    </tr>`;
+    // Skeleton loader para Baixo Estoque (10 colunas)
+    const skeletonRows = 5;
+    const colClasses = [
+        'skeleton-img', // imagem
+        '', // código
+        'skeleton-nome', // nome
+        '', // categoria
+        '', // tamanho
+        '', // gênero
+        '', // quantidade
+        '', // limite mínimo
+        '', // preço
+        'skeleton-acoes' // ações
+    ];
+    let skeletonHtml = '<tr><td colspan="10" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     const select = document.getElementById('registros-select');
     itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
@@ -675,7 +692,7 @@ function renderizarProdutos(produtos) {
                         style="
                             position: absolute;
                             top: 50%;
-                            right: 20px;
+                            right: 0px;
                             transform: translateY(-50%);
                             width: 20px;
                             height: 20px;

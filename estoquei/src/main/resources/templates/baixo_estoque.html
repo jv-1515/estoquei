@@ -25,7 +25,7 @@
     <div>
         <h1>Produtos Baixo Estoque</h1>
     </div>
-    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px; width: 1300px;">
+    <div class="filters-container" style="display: flex; flex-direction: column; gap: 8px;">
         <h2>Buscar Produtos</h2>
         <div style="display: flex; align-items: center; gap: 8px; position: relative; height: 30px; max-height: 30px;">
             <div style="flex:1; position:relative; display:flex;">
@@ -40,7 +40,7 @@
             </button>
         </div>
     </div>
-    <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column; width:1300px;">
+    <div id="filtros-avancados" class="filters-container" style="display:none; flex-direction:column;">
         <h2>Filtrar Produtos</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
             <div class="multiselect multiselect-categoria input-group">
@@ -100,7 +100,6 @@
                 <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
               </div>
               <div id="checkboxes-genero-multi" style="display:none;">
-                <!-- Seus checkboxes de gênero continuam aqui -->
                 <label>
                   <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
                 </label>
@@ -115,7 +114,7 @@
                 </label>
               </div>
             </div>
-                <div class="input-group">
+                <div class="input-group" style="min-width: 136px;">
                 <label for="filter-quantidade">Quantidades</label>
                 <div style="position:relative;">
                     <input type="text" id="filter-quantidade" placeholder="Todas" readonly style="cursor:pointer; padding-right: 20px;" />
@@ -215,7 +214,7 @@
                 <tr>
                     <th style="width: 30px; max-width: 30px; padding-left:20px"></th>
                     <th class="ordenar">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                    <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                    <th class="ordenar" style="min-width: 110px;">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Categoria <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Tamanho <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
                     <th class="ordenar">Gênero <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
@@ -328,7 +327,7 @@
                 </div>
                 <div style="display: flex; flex-direction: column;">
                   <label for="detalhe-descricao">Descrição</label>
-                  <textarea id="detalhe-descricao" readonly></textarea>
+                  <textarea id="detalhe-descricao" readonly placeholder="Sem descrição"></textarea>
                 </div>
                 <div class="detalhes-saida-box" style="display: flex; flex-direction: column; gap: 0;">
                   <label for="detalhe-ultima-saida" style="margin-top: 26px;">Última Saída</label>
