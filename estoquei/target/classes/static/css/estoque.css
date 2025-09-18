@@ -658,22 +658,53 @@ select#registros-select option {
 }
 .skeleton-table-row {
     display: flex;
-    gap: 0;
+    gap: 5px;
     margin-bottom: 8px;
     background-color: #ffffff;
 }
 .skeleton-cell {
     flex: 1;
     height: 30px;
-    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
     border-radius: 4px;
     animation: skeleton-loading 1.2s infinite linear;
     margin: 0 2px;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+}
+.skeleton-cell.skeleton-img,
+.skeleton-cell.skeleton-nome,
+.skeleton-cell.skeleton-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: skeleton-loading 1.2s infinite linear;
+    box-sizing: border-box;
+    padding: 0;
+}
+.skeleton-cell.skeleton-img {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    height: 30px;
+    aspect-ratio: 1 / 1;
+    border-radius: 4px;
+    margin-left: 20px;
+    margin-right: 0;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    vertical-align: middle;
 }
 .skeleton-table-row .skeleton-cell:first-child {
     margin-left: 20px;
 }
-.skeleton-table-row .skeleton-cell:last-child {
+
+.skeleton-cell.skeleton-nome {
+    min-width: 110px;
+    width: 100%;
+}
+.skeleton-cell.skeleton-acoes {
+    min-width: 55px;
+    max-width: 55px;
+    width: 55px;
     margin-right: 20px;
 }
 @keyframes skeleton-loading {

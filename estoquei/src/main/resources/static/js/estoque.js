@@ -879,18 +879,36 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
 
-    tbody.innerHTML = `
-    <tr>
-        <td colspan="14" style="padding:0;">
-            <div class="skeleton-table">
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(10) + '</div>'}
-            </div>
-        </td>
-    </tr>`;
+    // Skeleton loader with image cell reserved, matching carregarProdutos
+    const skeletonRows = 5;
+    // Define classes para cada coluna, alinhando com o thead
+    const colClasses = [
+        'skeleton-img', // imagem
+        '', // código
+        'skeleton-nome', // nome
+        '', // categoria
+        '', // tamanho
+        '', // gênero
+        '', // preço
+        '', // quantidade
+        '', // limite mínimo
+        '', // entradas hoje
+        '', // saídas hoje
+        '', // última entrada
+        '', // última saída
+        'skeleton-acoes' // ações
+    ];
+    let skeletonHtml = '<tr><td colspan="14" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     const select = document.getElementById('registros-select');
     itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
@@ -1107,16 +1125,23 @@ function renderizarPaginacao(totalPaginas) {
 function carregarProdutos(top) {
     const tbody = document.getElementById('product-table-body');
     
-    tbody.innerHTML = `
-    <tr>
-        <td colspan="12" style="padding:0;">
-            <div class="skeleton-table">
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
-                ${'<div class="skeleton-table-row">' + '<div class="skeleton-cell"></div>'.repeat(12) + '</div>'}
-            </div>
-        </td>
-    </tr>`;
+    // Skeleton loader with image cell reserved
+    const skeletonRows = 3;
+    const skeletonCols = 14;
+    let skeletonHtml = '<tr><td colspan="14" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < skeletonCols; j++) {
+            if (j === 0) {
+                skeletonHtml += '<div class="skeleton-cell skeleton-img"></div>';
+            } else {
+                skeletonHtml += '<div class="skeleton-cell"></div>';
+            }
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     let url = '/produtos';
     if (top && top !== "") {
