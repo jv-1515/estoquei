@@ -739,3 +739,11 @@ select#registros-select option {
     padding: 10px;
     font-size: 16px;
 }
+
+.swal2-validation-message {
+    color: #f27474;
+    font-size: 12px;
+    background: white;
+    margin: 0;
+    padding-top: 0;
+}

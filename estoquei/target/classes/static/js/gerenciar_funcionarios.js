@@ -805,6 +805,7 @@ function removerFuncionario(id) {
                 input.style.border = 'solid 1px #aaa';
                 input.style.borderRadius = '4px';
                 input.style.background = '#fff';
+                input.style.textAlign = 'center';
             }
 
             const btn = Swal.getConfirmButton();

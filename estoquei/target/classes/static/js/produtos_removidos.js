@@ -232,7 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             fetch(`/produtos/restaurar/${id}`, { method: 'PUT' })
                                 .then(res => {
                                     if (res.ok) {
-                                        setTimeout(() => location.reload(), 1500);
+                                        Swal.fire({
+                                            title: `Produto "${nome}" restaurado!`,
+                                            icon: 'success',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                            timerProgressBar: true
+                                        }).then(() => location.reload());
                                     } else {
                                         Swal.fire('Erro ao restaurar produto.', '', 'error');
                                     }
@@ -296,7 +302,13 @@ document.addEventListener('change', function(e) {
                     fetch('/produtos/excluir/' + id, { method: 'DELETE' })
                         .then(response => {
                             if (response.ok) {
-                                setTimeout(() => location.reload(), 2000);
+                                Swal.fire({
+                                    title: `Produto "${nomeProduto}" excluído!`,
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                }).then(() => location.reload());
                             } else {
                                 Swal.fire({
                                     title: 'Erro!',
@@ -320,7 +332,7 @@ document.addEventListener('change', function(e) {
             html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
             input: 'text',
             inputValidator: (value) => {
-                if (value !== 'Excluir') return 'Digite exatamente: Excluir';
+                if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
             },
             showCloseButton: true,
             showConfirmButton: true,
@@ -350,7 +362,13 @@ document.addEventListener('change', function(e) {
                         fetch('/produtos/excluir/' + id, { method: 'DELETE' })
                             .then(response => {
                                 if (response.ok) {
-                                    setTimeout(() => location.reload(), 1500);
+                                    Swal.fire({
+                                        title: `Produto "${nomeProduto}" excluído!`,
+                                        icon: 'success',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        timerProgressBar: true
+                                    }).then(() => location.reload());
                                 } else {
                                     Swal.fire({
                                         title: 'Erro!',
@@ -367,20 +385,4 @@ document.addEventListener('change', function(e) {
             }
         });
     }
-    // function excluirProdutosDefinitivos(ids) {
-    //     Swal.fire({
-    //         title: `Excluir ${ids.length} produto(s) selecionado(s)?`,
-    //         text: 'Esta ação é permanente',
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Excluir',
-    //         cancelButtonText: 'Cancelar'
-    //     }).then(result => {
-    //         if (result.isConfirmed) {
-    //             Promise.all(ids.map(id =>
-    //                 fetch(`/produtos/excluir/${id}`, { method: 'DELETE' })
-    //             )).then(() => location.reload());
-    //         }
-    //     });
-    // }
 });

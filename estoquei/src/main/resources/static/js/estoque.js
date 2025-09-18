@@ -819,7 +819,7 @@ function removerProduto(id, nome, quantidade) {
             icon: 'warning',
             showCancelButton: true,
             allowOutsideClick: false,
-            confirmButtonText: 'Excluir',
+            confirmButtonText: 'Remover',
             cancelButtonText: 'Cancelar',
             customClass: {
                 confirmButton: 'swal2-remove-custom',
@@ -833,7 +833,7 @@ function removerProduto(id, nome, quantidade) {
                     icon: 'info',
                     showConfirmButton: false,
                     allowOutsideClick: false,
-                    timer: 1500,
+                    timer: 1800,
                     timerProgressBar: true,
                     didOpen: () => {
                         Swal.showLoading();
@@ -842,7 +842,7 @@ function removerProduto(id, nome, quantidade) {
                                 .then(response => {
                                     if (response.ok) {
                                         Swal.fire({
-                                            title: `"${nomeProduto}" removido!`,
+                                            title: `Produto "${nomeProduto}" removido!`,
                                             icon: 'success',
                                             showConfirmButton: false,
                                             timer: 1500,
@@ -851,7 +851,7 @@ function removerProduto(id, nome, quantidade) {
                                     } else {
                                         Swal.fire({
                                             title: 'Erro!',
-                                            text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
+                                            text: `Não foi possível remover "${nomeProduto}". Tente novamente`,
                                             icon: 'error',
                                             showConfirmButton: false,
                                             timer: 1500,
