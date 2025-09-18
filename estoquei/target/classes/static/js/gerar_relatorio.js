@@ -1560,11 +1560,11 @@ function atualizarDetalhesPrevia(produtos, filtros) {
     document.getElementById('detalhe-selecionados').textContent = produtos.length;
 
     // Período
-    let periodo = 'de: __/__/____ até: __/__/____';
+    let periodo = 'de:  __/__/____ até: __/__/____';
     if (filtros.dataInicio && filtros.dataFim) {
         const inicio = formatarDataBR(filtros.dataInicio);
         const fim = formatarDataBR(filtros.dataFim);
-        periodo = `de: ${inicio} até: ${fim}`;
+        periodo = `de : ${inicio} até: ${fim}`;
     }
     document.getElementById('detalhe-periodo').textContent = periodo;
 

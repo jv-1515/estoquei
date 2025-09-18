@@ -562,6 +562,7 @@ select#registros-select option {
     margin: 0 0 0 8px !important;
     width: 12px !important;
     height: 12px !important;
+    accent-color: #1E94A3;
 }
 
 .input-group label {
