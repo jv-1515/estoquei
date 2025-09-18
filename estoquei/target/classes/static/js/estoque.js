@@ -819,7 +819,7 @@ function removerProduto(id, nome, quantidade) {
             icon: 'warning',
             showCancelButton: true,
             allowOutsideClick: false,
-            confirmButtonText: 'Excluir',
+            confirmButtonText: 'Remover',
             cancelButtonText: 'Cancelar',
             customClass: {
                 confirmButton: 'swal2-remove-custom',
@@ -833,7 +833,7 @@ function removerProduto(id, nome, quantidade) {
                     icon: 'info',
                     showConfirmButton: false,
                     allowOutsideClick: false,
-                    timer: 1500,
+                    timer: 1800,
                     timerProgressBar: true,
                     didOpen: () => {
                         Swal.showLoading();
@@ -842,7 +842,7 @@ function removerProduto(id, nome, quantidade) {
                                 .then(response => {
                                     if (response.ok) {
                                         Swal.fire({
-                                            title: `"${nomeProduto}" removido!`,
+                                            title: `Produto "${nomeProduto}" removido!`,
                                             icon: 'success',
                                             showConfirmButton: false,
                                             timer: 1500,
@@ -851,7 +851,7 @@ function removerProduto(id, nome, quantidade) {
                                     } else {
                                         Swal.fire({
                                             title: 'Erro!',
-                                            text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
+                                            text: `Não foi possível remover "${nomeProduto}". Tente novamente`,
                                             icon: 'error',
                                             showConfirmButton: false,
                                             timer: 1500,
@@ -879,14 +879,36 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
 
-    tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-            </span>
-            <span id="loading-text">Carregando produtos</span>
-        </td>
-    </tr>`;
+    // Skeleton loader with image cell reserved, matching carregarProdutos
+    const skeletonRows = 5;
+    // Define classes para cada coluna, alinhando com o thead
+    const colClasses = [
+        'skeleton-img', // imagem
+        '', // código
+        'skeleton-nome', // nome
+        '', // categoria
+        '', // tamanho
+        '', // gênero
+        '', // preço
+        '', // quantidade
+        '', // limite mínimo
+        '', // entradas hoje
+        '', // saídas hoje
+        '', // última entrada
+        '', // última saída
+        'skeleton-acoes' // ações
+    ];
+    let skeletonHtml = '<tr><td colspan="14" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     const select = document.getElementById('registros-select');
     itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
@@ -952,7 +974,7 @@ function renderizarProdutos(produtos) {
         tbody.innerHTML = ''; // Limpa o loading
         produtosPagina.forEach(p => {
             const imageUrl = p.url_imagem;
-            const precoFormatado = p.preco.toFixed(2).replace('.', ',');        
+            const precoFormatado = p.preco.toFixed(2).replace('.', ',');
             const precisaAbastecer = p.quantidade <= (2 * p.limiteMinimo);
             const tamanhoExibido = exibirTamanho(p.tamanho);
             p.genero = p.genero.charAt(0).toUpperCase() + p.genero.slice(1).toLowerCase();
@@ -1101,11 +1123,30 @@ function renderizarPaginacao(totalPaginas) {
 
 
 function carregarProdutos(top) {
+    const tbody = document.getElementById('product-table-body');
+    
+    // Skeleton loader with image cell reserved
+    const skeletonRows = 3;
+    const skeletonCols = 14;
+    let skeletonHtml = '<tr><td colspan="14" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < skeletonCols; j++) {
+            if (j === 0) {
+                skeletonHtml += '<div class="skeleton-cell skeleton-img"></div>';
+            } else {
+                skeletonHtml += '<div class="skeleton-cell"></div>';
+            }
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
+
     let url = '/produtos';
     if (top && top !== "") {
         url += `?top=${top}`;
     }
-    
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -1116,17 +1157,17 @@ function carregarProdutos(top) {
         .then(data => {
             produtos = data;
             produtosOriginais = [...produtos];
-            produtosFiltrados = [...produtos]; 
-        
+            produtosFiltrados = [...produtos];
+
             produtos.sort((a, b) => {
                 const valorA = (a.codigo || '').toString().toLowerCase();
                 const valorB = (b.codigo || '').toString().toLowerCase();
                 return valorA.localeCompare(valorB, undefined, { numeric: true });
             });
-            renderizarProdutos(produtosFiltrados); 
+            renderizarProdutos(produtosFiltrados);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
-            
+
             const buscaInput = document.getElementById('busca-produto');
             const buscaSugestoes = document.getElementById('busca-sugestoes');
             buscaInput.addEventListener('input', function() {
@@ -1201,15 +1242,15 @@ window.onload = function() {
     });
 
     const campos = [
-        null,               
-        'codigo',          
-        'nome',            
-        'categoria',       
-        'tamanho',         
-        'genero',          
-        'preco',           
-        'quantidade',      
-        'limiteMinimo',    
+        null,
+        'codigo',
+        'nome',
+        'categoria',
+        'tamanho',
+        'genero',
+        'preco',
+        'quantidade',
+        'limiteMinimo',
         'entradasHoje',    
         'saidasHoje',      
         'dtUltimaEntrada', 

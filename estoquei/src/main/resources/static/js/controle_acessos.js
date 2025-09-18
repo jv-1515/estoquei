@@ -123,8 +123,19 @@ async function aplicarPermissoesEstoque() {
         }
 
         const lixeiraDiv = document.getElementById('lixeira');
-        if (lixeiraDiv && (temPermissao(cargo, 'produtos', 4) && cargo.id < 2)) {
-            lixeiraDiv.style.display = 'flex';
+        if (lixeiraDiv) {
+            lixeiraDiv.style.display = 'none'; // sempre começa escondida
+            if (temPermissao(cargo, 'produtos', 4) && cargo.id < 2) {
+                fetch('/produtos/removidos')
+                    .then(res => res.json())
+                    .then(removidos => {
+                        if (removidos && removidos.length > 0) {
+                            lixeiraDiv.style.display = 'flex';
+                        } else {
+                            lixeiraDiv.style.display = 'none';
+                        }
+                    });
+            }
         }
 }
 

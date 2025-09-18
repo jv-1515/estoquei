@@ -170,9 +170,7 @@ window.excluirRelatorio = function(id) {
         showCloseButton: true,
         showConfirmButton: true,
         allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-remove-custom'
-        },
+
         didOpen: () => {
             const input = Swal.getInput();
             if (input) {
@@ -181,14 +179,11 @@ window.excluirRelatorio = function(id) {
                 input.style.border = 'solid 1px #aaa';
                 input.style.borderRadius = '4px';
                 input.style.background = '#fff';
+                input.style.textAlign = 'center';
             }
             const btn = Swal.getConfirmButton();
             if (btn) {
                 btn.style.maxWidth = '80px';
-                btn.style.minWidth = '60px';
-                btn.style.paddingLeft = '0';
-                btn.style.paddingRight = '0';
-                btn.style.textAlign = 'center';
             }
         }
     }).then((res) => {
