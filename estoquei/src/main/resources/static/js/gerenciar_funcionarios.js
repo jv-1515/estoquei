@@ -755,6 +755,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Carregar funcionários do backend
 function carregarFuncionarios() {
+    renderizarSkeletonFuncionarios();
     fetch('/usuarios')
         .then(res => res.json())
         .then(data => {
@@ -2177,5 +2178,29 @@ function renderizarCargosFuncionarios() {
       });
 }
 
-// Chama ao carregar a página
 document.addEventListener('DOMContentLoaded', renderizarCargosFuncionarios);
+
+function renderizarSkeletonFuncionarios(qtd = 5) {
+    const tbody = document.getElementById('func-list');
+    if (!tbody) return;
+    const colClasses = [
+        'skeleton-img',      // imagem/avatar
+        '',                 // código
+        'skeleton-nome',    // nome
+        '',                 // cargo
+        '',                 // email
+        '',                 // status
+        'skeleton-acoes'    // ações
+    ];
+    let skeletonHtml = '<tr><td colspan="7" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < qtd; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
+}
