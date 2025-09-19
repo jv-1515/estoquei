@@ -450,14 +450,6 @@
                 </tr>
             </thead>
             <tbody id="movimentacao-table-body">
-                <tr>
-                    <td colspan="13" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-                        <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                            <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-                        </span>
-                        <span id="loading-text">Carregando movimentações</span>
-                    </td>
-                </tr>
             </tbody>
         </table>
         <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
@@ -481,7 +473,7 @@
         <form onsubmit="event.preventDefault(); salvarEdicaoMovimentacao();" style="display:flex; padding:0 20px 20px; gap:20px;">
             <!-- Coluna Esquerda - Campos -->
             <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
-                <div style="border-radius:8px;">                    
+                <div style="border-radius:8px;">
                     <div>
                         <label>Código da Movimentação*</label>
                         <input type="text" id="edit-codigo-movimentacao" required maxlength="9" minlength="9" pattern="\d{9}" placeholder="000000000" />
