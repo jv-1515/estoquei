@@ -251,14 +251,14 @@ th.ordenar .sort-icon {
     display: none;
     pointer-events: none;
     font-size: 10px;
-    color: #888;
+    color: #fff;
     transition: color 0.2s;
 }
 
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 #paginacao button {

@@ -253,7 +253,7 @@ th.ordenar .sort-icon {
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 #paginacao button {
@@ -536,7 +536,7 @@ th.ordenar .sort-icon {
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 img.produto-img:hover {
