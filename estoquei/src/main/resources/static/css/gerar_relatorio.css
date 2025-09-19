@@ -172,8 +172,16 @@ td {
 }
 
 th {
-    color: #333;
-    font-weight: bold;
+    color: #ffffff;
+    font-weight: normal;
+    background: #277580;
+    border-right: 1px solid;
+    padding: 8px;
+}
+
+th:first-child,
+th:last-child {
+    border-right: none;
 }
 
 tbody tr:hover,
@@ -245,7 +253,7 @@ th.ordenar .sort-icon {
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 #paginacao button {
@@ -415,8 +423,16 @@ td {
 }
 
 th {
-    color: #333;
-    font-weight: bold;
+    color: #ffffff;
+    font-weight: normal;
+    background: #277580;
+    border-right: 1px solid;
+    padding: 8px;
+}
+
+th:first-child,
+th:last-child {
+    border-right: none;
 }
 
 tbody tr:hover,
@@ -520,7 +536,7 @@ th.ordenar .sort-icon {
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 img.produto-img:hover {

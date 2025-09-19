@@ -150,8 +150,17 @@ td {
 }
 
 th {
-    color: #333;
-    font-weight: bold;
+    color: #ffffff;
+    font-weight: normal;
+    background: #277580;
+    border-left: 1px solid;
+    padding: 8px;
+}
+
+th:first-child,
+th:nth-child(2),
+th:last-child {
+    border-left: none;
 }
 
 tbody tr:hover,
@@ -433,14 +442,14 @@ th.ordenar .sort-icon {
     display: none;
     pointer-events: none;
     font-size: 10px;
-    color: #888;
+    color: #fff;
     transition: color 0.2s;
 }
 
 th.ordenar:hover .sort-icon,
 th.ordenar.sorted .sort-icon {
     display: inline-block;
-    color: #1E94A3;
+    color: #fff;
 }
 
 select#registros-select {

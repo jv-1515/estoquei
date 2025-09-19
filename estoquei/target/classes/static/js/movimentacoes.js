@@ -1061,14 +1061,35 @@ function renderizarMovimentacoes(movimentacoes) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
     
-    tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="14" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-            </span>
-            <span id="loading-text">Carregando movimentações</span>
-        </td>
-    </tr>`;
+    // Skeleton loader para Movimentações (14 colunas)
+    const skeletonRows = 5;
+    const colClasses = [
+        '', // Data
+        '', // Tipo
+        '', // Código
+        '', // Quantidade
+        '', // Estoque Final
+        '', // Valor
+        '', // Parte Envolvida
+        '', // Responsável
+        '', // Código Produto
+        '', // Nome
+        '', // Categoria
+        '', // Tamanho
+        '', // Gênero
+        'skeleton-acoes' // Ações
+    ];
+    let skeletonHtml = '<tr><td colspan="14" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     const select = document.getElementById('registros-select');
     itensPorPagina = select.value === "" ? movimentacoes.length : parseInt(select.value);

@@ -39,13 +39,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.querySelectorAll('.cargo-multi-check').forEach(cb => {
             cb.addEventListener('change', function() {
+                const checks = Array.from(document.querySelectorAll('.cargo-multi-check'));
+                const todas = checks[0];
+                const individuais = checks.slice(1);
+
+                if (cb === todas) {
+                    // Se clicou em "Todos"
+                    if (todas.checked) {
+                        individuais.forEach(c => c.checked = true);
+                    } else {
+                        individuais.forEach(c => c.checked = false);
+                    }
+                } else {
+                    if (individuais.every(c => c.checked)) {
+                        todas.checked = true;
+                    } else {
+                        todas.checked = false;
+                    }
+                }
                 atualizarPlaceholderCargoMulti();
                 filtrarFuncionarios();
             });
         });
         atualizarPlaceholderCargoMulti();
     });
-    
     // fetch('/cargos')
     //   .then(res => res.json())
     //   .then(cargos => {
@@ -424,7 +441,7 @@ function renderizarFuncionarios(lista) {
                                 border-radius: 7px;
                                 position: absolute;
                                 top: 50%;
-                                right: 0px;
+                                right: 10px;
                                 transform: translateY(-50%);
                                 width: 5px;
                                 height: 8px;

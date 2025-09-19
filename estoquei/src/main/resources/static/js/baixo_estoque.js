@@ -1107,7 +1107,7 @@ function aplicarFiltroPrecoFaixa() {
         precoInput.style.border = '';
         precoInput.style.color = '';
     }
-    const chevron = input.parentNode.querySelector('.chevron-categoria');
+    const chevron = precoInput.parentNode.querySelector('.chevron-preco');
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
 
     filtrar();
@@ -1204,7 +1204,7 @@ function aplicarFiltroLimiteFaixa() {
         limiteInput.style.border = '';
         limiteInput.style.color = '';
     }
-    const chevron = limiteInput.parentNode.querySelector('.chevron-categoria');
+    const chevron = limiteInput.parentNode.querySelector('.chevron-limite');
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
     filtrar();
 }
