@@ -486,7 +486,7 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    top: 50%;
+    top: 52%;
     padding-left: 2px;
     transform: translateY(-50%);
     display: none;
@@ -756,8 +756,8 @@ select#registros-select option {
   margin: 4px 6px;
 }
 .skeleton-img {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 100%;
   flex: none;
   margin: 0 12px;

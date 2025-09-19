@@ -27,14 +27,14 @@ document.addEventListener('change', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.getElementById('removidos-table-body');
     // Mostra o loading imediatamente
-    tbody.innerHTML = `<tr style="background-color: #fff">
-        <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-            <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-                <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-            </span>
-            <span id="loading-text">Carregando produtos</span>
-        </td>
-    </tr>`;
+    // tbody.innerHTML = `<tr style="background-color: #fff">
+    //     <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
+    //         <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
+    //             <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
+    //         </span>
+    //         <span id="loading-text">Carregando produtos</span>
+    //     </td>
+    // </tr>`;
 
     fetch('/produtos/removidos')
         .then(res => res.json())

@@ -180,7 +180,7 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    top: 50%;
+    top: 52%;
     padding-left: 2px;
     transform: translateY(-50%);
     display: none;
