@@ -144,8 +144,16 @@ td {
 }
 
 th {
-    color: #333;
-    font-weight: bold;
+    color: #ffffff;
+    font-weight: normal;
+    background: #277580;
+    border-right: 1px solid;
+    padding: 8px;
+}
+
+th:first-child,
+th:last-child {
+    border-right: none;
 }
 
 tbody tr:hover,
@@ -626,30 +634,15 @@ select#registros-select option {
     color: #f27474;
 }
 
-/* 
-
-.notification {
-    position: relative;
-    font-size: 24px;
-}
-
-.notification .badge {
-    position: absolute;
-    top: 2px;
-    left: 16px;
-    font-size: 10px;
-    background-color: red;
-    color: white;
-    border-radius: 100%;
-} */
-
-/* Alinha os checkboxes centralizados na célula */
 td input[type="checkbox"].check-produto,
 th input[type="checkbox"]#check-all {
     vertical-align: middle;
+    accent-color: #1E94A3;
 }
 
-
+th input[type="checkbox"]#check-all {
+    accent-color: white;
+}
 
 /* sweetAlert */
 .swal2-popup {

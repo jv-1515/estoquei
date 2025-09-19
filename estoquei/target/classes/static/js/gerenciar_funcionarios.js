@@ -424,7 +424,7 @@ function renderizarFuncionarios(lista) {
                                 border-radius: 7px;
                                 position: absolute;
                                 top: 50%;
-                                right: 0px;
+                                right: 10px;
                                 transform: translateY(-50%);
                                 width: 5px;
                                 height: 8px;
