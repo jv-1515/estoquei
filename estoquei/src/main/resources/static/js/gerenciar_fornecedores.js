@@ -50,6 +50,27 @@ function atualizarSetasOrdenacao() {
 }
 
 // Renderização da tabela
+function renderizarSkeletonFornecedores() {
+    const tbody = document.getElementById('fornecedor-list');
+    if (!tbody) return;
+    let skeletonRows = '';
+    for (let i = 0; i < 10; i++) {
+        skeletonRows += `
+        <tr class="skeleton-table-row">
+            <td><div class="skeleton-cell skeleton-img" style="width:30px;height:30px;border-radius:50%;background:#e2e2e2;"></div></td>
+            <td><div class="skeleton-cell skeleton-codigo" style="width:80px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-nome" style="width:120px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-cnpj" style="width:110px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-responsavel" style="width:110px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-email" style="width:140px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-telefone" style="width:110px;height:18px;"></div></td>
+            <td><div class="skeleton-cell skeleton-acoes" style="width:60px;height:18px;"></div></td>
+        </tr>
+        `;
+    }
+    tbody.innerHTML = skeletonRows;
+}
+
 function renderizarFornecedores(lista) {
     const select = document.getElementById('registros-select');
     let totalItens = lista.length;
@@ -63,7 +84,6 @@ function renderizarFornecedores(lista) {
     const pagina = lista.slice(inicio, fim);
 
     const tbody = document.getElementById('fornecedor-list');
-
     const thead = document.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
     
@@ -74,7 +94,7 @@ function renderizarFornecedores(lista) {
         if (fornecedoresOriginais.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 30px 0; background-color: white">
+                    <td colspan="7" style="text-align: center; padding: 30px 0; background-color: white">
                         <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
                             <span style="font-weight:bold;">Nenhum fornecedor cadastrado</span>
                             <span>Cadastre o primeiro fornecedor</span>
@@ -86,7 +106,7 @@ function renderizarFornecedores(lista) {
         } else {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 30px 0; background-color: white">
+                    <td colspan="7" style="text-align: center; padding: 30px 0; background-color: white">
                         <div style="display: flex; flex-direction: column; align-items: center; font-size: 20px; color: #888;">
                             <span style="font-weight:bold;">Nenhum fornecedor encontrado</span>
                             <span>Selecione outros filtros</span>
@@ -146,6 +166,35 @@ function renderizarFornecedores(lista) {
 
     renderizarPaginacao(totalPaginas);
     atualizarSetasOrdenacao();
+// Carregar fornecedores do backend
+// function carregarFornecedores() {
+//     renderizarSkeletonFornecedores();
+//     fetch('/fornecedores')
+//         .then(res => res.json())
+//         .then(data => {
+//             fornecedores = data;
+//             fornecedoresOriginais = [...data];
+//             renderizarFornecedores(fornecedores);
+//         })
+//         .catch(() => {
+//             fornecedores = [];
+//             fornecedoresOriginais = [];
+//             renderizarFornecedores([]);
+//         });
+// }
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFornecedores();
+    document.getElementById('registros-select').addEventListener('change', function() {
+        paginaAtual = 1;
+        renderizarFornecedores(fornecedores);
+    });
+});
+
+// Ao carregar a página, mostra todos os fornecedores
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFornecedores();
+});
 }
 
 function renderizarPaginacao(totalPaginas) {
@@ -256,8 +305,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Carregar fornecedores do backend ao abrir a tela
-document.addEventListener('DOMContentLoaded', function() {
+
+// Carregar fornecedores do backend com skeleton loader
+function carregarFornecedores() {
+    renderizarSkeletonFornecedores();
     fetch('/fornecedores')
         .then(res => res.json())
         .then(data => {
@@ -270,6 +321,10 @@ document.addEventListener('DOMContentLoaded', function() {
             fornecedores = [];
             renderizarFornecedores([]);
         });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarFornecedores();
     document.getElementById('registros-select').addEventListener('change', function() {
         paginaAtual = 1;
         renderizarFornecedores(fornecedores);

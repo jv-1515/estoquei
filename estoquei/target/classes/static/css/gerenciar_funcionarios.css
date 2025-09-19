@@ -486,7 +486,7 @@ th.ordenar {
 
 th.ordenar .sort-icon {
     position: absolute;
-    top: 50%;
+    top: 52%;
     padding-left: 2px;
     transform: translateY(-50%);
     display: none;
@@ -725,14 +725,6 @@ select#registros-select option {
 .cargo-btn.cargo-7 { background: #16a085; color: #fff; }
 .cargo-btn.extra { background: #f3f3f3; color: #888; }
 
-/* .cargo-list {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    width: 100%;
-    position: relative;
-} */
 
 .btn-permissoes {
     position: absolute;
@@ -742,6 +734,47 @@ select#registros-select option {
     align-items: center;
     background: #1e94a3;
 }
+
+.skeleton-table {
+  width: 100%;
+  padding: 0;
+}
+.skeleton-table-row {
+  display: flex;
+  gap: 0;
+  height: 48px;
+  align-items: center;
+}
+.skeleton-cell {
+  background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+  border-radius: 6px;
+  min-height: 24px;
+  min-width: 0;
+  flex: 1;
+  margin: 4px 6px;
+}
+.skeleton-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  flex: none;
+  margin: 0 12px;
+}
+.skeleton-nome {
+  width: 120px;
+  flex: none;
+}
+.skeleton-acoes {
+  width: 60px;
+  flex: none;
+}
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 
 /* sweetAlert */
 .swal2-popup {
