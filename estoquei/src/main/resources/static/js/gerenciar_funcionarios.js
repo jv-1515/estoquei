@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //cadastro
     
-        // Código
+    // Código
     document.getElementById('cad-codigo').addEventListener('blur', function() {
         const codigo = this.value.trim();
         if (!codigo) return; // Só valida se não está vazio!
@@ -270,25 +270,29 @@ document.addEventListener('DOMContentLoaded', function() {
             this.focus();
             return;
         }
-        if (funcionarios.some(f => f.codigo === codigo)) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Código já cadastrado!',
-                text: 'Informe outro código',
-                timer: 1500,
-                showConfirmButton: false,
-                timerProgressBar: true,
-                allowOutsideClick: false
+        // Validação via backend
+        fetch('/admin/usuarios/codigo-existe?codigo=' + encodeURIComponent(codigo))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existe => {
+                if (existe) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Código já cadastrado!',
+                        text: 'Informe outro código',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    this.value = '';
+                    this.focus();
+                }
             });
-            this.value = '';
-            this.focus();
-        }
     });
     
     // Cargo
     document.getElementById('cad-cargo').addEventListener('blur', function() {
-        if (!this.value) return; // Só valida se tentou preencher
-        // (Se quiser, pode nem validar no blur, só no botão)
+        if (!this.value) return;
     });
     
     // Nome
@@ -370,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('cad-email').focus();
                 }
             });
-    });   
+    });
 
     // CPF
     document.getElementById('cad-cpf').addEventListener('blur', function() {
@@ -389,19 +393,24 @@ document.addEventListener('DOMContentLoaded', function() {
             this.focus();
             return;
         }
-        if (funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf)) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'CPF já cadastrado!',
-                text: 'Informe outro CPF',
-                timer: 1500,
-                showConfirmButton: false,
-                timerProgressBar: true,
-                allowOutsideClick: false
+        // Validação via backend
+        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existe => {
+                if (existe) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'CPF já cadastrado!',
+                        text: 'Informe outro CPF',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    this.value = '';
+                    this.focus();
+                }
             });
-            this.value = '';
-            this.focus();
-        }
     });
 
     // Data de nascimento
@@ -1126,8 +1135,54 @@ function cadastrarFuncionario() {
     const email = document.getElementById('cad-email').value.trim();
     const senha = document.getElementById('cad-senha').value;
     const dataNascimento = document.getElementById('cad-nascimento').value;
-    // const cpf = document.getElementById('cad-cpf').value;
 
+    // Validação de data de nascimento e idade
+    if (dataNascimento) {
+        const hoje = new Date();
+        const nasc = new Date(dataNascimento);
+        let idade = hoje.getFullYear() - nasc.getFullYear();
+        const m = hoje.getMonth() - nasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+        if (nasc > hoje || nasc.toDateString() === hoje.toDateString()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data inválida!',
+                text: 'A data de nascimento não pode ser hoje ou futura',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
+        if (idade < 16) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário deve ter pelo menos 16 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
+        if (idade > 99) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário não pode ter mais de 99 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
+    }
 
     const cargoInput = document.getElementById('cad-cargo-multi');
     const cargoId = cargoInput ? cargoInput.dataset.value : '';
@@ -1141,22 +1196,26 @@ function cadastrarFuncionario() {
         .then(existe => {
             if (existe) {
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Email já cadastrado!',
-                    text: 'Por favor, utilize outro email.',
-                    showConfirmButton: true
+                    text: 'Informe outro email',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
                 });
+                document.getElementById('cad-email').value = '';
+                document.getElementById('cad-email').focus();
                 return;
             }
             const funcionario = {
                 codigo: codigo,
                 nome: nome,
-                cargo: { id: Number(cargoId) }, // Envia como objeto, id numérico
+                cargo: { id: Number(cargoId) },
                 email: email,
                 senha: senha,
                 cpf: document.getElementById('cad-cpf').value.replace(/\D/g, '') || null,
                 dataNascimento: dataNascimento || null,
-                telefone: document.getElementById('cad-contato').value.replace(/\D/g, '') || null,
                 ativo: true
             };
             fetch('/usuarios', {
@@ -1174,10 +1233,10 @@ function cadastrarFuncionario() {
                         timerProgressBar: true,
                         allowOutsideClick: false
                     });
-                        limparFormularioCadastroFuncionario();
-                        document.getElementById('cadastro-funcionario').style.display = 'none';
-                        document.body.style.overflow = '';
-                        carregarFuncionarios();
+                    limparFormularioCadastroFuncionario();
+                    document.getElementById('cadastro-funcionario').style.display = 'none';
+                    document.body.style.overflow = '';
+                    carregarFuncionarios();
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -1329,7 +1388,7 @@ function fecharEdicaoFuncionario() {
 }
 
 
-function salvarEdicaoFuncionario() {
+async function salvarEdicaoFuncionario() {
 
     const cargoId = document.getElementById('edit-cargo-multi').value;
     const funcionarioAtual = {
@@ -1395,18 +1454,27 @@ function salvarEdicaoFuncionario() {
         });
         return;
     }
-    if (funcionarios.some(f => f.codigo === codigo && String(f.id) !== String(id))) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Código já cadastrado!',
-            text: 'Informe outro código',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
+    // Validação via backend
+    let codigoDuplicado = false;
+    fetch('/admin/usuarios/codigo-existe?codigo=' + encodeURIComponent(codigo))
+        .then(res => res.ok ? res.json() : Promise.resolve(false))
+        .then(existe => {
+            if (existe && String(window.dadosOriginaisEdicaoFuncionario.codigo) !== codigo) {
+                codigoDuplicado = true;
+            }
+            if (codigoDuplicado) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Código já cadastrado!',
+                    text: 'Informe outro código',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
         });
-        return;
-    }
 
     // --- CARGO ---
     if (!cargo) {
@@ -2026,22 +2094,54 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
     const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
 
     if (!codigo || codigo.length !== 6) {
-        Swal.fire({ icon: 'error', title: 'Código inválido!', text: 'Informe um código de 6 dígitos.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido!',
+            text: 'Informe um código de 6 dígitos.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
         document.getElementById('cad-codigo').focus();
         return;
     }
     if (!nome || nome.length < 3 || /\d/.test(nome) || /[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
-        Swal.fire({ icon: 'error', title: 'Nome inválido!', text: 'Preencha corretamente o nome (mínimo 3 letras, sem números ou símbolos).' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'Preencha corretamente o nome (mínimo 3 letras, sem números ou símbolos).',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
         document.getElementById('cad-nome').focus();
         return;
     }
     if (!cargoId || isNaN(Number(cargoId))) {
-        Swal.fire({ icon: 'error', title: 'Cargo inválido!', text: 'Selecione um cargo válido.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cargo inválido!',
+            text: 'Selecione um cargo válido.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
         cargoInput.focus();
         return;
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        Swal.fire({ icon: 'error', title: 'Email inválido!', text: 'Informe um email válido.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email inválido!',
+            text: 'Informe um email válido.',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
         document.getElementById('cad-email').focus();
         return;
     }
@@ -2050,7 +2150,16 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
         .then(res => res.ok ? res.json() : Promise.resolve(false))
         .then(existe => {
             if (existe) {
-                Swal.fire({ icon: 'error', title: 'Email já cadastrado!', text: 'Por favor, utilize outro email.' });
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email já cadastrado!',
+                    text: 'Informe outro email',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                document.getElementById('cad-email').value = '';
                 document.getElementById('cad-email').focus();
                 return;
             } else {
@@ -2154,18 +2263,19 @@ function atualizarAvatarCadastro() {
 
 document.getElementById('cad-nome').addEventListener('input', atualizarAvatarCadastro);
 
-// Função para validar email/CPF duplicado antes de avançar etapa
-function validarEmailCpfCadastroFuncionario(codigo, cargo, nome, email, callback) {
-    if (!codigo || !cargo || !nome || !email) {
-        let campo;
-        if (!codigo) campo = 'Código';
-        else if (!cargo) campo = 'Cargo';
-        else if (!nome) campo = 'Nome';
-        else campo = 'Email';
+// Função única para validação completa do cadastro de funcionário (etapa 1)
+function validarCadastroFuncionarioEtapa1(callback) {
+    const codigo = document.getElementById('cad-codigo').value.trim();
+    const cargo = document.getElementById('cad-cargo-multi').dataset.value || '';
+    const nome = document.getElementById('cad-nome').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
+
+    // --- CÓDIGO ---
+    if (!codigo) {
         Swal.fire({
             icon: 'warning',
-            title: `Campo obrigatório!`,
-            text: `Preencha o ${campo.toLowerCase()}`,
+            title: 'Código obrigatório!',
+            text: 'Informe o código do funcionário',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2173,10 +2283,127 @@ function validarEmailCpfCadastroFuncionario(codigo, cargo, nome, email, callback
         });
         return;
     }
+    if (codigo.length !== 6) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Código inválido!',
+            text: 'O código deve ter 6 dígitos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    // Backend: checa duplicidade de código
+    fetch('/admin/usuarios/codigo-existe?codigo=' + encodeURIComponent(codigo))
+        .then(res => res.ok ? res.json() : Promise.resolve(false))
+        .then(existeCodigo => {
+            if (existeCodigo) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Código já cadastrado!',
+                    text: 'Informe outro código',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                document.getElementById('cad-codigo').focus();
+                return;
+            }
+    // --- CARGO ---
+    if (!cargo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cargo obrigatório!',
+            text: 'Selecione o cargo do funcionário',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    // --- NOME ---
+    if (!nome) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome obrigatório!',
+            text: 'O nome não pode estar vazio',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (nome.length < 3) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome deve ter pelo menos 3 letras',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (/\d/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter números',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (/[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Nome inválido!',
+            text: 'O nome não pode conter símbolos',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    // --- EMAIL ---
+    if (!email) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email obrigatório!',
+            text: 'Informe o email do funcionário',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email inválido!',
+            text: 'Informe um email válido',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return;
+    }
+    // Backend: checa duplicidade de email
     fetch('/admin/usuarios/email-existe?email=' + encodeURIComponent(email))
         .then(res => res.ok ? res.json() : Promise.resolve(false))
-        .then(existe => {
-            if (existe) {
+        .then(existeEmail => {
+            if (existeEmail) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Email já cadastrado!',
@@ -2188,42 +2415,17 @@ function validarEmailCpfCadastroFuncionario(codigo, cargo, nome, email, callback
                 });
                 document.getElementById('cad-email').focus();
                 return;
-            } else {
-                const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
-                if (cpf) {
-                    fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
-                        .then(res => res.ok ? res.json() : Promise.resolve(false))
-                        .then(existeCpf => {
-                            if (existeCpf) {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'CPF já cadastrado!',
-                                    text: 'Informe outro CPF',
-                                    timer: 1500,
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    allowOutsideClick: false
-                                });
-                                document.getElementById('cad-cpf').focus();
-                                return;
-                            } else {
-                                callback();
-                            }
-                        });
-                } else {
-                    callback();
-                }
             }
+            // Tudo ok!
+            callback();
         });
+    });
 }
 
 document.getElementById('btn-proximo-1').onclick = function() {
-    const codigo = document.getElementById('cad-codigo').value.trim();
-    const cargo = document.getElementById('cad-cargo-multi').dataset.value || '';
-    const nome = document.getElementById('cad-nome').value.trim();
-    const email = document.getElementById('cad-email').value.trim();
-    validarEmailCpfCadastroFuncionario(codigo, cargo, nome, email, function() {
+    validarCadastroFuncionarioEtapa1(function() {
         // Tudo ok, avança etapa
+        const codigo = document.getElementById('cad-codigo').value.trim();
         document.getElementById('cad-codigo-2').value = codigo;
         document.getElementById('cad-cargo-2').value = document.getElementById('cad-cargo-multi').value;
         mostrarEtapaCadastro(2);
@@ -2258,49 +2460,55 @@ document.getElementById('btn-proximo-2').onclick = function() {
         return;
     }
 
-    // Idade
-    const hoje = new Date();
-    const nasc = new Date(nascimento);
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
-    if (nasc && nasc > hoje) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Data inválida!',
-            text: 'A data de nascimento não pode ser posterior a hoje',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
+    // Validação de data de nascimento e idade (igual ao cadastro)
+    if (nascimento) {
+        const hoje = new Date();
+        const nasc = new Date(nascimento);
+        let idade = hoje.getFullYear() - nasc.getFullYear();
+        const m = hoje.getMonth() - nasc.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+        if (nasc > hoje || nasc.toDateString() === hoje.toDateString()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data inválida!',
+                text: 'A data de nascimento não pode ser hoje ou futura',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
+        if (idade < 16) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário deve ter pelo menos 16 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
+        if (idade > 99) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Idade inválida!',
+                text: 'O funcionário não pode ter mais de 99 anos',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('cad-nascimento').focus();
+            return;
+        }
     }
-    if (idade && idade < 16) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Idade inválida!',
-            text: 'O funcionário deve ter pelo menos 16 anos',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (idade && idade > 99) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Idade inválida!',
-            text: 'O funcionário não pode ter mais de 99 anos',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    const contatoNumeros = contato.replace(/\D/g, '');  
+
+    const contatoNumeros = contato.replace(/\D/g, '');
     if (contatoNumeros && contatoNumeros.length < 10) {
         Swal.fire({
             icon: 'warning',

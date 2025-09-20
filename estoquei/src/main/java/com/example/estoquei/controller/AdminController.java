@@ -68,6 +68,12 @@ public class AdminController {
         return "redirect:/";
     }
     
+    @GetMapping("/usuarios/codigo-existe")
+    public ResponseEntity<Boolean> codigoExiste(@RequestParam String codigo) {
+        boolean existe = usuarioRepository.findByCodigo(codigo).isPresent();
+        return ResponseEntity.ok(existe);
+    }
+
     @GetMapping("/usuarios/email-existe")
     public ResponseEntity<Boolean> emailExiste(@RequestParam(name = "email", required = true) String email) {
         if (email == null || email.trim().isEmpty()) {
