@@ -919,10 +919,13 @@ select#registros-select option {
     scrollbar-width: thin;
     scrollbar-color: #aaa #fff;
 }
+
+#cad-cargo-multi {
+    background: #fff;
+}
 #cad-cargo-multi,
 #edit-cargo-multi {
     cursor: pointer;
-    background: #fff;
     border: 1px solid #aaa;
     border-radius: 4px;
     padding-right: 32px;
