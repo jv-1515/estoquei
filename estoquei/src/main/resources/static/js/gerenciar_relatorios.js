@@ -1,7 +1,3 @@
-// window.onload = function() {
-//     renderizarRelatorios(window.relatoriosGerados);
-// }
-
 document.addEventListener('DOMContentLoaded', function() {
     // Sempre recarrega do localStorage ao abrir a tela
     window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
@@ -74,8 +70,8 @@ window.adicionarRelatorio = function(relatorio) {
 };
 
 function renderizarRelatorios(relatorios) {
-    const tbody = document.getElementById('product-table-body');
-    const thead = document.getElementById('relatorios-thead');
+    const tbody = document.getElementById('relatorio-list');
+    const thead = document.getElementById('relatorio-thead');
     const registrosPagina = document.getElementById('registros-pagina');
 
     tbody.innerHTML = '';
@@ -587,12 +583,10 @@ document.addEventListener('mousedown', function(e) {
     }
 });
 
-// Botão "Filtrar Produtos" mostra filtros avançados
-btnFiltrarProdutos.addEventListener('click', function() {
-    filtrosAvancados.style.display = 'flex';
-});
+// btnFiltrarProdutos.addEventListener('click', function() {
+//     filtrosAvancados.style.display = 'flex';
+// });
 
-// Botão "Limpar Filtros" limpa só os filtros avançados e esconde a div
 btnLimparFiltros.addEventListener('click', function(e) {
     e.preventDefault();
     filtrosAvancados.querySelectorAll('input, select').forEach(el => {
@@ -608,3 +602,72 @@ window.relatoriosGerados = window.relatoriosGerados.map(r => {
     }
     return r;
 });
+
+
+
+function renderizarSkeletonRelatorios() {
+  const tbody = document.getElementById('relatorio-list');
+  if (!tbody) return;
+  let skeletonRows = '';
+  for (let i = 0; i < 8; i++) { // 8 skeleton rows
+    skeletonRows += `
+      <tr class="skeleton-table-row">
+        <td><div class="skeleton-cell" style="width:120px;"></div></td>
+        <td><div class="skeleton-cell" style="width:100px;"></div></td>
+        <td><div class="skeleton-cell" style="width:80px;"></div></td>
+        <td><div class="skeleton-cell" style="width:60px;"></div></td>
+      </tr>
+    `;
+  }
+  tbody.innerHTML = skeletonRows;
+}
+
+// Use this before fetching relatórios
+function carregarRelatorios() {
+  renderizarSkeletonRelatorios();
+  fetch('/relatorios')
+    .then(res => res.json())
+    .then(data => {
+      // renderizarRelatorios(data); // your normal render function
+    })
+    .catch(() => {
+      // handle error
+    });
+}
+
+
+function renderizarSkeletonRelatorios() {
+    const tbody = document.getElementById('relatorio-list');
+    if (!tbody) return;
+    let skeletonRows = '';
+    for (let i = 0; i < 8; i++) {
+        skeletonRows += `
+            <tr class="skeleton-table-row">
+                <td><div class="skeleton-cell" style="width:120px;"></div></td>
+                <td><div class="skeleton-cell" style="width:100px;"></div></td>
+                <td><div class="skeleton-cell" style="width:80px;"></div></td>
+                <td><div class="skeleton-cell" style="width:60px;"></div></td>
+            </tr>
+        `;
+    }
+    tbody.innerHTML = skeletonRows;
+}
+
+
+// Centralizado: carrega relatórios do backend
+function carregarRelatorios() {
+    renderizarSkeletonRelatorios();
+    fetch('/relatorios')
+        .then(res => res.json())
+        .then(data => {
+            window.relatoriosGerados = data;
+            renderizarRelatorios(window.relatoriosGerados);
+        })
+        .catch(() => {
+            // fallback para localStorage se offline ou erro
+            window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+            renderizarRelatorios(window.relatoriosGerados);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', carregarRelatorios);
