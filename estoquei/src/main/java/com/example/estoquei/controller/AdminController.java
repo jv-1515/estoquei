@@ -1,6 +1,7 @@
 package com.example.estoquei.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.estoquei.model.Usuario;
+import com.example.estoquei.repository.UsuarioRepository;
 import com.example.estoquei.service.UsuarioService;
 
 import jakarta.servlet.http.HttpSession;
@@ -16,9 +18,11 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping("/login")
     public String exibirLogin() {
@@ -62,5 +66,23 @@ public class AdminController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
+    }
+    
+    @GetMapping("/usuarios/email-existe")
+    public ResponseEntity<Boolean> emailExiste(@RequestParam(name = "email", required = true) String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean existe = usuarioRepository.findByEmail(email).isPresent();
+        return ResponseEntity.ok(existe);
+    }
+
+    @GetMapping("/usuarios/cpf-existe")
+    public ResponseEntity<Boolean> cpfExiste(@RequestParam(name = "cpf", required = true) String cpf) {
+        if (cpf == null || cpf.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean existe = usuarioRepository.findByCpf(cpf).isPresent();
+        return ResponseEntity.ok(existe);
     }
 }

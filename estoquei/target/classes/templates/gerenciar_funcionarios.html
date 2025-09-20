@@ -120,10 +120,14 @@
                   <input type="text" id="cad-codigo" name="codigo" maxlength="6" required pattern="\d{6}" placeholder="000000" tabindex="1"/>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                  <label for="cad-cargo">Cargo*</label>
-                  <select id="cad-cargo" name="cargo" required tabindex="2">
-                    <option value="" selected disabled hidden>Selecionar</option>
-                  </select>
+                  <label for="cad-cargo-multi">Cargo*</label>
+                  <div class="multiselect-cargo input-group" style="position: relative; min-width: 100%; max-height: 30px;">
+                    <input type="text" id="cad-cargo-multi" name="cargo" readonly required placeholder="Selecionar" tabindex="2"/>
+                    <span class="chevron-cargo" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </span>
+                    <div id="radios-cad-cargo-multi" class="radios-cargo-multi" style="display: none; position: absolute; z-index: 1000; width: 100%;"></div>
+                  </div>
                 </div>
               </div>
               <!-- Avatar -->
@@ -290,9 +294,14 @@
                             </div>
                         </div>
                     <label for="edit-cargo">Cargo*</label>
-                    <select id="edit-cargo" name="cargo" required>
-                      <option value="" selected disabled hidden>Cargo</option>
-                    </select>
+                    <div class="multiselect-cargo input-group" style="position: relative; width: 100%;">
+                      <label for="edit-cargo-multi">Cargo*</label>
+                      <input type="text" id="edit-cargo-multi" name="cargo" readonly required placeholder="Selecionar"/>
+                      <span class="chevron-cargo" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                        <i class="fa-solid fa-chevron-down"></i>
+                      </span>
+                      <div id="radios-edit-cargo-multi" class="radios-cargo-multi" style="display: none; position: absolute; z-index: 1000; width: 100%;"></div>
+                    </div>
                 </div>
                 <div style="display: flex; align-items: flex-end; height: 100%;">
                     <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: rgba(0,0,0,0.65); position: relative;">
