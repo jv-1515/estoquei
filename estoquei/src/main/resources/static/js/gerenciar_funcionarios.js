@@ -1216,6 +1216,7 @@ function cadastrarFuncionario() {
                 senha: senha,
                 cpf: document.getElementById('cad-cpf').value.replace(/\D/g, '') || null,
                 dataNascimento: dataNascimento || null,
+                telefone: document.getElementById('cad-contato').value.replace(/\D/g, '') || null,
                 ativo: true
             };
             fetch('/usuarios', {
@@ -2460,6 +2461,27 @@ document.getElementById('btn-proximo-2').onclick = function() {
         return;
     }
 
+    // Validação de CPF duplicado
+    if (cpf) {
+        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf.replace(/\D/g, '')))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existe => {
+                if (existe) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'CPF já cadastrado!',
+                        text: 'Informe outro CPF',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    });
+                    document.getElementById('cad-cpf').focus();
+                    return;
+                }
+            });
+        return;
+    }
+
     // Validação de data de nascimento e idade (igual ao cadastro)
     if (nascimento) {
         const hoje = new Date();
@@ -2521,18 +2543,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
         });
         return;
     }
-    // Validação de CPF duplicado
-    if (cpf && funcionarios.some(f => f.cpf && f.cpf.replace(/\D/g, '') === cpf.replace(/\D/g, ''))) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'CPF já cadastrado!',
-            text: 'Informe outro CPF',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true
-        });
-        return;
-    }
+
 
     // Preenche etapa 3
     document.getElementById('cad-codigo-3').value = document.getElementById('cad-codigo').value;
