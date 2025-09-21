@@ -58,14 +58,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
     fetch('/cargos')
-      .then(res => res.json())
-      .then(cargos => {
+    .then(res => res.json())
+    .then(cargos => {
         const container = document.getElementById('checkboxes-cargo-multi');
         container.innerHTML = `<label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked> Todos</label>`;
         cargos
         .filter(cargo => cargo.nome.toLowerCase() !== 'admin')
         .forEach(cargo => {
-          container.innerHTML += `<label><input type="checkbox" class="cargo-multi-check" value="${cargo.id}" checked> ${cargo.nome}</label>`;
+        container.innerHTML += `<label><input type="checkbox" class="cargo-multi-check" value="${cargo.id}" checked> ${cargo.nome}</label>`;
         });
         document.querySelectorAll('.cargo-multi-check').forEach(cb => {
             cb.addEventListener('change', function() {
@@ -94,35 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarPlaceholderCargoMulti();
     });
 
-
-
-    // Cadastro
-    // const avatarDiv = document.getElementById('cad-avatar');
-    // const iniciaisSpan = document.getElementById('cad-avatar-iniciais');
-    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
-
-    // function atualizarAvatarCadastro() {
-    //     const nome = nomeInput ? nomeInput.value.trim() : '';
-    //     if (nome.length > 0) {
-    //         if (iniciaisSpan) iniciaisSpan.textContent = getIniciais(nome);
-    //         if (avatarDiv) avatarDiv.style.background = corAvatar(nome);
-    //         if (icon) icon.style.display = 'none';
-    //     } else {
-    //         if (iniciaisSpan) iniciaisSpan.textContent = '';
-    //         if (avatarDiv) avatarDiv.style.background = '#f1f1f1';
-    //         if (icon) icon.style.display = '';
-    //     }
-    // }
-    // if (nomeInput && avatarDiv && iniciaisSpan) {
-    //     nomeInput.addEventListener('input', function(e) {
-    //         atualizarAvatarCadastro();
-    //         const valor = nomeInput.value;
-    //         if (/\d/.test(valor)) {
-    //             nomeInput.value = valor.replace(/\d/g, '');
-    //         }
-    //     });
-    //     atualizarAvatarCadastro();
-    // }
 
     
     // Código
@@ -790,7 +761,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Carregar funcionários do backend
 function carregarFuncionarios() {
-    renderizarSkeletonFuncionarios();
+    const tbody = document.getElementById('func-list');
+    
+    const skeletonRow = () => {
+        return `<tr class='skeleton-table-row'>${Array(7).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+    };
+    tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
     fetch('/usuarios')
         .then(res => res.json())
         .then(data => {
@@ -2162,13 +2138,13 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
                     document.getElementById('cad-cpf').focus();
                     return;
                 } else {
-                    // ...existing code for avançar etapa...
+                
                 }
             });
         e.preventDefault();
         return;
     }
-    // ...existing code for avançar etapa...
+    
 });
     document.querySelectorAll('.etapa-cadastro').forEach(div => {
         div.style.display = div.getAttribute('data-etapa') == etapa ? 'block' : 'none';
@@ -2208,13 +2184,6 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
             aviso.style.display = 'none';
         }
     }
-
-    // const titulo = document.getElementById('cadastro-etapa-titulo');
-    // if (titulo) {
-    //     if (etapa == 1) titulo.textContent = 'Cadastrar Funcionário (1/3)';
-    //     else if (etapa == 2) titulo.textContent = 'Informações Pessoais (2/3)';
-    //     else if (etapa == 3) titulo.textContent = 'Revisar Informações (3/3)';
-    // }
 }
 
 
@@ -2635,8 +2604,8 @@ function renderizarCargosFuncionarios() {
     container.innerHTML = '';
 
     fetch('/cargos')
-      .then(res => res.json())
-      .then(cargos => {
+    .then(res => res.json())
+    .then(cargos => {
         // Filtra e ordena os cargos reais (exceto admin)
         const cargosVisiveis = cargos
             .filter(c => c.nome.toLowerCase() !== 'admin')
@@ -2658,32 +2627,7 @@ function renderizarCargosFuncionarios() {
                     if (span) span.textContent = funcionarios.length;
                 });
         });
-      });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', renderizarCargosFuncionarios);
-
-function renderizarSkeletonFuncionarios(qtd = 5) {
-    const tbody = document.getElementById('func-list');
-    if (!tbody) return;
-    const colClasses = [
-        'skeleton-img',      // imagem/avatar
-        '',                 // código
-        'skeleton-nome',    // nome
-        '',                 // cargo
-        '',                 // email
-        '',                 // status
-        'skeleton-acoes'    // ações
-    ];
-    let skeletonHtml = '<tr><td colspan="7" style="padding:0;"><div class="skeleton-table">';
-    for (let i = 0; i < qtd; i++) {
-        skeletonHtml += '<div class="skeleton-table-row">';
-        for (let j = 0; j < colClasses.length; j++) {
-            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
-            skeletonHtml += `<div class="${cls}"></div>`;
-        }
-        skeletonHtml += '</div>';
-    }
-    skeletonHtml += '</div></td></tr>';
-    tbody.innerHTML = skeletonHtml;
-}
