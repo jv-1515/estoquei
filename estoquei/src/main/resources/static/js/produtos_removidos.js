@@ -26,16 +26,11 @@ document.addEventListener('change', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.getElementById('removidos-table-body');
-    // Mostra o loading imediatamente
-    // tbody.innerHTML = `<tr style="background-color: #fff">
-    //     <td colspan="12" style="text-align: center; padding: 10px; color: #888; font-size: 16px;">
-    //         <span id="loading-spinner" style="display: inline-block; vertical-align: middle;">
-    //             <i class="fa fa-spinner fa-spin" style="font-size: 20px; margin-right: 8px;"></i>
-    //         </span>
-    //         <span id="loading-text">Carregando produtos</span>
-    //     </td>
-    // </tr>`;
-
+    // Skeleton loading: 3 linhas, 12 colunas
+    const skeletonRow = () => {
+        return `<tr class='skeleton-table-row'>${Array(12).fill('').map((_,i) => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+    };
+    tbody.innerHTML = skeletonRow() + skeletonRow() + skeletonRow();
     fetch('/produtos/removidos')
         .then(res => res.json())
         .then(produtos => renderizarRemovidos(produtos));
@@ -89,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             ? `<img src="${produto.url_imagem}" alt="${produto.descricao || 'Foto do produto'}" class="produto-img">`
                             : `<span class="produto-img icon" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#f5f5f5;border-radius:6px;color:#bbb;font-size:18px;">
                                 <i class="fa-regular fa-image"></i>
-                              </span>`
+                            </span>`
                         }
                     </td>
                     <td>${produto.codigo || '-'}</td>
