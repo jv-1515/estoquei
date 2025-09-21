@@ -633,7 +633,7 @@ select#registros-select option {
 }
 
 /* Checkboxes de quantidade faixa-popup */
-.quantidade-check-label {
+/* .quantidade-check-label {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -644,16 +644,71 @@ select#registros-select option {
     cursor: pointer !important;
     padding: 2px 10px;
     gap: 8px;
-}
+} */
 
-.quantidade-check-label:hover {
+/* .quantidade-check-label:hover {
     background-color: #f3f3f3;
 }
 
 .quantidade-check-label input[type="checkbox"] {
     width: 12px !important;
     height: 12px !important;
+} */
+
+
+
+.skeleton-table {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #ffffff;
 }
+.skeleton-table-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 8px;
+    background-color: #ffffff;
+}
+.skeleton-cell {
+    flex: 1;
+    height: 30px;
+    border-radius: 4px;
+    animation: skeleton-loading 1.2s infinite linear;
+    margin: 0 2px;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+}
+.skeleton-cell.skeleton-nome,
+.skeleton-cell.skeleton-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: skeleton-loading 1.2s infinite linear;
+    box-sizing: border-box;
+    padding: 0;
+}
+.skeleton-table-row .skeleton-cell:first-child {
+    margin-left: 20px;
+}
+.skeleton-cell.skeleton-nome {
+    min-width: 110px;
+    width: 100%;
+}
+.skeleton-cell.skeleton-acoes {
+    min-width: 55px;
+    max-width: 55px;
+    width: 55px;
+    margin-right: 20px;
+}
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+
 
 /* sweetAlert */
 .swal2-popup {
