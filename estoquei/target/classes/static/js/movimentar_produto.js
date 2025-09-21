@@ -165,11 +165,16 @@ window.addEventListener('DOMContentLoaded', function() {
         // Preencher campos do produto
         if (produto && produto.codigo) preencherCampos(produto);
 
+            const fornecedorMultiGroup = fornecedorInput?.closest('.multiselect.input-group');
         
         // Validação ao digitar código da compra/venda
         const codigoCompraInput = document.getElementById('codigo-compra');
         if (codigoCompraInput) {
             codigoCompraInput.addEventListener('input', function() {
+                if (fornecedorMultiGroup) {
+                    fornecedorMultiGroup.style.pointerEvents = 'none';
+                    fornecedorMultiGroup.style.opacity = '0.6';
+                }
                 this.value = this.value.replace(/\D/g, '');
             });
         }
@@ -182,6 +187,10 @@ window.addEventListener('DOMContentLoaded', function() {
         
         if (codigoCompraInput) {
             codigoCompraInput.addEventListener('input', function() {
+                    if (fornecedorMultiGroup) {
+                        fornecedorMultiGroup.style.pointerEvents = produtoValido ? 'auto' : 'none';
+                        fornecedorMultiGroup.style.opacity = produtoValido ? '1' : '0.6';
+                    }
                 // Se produto já está no limite, não pode abastecer
                 if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) >= 999) {
                     Swal.fire({
