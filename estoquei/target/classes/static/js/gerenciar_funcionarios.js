@@ -31,9 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nomeInput) {
         nomeInput.addEventListener('input', function() {
             let valor = nomeInput.value;
-            if (/\d/.test(valor)) {
-                nomeInput.value = valor.replace(/\d/g, '');
-            }
+            // Remove números e caracteres especiais, só permite letras e espaços
+            nomeInput.value = valor.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
         });
     }
     // Validação de CPF duplicado ao sair do campo
@@ -98,32 +97,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Cadastro
-    const avatarDiv = document.getElementById('cad-avatar');
-    const iniciaisSpan = document.getElementById('cad-avatar-iniciais');
-    const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+    // const avatarDiv = document.getElementById('cad-avatar');
+    // const iniciaisSpan = document.getElementById('cad-avatar-iniciais');
+    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
 
-    function atualizarAvatarCadastro() {
-        const nome = nomeInput ? nomeInput.value.trim() : '';
-        if (nome.length > 0) {
-            if (iniciaisSpan) iniciaisSpan.textContent = getIniciais(nome);
-            if (avatarDiv) avatarDiv.style.background = corAvatar(nome);
-            if (icon) icon.style.display = 'none';
-        } else {
-            if (iniciaisSpan) iniciaisSpan.textContent = '';
-            if (avatarDiv) avatarDiv.style.background = '#f1f1f1';
-            if (icon) icon.style.display = '';
-        }
-    }
-    if (nomeInput && avatarDiv && iniciaisSpan) {
-        nomeInput.addEventListener('input', function(e) {
-            atualizarAvatarCadastro();
-            const valor = nomeInput.value;
-            if (/\d/.test(valor)) {
-                nomeInput.value = valor.replace(/\d/g, '');
-            }
-        });
-        atualizarAvatarCadastro();
-    }
+    // function atualizarAvatarCadastro() {
+    //     const nome = nomeInput ? nomeInput.value.trim() : '';
+    //     if (nome.length > 0) {
+    //         if (iniciaisSpan) iniciaisSpan.textContent = getIniciais(nome);
+    //         if (avatarDiv) avatarDiv.style.background = corAvatar(nome);
+    //         if (icon) icon.style.display = 'none';
+    //     } else {
+    //         if (iniciaisSpan) iniciaisSpan.textContent = '';
+    //         if (avatarDiv) avatarDiv.style.background = '#f1f1f1';
+    //         if (icon) icon.style.display = '';
+    //     }
+    // }
+    // if (nomeInput && avatarDiv && iniciaisSpan) {
+    //     nomeInput.addEventListener('input', function(e) {
+    //         atualizarAvatarCadastro();
+    //         const valor = nomeInput.value;
+    //         if (/\d/.test(valor)) {
+    //             nomeInput.value = valor.replace(/\d/g, '');
+    //         }
+    //     });
+    //     atualizarAvatarCadastro();
+    // }
 
     
     // Código
@@ -1174,8 +1173,13 @@ function abrirEdicaoFuncionario(id) {
 
     const editNomeInput = document.getElementById('edit-nome');
     if (editNomeInput) {
-        editNomeInput.removeEventListener('input', window.atualizarAvatarEdicao); // Prevent duplicates
+        editNomeInput.removeEventListener('input', window.atualizarAvatarEdicao);
         editNomeInput.addEventListener('input', window.atualizarAvatarEdicao);
+        editNomeInput.addEventListener('input', function() {
+            // Permite apenas letras e espaços
+            let valor = editNomeInput.value;
+            editNomeInput.value = valor.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+        });
         window.atualizarAvatarEdicao();
     }
     
@@ -1229,6 +1233,16 @@ function abrirEdicaoFuncionario(id) {
 //avatar edicao
 window.atualizarAvatarEdicao = function() {
     const nome = document.getElementById('edit-nome').value || '';
+    // Só mostra iniciais se for letra (não número, nem caractere especial)
+    if (nome.length > 0 && /^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
+    } else {
+        // se não for letra, limpa iniciais
+        document.getElementById('edit-avatar-iniciais').textContent = '';
+        document.getElementById('edit-avatar').style.background = '#f1f1f1';
+        const icon = document.getElementById('edit-avatar').querySelector('i.fa-user');
+        if (icon) icon.style.display = '';
+        return;
+    }
     const iniciais = getIniciais(nome);
 
     const avatarDiv = document.getElementById('edit-avatar');
@@ -2217,7 +2231,8 @@ function atualizarAvatarCadastro() {
         const spanEl = document.getElementById(span);
         const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
         if (avatarDiv && spanEl) {
-            if (nome.length > 0) {
+            // Só mostra iniciais se for letra (não número, nem caractere especial)
+            if (nome.length > 0 && /^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
                 spanEl.textContent = iniciais;
                 avatarDiv.style.background = corAvatar(nome);
                 if (icon) icon.style.display = 'none';
