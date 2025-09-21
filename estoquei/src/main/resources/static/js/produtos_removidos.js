@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const skeletonRow = () => {
         return `<tr class='skeleton-table-row'>${Array(12).fill('').map((_,i) => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
     };
-    tbody.innerHTML = skeletonRow() + skeletonRow() + skeletonRow();
+    tbody.innerHTML = Array(5).fill('').map(skeletonRow).join('');
+
     fetch('/produtos/removidos')
         .then(res => res.json())
         .then(produtos => renderizarRemovidos(produtos));
