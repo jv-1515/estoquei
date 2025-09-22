@@ -878,9 +878,14 @@ function renderizarProdutos(produtos) {
     const tbody = document.getElementById('product-table-body');
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
-
-    const select = document.getElementById('registros-select');
-    itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
+    const registrosInput = document.getElementById('registros-multi');
+    // Usa o valor do radio personalizado
+    let valorRadio = '';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
+    }
+    itensPorPagina = valorRadio === '' ? produtos.length : parseInt(valorRadio);
 
     const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -1190,13 +1195,74 @@ function parseDataQualquerFormato(dataStr) {
 let btnFiltrarProdutos;
 
 window.onload = function() {
-    const select = document.getElementById('registros-select');
-    carregarProdutos(select.value);
-    select.addEventListener('change', function() {
-        itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
-        paginaAtual = 1;
-        renderizarProdutos(produtosFiltrados);
+    // Inicializa radios personalizados de registros por página
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+    const opcoes = [
+        { value: '', label: 'Todos' },
+        { value: '10', label: '10' },
+        { value: '20', label: '20' },
+        { value: '50', label: '50' },
+        { value: '100', label: '100' }
+    ];
+
+    // Renderiza radios
+    radiosDiv.innerHTML = '';
+    opcoes.forEach(opt => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="registros-radio" value="${opt.value}">${opt.label}`;
+        radiosDiv.appendChild(label);
     });
+
+    // Inicializa visual
+    registrosInput.value = 'Todos';
+    radiosDiv.querySelector('input[type="radio"][value=""]').checked = true;
+
+    // Abre/fecha lista ao clicar no input ou chevron
+    function abrirLista() {
+        radiosDiv.style.display = 'block';
+    }
+    function fecharLista() {
+        radiosDiv.style.display = 'none';
+    }
+    registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    // Fecha ao clicar fora
+    document.addEventListener('mousedown', function(e) {
+        if (!radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            fecharLista();
+        }
+    });
+
+    // Evento para atualizar input ao selecionar radio (label clicável)
+    radiosDiv.addEventListener('click', function(e) {
+        const label = e.target.closest('label');
+        if (label) {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) {
+                registrosInput.value = label.textContent.trim();
+                radiosDiv.querySelectorAll('label').forEach(lbl => lbl.classList.remove('selecionado'));
+                label.classList.add('selecionado');
+                radio.checked = true;
+                fecharLista();
+                // Atualiza paginação
+                itensPorPagina = radio.value === '' ? produtosOriginais.length : parseInt(radio.value);
+                paginaAtual = 1;
+                renderizarProdutos(produtosFiltrados);
+            }
+        }
+    });
+
+    // Inicializa carregamento com valor do radio
+    let valorRadio = '';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
+    }
+    carregarProdutos(valorRadio === '' ? '' : valorRadio);
+    // ...existing code...
 
     const campos = [
         null,
