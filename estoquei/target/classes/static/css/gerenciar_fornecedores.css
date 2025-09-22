@@ -157,6 +157,11 @@ th {
     padding: 8px;
 }
 
+td {
+    text-align: left;
+    padding: 5px 5px 5px 20px;
+}
+
 th:first-child,
 th:nth-child(2),
 th:last-child {
@@ -452,15 +457,72 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-select#registros-select {
-    color: #1E94A3;
-    border: #1e94a3 2px solid;
-    background-color: white !important;
+#registros-pagina {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
 }
 
-select#registros-select option {
-    color: #757575;
+#registros-multi {
+    color: #1E94A3 !important;
+    border: #1e94a3 2px solid;
+    background-color: #fff;
 }
+
+.chevron-registros {
+    color: #1E94A3;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.multiselect-registros.input-group {
+    min-width: 70px;
+    width: 70px;
+}
+
+#radios-registros-multi {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid #aaa;
+    border-radius: 4px 0 0 4px;
+    background: #fff;
+    z-index: 2000;
+    max-height: 52px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
+}
+#radios-registros-multi label {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: normal;
+    color: #757575;
+    cursor: pointer;
+    padding: 5px 10px;
+    gap: 8px;
+    transition: background 0.2s, color 0.2s;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    pointer-events: auto;
+}
+#radios-registros-multi label:hover,
+#radios-registros-multi label.selecionado {
+    background-color: #f3f3f3;
+    color: black;
+}
+#radios-registros-multi input[type="radio"] {
+    display: none;
+}
+
+
 
 .multiselect {
   min-width: 90px;

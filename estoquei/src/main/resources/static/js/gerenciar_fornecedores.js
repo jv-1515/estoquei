@@ -50,15 +50,19 @@ function atualizarSetasOrdenacao() {
 }
 
 function renderizarFornecedores(lista) {
-    const select = document.getElementById('registros-select');
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
     let totalItens = lista.length;
-    let valorSelect = select.value;
-    let itensPorPagina = valorSelect === "" ? totalItens : parseInt(valorSelect);
+    let valorRadio = '';
+    if (registrosInput) {
+        valorRadio = radiosDiv.querySelector('input[type="radio"]:checked')?.value ?? '';
+    }
+    let itensPorPagina = valorRadio === "" ? totalItens : parseInt(valorRadio);
 
     const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
     if (paginaAtual > totalPaginas) paginaAtual = 1;
     const inicio = (paginaAtual - 1) * itensPorPagina;
-    const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
+    const fim = valorRadio === "" ? totalItens : inicio + itensPorPagina;
     const pagina = lista.slice(inicio, fim);
     const tbody = document.getElementById('fornecedor-list');
     const thead = document.querySelector('thead');
@@ -147,10 +151,48 @@ function renderizarFornecedores(lista) {
 
 document.addEventListener('DOMContentLoaded', function() {
     carregarFornecedores();
-    document.getElementById('registros-select').addEventListener('change', function() {
-        paginaAtual = 1;
-        renderizarFornecedores(fornecedores);
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+
+    // Inicializa visual
+    if (registrosInput && radiosDiv) {
+        registrosInput.value = 'Todos';
+        radiosDiv.querySelector('input[type="radio"][value=""]').checked = true;
+    }
+
+    // Abre/fecha lista ao clicar no input ou chevron
+    function abrirLista() {
+        radiosDiv.style.display = 'block';
+    }
+    function fecharLista() {
+        radiosDiv.style.display = 'none';
+    }
+    if (registrosInput) registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    // Fecha ao clicar fora
+    document.addEventListener('mousedown', function(e) {
+        if (!radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            fecharLista();
+        }
     });
+
+    // Evento para atualizar input ao selecionar radio (label clicável)
+    if (radiosDiv) {
+        radiosDiv.addEventListener('click', function(e) {
+            const radio = e.target.closest('input[type="radio"]');
+            if (radio) {
+                registrosInput.value = radio.value === '' ? 'Todos' : radio.value;
+                radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+                radio.parentElement.classList.add('selecionado');
+                radio.checked = true;
+                fecharLista();
+                paginaAtual = 1;
+                renderizarFornecedores(fornecedores);
+            }
+        });
+    }
 });
 
 // Ao carregar a página, mostra todos os fornecedores
@@ -272,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function carregarFornecedores() {
         const tbody = document.getElementById('fornecedor-list');
         const skeletonRow = () => {
-        return `<tr class='skeleton-table-row'>${Array(7).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+        return `<tr class='skeleton-table-row'>${Array(8).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
     };
     
     tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
@@ -293,10 +335,35 @@ function carregarFornecedores() {
 
 document.addEventListener('DOMContentLoaded', function() {
     carregarFornecedores();
-    document.getElementById('registros-select').addEventListener('change', function() {
-        paginaAtual = 1;
-        renderizarFornecedores(fornecedores);
+    // Adaptação para radios customizados
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+
+    function abrirLista() {
+        if (radiosDiv) radiosDiv.style.display = radiosDiv.style.display === 'none' ? 'block' : 'none';
+    }
+    if (registrosInput) registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    document.addEventListener('mousedown', function(e) {
+        if (radiosDiv && !radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            radiosDiv.style.display = 'none';
+        }
     });
+
+    if (radiosDiv) {
+        radiosDiv.addEventListener('click', function(e) {
+            if (e.target && e.target.matches('input[type="radio"]')) {
+                radiosDiv.querySelectorAll('label').forEach(label => label.classList.remove('selecionado'));
+                e.target.parentElement.classList.add('selecionado');
+                registrosInput.value = e.target.value === '' ? 'Todos' : e.target.value;
+                radiosDiv.style.display = 'none';
+                paginaAtual = 1;
+                renderizarFornecedores(fornecedores);
+            }
+        });
+    }
 });
 
 
