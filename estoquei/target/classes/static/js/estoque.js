@@ -1199,21 +1199,6 @@ window.onload = function() {
     const registrosInput = document.getElementById('registros-multi');
     const radiosDiv = document.getElementById('radios-registros-multi');
     const chevron = document.querySelector('.chevron-registros');
-    const opcoes = [
-        { value: '', label: 'Todos' },
-        { value: '10', label: '10' },
-        { value: '20', label: '20' },
-        { value: '50', label: '50' },
-        { value: '100', label: '100' }
-    ];
-
-    // Renderiza radios
-    radiosDiv.innerHTML = '';
-    opcoes.forEach(opt => {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="radio" name="registros-radio" value="${opt.value}">${opt.label}`;
-        radiosDiv.appendChild(label);
-    });
 
     // Inicializa visual
     registrosInput.value = 'Todos';

@@ -613,8 +613,12 @@ function renderizarProdutos(produtos) {
     skeletonHtml += '</div></td></tr>';
     tbody.innerHTML = skeletonHtml;
 
-    const select = document.getElementById('registros-select');
-    itensPorPagina = select.value === "" ? produtos.length : parseInt(select.value);
+    const registrosInput = document.getElementById('registros-multi');
+    let value = '';
+    if (registrosInput) {
+        value = registrosInput.value === 'Todos' ? '' : registrosInput.value;
+    }
+    itensPorPagina = value === '' ? produtos.length : parseInt(value);
 
     const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -861,25 +865,69 @@ function parseDataQualquerFormato(dataStr) {
 }
 
 window.onload = function() {
-    const select = document.getElementById('registros-select');
-    carregarProdutos(select.value);
-    select.addEventListener('change', function() {
-        itensPorPagina = this.value === "" ? produtos.length : parseInt(this.value);
-        paginaAtual = 1;
-        renderizarProdutos(produtos);
+    // Inicializa radios personalizados de registros por página
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+
+    // Inicializa visual
+    registrosInput.value = 'Todos';
+    radiosDiv.querySelector('input[type="radio"][value=""]').checked = true;
+
+    // Abre/fecha lista ao clicar no input ou chevron
+    function abrirLista() {
+        radiosDiv.style.display = 'block';
+    }
+    function fecharLista() {
+        radiosDiv.style.display = 'none';
+    }
+    registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    // Fecha ao clicar fora
+    document.addEventListener('mousedown', function(e) {
+        if (!radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            fecharLista();
+        }
     });
 
+    // Evento para atualizar input ao selecionar radio (label clicável)
+    radiosDiv.addEventListener('click', function(e) {
+        const label = e.target.closest('label');
+        if (label) {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) {
+                registrosInput.value = label.textContent.trim();
+                radiosDiv.querySelectorAll('label').forEach(lbl => lbl.classList.remove('selecionado'));
+                label.classList.add('selecionado');
+                radio.checked = true;
+                fecharLista();
+                itensPorPagina = radio.value === '' ? produtos.length : parseInt(radio.value);
+                paginaAtual = 1;
+                renderizarProdutos(produtos);
+            }
+        }
+    });
+
+    // Inicializa carregamento com valor do radio
+    let valorRadio = '';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
+    }
+    carregarProdutos(valorRadio === '' ? '' : valorRadio);
+
     const campos = [
-        null,               
-        'codigo',          
-        'nome',            
-        'categoria',       
-        'tamanho',         
-        'genero',          
-        'preco',           
-        'quantidade',      
-        'limiteMinimo',    
-        null               
+        null,
+        'codigo',
+        'nome',
+        'categoria',
+        'tamanho',
+        'genero',
+        'preco',
+        'quantidade',
+        'limiteMinimo',
+        null
     ];
     
     //inicia com true (decrescente)

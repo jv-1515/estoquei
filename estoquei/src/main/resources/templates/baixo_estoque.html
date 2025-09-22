@@ -193,15 +193,21 @@
         </div>
     </div>
     <div class="filters-container" style="align-items: center; justify-content: space-between; display: flex; margin: 0 auto 0 auto; border-radius: 10px 10px 0 0;padding: 20px 20px 10px 22px;">
-        <div id="registros-pagina" style="display: flex; align-items: center; gap: 5px;">
-            <label for="registros-select">Mostrando</label>
-            <select id="registros-select" style="padding: 5px 0; border-radius: 4px; font-size: 12px; height:30px; width: 55px;">
-                <option value=""> Todos</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
+        <div id="registros-pagina">
+          <label for="registros-multi">Mostrando</label>
+          <div class="multiselect-registros input-group">
+            <input id="registros-multi" type="text" readonly value="Todos" tabindex="7" />
+            <span class="chevron-registros">
+              <i class="fa-solid fa-chevron-down"></i>
+            </span>
+            <div id="radios-registros-multi" style="display: none;">
+              <label class="selecionado"><input type="radio" name="registros-radio" value="" checked>Todos</label>
+              <label><input type="radio" name="registros-radio" value="10">10</label>
+              <label><input type="radio" name="registros-radio" value="20">20</label>
+              <label><input type="radio" name="registros-radio" value="50">50</label>
+              <label><input type="radio" name="registros-radio" value="100">100</label>
+            </div>
+          </div>
         </div>
         <button class="btn" style="margin-left: auto;" onclick="window.location.href='/movimentar-produto'">
             <i class="fa-solid fa-cart-shopping" style="margin-right: 4px;"></i> Abastecer
