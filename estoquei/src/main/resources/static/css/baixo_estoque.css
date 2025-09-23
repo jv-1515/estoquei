@@ -370,7 +370,7 @@ select#filter-genero {
 .chevron-registros {
     color: #1E94A3;
     position: absolute;
-    right: 12px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;

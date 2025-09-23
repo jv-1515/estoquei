@@ -225,14 +225,76 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-select#registros-select {
-    color: #1E94A3;
+#registros-pagina {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+}
+
+#registros-pagina label {
+    font-weight: normal;
+    color: #000;
+}
+
+#registros-multi {
+    color: #1E94A3 !important;
     border: #1e94a3 2px solid;
 }
 
-select#registros-select option {
-    color: #757575;
+.chevron-registros {
+    color: #1E94A3;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
+.multiselect-registros.input-group {
+    min-width: 70px;
+    width: 70px;
+}
+
+#radios-registros-multi {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid #aaa;
+    border-radius: 4px 0 0 4px;
+    background: #fff;
+    z-index: 2000;
+    max-height: 52px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
+}
+#radios-registros-multi label {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: normal;
+    color: #757575;
+    cursor: pointer;
+    padding: 5px 10px;
+    gap: 8px;
+    justify-content: flex-end;
+    transition: background 0.2s, color 0.2s;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    pointer-events: auto;
+}
+#radios-registros-multi label:hover,
+#radios-registros-multi label.selecionado {
+    background-color: #f3f3f3;
+    color: black;
+}
+#radios-registros-multi input[type="radio"] {
+    display: none;
+}
+
 
 #busca-sugestoes {
     position: absolute;

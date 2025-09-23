@@ -1067,8 +1067,14 @@ function renderizarMovimentacoes(movimentacoes) {
     tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
 
 
-    const select = document.getElementById('registros-select');
-    itensPorPagina = select.value === "" ? movimentacoes.length : parseInt(select.value);
+    // Adaptação para radio customizado igual ESTOQUE
+    const registrosInput = document.getElementById('registros-multi');
+    let valorRadio = '';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
+    }
+    itensPorPagina = valorRadio === '' ? movimentacoes.length : parseInt(valorRadio);
 
     const totalPaginas = Math.ceil(movimentacoes.length / itensPorPagina);
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -1563,14 +1569,63 @@ function atualizarCardsMovimentacoes(movimentacoes) {
 }
 
 window.onload = function() {
-    const select = document.getElementById('registros-select');
-    carregarMovimentacoes(select.value);
-    
-    select.addEventListener('change', function() {
-        itensPorPagina = this.value === "" ? movimentacoes.length : parseInt(this.value);
-        paginaAtual = 1;
-        renderizarMovimentacoes(filtradas);
+    // Inicializa radios personalizados de registros por página (igual estoque.js)
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+
+    // Inicializa visual
+    if (registrosInput && radiosDiv) {
+        registrosInput.value = 'Todos';
+        const radioTodos = radiosDiv.querySelector('input[type="radio"][value=""]');
+        if (radioTodos) radioTodos.checked = true;
+    }
+
+    // Abre/fecha lista ao clicar no input ou chevron
+    function abrirLista() {
+        if (radiosDiv) radiosDiv.style.display = 'block';
+    }
+    function fecharLista() {
+        if (radiosDiv) radiosDiv.style.display = 'none';
+    }
+    if (registrosInput) registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    // Fecha ao clicar fora
+    document.addEventListener('mousedown', function(e) {
+        if (radiosDiv && !radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            fecharLista();
+        }
     });
+
+    // Evento para atualizar input ao selecionar radio (label clicável)
+    if (radiosDiv && registrosInput) {
+        radiosDiv.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (label) {
+                const radio = label.querySelector('input[type="radio"]');
+                if (radio) {
+                    registrosInput.value = label.textContent.trim();
+                    radiosDiv.querySelectorAll('label').forEach(lbl => lbl.classList.remove('selecionado'));
+                    label.classList.add('selecionado');
+                    radio.checked = true;
+                    fecharLista();
+                    // Atualiza paginação
+                    itensPorPagina = radio.value === '' ? movimentacoes.length : parseInt(radio.value);
+                    paginaAtual = 1;
+                    renderizarMovimentacoes(filtradas);
+                }
+            }
+        });
+    }
+
+    // Inicializa carregamento com valor do radio
+    let valorRadio = '';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
+    }
+    carregarMovimentacoes(valorRadio);
 
 const campos = [
     'data',
