@@ -149,9 +149,20 @@ table {
     background-color: white;
     border-collapse: collapse;
     border-radius: 0 0 10px 10px;
-    overflow: hidden;
     font-size: 12px;
     margin: 0;
+}
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+table tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
+}
+table th,
+table th.ordenar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 th, td {
@@ -174,11 +185,11 @@ th:last-child {
 }
 
 tbody tr:hover,
-tbody tr:nth-child(odd):hover {
+tbody tr:nth-child(even):hover {
     background-color: #e0e0e0;
 }
 
-tbody tr:nth-child(odd) {
+tbody tr:nth-child(even) {
     background-color: #f1f1f1;
 }
 

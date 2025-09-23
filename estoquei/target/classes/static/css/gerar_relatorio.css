@@ -154,45 +154,6 @@ h2 {
     box-sizing: border-box;
 }
 
-table {
-    width: 100%;
-    background-color: white;
-    border-collapse: collapse;
-    border-radius: 0 0 10px 10px;
-    overflow: hidden;
-    font-size: 12px;
-    margin: 0;
-}
-
-th,
-td {
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-th {
-    color: #ffffff;
-    font-weight: normal;
-    background: #277580;
-    border-right: 1px solid;
-    padding: 8px;
-}
-
-th:first-child,
-th:last-child {
-    border-right: none;
-}
-
-tbody tr:hover,
-tbody tr:nth-child(odd):hover {
-    background-color: #e0e0e0;
-}
-
-tbody tr:nth-child(odd) {
-    background-color: #f1f1f1;
-}
-
 .actions a, .actions button {
     background: none;
     border: none;
@@ -403,45 +364,6 @@ h2 {
     min-width: 1300px;
     margin: 0 auto;
     box-sizing: border-box;
-}
-
-table {
-    width: 100%;
-    background-color: white;
-    border-collapse: collapse;
-    border-radius: 0 0 10px 10px;
-    overflow: hidden;
-    font-size: 12px;
-    margin: 0;
-}
-
-th,
-td {
-    padding: 5px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-th {
-    color: #ffffff;
-    font-weight: normal;
-    background: #277580;
-    border-right: 1px solid;
-    padding: 8px;
-}
-
-th:first-child,
-th:last-child {
-    border-right: none;
-}
-
-tbody tr:hover,
-tbody tr:nth-child(odd):hover {
-    background-color: #e0e0e0;
-}
-
-tbody tr:nth-child(odd) {
-    background-color: #f1f1f1;
 }
 
 .actions a, .actions button {
