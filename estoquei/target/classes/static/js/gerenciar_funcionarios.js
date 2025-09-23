@@ -364,15 +364,19 @@ document.getElementById('radios-cad-cargo-multi').addEventListener('click', func
 
 // Renderização da tabela
 function renderizarFuncionarios(lista) {
-    const select = document.getElementById('registros-select');
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
     let totalItens = lista.length;
-    let valorSelect = select.value;
-    let itensPorPagina = valorSelect === "" ? totalItens : parseInt(valorSelect);
+    let valorRadio = '';
+    if (registrosInput && radiosDiv) {
+        valorRadio = radiosDiv.querySelector('input[type="radio"]:checked')?.value ?? '';
+    }
+    let itensPorPagina = valorRadio === "" ? totalItens : parseInt(valorRadio);
 
     const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
     if (paginaAtual > totalPaginas) paginaAtual = 1;
     const inicio = (paginaAtual - 1) * itensPorPagina;
-    const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
+    const fim = valorRadio === "" ? totalItens : inicio + itensPorPagina;
     const pagina = lista.slice(inicio, fim);
 
     const tbody = document.getElementById('func-list');
@@ -522,9 +526,35 @@ function renderizarPaginacao(totalPaginas) {
     }
 }
 
-document.getElementById('registros-select').addEventListener('change', function() {
-    paginaAtual = 1;
-    filtrarFuncionarios();
+document.addEventListener('DOMContentLoaded', function() {
+    const registrosInput = document.getElementById('registros-multi');
+    const radiosDiv = document.getElementById('radios-registros-multi');
+    const chevron = document.querySelector('.chevron-registros');
+
+    function abrirLista() {
+        if (radiosDiv) radiosDiv.style.display = radiosDiv.style.display === 'none' ? 'block' : 'none';
+    }
+    if (registrosInput) registrosInput.addEventListener('click', abrirLista);
+    if (chevron) chevron.addEventListener('click', abrirLista);
+
+    document.addEventListener('mousedown', function(e) {
+        if (radiosDiv && !radiosDiv.contains(e.target) && e.target !== registrosInput && e.target !== chevron) {
+            radiosDiv.style.display = 'none';
+        }
+    });
+
+    if (radiosDiv) {
+        radiosDiv.addEventListener('click', function(e) {
+            if (e.target && e.target.matches('input[type="radio"]')) {
+                radiosDiv.querySelectorAll('label').forEach(label => label.classList.remove('selecionado'));
+                e.target.parentElement.classList.add('selecionado');
+                registrosInput.value = e.target.value === '' ? 'Todos' : e.target.value;
+                radiosDiv.style.display = 'none';
+                paginaAtual = 1;
+                filtrarFuncionarios();
+            }
+        });
+    }
 });
 
 // --- MULTISELECT CARGO ---
@@ -2445,7 +2475,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
             Swal.fire({
                 icon: 'warning',
                 title: 'Data inválida!',
-                text: 'A data de nascimento não pode ser hoje ou futura',
+                text: 'A data de nascimento não pode ser posterior a hoje',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
