@@ -26,6 +26,7 @@ h2 {
 }
 
 .notification .badge {
+    display: none;
     position: absolute;
     top: 2px;
     left: 16px;
@@ -33,6 +34,15 @@ h2 {
     background-color: red;
     color: white;
     border-radius: 100%;
+    min-width: 18px;
+    height: 18px;
+    text-align: center;
+    z-index: 2;
+    line-height: 12px;
+    font-weight: bold;
+    box-sizing: border-box;
+    pointer-events: none;
+    padding: 3px 6px;
 }
 
 .filters {
