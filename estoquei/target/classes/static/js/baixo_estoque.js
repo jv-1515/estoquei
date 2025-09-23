@@ -587,11 +587,31 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
     // Mostra o loading imediatamente
-
-    const skeletonRow = () => {
-        return `<tr class='skeleton-table-row'>${Array(10).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
-    };
-    tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
+    // Skeleton loader para Baixo Estoque (10 colunas)
+    const skeletonRows = 5;
+    const colClasses = [
+        'skeleton-img', // imagem
+        '', // código
+        'skeleton-nome', // nome
+        '', // categoria
+        '', // tamanho
+        '', // gênero
+        '', // quantidade
+        '', // limite mínimo
+        '', // preço
+        'skeleton-acoes' // ações
+    ];
+    let skeletonHtml = '<tr><td colspan="10" style="padding:0;"><div class="skeleton-table">';
+    for (let i = 0; i < skeletonRows; i++) {
+        skeletonHtml += '<div class="skeleton-table-row">';
+        for (let j = 0; j < colClasses.length; j++) {
+            const cls = colClasses[j] ? `skeleton-cell ${colClasses[j]}` : 'skeleton-cell';
+            skeletonHtml += `<div class="${cls}"></div>`;
+        }
+        skeletonHtml += '</div>';
+    }
+    skeletonHtml += '</div></td></tr>';
+    tbody.innerHTML = skeletonHtml;
 
     const registrosInput = document.getElementById('registros-multi');
     let value = '';
