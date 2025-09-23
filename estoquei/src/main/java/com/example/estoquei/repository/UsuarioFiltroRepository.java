@@ -26,6 +26,7 @@ public class UsuarioFiltroRepository {
         String codigo = filtro.getCodigo();
         String email = filtro.getEmail();
         Cargo cargo = filtro.getCargo();
+        List<Long> cargoIds = filtro.getCargoIds();
 
         whereClause.add("u.ic_excluido = false");
 
@@ -34,6 +35,9 @@ public class UsuarioFiltroRepository {
         }
         if (cargo != null) {
             whereClause.add("u.cargo = :cargo");
+        }
+        if (cargoIds != null && !cargoIds.isEmpty()) {
+            whereClause.add("u.cargo.id IN :cargoIds");
         }
 
         if (!whereClause.isEmpty()) {
@@ -44,10 +48,15 @@ public class UsuarioFiltroRepository {
 
         if ((nome != null && !nome.isEmpty()) || (codigo != null && !codigo.isEmpty()) || (email != null && !email.isEmpty())) {
             String termo = nome != null && !nome.isEmpty() ? nome : (codigo != null && !codigo.isEmpty() ? codigo : email);
-            typedQuery.setParameter("termo", "%" + termo.toLowerCase() + "%");
+            if (termo != null) {
+                typedQuery.setParameter("termo", "%" + termo.toLowerCase() + "%");
+            }
         }
         if (cargo != null) {
             typedQuery.setParameter("cargo", cargo);
+        }
+        if (cargoIds != null && !cargoIds.isEmpty()) {
+            typedQuery.setParameter("cargoIds", cargoIds);
         }
 
         return typedQuery.getResultList();

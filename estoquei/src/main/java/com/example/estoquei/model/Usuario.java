@@ -78,6 +78,12 @@ public class Usuario {
     public boolean getIc_excluido() { return ic_excluido; }
     public void setIc_excluido(boolean ic_excluido) { this.ic_excluido = ic_excluido; }
 
+    @jakarta.persistence.Transient
+    private java.util.List<Long> cargoIds;
+
+    public java.util.List<Long> getCargoIds() { return cargoIds; }
+    public void setCargoIds(java.util.List<Long> cargoIds) { this.cargoIds = cargoIds; }
+
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {

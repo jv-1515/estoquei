@@ -729,17 +729,13 @@ function filtrarFuncionarios() {
         .map(cb => cb.value);
 
     const filtro = {};
-    if (cargos.length === 1) {
-    filtro.cargo = { id: cargos[0] };
+    if (cargos.length > 0) {
+        filtro.cargoIds = cargos.map(id => Number(id));
     }
     if (termo) {
         filtro.nome = termo;
         filtro.codigo = termo;
         filtro.email = termo;
-    }
-    // Se só um cargo está selecionado, envie o id para o backend
-    if (cargos.length === 1) {
-        filtro.cargo = { id: cargos[0] };
     }
 
     fetch('/usuarios/filtrar', {
@@ -763,6 +759,10 @@ function filtrarFuncionarios() {
             if (campo === 'ativo') {
                 valA = a.ativo ? 1 : 0;
                 valB = b.ativo ? 1 : 0;
+            }
+            if (campo === 'cargo') {
+                valA = a.cargo && a.cargo.nome ? a.cargo.nome.toLowerCase() : '';
+                valB = b.cargo && b.cargo.nome ? b.cargo.nome.toLowerCase() : '';
             }
             if (estadoOrdenacao[indiceOrdenacaoAtual]) {
                 return valB > valA ? 1 : valB < valA ? -1 : 0;

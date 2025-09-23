@@ -139,7 +139,7 @@ function renderizarRelatorios(relatorios) {
             <i class="fa-solid fa-download"></i>
             </a>
             <a href="#" title="Renomear" onclick="renomearRelatorio('${r.id}'); return false;">
-            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-pen-to-square"></i>
             </a>
             <a href="#" title="Excluir" onclick="excluirRelatorio('${r.id}'); return false;">
             <i class="fa-solid fa-trash"></i>
