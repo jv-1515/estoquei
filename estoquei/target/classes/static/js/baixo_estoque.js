@@ -752,10 +752,10 @@ function renderizarProdutos(produtos) {
                             <i class="fa-solid fa-eye"></i>
                         </button>
                         <a href="/movimentar-produto?id=${p.id}" title="Abastecer">
-                            <i class="fa-solid fa-cart-plus"></i>
+                            <i class="fa-solid fa-cart-shopping"></i>
                         </a>
                     </td>
-                </tr> 
+                </tr>
             `;
             tbody.innerHTML += rowHtml;
         });
@@ -1368,7 +1368,7 @@ function abrirDetalhesProduto(produto) {
                 : null;
             document.getElementById('detalhe-valor-venda').value = valorSaida != null
                 ? valorSaida.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-                : '-';            
+                : '-';
                 document.getElementById('detalhe-fornecedor').value = entrada ? entrada.parteEnvolvida : '-';
             if (document.getElementById('detalhe-resp-entrada'))
                 document.getElementById('detalhe-resp-entrada').value = entrada ? entrada.responsavel : '-';

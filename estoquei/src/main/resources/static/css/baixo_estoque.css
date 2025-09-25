@@ -165,7 +165,7 @@ th {
 th:first-child,
 th:nth-child(2),
 th:last-child {
-    border-left: none;
+    border-left: 1px solid #277580;
 }
 
 tbody tr:hover,
