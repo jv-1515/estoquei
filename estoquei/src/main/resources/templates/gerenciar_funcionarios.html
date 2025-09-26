@@ -98,6 +98,27 @@
             <i class="fa fa-user-plus" style="margin-right: 4px;"></i> Cadastrar
         </button>
         </div>
+
+          <div class="main-container">
+            <div class="table-space"></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:45px; padding-left: 15px;"></th>
+                        <th class="ordenar" style="min-width: 50px;">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Cargo <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Email <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th class="ordenar">Status <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="func-list">
+                </tbody>
+            </table>
+            <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
+        </div>
+
         <span id="cadastro-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
         <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); cadastrarFuncionario();">
           <button type="button" onclick="fecharCadastroFuncionario()" class="botao-fechar" title="Fechar">
@@ -249,7 +270,7 @@
               
               <p style="font-size: 12px; color: #757575; margin: 0; margin-top: 8px; font-weight: bold;">
                   <i class="fa-solid fa-circle-info"></i>
-                   Extras: Você poderá completar mais tarde
+                  Extras: Você poderá completar mais tarde
               </p>
               
               <label for="cad-cpf-3">CPF</label>
@@ -345,30 +366,11 @@
             </form>
             </span>
 
-        <div class="main-container">
-            <div class="table-space"></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:48px; padding-left: 15px;"></th>
-                        <th class="ordenar" style="min-width: 50px;">Código <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                        <th class="ordenar">Nome <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                        <th class="ordenar">Cargo <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                        <th class="ordenar">Email <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                        <th class="ordenar">Status <span class="sort-icon"><i class="fa-solid fa-arrow-down"></i></span></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="func-list">
-                </tbody>
-            </table>
-            <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
-        </div>
-        <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
-            <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-            <i class="fa-solid fa-arrow-up" style="font-size: 16px; padding-top: 4px;"></i>
+      <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
+        <button tabindex="14" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+          <i class="fa-solid fa-arrow-up" style="font-size: 16px; padding-top: 4px;"></i>
         </button>
-    </a>
+      </a>
 
     <div id="detalhes-funcionario-popup" class="detalhes-modal-bg" style="display:none;">
       <div class="detalhes-modal">
