@@ -1166,6 +1166,10 @@ function renderizarMovimentacoes(movimentacoes) {
         });
 
         renderizarPaginacao(totalPaginas);
+
+        if (window.aplicarPermissoesMovimentacoes) {
+            window.aplicarPermissoesMovimentacoes();
+        }
     }, 300);
 }
 

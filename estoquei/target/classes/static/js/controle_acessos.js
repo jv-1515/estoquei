@@ -149,38 +149,51 @@ async function aplicarPermissoesMovimentacoes() {
     // Nova movimentação (criar = 2)
     const btnNovaMov = document.querySelector('button[onclick*="/movimentar-produto"]');
     if (btnNovaMov && !temPermissao(cargo, 'movimentacoes', 2)) {
-        btnNovaMov.style.pointerEvents = 'none';
-        btnNovaMov.style.opacity = '0.5';
+        btnNovaMov.disabled = true;
         btnNovaMov.title = 'Sem permissão';
+        btnNovaMov.style.cursor = 'not-allowed';
+        btnNovaMov.style.backgroundColor = '#aaa';
     }
 
     // Editar movimentação (editar = 3)
-    document.querySelectorAll('.edit-icon, .btn-editar-movimentacao').forEach(btn => {
+    document.querySelectorAll('button[title="Editar"]').forEach(btn => {
         if (!temPermissao(cargo, 'movimentacoes', 3)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
+            btn.disabled = true;
             btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+    
+    // Excluir movimentação (excluir = 4)
+    document.querySelectorAll('button[title="Excluir"]').forEach(btn => {
+        if (!temPermissao(cargo, 'movimentacoes', 4)) {
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
         }
     });
 
-    // Remover movimentação (excluir = 4)
-    document.querySelectorAll('.trash-icon, .btn-remover-movimentacao').forEach(btn => {
-        if (!temPermissao(cargo, 'movimentacoes', 4)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
-            btn.title = 'Sem permissão';
+    // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
         }
-    });
+    }
 }
 
 // -------- MOVIMENTAR PRODUTO --------
 async function aplicarPermissoesMovimentarProduto() {
-    const { usuario, cargo } = await getPermissoesUsuario();
+    // const { usuario, cargo } = await getPermissoesUsuario();
 
     // Só permite acessar se tem permissão de criar movimentações
-    if (!temPermissao(cargo, 'movimentacoes', 2)) {
-        document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
-    }
+    // if (!temPermissao(cargo, 'movimentacoes', 2)) {
+    //     document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
+    // }
 }
 
 // Exporte as funções para usar nos outros arquivos

@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/movimentacoes.css" />
     <script src="/js/movimentacoes.js" defer></script>
+    <script src="/js/controle_acessos.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/grafico.js" defer></script>
 </head>
@@ -464,7 +465,7 @@
 <span id="editar-movimentacao" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
     <div style="background:white; border-radius:10px; width:650px; margin:auto; position:relative; overflow:hidden;">
 
-        <button title="Remover movimentação" type="button" onclick="removerMovimentacao(document.getElementById('editar-movimentacao').dataset.movimentacaoId)" 
+        <button title="Excluir" type="button" onclick="removerMovimentacao(document.getElementById('editar-movimentacao').dataset.movimentacaoId)" 
             style="position:absolute; top:22px; right:35px; background:none; border:none; font-size:12px; cursor:pointer; z-index:10; color:#555;">
             <i class="fa-solid fa-trash"></i>
         </button>
