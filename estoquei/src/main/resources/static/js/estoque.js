@@ -1247,7 +1247,6 @@ window.onload = function() {
         valorRadio = radioSelecionado.value;
     }
     carregarProdutos(valorRadio === '' ? '' : valorRadio);
-    // ...existing code...
 
     const campos = [
         null,
