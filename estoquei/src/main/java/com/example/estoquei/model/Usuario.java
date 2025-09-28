@@ -42,6 +42,9 @@ public class Usuario {
     private boolean ativo;
     private boolean ic_excluido;
 
+    private String ctps;
+    private String rg;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -59,6 +62,12 @@ public class Usuario {
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public String getCtps() { return ctps; }
+    public void setCtps(String ctps) { this.ctps = ctps; }
+    
+    public String getRg() { return rg; }
+    public void setRg(String rg) { this.rg = rg; }
 
     public String getCpf() { return cpf; }
     public void setCpf(String cpf) { this.cpf = cpf; }

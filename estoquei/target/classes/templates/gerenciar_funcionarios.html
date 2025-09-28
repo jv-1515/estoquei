@@ -183,6 +183,10 @@
                     </button>
                 </div>
               </div>
+              <div style="display: flex; flex-direction: column;">
+                <label for="cad-ctps">Carteira de Trabalho</label>
+                <input type="text" id="cad-ctps" name="ctps" placeholder="0000000/0000" tabindex="8" maxlength="12" />
+              </div>
             </div>
             <div class="cadastro-bullets">
               <span class="bullet active"></span>
@@ -215,10 +219,13 @@
               </div>
             </div>
             <div style="display: flex; flex-direction: column;">
+              <label for="cad-rg">RG</label>
+              <input type="text" id="cad-rg" name="rg" placeholder="00.000.000-0" tabindex="9" maxlength="12" />
+            </div>
+            <div style="display: flex; flex-direction: column;">
               <label for="cad-cpf">CPF</label>
               <input type="text" id="cad-cpf" name="cpf" placeholder="000.000.000-00" tabindex="7" />
             </div>
-            
             <div style="display: flex; flex-direction: column;">
               <label for="cad-nascimento">Data de Nascimento</label>
               <input type="date" id="cad-nascimento" name="nascimento" tabindex="8" />
@@ -268,10 +275,11 @@
               <label for="cad-senha-3">Senha Provisória*</label>
               <input type="text" id="cad-senha-3" name="senha-3" readonly />
               
-              <p style="font-size: 12px; color: #757575; margin: 0; margin-top: 8px; font-weight: bold;">
-                  <i class="fa-solid fa-circle-info"></i>
-                  Extras: Você poderá completar mais tarde
-              </p>
+              <label for="cad-ctps-3">Carteira de Trabalho</label>
+              <input type="text" id="cad-ctps-3" name="ctps-3" readonly />
+              
+              <label for="cad-rg-3">RG</label>
+              <input type="text" id="cad-rg-3" name="rg-3" readonly placeholder="Não informado" />
               
               <label for="cad-cpf-3">CPF</label>
               <input type="text" id="cad-cpf-3" name="cpf-3" readonly placeholder="Não informado" />
@@ -353,14 +361,20 @@
                 </span>
             </div>
 
+            <label for="edit-ctps">Carteira de Trabalho</label>
+            <input type="text" id="edit-ctps" name="ctps" placeholder="Não informada" required maxlength="12" />
+
+            <label for="edit-rg">RG</label>
+            <input type="text" id="edit-rg" name="rg" placeholder="Não informado" maxlength="12" />
+
             <label for="edit-cpf">CPF</label>
-            <input type="text" id="edit-cpf" name="cpf" placeholder="000.000.000-00" />
+            <input type="text" id="edit-cpf" name="cpf" placeholder="Não informado" />
 
             <label for="edit-nascimento">Data de Nascimento</label>
             <input type="date" id="edit-nascimento" name="nascimento" placeholder="Data de Nascimento" />
 
             <label for="edit-contato">Número de Contato</label>
-            <input type="tel" id="edit-contato" name="contato" placeholder="(00) 00000-0000" />
+            <input type="tel" id="edit-contato" name="contato" placeholder="Não informado" />
 
             <button class="btn" style="margin-top:10px" type="submit">Salvar Alterações</button>
             </form>

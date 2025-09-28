@@ -187,11 +187,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cad-email').addEventListener('blur', function() {
         const email = this.value.trim();
         if (!email) return;
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Email inválido!',
-                text: 'Informe um email válido',
+                text: 'Informe outro email',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
@@ -938,6 +938,8 @@ function limparFormularioCadastroFuncionario() {
     if (cargoInput) cargoInput.value = '';
     document.getElementById('cad-email').value = '';
     document.getElementById('cad-senha').value = '';
+    document.getElementById('cad-ctps').value = '';
+    document.getElementById('cad-rg').value = '';
     document.getElementById('cad-cpf').value = '';
     document.getElementById('cad-nascimento').value = '';
     document.getElementById('cad-contato').value = '';
@@ -954,8 +956,12 @@ function abrirCadastroFuncionario() {
 
     const telCad = document.getElementById('cad-contato');
     const cpfCad = document.getElementById('cad-cpf');
+    const ctpsCad = document.getElementById('cad-ctps');
+    const rgCad = document.getElementById('cad-rg');
     if (telCad) mascaraTelefone(telCad);
     if (cpfCad) mascaraCPF(cpfCad);
+    if (ctpsCad) mascaraCTPS(ctpsCad);
+    if (rgCad) mascaraRG(rgCad);
 }
 
 function cadastroFuncionarioPreenchido() {
@@ -1017,6 +1023,8 @@ function cadastrarFuncionario() {
     const email = document.getElementById('cad-email').value.trim();
     const senha = document.getElementById('cad-senha').value;
     const dataNascimento = document.getElementById('cad-nascimento').value;
+    const ctps = document.getElementById('cad-ctps').value.replace(/\D/g, '');
+    const rg = document.getElementById('cad-rg').value.replace(/\D/g, '');
 
     // Validação de data de nascimento e idade
     if (dataNascimento) {
@@ -1066,6 +1074,68 @@ function cadastrarFuncionario() {
         }
     }
 
+    // Validação de CTPS duplicada
+    if (ctps) {
+        fetch('/admin/usuarios/ctps-existe?ctps=' + encodeURIComponent(ctps))
+            .then(res => res.ok ? res.json() : false)
+            .then(existeCtps => {
+                if (existeCtps) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Carteira de Trabalho já cadastrada!',
+                        text: 'Informe outra',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    document.getElementById('cad-ctps').focus();
+                    return;
+                }
+
+                if (rg) {
+                    fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
+                        .then(res => res.ok ? res.json() : false)
+                        .then(existeRg => {
+                            if (existeRg) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'RG já cadastrado!',
+                                    text: 'Informe outro',
+                                    timer: 1500,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    allowOutsideClick: false
+                                });
+                                document.getElementById('cad-rg').focus();
+                                return;
+                            }
+                            
+                        });
+                } else {
+                }
+            });
+    } else if (rg) {
+        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
+            .then(res => res.ok ? res.json() : false)
+            .then(existeRg => {
+                if (existeRg) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'RG já cadastrado!',
+                        text: 'Informe outro RG',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    document.getElementById('cad-rg').focus();
+                    return;
+                }
+            });
+    } else {
+    }
+
     const cargoInput = document.getElementById('cad-cargo-multi');
     const cargoId = cargoInput ? cargoInput.dataset.value : '';
     if (!cargoId || isNaN(Number(cargoId))) {
@@ -1099,6 +1169,8 @@ function cadastrarFuncionario() {
                 cpf: document.getElementById('cad-cpf').value.replace(/\D/g, '') || null,
                 dataNascimento: dataNascimento || null,
                 telefone: document.getElementById('cad-contato').value.replace(/\D/g, '') || null,
+                ctps: document.getElementById('cad-ctps').value.replace(/\D/g, '') || null,
+                rg: document.getElementById('cad-rg').value.replace(/\D/g, '') || null,
                 ativo: true
             };
             fetch('/usuarios', {
@@ -1143,6 +1215,8 @@ function cadastrarFuncionario() {
                 }
             });
         });
+
+        
 }
 
 // Edição
@@ -1201,6 +1275,8 @@ function abrirEdicaoFuncionario(id) {
         document.getElementById('edit-email').value = funcionario.email;
         document.getElementById('edit-senha').value = funcionario.senha;
         document.getElementById('edit-cpf').value = funcionario.cpf;
+        document.getElementById('edit-ctps').value = funcionario.ctps || '';
+        document.getElementById('edit-rg').value = funcionario.rg || '';
         document.getElementById('edit-contato').value = funcionario.telefone || '';
         document.getElementById('edit-nascimento').value = funcionario.dataNascimento
             ? funcionario.dataNascimento.substring(0, 10)
@@ -1226,12 +1302,14 @@ function abrirEdicaoFuncionario(id) {
     window.dadosOriginaisEdicaoFuncionario = {
         codigo: funcionario.codigo || '',
         nome: funcionario.nome || '',
-        cargo: funcionario.cargo || '',
+        cargoId: funcionario.cargo && funcionario.cargo.id ? funcionario.cargo.id : '',
         email: funcionario.email || '',
         senha: funcionario.senha || '',
         cpf: funcionario.cpf || '',
         dataNascimento: funcionario.dataNascimento ? funcionario.dataNascimento.substring(0, 10) : '',
         telefone: funcionario.telefone || '',
+        ctps: funcionario.ctps || '',
+        rg: funcionario.rg || '',
         ativo: funcionario.ativo ?? true
     };
 }
@@ -1329,7 +1407,7 @@ function fecharEdicaoFuncionario() {
     const orig = window.dadosOriginaisEdicaoFuncionario || {};
     const codigo = document.getElementById('edit-codigo').value.trim();
     const nome = document.getElementById('edit-nome').value.trim();
-    const cargo = document.getElementById('edit-cargo-multi').value;
+    const cargoIdAtual = Number(document.getElementById('edit-cargo-multi').dataset.value || '');
     const email = document.getElementById('edit-email').value.trim();
     const senha = document.getElementById('edit-senha').value;
     const cpf = document.getElementById('edit-cpf').value.replace(/\D/g, '');
@@ -1340,7 +1418,7 @@ function fecharEdicaoFuncionario() {
     const houveMudanca =
         codigo !== (orig.codigo || '') ||
         nome !== (orig.nome || '') ||
-        cargo !== (orig.cargo || '') ||
+        cargoIdAtual !== Number(orig.cargoId || '') ||
         email !== (orig.email || '') ||
         senha !== (orig.senha || '') ||
         cpf !== (orig.cpf || '') ||
@@ -1386,10 +1464,11 @@ async function salvarEdicaoFuncionario() {
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
+        ctps: document.getElementById('edit-ctps').value || null,
+        rg: document.getElementById('edit-rg').value || null,
         ativo: document.getElementById('edit-ativo').checked
     };
 
-    // VALIDAÇÃO SEM ALTERAÇÕES
     const orig = window.dadosOriginaisEdicaoFuncionario || {};
     let alterado = false;
     for (const k in funcionarioAtual) {
@@ -1581,11 +1660,11 @@ async function salvarEdicaoFuncionario() {
         });
         return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -1983,7 +2062,7 @@ function validaCPF(cpf) {
     return true
 }
 
-
+//TEL
 function formatarTelefoneExibicao(telefone) {
     if (!telefone) return 'Não informado';
     let v = telefone.replace(/\D/g, '');
@@ -1993,6 +2072,45 @@ function formatarTelefoneExibicao(telefone) {
         return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
     }
     return telefone;
+}
+
+//Carteira de Trabalho
+function mascaraCTPS(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '').slice(0, 11);
+        if (v.length <= 7) {
+            input.value = v;
+        } else {
+            input.value = v.slice(0, 7) + '/' + v.slice(7);
+        }
+    });
+    // Aplica ao carregar
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 7) {
+        input.value = v;
+    } else {
+        input.value = v.slice(0, 7) + '/' + v.slice(7);
+    }
+}
+
+function mascaraRG(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '').slice(0, 9);
+        let out = '';
+        if (v.length > 0) out += v.slice(0,2);
+        if (v.length > 2) out += '.' + v.slice(2,5);
+        if (v.length > 5) out += '.' + v.slice(5,8);
+        if (v.length > 8) out += '-' + v.slice(8,9);
+        input.value = out;
+    });
+    // Aplica ao carregar
+    let v = input.value.replace(/\D/g, '').slice(0, 9);
+    let out = '';
+    if (v.length > 0) out += v.slice(0,2);
+    if (v.length > 2) out += '.' + v.slice(2,5);
+    if (v.length > 5) out += '.' + v.slice(5,8);
+    if (v.length > 8) out += '-' + v.slice(8,9);
+    input.value = out;
 }
 
 function abrirDetalhesFuncionario(id) {
@@ -2121,11 +2239,11 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
         cargoInput.focus();
         return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido.',
+            text: 'Informe um email válido (apenas letras, números, ponto, hífen e arroba)',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2370,11 +2488,11 @@ function validarCadastroFuncionarioEtapa1(callback) {
         });
         return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2426,10 +2544,35 @@ document.getElementById('btn-voltar-2').onclick = function() {
 
 document.getElementById('btn-proximo-2').onclick = function() {
     // Validação dos campos da etapa 2
+    const rg = document.getElementById('cad-rg').value;
     const cpf = document.getElementById('cad-cpf').value;
     const nascimento = document.getElementById('cad-nascimento').value;
     const contato = document.getElementById('cad-contato').value;
 
+    if (rg) {
+        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existeRg => {
+                if (existeRg) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'RG já cadastrado!',
+                        text: 'Informe outro RG',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    document.getElementById('cad-rg').focus();
+                    return;
+                }
+                // Se passou, segue para próxima etapa!
+                mostrarEtapaCadastro(3);
+                atualizarAvatarCadastro();
+                atualizarContadorEtapaFuncionario(3);
+            });
+        return;
+    }
     if (cpf && !validaCPF(cpf)) {
         Swal.fire({
             icon: 'warning',
@@ -2529,12 +2672,13 @@ document.getElementById('btn-proximo-2').onclick = function() {
 
     // Preenche etapa 3
     document.getElementById('cad-codigo-3').value = document.getElementById('cad-codigo').value;
-    // Usar o input multiselect radio para cargo
     const cargoInput = document.getElementById('cad-cargo-multi');
     document.getElementById('cad-cargo-3').value = cargoInput ? cargoInput.value : '';
     document.getElementById('cad-nome-3').value = document.getElementById('cad-nome').value;
     document.getElementById('cad-email-3').value = document.getElementById('cad-email').value;
     document.getElementById('cad-senha-3').value = document.getElementById('cad-senha').value;
+    document.getElementById('cad-ctps-3').value = document.getElementById('cad-ctps').value;
+    document.getElementById('cad-rg-3').value = document.getElementById('cad-rg').value;
     document.getElementById('cad-cpf-3').value = cpf;
     document.getElementById('cad-nascimento-3').value = nascimento;
     document.getElementById('cad-contato-3').value = contato;
@@ -2562,6 +2706,10 @@ function abrirCadastroFuncionario() {
 
 mascaraCPF(document.getElementById('cad-cpf'));
 mascaraTelefone(document.getElementById('cad-contato'));
+mascaraCTPS(document.getElementById('cad-ctps'));
+mascaraRG(document.getElementById('cad-rg'));
+
+
 
 function aplicarEstiloInputs() {
     // IDs dos inputs do cadastro que NÃO devem ser estilizados
