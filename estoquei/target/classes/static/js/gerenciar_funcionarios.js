@@ -35,28 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nomeInput.value = valor.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
         });
     }
-    // Validação de CPF duplicado ao sair do campo
-    document.getElementById('cad-cpf').addEventListener('blur', function() {
-        const cpf = this.value.replace(/\D/g, '');
-        if (!cpf || cpf.length < 11) return;
-        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existe => {
-                if (existe) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'CPF já cadastrado!',
-                        text: 'Informe outro CPF',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    this.value = '';
-                    this.focus();
-                }
-            });
-    });
+
     fetch('/cargos')
     .then(res => res.json())
     .then(cargos => {
@@ -219,6 +198,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
     });
+
+    //RG
+    document.getElementById('cad-rg').addEventListener('blur', function() {
+        const rg = this.value.replace(/\D/g, '');
+        if (!rg) return;
+        if (rg.length < 9) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'RG inválido!',
+                text: 'Informe o RG completo',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            this.focus();
+            return;
+        }
+        // Validação via backend
+        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existe => {
+                if (existe) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'RG já cadastrado!',
+                        text: 'Informe outro RG',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    this.value = '';
+                    this.focus();
+                }
+            });
+    });
+
 
     // CPF
     document.getElementById('cad-cpf').addEventListener('blur', function() {
@@ -2605,30 +2622,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
     const nascimento = document.getElementById('cad-nascimento').value;
     const contato = document.getElementById('cad-contato').value;
 
-    if (rg) {
-        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existeRg => {
-                if (existeRg) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'RG já cadastrado!',
-                        text: 'Informe outro RG',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    document.getElementById('cad-rg').focus();
-                    return;
-                }
-                // Se passou, segue para próxima etapa!
-                mostrarEtapaCadastro(3);
-                atualizarAvatarCadastro();
-                atualizarContadorEtapaFuncionario(3);
-            });
-        return;
-    }
+    // Validação de CPF (formato)
     if (cpf && !validaCPF(cpf)) {
         Swal.fire({
             icon: 'warning',
@@ -2643,25 +2637,25 @@ document.getElementById('btn-proximo-2').onclick = function() {
     }
 
     // Validação de CPF duplicado
-    if (cpf) {
-        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf.replace(/\D/g, '')))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existe => {
-                if (existe) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'CPF já cadastrado!',
-                        text: 'Informe outro CPF',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true
-                    });
-                    document.getElementById('cad-cpf').focus();
-                    return;
-                }
-            });
-        return;
-    }
+    // if (cpf) {
+    //     fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf.replace(/\D/g, '')))
+    //         .then(res => res.ok ? res.json() : Promise.resolve(false))
+    //         .then(existe => {
+    //             if (existe) {
+    //                 Swal.fire({
+    //                     icon: 'warning',
+    //                     title: 'CPF já cadastrado!',
+    //                     text: 'Informe outro CPFBBBBBBBBBBBBBBBBBBBB',
+    //                     timer: 1500,
+    //                     showConfirmButton: false,
+    //                     timerProgressBar: true
+    //                 });
+    //                 document.getElementById('cad-cpf').focus();
+    //                 return;
+    //             }
+    //         });
+    //     return;
+    // }
 
     // Validação de data de nascimento e idade (igual ao cadastro)
     if (nascimento) {
@@ -2742,6 +2736,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
     atualizarAvatarCadastro();
     atualizarContadorEtapaFuncionario(3);
 };
+
 document.getElementById('btn-voltar-3').onclick = function() {
     mostrarEtapaCadastro(2);
     atualizarAvatarCadastro();
