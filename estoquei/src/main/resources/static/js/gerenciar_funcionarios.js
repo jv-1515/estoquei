@@ -1113,48 +1113,7 @@ function cadastrarFuncionario() {
                     document.getElementById('cad-ctps').focus();
                     return;
                 }
-
-                if (rg) {
-                    fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-                        .then(res => res.ok ? res.json() : false)
-                        .then(existeRg => {
-                            if (existeRg) {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'RG já cadastrado!',
-                                    text: 'Informe outro',
-                                    timer: 1500,
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    allowOutsideClick: false
-                                });
-                                document.getElementById('cad-rg').focus();
-                                return;
-                            }
-                            
-                        });
-                } else {
-                }
             });
-    } else if (rg) {
-        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-            .then(res => res.ok ? res.json() : false)
-            .then(existeRg => {
-                if (existeRg) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'RG já cadastrado!',
-                        text: 'Informe outro RG',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    document.getElementById('cad-rg').focus();
-                    return;
-                }
-            });
-    } else {
     }
 
     const cargoInput = document.getElementById('cad-cargo-multi');
@@ -1237,7 +1196,6 @@ function cadastrarFuncionario() {
             });
         });
 
-        
 }
 
 // Edição
@@ -1316,8 +1274,12 @@ function abrirEdicaoFuncionario(id) {
         
         const telEdit = document.getElementById('edit-contato');
         const cpfEdit = document.getElementById('edit-cpf');
+        const ctpsEdit = document.getElementById('edit-ctps');
+        const rgEdit = document.getElementById('edit-rg');
         if (telEdit) mascaraTelefone(telEdit);
         if (cpfEdit) mascaraCPF(cpfEdit);
+        if (ctpsEdit) mascaraCTPS(ctpsEdit);
+        if (rgEdit) mascaraRG(rgEdit);
     });
 
     window.dadosOriginaisEdicaoFuncionario = {
@@ -1485,8 +1447,8 @@ async function salvarEdicaoFuncionario() {
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
-        ctps: document.getElementById('edit-ctps').value || null,
-        rg: document.getElementById('edit-rg').value || null,
+        ctps: document.getElementById('edit-ctps').value.replace(/\D/g, ''),
+        rg: document.getElementById('edit-rg').value.replace(/\D/g, ''),
         ativo: document.getElementById('edit-ativo').checked
     };
 
@@ -1516,7 +1478,10 @@ async function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
     const codigo = funcionarioAtual.codigo;
     const email = funcionarioAtual.email;
+    const ctps = funcionarioAtual.ctps;
+    const rg = funcionarioAtual.rg;
     const cpf = funcionarioAtual.cpf;
+
 
     // Validação de duplicidade via backend
     // Código
@@ -1550,6 +1515,67 @@ async function salvarEdicaoFuncionario() {
                 allowOutsideClick: false
             });
             document.getElementById('edit-email').focus();
+            return;
+        }
+    }
+    // CTPS
+        if (ctps && ctps.length < 11) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carteira de Trabalho inválida!',
+            text: 'informe outra CTPS',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-ctps').focus();
+        return;
+    }
+    if (ctps && ctps !== (orig.ctps || '')) {
+        const existeCtps = await fetch('/admin/usuarios/ctps-existe?ctps=' + encodeURIComponent(funcionarioAtual.ctps)).then(res => res.ok ? res.json() : false);
+        if (existeCtps) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'CTPS já cadastrada!',
+                text: 'Informe outra CTPS',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('edit-ctps').focus();
+            return;
+        }
+    }
+
+    // RG
+    if (rg && rg.length < 9) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'RG inválido!',
+            text: 'Informe outro RG',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-rg').focus();
+        return;
+    }
+    if (funcionarioAtual.rg && funcionarioAtual.rg !== (orig.rg || '')) {
+        const existeRg = await fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(funcionarioAtual.rg)).then(res => res.ok ? res.json() : false);
+        if (existeRg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'RG já cadastrado!',
+                text: 'Informe outro RG',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('edit-rg').focus();
             return;
         }
     }
