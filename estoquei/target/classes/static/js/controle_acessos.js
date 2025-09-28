@@ -25,6 +25,7 @@ function temPermissao(cargo, modulo, nivelMinimo) {
     return cargo && typeof cargo[modulo] !== 'undefined' && cargo[modulo] >= nivelMinimo;
 }
 
+
 // -------- ESTOQUE --------
 async function aplicarPermissoesEstoque() {
     const { usuario, cargo } = await getPermissoesUsuario();
@@ -44,7 +45,7 @@ async function aplicarPermissoesEstoque() {
     if (editLink) {
         editLink.href = `/editar-produto?id=${editLink.dataset.produtoId}`;
         if (!temPermissao(cargo, 'produtos', 2)) {
-            editLink.disabled = true;
+            editLink.removeAttribute('href');
             editLink.title = 'Sem permissão';
             editLink.style.cursor = 'not-allowed';
             editLink.style.opacity = '0.6';
@@ -53,6 +54,7 @@ async function aplicarPermissoesEstoque() {
     document.querySelectorAll('a[title="Editar"], .edit-icon, .btn-editar-produto').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 3)) {
             btn.disabled = true;
+            btn.removeAttribute('href');
             btn.title = 'Sem permissão';
             btn.style.cursor = 'not-allowed';
             btn.style.opacity = '0.6';
@@ -95,6 +97,7 @@ async function aplicarPermissoesEstoque() {
     // Detalhes/histórico (visualizar movimentações = 1)
     document.querySelectorAll('.detalhes-historico-link').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 1)) {
+            link.removeAttribute('href');
             link.title = 'Sem permissão';
             link.style.pointerEvents = 'unset';
             link.style.cursor = 'not-allowed';
@@ -107,7 +110,7 @@ async function aplicarPermissoesEstoque() {
     });
 
 
-    // Tcontrole movimentar o produto
+    // controle movimentar o produto
     document.querySelectorAll('a[title="Abastecer produto"]').forEach(triangulo => {
         if (!temPermissao(cargo, 'movimentacoes', 2)) {
             triangulo.removeAttribute('href');

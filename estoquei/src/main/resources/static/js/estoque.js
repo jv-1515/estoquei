@@ -1792,6 +1792,10 @@ function abrirDetalhesProduto(produto) {
             removerProduto(produto.id, produto.nome, produto.quantidade);
         };
     }
+
+    if (window.aplicarPermissoesEstoque) {
+        window.aplicarPermissoesEstoque();
+    }
 }
 
 document.addEventListener('mousedown', function(e) {
