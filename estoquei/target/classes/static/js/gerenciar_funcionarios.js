@@ -35,28 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nomeInput.value = valor.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
         });
     }
-    // Validação de CPF duplicado ao sair do campo
-    document.getElementById('cad-cpf').addEventListener('blur', function() {
-        const cpf = this.value.replace(/\D/g, '');
-        if (!cpf || cpf.length < 11) return;
-        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existe => {
-                if (existe) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'CPF já cadastrado!',
-                        text: 'Informe outro CPF',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    this.value = '';
-                    this.focus();
-                }
-            });
-    });
+
     fetch('/cargos')
     .then(res => res.json())
     .then(cargos => {
@@ -135,9 +114,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Cargo
-    document.getElementById('cad-cargo').addEventListener('blur', function() {
-        if (!this.value) return;
-    });
+    // document.getElementById('cad-cargo').addEventListener('blur', function() {
+    //     if (!this.value) return;
+    // });
     
     // Nome
     document.getElementById('cad-nome').addEventListener('blur', function() {
@@ -219,6 +198,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
     });
+
+    //RG
+    document.getElementById('cad-rg').addEventListener('blur', function() {
+        const rg = this.value.replace(/\D/g, '');
+        if (!rg) return;
+        if (rg.length < 9) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'RG inválido!',
+                text: 'Informe o RG completo',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            this.focus();
+            return;
+        }
+        // Validação via backend
+        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
+            .then(res => res.ok ? res.json() : Promise.resolve(false))
+            .then(existe => {
+                if (existe) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'RG já cadastrado!',
+                        text: 'Informe outro RG',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    this.value = '';
+                    this.focus();
+                }
+            });
+    });
+
 
     // CPF
     document.getElementById('cad-cpf').addEventListener('blur', function() {
@@ -972,6 +989,8 @@ function cadastroFuncionarioPreenchido() {
     const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
     const nascimento = document.getElementById('cad-nascimento').value.trim();
     const contato = document.getElementById('cad-contato').value.replace(/\D/g, '');
+    const ctps = document.getElementById('cad-ctps').value.replace(/\D/g, '');
+    const rg = document.getElementById('cad-rg').value.replace(/\D/g, '');
 
     return (
         codigo ||
@@ -980,7 +999,9 @@ function cadastroFuncionarioPreenchido() {
         email ||
         (cpf && cpf.length >= 11) ||
         nascimento ||
-        (contato && contato.length >= 10)
+        (contato && contato.length >= 10) ||
+        (ctps && ctps.length >= 7) ||
+        (rg && rg.length >= 9)
     );
 }
 
@@ -1092,48 +1113,7 @@ function cadastrarFuncionario() {
                     document.getElementById('cad-ctps').focus();
                     return;
                 }
-
-                if (rg) {
-                    fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-                        .then(res => res.ok ? res.json() : false)
-                        .then(existeRg => {
-                            if (existeRg) {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'RG já cadastrado!',
-                                    text: 'Informe outro',
-                                    timer: 1500,
-                                    showConfirmButton: false,
-                                    timerProgressBar: true,
-                                    allowOutsideClick: false
-                                });
-                                document.getElementById('cad-rg').focus();
-                                return;
-                            }
-                            
-                        });
-                } else {
-                }
             });
-    } else if (rg) {
-        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-            .then(res => res.ok ? res.json() : false)
-            .then(existeRg => {
-                if (existeRg) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'RG já cadastrado!',
-                        text: 'Informe outro RG',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    document.getElementById('cad-rg').focus();
-                    return;
-                }
-            });
-    } else {
     }
 
     const cargoInput = document.getElementById('cad-cargo-multi');
@@ -1216,7 +1196,6 @@ function cadastrarFuncionario() {
             });
         });
 
-        
 }
 
 // Edição
@@ -1295,8 +1274,12 @@ function abrirEdicaoFuncionario(id) {
         
         const telEdit = document.getElementById('edit-contato');
         const cpfEdit = document.getElementById('edit-cpf');
+        const ctpsEdit = document.getElementById('edit-ctps');
+        const rgEdit = document.getElementById('edit-rg');
         if (telEdit) mascaraTelefone(telEdit);
         if (cpfEdit) mascaraCPF(cpfEdit);
+        if (ctpsEdit) mascaraCTPS(ctpsEdit);
+        if (rgEdit) mascaraRG(rgEdit);
     });
 
     window.dadosOriginaisEdicaoFuncionario = {
@@ -1464,8 +1447,8 @@ async function salvarEdicaoFuncionario() {
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
-        ctps: document.getElementById('edit-ctps').value || null,
-        rg: document.getElementById('edit-rg').value || null,
+        ctps: document.getElementById('edit-ctps').value.replace(/\D/g, ''),
+        rg: document.getElementById('edit-rg').value.replace(/\D/g, ''),
         ativo: document.getElementById('edit-ativo').checked
     };
 
@@ -1495,7 +1478,10 @@ async function salvarEdicaoFuncionario() {
     const id = document.getElementById('edit-id').value;
     const codigo = funcionarioAtual.codigo;
     const email = funcionarioAtual.email;
+    const ctps = funcionarioAtual.ctps;
+    const rg = funcionarioAtual.rg;
     const cpf = funcionarioAtual.cpf;
+
 
     // Validação de duplicidade via backend
     // Código
@@ -1529,6 +1515,67 @@ async function salvarEdicaoFuncionario() {
                 allowOutsideClick: false
             });
             document.getElementById('edit-email').focus();
+            return;
+        }
+    }
+    // CTPS
+        if (ctps && ctps.length < 11) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carteira de Trabalho inválida!',
+            text: 'informe outra CTPS',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-ctps').focus();
+        return;
+    }
+    if (ctps && ctps !== (orig.ctps || '')) {
+        const existeCtps = await fetch('/admin/usuarios/ctps-existe?ctps=' + encodeURIComponent(funcionarioAtual.ctps)).then(res => res.ok ? res.json() : false);
+        if (existeCtps) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'CTPS já cadastrada!',
+                text: 'Informe outra CTPS',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('edit-ctps').focus();
+            return;
+        }
+    }
+
+    // RG
+    if (rg && rg.length < 9) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'RG inválido!',
+            text: 'Informe outro RG',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-rg').focus();
+        return;
+    }
+    if (funcionarioAtual.rg && funcionarioAtual.rg !== (orig.rg || '')) {
+        const existeRg = await fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(funcionarioAtual.rg)).then(res => res.ok ? res.json() : false);
+        if (existeRg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'RG já cadastrado!',
+                text: 'Informe outro RG',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('edit-rg').focus();
             return;
         }
     }
@@ -2191,109 +2238,113 @@ let etapaCadastroAtual = 1;
 
 function mostrarEtapaCadastro(etapa) {
 // Validação completa ao avançar etapa 1
-document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
-    const codigo = document.getElementById('cad-codigo').value.trim();
-    const nome = document.getElementById('cad-nome').value.trim();
-    const cargoInput = document.getElementById('cad-cargo-multi');
-    const cargoId = cargoInput ? cargoInput.dataset.value : '';
-    const email = document.getElementById('cad-email').value.trim();
-    const senha = document.getElementById('cad-senha').value.trim();
-    const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
+    // document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
+    //     const codigo = document.getElementById('cad-codigo').value.trim();
+    //     const nome = document.getElementById('cad-nome').value.trim();
+    //     const cargoInput = document.getElementById('cad-cargo-multi');
+    //     const cargoId = cargoInput ? cargoInput.dataset.value : '';
+    //     const email = document.getElementById('cad-email').value.trim();
+    //     const ctps = document.getElementById('cad-ctps').value.replace(/\D/g, '');
+    //     const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
 
-    if (!codigo || codigo.length !== 6) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Código inválido!',
-            text: 'Informe um código de 6 dígitos.',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        document.getElementById('cad-codigo').focus();
-        return;
-    }
-    if (!nome || nome.length < 3 || /\d/.test(nome) || /[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome inválido!',
-            text: 'Preencha corretamente o nome (mínimo 3 letras, sem números ou símbolos).',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        document.getElementById('cad-nome').focus();
-        return;
-    }
-    if (!cargoId || isNaN(Number(cargoId))) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Cargo inválido!',
-            text: 'Selecione um cargo válido.',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        cargoInput.focus();
-        return;
-    }
-    if (!email || !/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Email inválido!',
-            text: 'Informe um email válido (apenas letras, números, ponto, hífen e arroba)',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        document.getElementById('cad-email').focus();
-        return;
-    }
-    // Checa duplicidade de email
-    fetch('/admin/usuarios/email-existe?email=' + encodeURIComponent(email))
-        .then(res => res.ok ? res.json() : Promise.resolve(false))
-        .then(existe => {
-            if (existe) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Email já cadastrado!',
-                    text: 'Informe outro email',
-                    timer: 1500,
-                    showConfirmButton: false,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-                document.getElementById('cad-email').value = '';
-                document.getElementById('cad-email').focus();
-                return;
-            } else {
-                mostrarEtapaCadastro(2);
-            }
-        });
-});
-// Validação de CPF único ao avançar etapa 1
-document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
-    const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
-    if (cpf && cpf.length === 11) {
-        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existe => {
-                if (existe) {
-                    Swal.fire({ icon: 'error', title: 'CPF já cadastrado!', text: 'Informe outro CPF.' });
-                    document.getElementById('cad-cpf').focus();
-                    return;
-                } else {
-                
-                }
-            });
-        e.preventDefault();
-        return;
-    }
-    
-});
+    // if (!codigo || codigo.length !== 6) {
+    //     Swal.fire({
+    //         icon: 'warning',
+    //         title: 'Código inválido!',
+    //         text: 'Informe um código de 6 dígitos.',
+    //         timer: 1500,
+    //         showConfirmButton: false,
+    //         timerProgressBar: true,
+    //         allowOutsideClick: false
+    //     });
+    //     document.getElementById('cad-codigo').focus();
+    //     return;
+    // }
+    // if (!nome || nome.length < 3 || /\d/.test(nome) || /[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
+    //     Swal.fire({
+    //         icon: 'warning',
+    //         title: 'Nome inválido!',
+    //         text: 'Preencha corretamente o nome (mínimo 3 letras, sem números ou símbolos).',
+    //         timer: 1500,
+    //         showConfirmButton: false,
+    //         timerProgressBar: true,
+    //         allowOutsideClick: false
+    //     });
+    //     document.getElementById('cad-nome').focus();
+    //     return;
+    // }
+    // if (!cargoId || isNaN(Number(cargoId))) {
+    //     Swal.fire({
+    //         icon: 'warning',
+    //         title: 'Cargo inválido!',
+    //         text: 'Selecione um cargo válido.',
+    //         timer: 1500,
+    //         showConfirmButton: false,
+    //         timerProgressBar: true,
+    //         allowOutsideClick: false
+    //     });
+    //     cargoInput.focus();
+    //     return;
+    // }
+    // if (!email || !/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
+    //     Swal.fire({
+    //         icon: 'warning',
+    //         title: 'Email inválido!',
+    //         text: 'Informe um email válido (apenas letras, números, ponto, hífen e arroba)',
+    //         timer: 1500,
+    //         showConfirmButton: false,
+    //         timerProgressBar: true,
+    //         allowOutsideClick: false
+    //     });
+    //     document.getElementById('cad-email').focus();
+    //     return;
+    // }
+    // // Checa duplicidade de email
+    // fetch('/admin/usuarios/email-existe?email=' + encodeURIComponent(email))
+    //     .then(res => res.ok ? res.json() : Promise.resolve(false))
+    //     .then(existe => {
+    //         if (existe) {
+    //             Swal.fire({
+    //                 icon: 'warning',
+    //                 title: 'Email já cadastrado!',
+    //                 text: 'Informe outro email',
+    //                 timer: 1500,
+    //                 showConfirmButton: false,
+    //                 timerProgressBar: true,
+    //                 allowOutsideClick: false
+    //             });
+    //             document.getElementById('cad-email').value = '';
+    //             document.getElementById('cad-email').focus();
+    //             return;
+    //         } else {
+    //             mostrarEtapaCadastro(2);
+    //         }
+    //     });
+    // });
+
+    // // Validação de CPF único ao avançar etapa 1
+    // document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
+    //     const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
+    //     if (cpf && cpf.length === 11) {
+    //         fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf))
+    //             .then(res => res.ok ? res.json() : Promise.resolve(false))
+    //             .then(existe => {
+    //                 if (existe) {
+    //                     Swal.fire({ icon: 'error', title: 'CPF já cadastrado!', text: 'Informe outro CPF.' });
+    //                     document.getElementById('cad-cpf').focus();
+    //                     return;
+    //                 } else {
+                    
+    //                 }
+    //             });
+    //         e.preventDefault();
+    //         return;
+    //     }
+        
+    // });
+
+
+
     document.querySelectorAll('.etapa-cadastro').forEach(div => {
         div.style.display = div.getAttribute('data-etapa') == etapa ? 'block' : 'none';
     });
@@ -2370,6 +2421,7 @@ function validarCadastroFuncionarioEtapa1(callback) {
     const cargo = document.getElementById('cad-cargo-multi').dataset.value || '';
     const nome = document.getElementById('cad-nome').value.trim();
     const email = document.getElementById('cad-email').value.trim();
+    const ctps = document.getElementById('cad-ctps').value.replace(/\D/g, '');
 
     // --- CÓDIGO ---
     if (!codigo) {
@@ -2396,9 +2448,8 @@ function validarCadastroFuncionarioEtapa1(callback) {
         });
         return;
     }
-    // Backend: checa duplicidade de código
     fetch('/admin/usuarios/codigo-existe?codigo=' + encodeURIComponent(codigo))
-        .then(res => res.ok ? res.json() : Promise.resolve(false))
+        .then(res => res.ok ? res.json() : false)
         .then(existeCodigo => {
             if (existeCodigo) {
                 Swal.fire({
@@ -2413,114 +2464,162 @@ function validarCadastroFuncionarioEtapa1(callback) {
                 document.getElementById('cad-codigo').focus();
                 return;
             }
-    // --- CARGO ---
-    if (!cargo) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Cargo obrigatório!',
-            text: 'Selecione o cargo do funcionário',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    // --- NOME ---
-    if (!nome) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome obrigatório!',
-            text: 'O nome não pode estar vazio',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (nome.length < 3) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome inválido!',
-            text: 'O nome deve ter pelo menos 3 letras',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (/\d/.test(nome)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome inválido!',
-            text: 'O nome não pode conter números',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (/[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Nome inválido!',
-            text: 'O nome não pode conter símbolos',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    // --- EMAIL ---
-    if (!email) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Email obrigatório!',
-            text: 'Informe o email do funcionário',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Email inválido!',
-            text: 'Informe outro email',
-            timer: 1500,
-            showConfirmButton: false,
-            timerProgressBar: true,
-            allowOutsideClick: false
-        });
-        return;
-    }
-    // Backend: checa duplicidade de email
-    fetch('/admin/usuarios/email-existe?email=' + encodeURIComponent(email))
-        .then(res => res.ok ? res.json() : Promise.resolve(false))
-        .then(existeEmail => {
-            if (existeEmail) {
+
+            // --- CARGO ---
+            if (!cargo || isNaN(Number(cargo)) || Number(cargo) <= 0) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Email já cadastrado!',
+                    title: 'Cargo obrigatório!',
+                    text: 'Selecione um cargo',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                document.getElementById('cad-cargo-multi').focus();
+                return;
+            }
+
+            // --- NOME ---
+            if (!nome) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome obrigatório!',
+                    text: 'O nome não pode estar vazio',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+            if (nome.length < 3) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome inválido!',
+                    text: 'O nome deve ter pelo menos 3 letras',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+            if (/\d/.test(nome)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome inválido!',
+                    text: 'O nome não pode conter números',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+            if (/[^a-zA-ZÀ-ÿ\s]/.test(nome)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome inválido!',
+                    text: 'O nome não pode conter símbolos',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+
+            // --- EMAIL ---
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email obrigatório!',
+                    text: 'Informe o email do funcionário',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+            if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email inválido!',
                     text: 'Informe outro email',
                     timer: 1500,
                     showConfirmButton: false,
                     timerProgressBar: true,
                     allowOutsideClick: false
                 });
-                document.getElementById('cad-email').focus();
                 return;
             }
-            // Tudo ok!
-            callback();
+            fetch('/admin/usuarios/email-existe?email=' + encodeURIComponent(email))
+                .then(res => res.ok ? res.json() : false)
+                .then(existeEmail => {
+                    if (existeEmail) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Email já cadastrado!',
+                            text: 'Informe outro email',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            allowOutsideClick: false
+                        });
+                        document.getElementById('cad-email').focus();
+                        return;
+                    }
+
+                // --- CTPS ---
+                if (!ctps) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Carteira de Trabalho obrigatória!',
+                        text: 'Informe a Carteira de Trabalho (CTPS)',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    document.getElementById('cad-ctps').focus();
+                    return;
+                }
+                if (ctps.length < 7) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'CTPS inválida!',
+                        text: 'A CTPS deve ter pelo menos 7 dígitos',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        allowOutsideClick: false
+                    });
+                    document.getElementById('cad-ctps').focus();
+                    return;
+                }
+                fetch('/admin/usuarios/ctps-existe?ctps=' + encodeURIComponent(ctps))
+                    .then(res => res.ok ? res.json() : false)
+                    .then(existeCtps => {
+                        if (existeCtps) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Carteira de Trabalho já cadastrada!',
+                                text: 'Informe outra CTPS',
+                                timer: 1500,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                allowOutsideClick: false
+                            });
+                            document.getElementById('cad-ctps').focus();
+                            return;
+                        }
+                        // Tudo ok!
+                        callback();
+                        });
+                });
         });
-    });
 }
 
 document.getElementById('btn-proximo-1').onclick = function() {
@@ -2549,30 +2648,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
     const nascimento = document.getElementById('cad-nascimento').value;
     const contato = document.getElementById('cad-contato').value;
 
-    if (rg) {
-        fetch('/admin/usuarios/rg-existe?rg=' + encodeURIComponent(rg))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existeRg => {
-                if (existeRg) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'RG já cadastrado!',
-                        text: 'Informe outro RG',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        allowOutsideClick: false
-                    });
-                    document.getElementById('cad-rg').focus();
-                    return;
-                }
-                // Se passou, segue para próxima etapa!
-                mostrarEtapaCadastro(3);
-                atualizarAvatarCadastro();
-                atualizarContadorEtapaFuncionario(3);
-            });
-        return;
-    }
+    // Validação de CPF (formato)
     if (cpf && !validaCPF(cpf)) {
         Swal.fire({
             icon: 'warning',
@@ -2587,25 +2663,25 @@ document.getElementById('btn-proximo-2').onclick = function() {
     }
 
     // Validação de CPF duplicado
-    if (cpf) {
-        fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf.replace(/\D/g, '')))
-            .then(res => res.ok ? res.json() : Promise.resolve(false))
-            .then(existe => {
-                if (existe) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'CPF já cadastrado!',
-                        text: 'Informe outro CPF',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        timerProgressBar: true
-                    });
-                    document.getElementById('cad-cpf').focus();
-                    return;
-                }
-            });
-        return;
-    }
+    // if (cpf) {
+    //     fetch('/admin/usuarios/cpf-existe?cpf=' + encodeURIComponent(cpf.replace(/\D/g, '')))
+    //         .then(res => res.ok ? res.json() : Promise.resolve(false))
+    //         .then(existe => {
+    //             if (existe) {
+    //                 Swal.fire({
+    //                     icon: 'warning',
+    //                     title: 'CPF já cadastrado!',
+    //                     text: 'Informe outro CPFBBBBBBBBBBBBBBBBBBBB',
+    //                     timer: 1500,
+    //                     showConfirmButton: false,
+    //                     timerProgressBar: true
+    //                 });
+    //                 document.getElementById('cad-cpf').focus();
+    //                 return;
+    //             }
+    //         });
+    //     return;
+    // }
 
     // Validação de data de nascimento e idade (igual ao cadastro)
     if (nascimento) {
@@ -2686,6 +2762,7 @@ document.getElementById('btn-proximo-2').onclick = function() {
     atualizarAvatarCadastro();
     atualizarContadorEtapaFuncionario(3);
 };
+
 document.getElementById('btn-voltar-3').onclick = function() {
     mostrarEtapaCadastro(2);
     atualizarAvatarCadastro();

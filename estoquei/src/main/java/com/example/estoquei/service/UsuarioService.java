@@ -52,14 +52,15 @@ public class UsuarioService {
         usuario.setNome(usuarioAtualizado.getNome());
         usuario.setEmail(usuarioAtualizado.getEmail());
         usuario.setCargo(usuarioAtualizado.getCargo());
-
         usuario.setTelefone(usuarioAtualizado.getTelefone());
         usuario.setCpf(usuarioAtualizado.getCpf());
         usuario.setDataNascimento(usuarioAtualizado.getDataNascimento());
         usuario.setAtivo(usuarioAtualizado.getAtivo());
+        usuario.setCtps(usuarioAtualizado.getCtps());
+        usuario.setRg(usuarioAtualizado.getRg());
         if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
             usuario.setSenha(usuarioAtualizado.getSenha());
-        }      
+        }
         return usuarioRepository.save(usuario);
     }
 
