@@ -183,6 +183,10 @@
                     </button>
                 </div>
               </div>
+              <div style="display: flex; flex-direction: column;">
+                <label for="cad-ctps">Carteira de Trabalho</label>
+                <input type="text" id="cad-ctps" name="ctps" placeholder="0000000/0000" tabindex="8" maxlength="12" />
+              </div>
             </div>
             <div class="cadastro-bullets">
               <span class="bullet active"></span>
@@ -215,10 +219,13 @@
               </div>
             </div>
             <div style="display: flex; flex-direction: column;">
+              <label for="cad-rg">RG</label>
+              <input type="text" id="cad-rg" name="rg" placeholder="00.000.000-0" tabindex="9" maxlength="12" />
+            </div>
+            <div style="display: flex; flex-direction: column;">
               <label for="cad-cpf">CPF</label>
               <input type="text" id="cad-cpf" name="cpf" placeholder="000.000.000-00" tabindex="7" />
             </div>
-            
             <div style="display: flex; flex-direction: column;">
               <label for="cad-nascimento">Data de Nascimento</label>
               <input type="date" id="cad-nascimento" name="nascimento" tabindex="8" />
@@ -352,6 +359,12 @@
                     <i class="fa-solid fa-eye-slash" id="icon-edit-senha"></i>
                 </span>
             </div>
+
+            <label for="edit-ctps">Carteira de Trabalho</label>
+            <input type="text" id="edit-ctps" name="ctps" placeholder="0000000/0000" maxlength="12" />
+
+            <label for="edit-rg">RG</label>
+            <input type="text" id="edit-rg" name="rg" placeholder="00.000.000-0" maxlength="12" />
 
             <label for="edit-cpf">CPF</label>
             <input type="text" id="edit-cpf" name="cpf" placeholder="000.000.000-00" />

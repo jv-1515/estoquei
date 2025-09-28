@@ -954,8 +954,12 @@ function abrirCadastroFuncionario() {
 
     const telCad = document.getElementById('cad-contato');
     const cpfCad = document.getElementById('cad-cpf');
+    const ctpsCad = document.getElementById('cad-ctps');
+    const rgCad = document.getElementById('cad-rg');
     if (telCad) mascaraTelefone(telCad);
     if (cpfCad) mascaraCPF(cpfCad);
+    if (ctpsCad) mascaraCTPS(ctpsCad);
+    if (rgCad) mascaraRG(rgCad);
 }
 
 function cadastroFuncionarioPreenchido() {
@@ -1983,7 +1987,7 @@ function validaCPF(cpf) {
     return true
 }
 
-
+//TEL
 function formatarTelefoneExibicao(telefone) {
     if (!telefone) return 'Não informado';
     let v = telefone.replace(/\D/g, '');
@@ -1993,6 +1997,45 @@ function formatarTelefoneExibicao(telefone) {
         return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
     }
     return telefone;
+}
+
+//Carteira de Trabalho
+function mascaraCTPS(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '').slice(0, 11);
+        if (v.length <= 7) {
+            input.value = v;
+        } else {
+            input.value = v.slice(0, 7) + '/' + v.slice(7);
+        }
+    });
+    // Aplica ao carregar
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 7) {
+        input.value = v;
+    } else {
+        input.value = v.slice(0, 7) + '/' + v.slice(7);
+    }
+}
+
+function mascaraRG(input) {
+    input.addEventListener('input', function() {
+        let v = input.value.replace(/\D/g, '').slice(0, 9);
+        let out = '';
+        if (v.length > 0) out += v.slice(0,2);
+        if (v.length > 2) out += '.' + v.slice(2,5);
+        if (v.length > 5) out += '.' + v.slice(5,8);
+        if (v.length > 8) out += '-' + v.slice(8,9);
+        input.value = out;
+    });
+    // Aplica ao carregar
+    let v = input.value.replace(/\D/g, '').slice(0, 9);
+    let out = '';
+    if (v.length > 0) out += v.slice(0,2);
+    if (v.length > 2) out += '.' + v.slice(2,5);
+    if (v.length > 5) out += '.' + v.slice(5,8);
+    if (v.length > 8) out += '-' + v.slice(8,9);
+    input.value = out;
 }
 
 function abrirDetalhesFuncionario(id) {
@@ -2562,6 +2605,10 @@ function abrirCadastroFuncionario() {
 
 mascaraCPF(document.getElementById('cad-cpf'));
 mascaraTelefone(document.getElementById('cad-contato'));
+mascaraCTPS(document.getElementById('cad-ctps'));
+mascaraRG(document.getElementById('cad-rg'));
+
+
 
 function aplicarEstiloInputs() {
     // IDs dos inputs do cadastro que NÃO devem ser estilizados
