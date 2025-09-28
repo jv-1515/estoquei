@@ -187,11 +187,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cad-email').addEventListener('blur', function() {
         const email = this.value.trim();
         if (!email) return;
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Email inválido!',
-                text: 'Informe um email válido',
+                text: 'Informe outro email',
                 timer: 1500,
                 showConfirmButton: false,
                 timerProgressBar: true,
@@ -938,6 +938,8 @@ function limparFormularioCadastroFuncionario() {
     if (cargoInput) cargoInput.value = '';
     document.getElementById('cad-email').value = '';
     document.getElementById('cad-senha').value = '';
+    document.getElementById('cad-ctps').value = '';
+    document.getElementById('cad-rg').value = '';
     document.getElementById('cad-cpf').value = '';
     document.getElementById('cad-nascimento').value = '';
     document.getElementById('cad-contato').value = '';
@@ -1103,6 +1105,8 @@ function cadastrarFuncionario() {
                 cpf: document.getElementById('cad-cpf').value.replace(/\D/g, '') || null,
                 dataNascimento: dataNascimento || null,
                 telefone: document.getElementById('cad-contato').value.replace(/\D/g, '') || null,
+                ctps: document.getElementById('cad-ctps').value || null,
+                rg: document.getElementById('cad-rg').value || null,
                 ativo: true
             };
             fetch('/usuarios', {
@@ -1390,6 +1394,8 @@ async function salvarEdicaoFuncionario() {
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
+        ctps: document.getElementById('edit-ctps').value || null,
+        rg: document.getElementById('edit-rg').value || null,
         ativo: document.getElementById('edit-ativo').checked
     };
 
@@ -1585,11 +1591,11 @@ async function salvarEdicaoFuncionario() {
         });
         return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2164,11 +2170,11 @@ document.getElementById('btn-proximo-1').addEventListener('click', function(e) {
         cargoInput.focus();
         return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido.',
+            text: 'Informe um email válido (apenas letras, números, ponto, hífen e arroba)',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2413,11 +2419,11 @@ function validarCadastroFuncionarioEtapa1(callback) {
         });
         return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
         Swal.fire({
             icon: 'warning',
             title: 'Email inválido!',
-            text: 'Informe um email válido',
+            text: 'Informe outro email',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2572,12 +2578,13 @@ document.getElementById('btn-proximo-2').onclick = function() {
 
     // Preenche etapa 3
     document.getElementById('cad-codigo-3').value = document.getElementById('cad-codigo').value;
-    // Usar o input multiselect radio para cargo
     const cargoInput = document.getElementById('cad-cargo-multi');
     document.getElementById('cad-cargo-3').value = cargoInput ? cargoInput.value : '';
     document.getElementById('cad-nome-3').value = document.getElementById('cad-nome').value;
     document.getElementById('cad-email-3').value = document.getElementById('cad-email').value;
     document.getElementById('cad-senha-3').value = document.getElementById('cad-senha').value;
+    document.getElementById('cad-ctps-3').value = document.getElementById('cad-ctps').value;
+    document.getElementById('cad-rg-3').value = document.getElementById('cad-rg').value;
     document.getElementById('cad-cpf-3').value = cpf;
     document.getElementById('cad-nascimento-3').value = nascimento;
     document.getElementById('cad-contato-3').value = contato;
