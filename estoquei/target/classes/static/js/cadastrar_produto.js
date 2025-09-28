@@ -170,6 +170,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
         const descricaoInput = document.getElementById('descricao');
         if (descricaoInput) descricaoInput.value = '';
 
+        const { cargo } = await getPermissoesUsuario();
+        
         Swal.fire({
             title: `Produto "${produto.nome}" cadastrado!`,
             text: "Selecione uma opção",
@@ -177,7 +179,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             showCloseButton: true,
             showCancelButton: true,
             confirmButtonText: 'Acessar Estoque',
-            cancelButtonText: 'Abastecer Produto',
+            cancelButtonText: temPermissao(cargo, 'movimentacoes', 2) ? 'Abastecer Produto' : 'Voltar ao Início',
             allowOutsideClick: false,
             customClass: {
               confirmButton: 'swal2-confirm-custom',
@@ -185,9 +187,13 @@ document.querySelector('form').addEventListener('submit', function(event) {
             }
         }).then((result) => {
             if (result.isConfirmed) {
-          window.location.href = "/estoque";
+                window.location.href = "/estoque";
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-          window.location.href = `/movimentar-produto?id=${idProduto}`;
+                if (temPermissao(cargo, 'movimentacoes', 2)) {
+                    window.location.href = `/movimentar-produto?id=${idProduto}`;
+                } else {
+                    window.location.href = "/inicio";
+                }
             }
         });
     }).catch(error => {
