@@ -972,6 +972,8 @@ function cadastroFuncionarioPreenchido() {
     const cpf = document.getElementById('cad-cpf').value.replace(/\D/g, '');
     const nascimento = document.getElementById('cad-nascimento').value.trim();
     const contato = document.getElementById('cad-contato').value.replace(/\D/g, '');
+    const ctps = document.getElementById('cad-ctps').value.replace(/\D/g, '');
+    const rg = document.getElementById('cad-rg').value.replace(/\D/g, '');
 
     return (
         codigo ||
@@ -980,7 +982,9 @@ function cadastroFuncionarioPreenchido() {
         email ||
         (cpf && cpf.length >= 11) ||
         nascimento ||
-        (contato && contato.length >= 10)
+        (contato && contato.length >= 10) ||
+        (ctps && ctps.length >= 7) ||
+        (rg && rg.length >= 9)
     );
 }
 
