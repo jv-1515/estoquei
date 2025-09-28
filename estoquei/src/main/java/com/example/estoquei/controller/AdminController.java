@@ -83,6 +83,24 @@ public class AdminController {
         return ResponseEntity.ok(existe);
     }
 
+    @GetMapping("/usuarios/ctps-existe")
+    public ResponseEntity<Boolean> ctpsExiste(@RequestParam String ctps) {
+        if (ctps == null || ctps.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean existe = usuarioRepository.findByCtps(ctps).isPresent();
+        return ResponseEntity.ok(existe);
+    }
+    
+    @GetMapping("/usuarios/rg-existe")
+    public ResponseEntity<Boolean> rgExiste(@RequestParam String rg) {
+        if (rg == null || rg.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean existe = usuarioRepository.findByRg(rg).isPresent();
+        return ResponseEntity.ok(existe);
+    }
+
     @GetMapping("/usuarios/cpf-existe")
     public ResponseEntity<Boolean> cpfExiste(@RequestParam(name = "cpf", required = true) String cpf) {
         if (cpf == null || cpf.trim().isEmpty()) {
