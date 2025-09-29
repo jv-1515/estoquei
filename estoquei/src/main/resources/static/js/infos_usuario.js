@@ -99,6 +99,9 @@ function getIniciais(nome) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.aplicarPermissoesInfosUsuario) {
+        window.aplicarPermissoesInfosUsuario();
+    }
     const avatarCircle = document.getElementById('avatar-user-info');
     const nomeSpan = document.getElementById('avatar-nome');
     if (!avatarCircle || !nomeSpan) return;

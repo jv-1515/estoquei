@@ -33,7 +33,13 @@ function atualizarBadgeBaixoEstoque() {
         });
 }
 
-document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+    if (window.aplicarPermissoesMovimentacoes) {
+        window.aplicarPermissoesMovimentacoes();
+    }
+});
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -1166,6 +1172,10 @@ function renderizarMovimentacoes(movimentacoes) {
         });
 
         renderizarPaginacao(totalPaginas);
+
+        if (window.aplicarPermissoesMovimentacoes) {
+            window.aplicarPermissoesMovimentacoes();
+        }
     }, 300);
 }
 

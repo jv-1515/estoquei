@@ -257,6 +257,9 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.aplicarPermissoesInicio) {
+        window.aplicarPermissoesInicio();
+    }
     const h1 = document.querySelector('h1');
     const avatarDiv = document.getElementById('user-avatar-float');
     const avatarCircle = document.getElementById('avatar-circle');

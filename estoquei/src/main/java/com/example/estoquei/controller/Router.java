@@ -46,6 +46,9 @@ public class Router {
     public String estoque(HttpSession session, Model model) {
         Usuario usuario = getUsuarioOuRedireciona(session);
         if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getProdutos() < 1) {
+            return "redirect:/inicio";
+        }
         model.addAttribute("cargo", usuario.getCargo());
         return "estoque";
     }

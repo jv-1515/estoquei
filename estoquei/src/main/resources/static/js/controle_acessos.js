@@ -25,6 +25,7 @@ function temPermissao(cargo, modulo, nivelMinimo) {
     return cargo && typeof cargo[modulo] !== 'undefined' && cargo[modulo] >= nivelMinimo;
 }
 
+
 // -------- ESTOQUE --------
 async function aplicarPermissoesEstoque() {
     const { usuario, cargo } = await getPermissoesUsuario();
@@ -44,7 +45,7 @@ async function aplicarPermissoesEstoque() {
     if (editLink) {
         editLink.href = `/editar-produto?id=${editLink.dataset.produtoId}`;
         if (!temPermissao(cargo, 'produtos', 2)) {
-            editLink.disabled = true;
+            editLink.removeAttribute('href');
             editLink.title = 'Sem permissão';
             editLink.style.cursor = 'not-allowed';
             editLink.style.opacity = '0.6';
@@ -53,6 +54,7 @@ async function aplicarPermissoesEstoque() {
     document.querySelectorAll('a[title="Editar"], .edit-icon, .btn-editar-produto').forEach(btn => {
         if (!temPermissao(cargo, 'produtos', 3)) {
             btn.disabled = true;
+            btn.removeAttribute('href');
             btn.title = 'Sem permissão';
             btn.style.cursor = 'not-allowed';
             btn.style.opacity = '0.6';
@@ -95,6 +97,7 @@ async function aplicarPermissoesEstoque() {
     // Detalhes/histórico (visualizar movimentações = 1)
     document.querySelectorAll('.detalhes-historico-link').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 1)) {
+            link.removeAttribute('href');
             link.title = 'Sem permissão';
             link.style.pointerEvents = 'unset';
             link.style.cursor = 'not-allowed';
@@ -107,7 +110,7 @@ async function aplicarPermissoesEstoque() {
     });
 
 
-    // Tcontrole movimentar o produto
+    // controle movimentar o produto
     document.querySelectorAll('a[title="Abastecer produto"]').forEach(triangulo => {
         if (!temPermissao(cargo, 'movimentacoes', 2)) {
             triangulo.removeAttribute('href');
@@ -146,37 +149,104 @@ async function aplicarPermissoesMovimentacoes() {
     // Nova movimentação (criar = 2)
     const btnNovaMov = document.querySelector('button[onclick*="/movimentar-produto"]');
     if (btnNovaMov && !temPermissao(cargo, 'movimentacoes', 2)) {
-        btnNovaMov.style.pointerEvents = 'none';
-        btnNovaMov.style.opacity = '0.5';
+        btnNovaMov.disabled = true;
         btnNovaMov.title = 'Sem permissão';
+        btnNovaMov.style.cursor = 'not-allowed';
+        btnNovaMov.style.backgroundColor = '#aaa';
     }
 
     // Editar movimentação (editar = 3)
-    document.querySelectorAll('.edit-icon, .btn-editar-movimentacao').forEach(btn => {
+    document.querySelectorAll('button[title="Editar"]').forEach(btn => {
         if (!temPermissao(cargo, 'movimentacoes', 3)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
+            btn.disabled = true;
             btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+    
+    // Excluir movimentação (excluir = 4)
+    document.querySelectorAll('button[title="Excluir"]').forEach(btn => {
+        if (!temPermissao(cargo, 'movimentacoes', 4)) {
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
         }
     });
 
-    // Remover movimentação (excluir = 4)
-    document.querySelectorAll('.trash-icon, .btn-remover-movimentacao').forEach(btn => {
-        if (!temPermissao(cargo, 'movimentacoes', 4)) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
-            btn.title = 'Sem permissão';
+    // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
         }
-    });
+    }
 }
 
 // -------- MOVIMENTAR PRODUTO --------
 async function aplicarPermissoesMovimentarProduto() {
-    const { usuario, cargo } = await getPermissoesUsuario();
+
+    //sino
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
+    }
+    // const { usuario, cargo } = await getPermissoesUsuario();
 
     // Só permite acessar se tem permissão de criar movimentações
-    if (!temPermissao(cargo, 'movimentacoes', 2)) {
-        document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
+    // if (!temPermissao(cargo, 'movimentacoes', 2)) {
+    //     document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
+    // }
+}
+
+
+// Inicio
+
+async function aplicarPermissoesInicio() {
+    // Obtenha o cargo do usuário (pode usar window.cargoUsuario se já está disponível)
+    let cargo = window.cargoUsuario;
+    if (!cargo) {
+        // Se não existir, tente buscar via API
+        const res = await fetch('/usuarios/usuario-logado');
+        if (res.ok) {
+            const usuario = await res.json();
+            cargo = usuario.cargo;
+        }
+    }
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
+    }
+}
+
+
+// Infos Usuario
+async function aplicarPermissoesInfosUsuario() {
+    // Obtenha o cargo do usuário
+    const res = await fetch('/usuarios/usuario-logado');
+    let cargo = null;
+    if (res.ok) {
+        const usuario = await res.json();
+        cargo = usuario.cargo;
+    }
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
     }
 }
 
@@ -184,4 +254,8 @@ async function aplicarPermissoesMovimentarProduto() {
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
+window.aplicarPermissoesInicio = aplicarPermissoesInicio;
+window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
+
+
 
