@@ -12,6 +12,7 @@
         window.cargoUsuario = [[${cargo}]];
     </script>
     <script src="/js/inicio.js" defer></script>
+    <script src="/js/controle_acessos.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
@@ -29,7 +30,7 @@
     </div>
 
     <div style="display: flex; gap: 12px; position:fixed; top:20px; right:20px; z-index:1000; align-items:center;">
-        <div id="nots" title="Baixo estoque" style="font-size:20px; display:flex; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
+        <div id="nots" title="Baixo estoque" style="font-size:20px; display:none; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.08); background:#fff; border-radius:24px; height:40px; min-height:40px; width: 40px; min-width: 40px;">
             <div class="notification" onclick="window.location.href='/baixo-estoque'" style="cursor:pointer;">
                 <span style="display: inline-block; position: relative;">
                     <i class="fa-regular fa-bell" style="font-size: 20px;padding: 8px 0 0 11px"></i>

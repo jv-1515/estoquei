@@ -188,6 +188,16 @@ async function aplicarPermissoesMovimentacoes() {
 
 // -------- MOVIMENTAR PRODUTO --------
 async function aplicarPermissoesMovimentarProduto() {
+
+    //sino
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
+    }
     // const { usuario, cargo } = await getPermissoesUsuario();
 
     // Só permite acessar se tem permissão de criar movimentações
@@ -196,8 +206,56 @@ async function aplicarPermissoesMovimentarProduto() {
     // }
 }
 
+
+// Inicio
+
+async function aplicarPermissoesInicio() {
+    // Obtenha o cargo do usuário (pode usar window.cargoUsuario se já está disponível)
+    let cargo = window.cargoUsuario;
+    if (!cargo) {
+        // Se não existir, tente buscar via API
+        const res = await fetch('/usuarios/usuario-logado');
+        if (res.ok) {
+            const usuario = await res.json();
+            cargo = usuario.cargo;
+        }
+    }
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
+    }
+}
+
+
+// Infos Usuario
+async function aplicarPermissoesInfosUsuario() {
+    // Obtenha o cargo do usuário
+    const res = await fetch('/usuarios/usuario-logado');
+    let cargo = null;
+    if (res.ok) {
+        const usuario = await res.json();
+        cargo = usuario.cargo;
+    }
+    const notsDiv = document.getElementById('nots');
+    if (notsDiv) {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            notsDiv.style.display = 'none';
+        } else {
+            notsDiv.style.display = 'flex';
+        }
+    }
+}
+
 // Exporte as funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
+window.aplicarPermissoesInicio = aplicarPermissoesInicio;
+window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
+
+
 
