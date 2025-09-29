@@ -147,6 +147,10 @@ function renderizarFornecedores(lista) {
 
     renderizarPaginacao(totalPaginas);
     atualizarSetasOrdenacao();
+        if (window.aplicarPermissoesFornecedores) {
+        window.aplicarPermissoesFornecedores();
+    }
+    
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -193,11 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
 });
 
 // Ao carregar a página, mostra todos os fornecedores
 document.addEventListener('DOMContentLoaded', function() {
     carregarFornecedores();
+
 });
 }
 

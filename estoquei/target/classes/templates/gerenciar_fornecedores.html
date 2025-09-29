@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/gerenciar_fornecedores.css" />
     <script src="/js/gerenciar_fornecedores.js" defer></script>
+    <script src="/js/controle_acessos.js" defer></script>
 </head>
 <body>
     <a href="/inicio" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
@@ -76,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <button class="btn" style="margin-left: auto;" onclick="abrirCadastroFornecedor()">
+        <button id="btn-novo-fornecedor" class="btn" style="margin-left: auto;" onclick="abrirCadastroFornecedor()">
             <i class="fa-solid fa-handshake" style="margin-right: 4px;"></i> Novo Fornecedor
         </button>
     </div>

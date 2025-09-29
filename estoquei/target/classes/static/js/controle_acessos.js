@@ -288,6 +288,45 @@ async function aplicarPermissoesRelatorios() {
 }
 
 
+// -------- FORNECEDORES --------
+async function aplicarPermissoesFornecedores() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+
+    // Cadastrar fornecedor (criar = 2)
+    const btnCadastrar = document.getElementById('btn-novo-fornecedor');
+    if (btnCadastrar && !temPermissao(cargo, 'fornecedores', 2)) {
+        btnCadastrar.disabled = true;
+        btnCadastrar.title = 'Sem permissão';
+        btnCadastrar.style.cursor = 'not-allowed';
+        btnCadastrar.style.backgroundColor = '#aaa';
+    }
+
+    // Editar fornecedor (editar = 3)
+    document.querySelectorAll('a[title="Editar"], button[title="Editar"]').forEach(btn => {
+        if (!temPermissao(cargo, 'fornecedores', 3)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+
+    // Remover fornecedor (excluir = 4)
+    document.querySelectorAll('button[title="Excluir"], button[title="Remover"], a[title="Excluir"], a[title="Remover"]').forEach(btn => {
+        if (!temPermissao(cargo, 'fornecedores', 4)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+}
+
+
 // funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
@@ -295,3 +334,4 @@ window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
 window.aplicarPermissoesInicio = aplicarPermissoesInicio;
 window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
 window.aplicarPermissoesRelatorios = aplicarPermissoesRelatorios;
+window.aplicarPermissoesFornecedores = aplicarPermissoesFornecedores;
