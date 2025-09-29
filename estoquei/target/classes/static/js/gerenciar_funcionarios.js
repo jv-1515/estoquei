@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('checkboxes-cargo-multi');
         container.innerHTML = `<label><input type="checkbox" id="cargo-multi-todos" class="cargo-multi-check" value="" checked> Todos</label>`;
         cargos
-        .filter(cargo => cargo.nome.toLowerCase() !== 'admin')
+        .filter(cargo => cargo.id > 0)
         .forEach(cargo => {
         container.innerHTML += `<label><input type="checkbox" class="cargo-multi-check" value="${cargo.id}" checked> ${cargo.nome}</label>`;
         });
@@ -332,7 +332,9 @@ function preencherRadiosCadCargoMulti() {
         .then(cargos => {
             const radiosDiv = document.getElementById('radios-cad-cargo-multi');
             radiosDiv.innerHTML = '';
-            cargos.filter(cargo => cargo.nome.toLowerCase() !== 'admin').forEach((cargo, idx) => {
+            cargos
+            .filter(cargo => cargo.nome.toLowerCase() !== 'admin' && cargo.nome.toLowerCase() !== 'gerente')
+            .forEach((cargo, idx) => {
                 const label = document.createElement('label');
                 label.className = 'cargo-multi-label';
                 label.innerHTML = `<input type="radio" name="cad-cargo-radio" value="${cargo.id}" style="display:none;">${cargo.nome}`;
@@ -1213,7 +1215,20 @@ function abrirEdicaoFuncionario(id) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Ação não permitida!',
-                    text: 'Você não pode inativar a si mesmo!',
+                    text: 'Você não pode inativar a si mesmo',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+            };
+        } else if (funcionario.cargo && Number(funcionario.cargo.id) === 1) {
+            sliderSpan.onclick = function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ação não permitida!',
+                    text: 'Você não pode inativar um Gerente',
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true,
@@ -1282,6 +1297,28 @@ function abrirEdicaoFuncionario(id) {
         if (rgEdit) mascaraRG(rgEdit);
     });
 
+
+    if (funcionario.cargo && funcionario.cargo.nome && funcionario.cargo.nome.toLowerCase() === 'gerente') {
+        const cargoInput = document.getElementById('edit-cargo-multi');
+        if (cargoInput) {
+            cargoInput.disabled = true;
+            cargoInput.style.backgroundColor = '#f1f1f1';
+            cargoInput.style.color = '#757575';
+            cargoInput.style.cursor = 'pointer';
+        }
+        const radiosDiv = document.getElementById('radios-edit-cargo-multi');
+        if (radiosDiv) radiosDiv.style.display = 'none';
+    }
+    else {
+        const cargoInput = document.getElementById('edit-cargo-multi');
+        if (cargoInput) {
+            cargoInput.disabled = false;
+            cargoInput.style.backgroundColor = '';
+            cargoInput.style.color = '';
+            cargoInput.style.cursor = '';
+        }
+    }
+
     window.dadosOriginaisEdicaoFuncionario = {
         codigo: funcionario.codigo || '',
         nome: funcionario.nome || '',
@@ -1336,7 +1373,7 @@ function preencherRadiosEditCargoMulti(selectedId) {
         .then(cargos => {
             const radiosDiv = document.getElementById('radios-edit-cargo-multi');
             radiosDiv.innerHTML = '';
-            cargos.filter(cargo => cargo.nome.toLowerCase() !== 'admin').forEach((cargo, idx) => {
+            cargos.filter(cargo => cargo.id > 1).forEach((cargo, idx) => {
                 const label = document.createElement('label');
                 label.className = 'cargo-multi-label';
                 label.innerHTML = `<input type="radio" name="edit-cargo-radio" value="${cargo.id}" style="display:none;" ${cargo.id == selectedId ? 'checked' : ''}>${cargo.nome}`;

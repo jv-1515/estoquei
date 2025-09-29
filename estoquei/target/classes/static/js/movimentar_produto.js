@@ -49,7 +49,6 @@ function atualizarBadgeBaixoEstoque() {
             }
         });
 }
-
 document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);
 
 // Crie o aviso acima do campo quantidade-final
