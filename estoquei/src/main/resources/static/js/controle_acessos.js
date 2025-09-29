@@ -250,12 +250,48 @@ async function aplicarPermissoesInfosUsuario() {
     }
 }
 
-// Exporte as funções para usar nos outros arquivos
+
+// -------- RELATÓRIOS --------
+async function aplicarPermissoesRelatorios() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+
+    // gerar relatório (nível 2)
+    const btnNovoRelatorio = document.getElementById('btn-gerar-busca');
+    if (btnNovoRelatorio && !temPermissao(cargo, 'relatorios', 2)) {
+        btnNovoRelatorio.disabled = true;
+        btnNovoRelatorio.title = 'Sem permissão';
+        btnNovoRelatorio.style.cursor = 'not-allowed';
+        btnNovoRelatorio.style.backgroundColor = '#aaa';
+    }
+
+    // Renomear relatório (nível 3)
+    document.querySelectorAll('a[title="Renomear"]').forEach(link => {
+        if (!temPermissao(cargo, 'relatorios', 3)) {
+            link.removeAttribute('onclick');
+            link.removeAttribute('href');
+            link.title = 'Sem permissão';
+            link.style.cursor = 'not-allowed';
+            link.style.opacity = '0.6';
+        }
+    });
+
+    // Remover relatório (nível 4)
+    document.querySelectorAll('a[title="Excluir"]').forEach(link => {
+        if (!temPermissao(cargo, 'relatorios', 4)) {
+            link.removeAttribute('onclick');
+            link.removeAttribute('href');
+            link.title = 'Sem permissão';
+            link.style.cursor = 'not-allowed';
+            link.style.opacity = '0.6';
+        }
+    });
+}
+
+
+// funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
 window.aplicarPermissoesInicio = aplicarPermissoesInicio;
 window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
-
-
-
+window.aplicarPermissoesRelatorios = aplicarPermissoesRelatorios;
