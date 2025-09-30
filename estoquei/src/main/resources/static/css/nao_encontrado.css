@@ -65,3 +65,8 @@ button {
 button:hover {
     background-color: #277580;
 }
+
+.swal2-timer-progress-bar {
+    border-radius: 0px 0 0 10px;
+    margin-left: 3px;
+}

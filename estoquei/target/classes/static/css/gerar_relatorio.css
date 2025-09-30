@@ -96,6 +96,8 @@ h2 {
     padding: 2px 0 0 0;
     font-weight: bold;
     pointer-events: none;
+    flex-direction: row-reverse;
+    justify-content: space-between;
 }
 
 .input-group input,
@@ -295,18 +297,6 @@ h2 {
     padding: 20px;
     display: flex;
     justify-content: center;
-}
-
-#busca-produto {
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    height: 30px;
-    font-size: 14px;
-    padding: 8px 12px;
-    background: #fff;
-    box-sizing: border-box;
-    outline: none;
-    transition: border-color 0.2s;
 }
 
 /* .filters {
@@ -718,4 +708,9 @@ select#filter-genero {
 .swal2-html-container {
     padding: 10px;
     font-size: 16px;
+}
+
+.swal2-timer-progress-bar {
+    border-radius: 0px 0 0 10px;
+    margin-left: 3px;
 }

@@ -1003,6 +1003,11 @@ th.ordenar.sorted .sort-icon {
     font-size: 16px;
 }
 
+.swal2-timer-progress-bar {
+    border-radius: 0px 0 0 10px;
+    margin-left: 3px;
+}
+
 .swal2-validation-message {
     color: #f27474;
     font-size: 12px;

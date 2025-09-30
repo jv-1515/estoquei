@@ -698,3 +698,8 @@ input:focus[readonly] {
     margin: 0;
     padding-top: 0;
 }
+
+.swal2-timer-progress-bar {
+    border-radius: 0px 0 0 10px;
+    margin-left: 3px;
+}
