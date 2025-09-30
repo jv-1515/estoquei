@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sempre recarrega do localStorage ao abrir a tela
     window.relatoriosGerados = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
     renderizarRelatorios(window.relatoriosGerados);
+    
+    if (window.aplicarPermissoesRelatorios) {
+        window.aplicarPermissoesRelatorios();
+    }
 });
 
 //botão voltar ao topo

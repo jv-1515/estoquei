@@ -201,7 +201,12 @@ public class Router {
     }
 
     @GetMapping("/gerar-relatorio")
-    public String gerarRelatorioPage() {
+    public String gerarRelatorioPage(HttpSession session) {
+        Usuario usuario = getUsuarioOuRedireciona(session);
+        if (usuario == null) return "redirect:/";
+        if (usuario.getCargo() == null || usuario.getCargo().getRelatorios() < 2) {
+            return "redirect:/inicio";
+        }
         return "gerar_relatorio";
     }
 

@@ -175,6 +175,8 @@ async function aplicarPermissoesMovimentacoes() {
         }
     });
 
+
+
     // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
     const notsDiv = document.getElementById('nots');
     if (notsDiv) {
@@ -184,6 +186,7 @@ async function aplicarPermissoesMovimentacoes() {
             notsDiv.style.display = 'flex';
         }
     }
+
 }
 
 // -------- MOVIMENTAR PRODUTO --------
@@ -198,17 +201,10 @@ async function aplicarPermissoesMovimentarProduto() {
             notsDiv.style.display = 'flex';
         }
     }
-    // const { usuario, cargo } = await getPermissoesUsuario();
-
-    // Só permite acessar se tem permissão de criar movimentações
-    // if (!temPermissao(cargo, 'movimentacoes', 2)) {
-    //     document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
-    // }
 }
 
 
 // Inicio
-
 async function aplicarPermissoesInicio() {
     // Obtenha o cargo do usuário (pode usar window.cargoUsuario se já está disponível)
     let cargo = window.cargoUsuario;
@@ -250,12 +246,88 @@ async function aplicarPermissoesInfosUsuario() {
     }
 }
 
-// Exporte as funções para usar nos outros arquivos
+
+// -------- RELATÓRIOS --------
+async function aplicarPermissoesRelatorios() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+
+    // gerar relatório (nível 2)
+    const btnNovoRelatorio = document.getElementById('btn-gerar-busca');
+    if (btnNovoRelatorio && !temPermissao(cargo, 'relatorios', 2)) {
+        btnNovoRelatorio.disabled = true;
+        btnNovoRelatorio.title = 'Sem permissão';
+        btnNovoRelatorio.style.cursor = 'not-allowed';
+        btnNovoRelatorio.style.backgroundColor = '#aaa';
+    }
+
+    // Renomear relatório (nível 3)
+    document.querySelectorAll('a[title="Renomear"]').forEach(link => {
+        if (!temPermissao(cargo, 'relatorios', 3)) {
+            link.removeAttribute('onclick');
+            link.removeAttribute('href');
+            link.title = 'Sem permissão';
+            link.style.cursor = 'not-allowed';
+            link.style.opacity = '0.6';
+        }
+    });
+
+    // Remover relatório (nível 4)
+    document.querySelectorAll('a[title="Excluir"]').forEach(link => {
+        if (!temPermissao(cargo, 'relatorios', 4)) {
+            link.removeAttribute('onclick');
+            link.removeAttribute('href');
+            link.title = 'Sem permissão';
+            link.style.cursor = 'not-allowed';
+            link.style.opacity = '0.6';
+        }
+    });
+}
+
+
+// -------- FORNECEDORES --------
+async function aplicarPermissoesFornecedores() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+
+    // Cadastrar fornecedor (criar = 2)
+    const btnCadastrar = document.getElementById('btn-novo-fornecedor');
+    if (btnCadastrar && !temPermissao(cargo, 'fornecedores', 2)) {
+        btnCadastrar.disabled = true;
+        btnCadastrar.title = 'Sem permissão';
+        btnCadastrar.style.cursor = 'not-allowed';
+        btnCadastrar.style.backgroundColor = '#aaa';
+    }
+
+    // Editar fornecedor (editar = 3)
+    document.querySelectorAll('a[title="Editar"], button[title="Editar"]').forEach(btn => {
+        if (!temPermissao(cargo, 'fornecedores', 3)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+
+    // Remover fornecedor (excluir = 4)
+    document.querySelectorAll('button[title="Excluir"], button[title="Remover"], a[title="Excluir"], a[title="Remover"]').forEach(btn => {
+        if (!temPermissao(cargo, 'fornecedores', 4)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+}
+
+
+// funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
 window.aplicarPermissoesInicio = aplicarPermissoesInicio;
 window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
-
-
-
+window.aplicarPermissoesRelatorios = aplicarPermissoesRelatorios;
+window.aplicarPermissoesFornecedores = aplicarPermissoesFornecedores;
