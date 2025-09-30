@@ -175,8 +175,6 @@ async function aplicarPermissoesMovimentacoes() {
         }
     });
 
-
-
     // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
     const notsDiv = document.getElementById('nots');
     if (notsDiv) {
@@ -187,6 +185,21 @@ async function aplicarPermissoesMovimentacoes() {
         }
     }
 
+    // Links de movimentações, baixo-estoque, movimentar-produto (cards)
+    document.querySelectorAll('a[href="/movimentacoes"], a[href="/baixo-estoque"], a[href="/movimentar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
+
+    // Link de cadastrar produto (card)
+    document.querySelectorAll('a[href="/cadastrar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'produtos', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
 }
 
 // -------- MOVIMENTAR PRODUTO --------
