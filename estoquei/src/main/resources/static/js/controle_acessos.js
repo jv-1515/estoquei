@@ -175,6 +175,8 @@ async function aplicarPermissoesMovimentacoes() {
         }
     });
 
+
+
     // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
     const notsDiv = document.getElementById('nots');
     if (notsDiv) {
@@ -184,6 +186,7 @@ async function aplicarPermissoesMovimentacoes() {
             notsDiv.style.display = 'flex';
         }
     }
+
 }
 
 // -------- MOVIMENTAR PRODUTO --------
@@ -198,17 +201,10 @@ async function aplicarPermissoesMovimentarProduto() {
             notsDiv.style.display = 'flex';
         }
     }
-    // const { usuario, cargo } = await getPermissoesUsuario();
-
-    // Só permite acessar se tem permissão de criar movimentações
-    // if (!temPermissao(cargo, 'movimentacoes', 2)) {
-    //     document.body.innerHTML = '<h2 style="color:red;text-align:center;">Sem permissão para registrar movimentações</h2>';
-    // }
 }
 
 
 // Inicio
-
 async function aplicarPermissoesInicio() {
     // Obtenha o cargo do usuário (pode usar window.cargoUsuario se já está disponível)
     let cargo = window.cargoUsuario;
