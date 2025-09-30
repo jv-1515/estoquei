@@ -522,6 +522,10 @@ function renderizarFuncionarios(lista) {
 
     renderizarPaginacao(totalPaginas);
     atualizarSetasOrdenacao();
+
+    if (window.aplicarPermissoesFuncionarios) {
+        window.aplicarPermissoesFuncionarios();
+    }
 }
 let paginaAtual = 1;
 let itensPorPagina = 10;

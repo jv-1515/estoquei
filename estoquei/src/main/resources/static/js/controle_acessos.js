@@ -175,8 +175,6 @@ async function aplicarPermissoesMovimentacoes() {
         }
     });
 
-
-
     // Sino (baixo-estoque) - só aparece se tem permissão de movimentações nível 2
     const notsDiv = document.getElementById('nots');
     if (notsDiv) {
@@ -187,6 +185,21 @@ async function aplicarPermissoesMovimentacoes() {
         }
     }
 
+    // Links de movimentações, baixo-estoque, movimentar-produto (cards)
+    document.querySelectorAll('a[href="/movimentacoes"], a[href="/baixo-estoque"], a[href="/movimentar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'movimentacoes', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
+
+    // Link de cadastrar produto (card)
+    document.querySelectorAll('a[href="/cadastrar-produto"]').forEach(link => {
+        if (!temPermissao(cargo, 'produtos', 2)) {
+            link.style.pointerEvents = 'none';
+            link.title = 'Sem permissão';
+        }
+    });
 }
 
 // -------- MOVIMENTAR PRODUTO --------
@@ -322,6 +335,60 @@ async function aplicarPermissoesFornecedores() {
     });
 }
 
+// -------- FUNCIONÁRIOS --------
+async function aplicarPermissoesFuncionarios() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+
+    // Visualizar funcionários (nível 1)
+    const mainContainer = document.querySelector('.main-container');
+    if (mainContainer && !temPermissao(cargo, 'funcionarios', 1)) {
+        mainContainer.style.display = 'none';
+        Swal.fire('Sem permissão', 'Você não pode visualizar funcionários.', 'warning');
+    }
+
+    // Cadastrar funcionário (criar = 2)
+    const btnCadastrar = document.querySelector('button[onclick*="abrirCadastroFuncionario"]');
+    if (btnCadastrar && !temPermissao(cargo, 'funcionarios', 2)) {
+        btnCadastrar.disabled = true;
+        btnCadastrar.title = 'Sem permissão para cadastrar';
+        btnCadastrar.style.cursor = 'not-allowed';
+        btnCadastrar.style.backgroundColor = '#aaa';
+    }
+
+    // Editar funcionário (editar = 3)
+    document.querySelectorAll('a[title="Editar"], button[title="Editar"]').forEach(btn => {
+        if (!temPermissao(cargo, 'funcionarios', 3)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+
+    // Alerta dados incompletos (editar)
+    // document.querySelectorAll('span[title="Dados incompletos"]').forEach(alerta => {
+    //     if (!temPermissao(cargo, 'funcionarios', 3)) {
+    //         alerta.removeAttribute('onclick');
+    //         alerta.removeAttribute('href');
+    //     }
+    // });
+
+    // Remover funcionário (excluir = 4)
+    document.querySelectorAll('button[title="Excluir"], button[title="Remover"], a[title="Excluir"], a[title="Remover"]').forEach(btn => {
+        if (!temPermissao(cargo, 'funcionarios', 4)) {
+            btn.disabled = true;
+            btn.removeAttribute('onclick');
+            btn.removeAttribute('href');
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+        }
+    });
+}
+
+
 
 // funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
@@ -331,3 +398,4 @@ window.aplicarPermissoesInicio = aplicarPermissoesInicio;
 window.aplicarPermissoesInfosUsuario = aplicarPermissoesInfosUsuario;
 window.aplicarPermissoesRelatorios = aplicarPermissoesRelatorios;
 window.aplicarPermissoesFornecedores = aplicarPermissoesFornecedores;
+window.aplicarPermissoesFuncionarios = aplicarPermissoesFuncionarios;
