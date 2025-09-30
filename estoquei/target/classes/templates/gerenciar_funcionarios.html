@@ -307,10 +307,17 @@
         <span id="editar-funcionario" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
             
             <form class="form-container" style="background:white; border-radius:10px; width:300px; margin:auto; display:flex; flex-direction:column; position:relative;" onsubmit="event.preventDefault(); salvarEdicaoFuncionario();">
-            <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar" title="Fechar" style="padding-top: 2px;">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h2 style="margin-bottom:10px;">Editar Funcionário</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <h2 style="margin: 0;">Editar Funcionário</h2>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" onclick="removerFuncionario(window.detalhesFuncionarioId)" title="Remover" style="background:none; border:none; cursor:pointer; position: absolute; top: 18px; right: 35px;">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+                <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar" title="Fechar" style="padding-top: 2px;">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 15px;">
               <div style="display: flex; flex-direction: column; flex: 1;">
                 <div style="display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; height: 42px;">

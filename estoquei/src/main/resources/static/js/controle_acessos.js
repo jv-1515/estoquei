@@ -367,6 +367,14 @@ async function aplicarPermissoesFuncionarios() {
         }
     });
 
+    // Alerta dados incompletos (editar)
+    // document.querySelectorAll('span[title="Dados incompletos"]').forEach(alerta => {
+    //     if (!temPermissao(cargo, 'funcionarios', 3)) {
+    //         alerta.removeAttribute('onclick');
+    //         alerta.removeAttribute('href');
+    //     }
+    // });
+
     // Remover funcionário (excluir = 4)
     document.querySelectorAll('button[title="Excluir"], button[title="Remover"], a[title="Excluir"], a[title="Remover"]').forEach(btn => {
         if (!temPermissao(cargo, 'funcionarios', 4)) {

@@ -658,13 +658,13 @@ th.ordenar.sorted .sort-icon {
     display: flex; 
     flex-direction: column; 
 }
-.botao-fechar {
+/* .botao-fechar {
     font-size: 18px;
     background: none;
     border: none;
     color: #333;
     cursor: pointer;
-}
+} */
 .detalhes-flex {
     display: flex; flex-direction: row; align-items: flex-start; gap: 32px;
 }
