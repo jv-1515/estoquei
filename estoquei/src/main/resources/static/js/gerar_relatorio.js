@@ -388,15 +388,15 @@ async function atualizarLista() {
 
 async function gerarRelatorio() {
         Swal.fire({
-        icon: 'info',
-        title: 'Gerando relatório',
-        text: 'Aguarde...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-
-    });
+            icon: 'info',
+            title: 'Gerando Relatório de Desempenho',
+            text: 'Aguarde...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
     const filtros = getFiltrosSelecionados();
 
 
