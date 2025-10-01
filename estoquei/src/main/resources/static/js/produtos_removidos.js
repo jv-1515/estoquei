@@ -325,7 +325,7 @@ document.addEventListener('change', function(e) {
         Swal.fire({
             icon: 'warning',
             title: `Esta ação é irreversível!`,
-            html: 'Para confirmar, digite <b>Excluir</b> abaixo:',
+            html: 'Digite <strong>EXCLUIR</strong> para confirmar:',
             input: 'text',
             inputValidator: (value) => {
                 if (value !== 'EXCLUIR') return 'Digite exatamente: EXCLUIR';
