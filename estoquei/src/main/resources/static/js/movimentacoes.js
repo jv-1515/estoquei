@@ -1338,7 +1338,7 @@ function removerMovimentacao(id) {
     Swal.fire({
         icon: 'warning',
         title: `Esta ação é irreversível!`,
-        html: 'Para confirmar, digite <b>EXCLUIR</b> abaixo:',
+        html: 'Digite <strong>EXCLUIR</strong> para confirmar:',
         input: 'text',
         inputPlaceholder: 'EXCLUIR',
         inputValidator: (value) => {
