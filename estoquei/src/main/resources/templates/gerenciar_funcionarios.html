@@ -310,7 +310,7 @@
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
               <h2 style="margin: 0;">Editar Funcionário</h2>
               <div style="display: flex; gap: 8px;">
-                <button type="button" onclick="removerFuncionario(window.detalhesFuncionarioId)" title="Remover" style="background:none; border:none; cursor:pointer; position: absolute; top: 18px; right: 35px;">
+                <button type="button" onclick="removerFuncionario(document.getElementById('edit-id').value)" title="Remover" style="background:none; border:none; cursor:pointer; position: absolute; top: 18px; right: 35px;">
                   <i class="fa-solid fa-trash"></i>
                 </button>
                 <button type="button" onclick="fecharEdicaoFuncionario()" class="botao-fechar" title="Fechar" style="padding-top: 2px;">

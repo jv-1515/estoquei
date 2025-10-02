@@ -259,6 +259,9 @@ tbody tr:nth-child(even) {
     color: #1e94a3;
 }
 
+.fa-trash {
+    color: #555;
+}
 .fa-trash:hover {
     color: red;
 }
