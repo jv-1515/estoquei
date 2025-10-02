@@ -515,7 +515,8 @@ select#filter-genero {
 }
 
 #checkboxes-categoria-multi label,
-#checkboxes-tamanho-multi label {
+#checkboxes-tamanho-multi label,
+#checkboxes-genero-multi label {
     padding: 2px 0 2px 8px;
 }
 

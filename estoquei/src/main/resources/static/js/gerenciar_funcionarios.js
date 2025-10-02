@@ -1564,7 +1564,7 @@ async function salvarEdicaoFuncionario() {
         Swal.fire({
             icon: 'warning',
             title: 'Carteira de Trabalho inválida!',
-            text: 'informe outra CTPS',
+            text: 'informe a CTPS completa',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -2618,7 +2618,7 @@ function validarCadastroFuncionarioEtapa1(callback) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Carteira de Trabalho obrigatória!',
-                        text: 'Informe a Carteira de Trabalho (CTPS)',
+                        text: 'Informe a CTPS',
                         timer: 1500,
                         showConfirmButton: false,
                         timerProgressBar: true,
@@ -2627,11 +2627,11 @@ function validarCadastroFuncionarioEtapa1(callback) {
                     document.getElementById('cad-ctps').focus();
                     return;
                 }
-                if (ctps.length < 7) {
+                if (ctps.length < 11) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'CTPS inválida!',
-                        text: 'A CTPS deve ter pelo menos 7 dígitos',
+                        title: 'Carteira de Trabalho inválida!',
+                        text: 'informe a CTPS completa',
                         timer: 1500,
                         showConfirmButton: false,
                         timerProgressBar: true,
