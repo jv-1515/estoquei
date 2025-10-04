@@ -5,9 +5,7 @@ let paginaAtual = 1;
 // Utilidades de avatar
 function getIniciaisFornecedor(nome) {
     if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
-    const partes = nome.trim().split(' ');
-    if (partes.length === 1) return partes[0][0].toUpperCase();
-    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+    return nome.trim()[0].toUpperCase();
 }
 function corAvatarFornecedor(str) {
     if (!str) return '#f1f1f1';
@@ -106,7 +104,37 @@ function renderizarFornecedores(lista) {
 
     tbody.innerHTML = pagina
         .map(
-            (f, idx) => `
+            (f, idx) => {
+                // Nome responsável
+                let nomeResponsavel = f.nome_responsavel && f.nome_responsavel.trim()
+                    ? f.nome_responsavel
+                    : `
+                        <span style="
+                            display:inline-block;
+                            padding:4px 10px;
+                            border-radius:12px;
+                            font-size:12px;
+                            color:#fff;
+                            background:#888;
+                        ">Não informado</span>
+                    `;
+
+                // Telefone
+                let telefone = formatarTelefoneExibicao(f.telefone);
+                telefone = telefone
+                    ? telefone
+                    : `
+                        <span style="
+                            display:inline-block;
+                            padding:4px 10px;
+                            border-radius:12px;
+                            font-size:12px;
+                            color:#fff;
+                            background:#888;
+                        ">Não informado</span>
+                    `;
+
+                return `
             <tr tabindex="${idx + 1}">
                 <td style="padding-left: 20px">
                     <div class="avatar" style="
@@ -126,9 +154,9 @@ function renderizarFornecedores(lista) {
                 <td>${f.codigo}</td>
                 <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${f.nome_empresa}">${f.nome_empresa}</td>
                 <td>${aplicarMascaraCNPJ(f.cnpj)}</td>
-                <td>${f.nome_responsavel || 'Não informado'}</td>
+                <td>${nomeResponsavel}</td>
                 <td>${f.email}</td>
-                <td>${formatarTelefoneExibicao(f.telefone) || 'Não informado'}</td>
+                <td>${telefone}</td>
                 <td class="actions">
                     <a href="#" onclick="abrirDetalhesFornecedor('${f.id}', '${f.nome_empresa}')" title="Detalhes">
                         <i class="fa-solid fa-eye"></i>
@@ -141,7 +169,8 @@ function renderizarFornecedores(lista) {
                     </button>
                 </td>
             </tr>
-            `
+            `;
+            }
         )
         .join("");
 
@@ -1281,13 +1310,6 @@ function atualizarAvatarFornecedor() {
     if (avatar4) avatar4.style.background = corAvatarFornecedor(nome);
     if (iniciais4) iniciais4.textContent = iniciais;
     if (icon4) icon4.style.display = nome.trim() ? 'none' : '';
-}
-
-function getIniciaisFornecedor(nome) {
-    if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
-    const partes = nome.trim().split(' ');
-    if (partes.length === 1) return partes[0][0].toUpperCase();
-    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
 // Multicheck de categorias

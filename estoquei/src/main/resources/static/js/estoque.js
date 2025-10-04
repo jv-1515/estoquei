@@ -987,7 +987,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
                         <span style="
                             display:inline-block;
-                            padding:2px 10px;
+                            padding:4px 10px;
                             border-radius:12px;
                             font-size:12px;
                             color:#fff;
