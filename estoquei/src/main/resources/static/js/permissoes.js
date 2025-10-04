@@ -47,7 +47,7 @@ function renderizarCargos() {
     btn.className = `cargo-btn cargo-${i}`;
 
     if (cargo) {
-      btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen"></i>' : ''}`;
+    btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen" title="Renomear"></i>' : ''}`;
         btn.onclick = () => {
         if (cargo.id !== 1) abrirEditarCargo(cargo.id);
         };
