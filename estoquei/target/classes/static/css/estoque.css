@@ -147,6 +147,17 @@ table th.ordenar {
     z-index: 1;
 }
 
+td:nth-child(7) {
+    text-align: right;
+    padding-right: 15px;
+}
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(6) {
+    text-align: left;
+    padding-left: 15px;
+}
+
 th,
 td {
     padding: 5px;
@@ -730,6 +741,8 @@ select#filter-genero {
     text-align: center;
     vertical-align: middle;
     background-color: #fff;
+    padding: 5px !important;
+
 }
 .skeleton-bar {
     width: 100%;

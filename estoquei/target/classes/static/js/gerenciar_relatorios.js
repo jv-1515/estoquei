@@ -134,6 +134,7 @@ function renderizarRelatorios(relatorios) {
         tbody.innerHTML += `
             <tr>
             <td>
+            <i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:6px;"></i>
             ${r.nome}
             </td>
             <td>${r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString() : ''}</td>

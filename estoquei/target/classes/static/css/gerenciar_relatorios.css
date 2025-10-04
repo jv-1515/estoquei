@@ -173,6 +173,11 @@ table th.ordenar {
     z-index: 1;
 }
 
+td:first-child {
+    text-align: left;
+    padding-left: 110px;
+}
+
 th,
 td {
     padding: 5px;
@@ -636,47 +641,32 @@ select#registros-select option {
 
 
 
-.skeleton-table {
-    width: 100%;
-    padding: 12px 0;
-    background-color: #ffffff;
-}
+/* Skeleton */
 .skeleton-table-row {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 8px;
-    background-color: #ffffff;
+    height: 40px;
 }
 .skeleton-cell {
-    flex: 1;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fff;
+    padding: 5px !important;
+}
+.skeleton-bar {
+    width: 100%;
     height: 30px;
     border-radius: 4px;
     animation: skeleton-loading 1.2s infinite linear;
-    margin: 0 2px;
-    box-sizing: border-box;
+    display: block;
     background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
 }
-.skeleton-cell.skeleton-nome,
-.skeleton-cell.skeleton-acoes {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: skeleton-loading 1.2s infinite linear;
-    box-sizing: border-box;
-    padding: 0;
+.skeleton-cell:first-child .skeleton-bar {
+    max-width: 30px;
+    margin: 0 0 0 15px;
+    border-radius: 100%;
 }
-.skeleton-table-row .skeleton-cell:first-child {
-    margin-left: 20px;
-}
-.skeleton-cell.skeleton-nome {
-    min-width: 110px;
-    width: 100%;
-}
-.skeleton-cell.skeleton-acoes {
-    min-width: 55px;
+.skeleton-cell:last-child .skeleton-bar {
     max-width: 55px;
-    width: 55px;
-    margin-right: 20px;
+    margin: 0 20px 0 0;
 }
 @keyframes skeleton-loading {
     0% {

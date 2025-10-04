@@ -706,6 +706,7 @@ select#filter-genero {
     text-align: center;
     vertical-align: middle;
     background-color: #fff;
+    padding: 5px !important;
 }
 .skeleton-bar {
     width: 100%;

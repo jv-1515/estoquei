@@ -146,6 +146,7 @@ table tr:last-child td:first-child {
 table tr:last-child td:last-child {
     border-bottom-right-radius: 10px;
 }
+
 table th,
 table th.ordenar {
     position: sticky;
@@ -788,6 +789,7 @@ textarea {
     text-align: center;
     vertical-align: middle;
     background-color: #fff;
+    padding: 5px !important;
 }
 .skeleton-bar {
     width: 100%;
