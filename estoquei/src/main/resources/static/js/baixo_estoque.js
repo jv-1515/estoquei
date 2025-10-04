@@ -1055,10 +1055,13 @@ window.onload = function() {
         limiteMax.value = '';
         limiteInput.value = '';
 
-        filtrar(); // Atualiza lista
+        filtrar();
     });
 
-    // Clicou fora, esconde
+
+    if (typeof aplicarPermissoesBaixoEstoque === 'function') {
+        aplicarPermissoesBaixoEstoque();
+    }
 
 }
 
@@ -1388,6 +1391,10 @@ function abrirDetalhesProduto(produto) {
         removeBtn.onclick = function() {
             removerProduto(produto.id, produto.nome, produto.quantidade);
         };
+    }
+
+    if (typeof aplicarPermissoesBaixoEstoque === 'function') {
+        setTimeout(() => aplicarPermissoesBaixoEstoque(), 50);
     }
 }
 
