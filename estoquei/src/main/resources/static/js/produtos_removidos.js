@@ -115,8 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.btn').onclick = function() {
                 const selecionados = Array.from(document.querySelectorAll('.check-produto:checked'));
                 if (!selecionados.length || selecionados.length === 1) return;
-
-                // Fluxo múltiplos: mostra opções em um novo SweetAlert
+            
                 Swal.fire({
                     title: `${selecionados.length} produtos selecionados`,
                     text: 'Selecione uma opção',
@@ -131,38 +130,88 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }).then(result => {
                     if (result.isConfirmed) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: `${selecionados.length} produtos serão excluídos`,
-                            text: 'Esta ação é permanente. Deseja continuar?',
-                            showCancelButton: true,
-                            confirmButtonText: 'Excluir todos',
-                            cancelButtonText: 'Cancelar',
-                            customClass: {
-                                confirmButton: 'swal2-remove-custom',
-                                cancelButton: 'swal2-cancel-custom'
-                            },
-                            allowOutsideClick: false
-                        }).then((res) => {
-                            if (res.isConfirmed) {
-                                Swal.fire({
-                                    title: 'Excluindo produtos...',
-                                    text: 'Aguarde enquanto os produtos são excluídos',
-                                    icon: 'info',
-                                    showConfirmButton: false,
-                                    timer: 1800,
-                                    timerProgressBar: true,
-                                    didOpen: () => {
-                                        Swal.showLoading();
-                                        Promise.all(selecionados.map(cb =>
-                                            fetch(`/produtos/excluir/${cb.dataset.id}`, { method: 'DELETE' })
-                                        )).then(() => location.reload());
-                                    }
-                                });
-                            }
+                        const produtosSelecionados = selecionados.map(cb => {
+                            const tr = cb.closest('tr');
+                            const nome = tr.querySelector('td:nth-child(3)').textContent || 'produto';
+                            const quantidade = Number(tr.querySelector('td:nth-child(8)').textContent) || 0;
+                            return { id: cb.dataset.id, nome, quantidade };
                         });
+                        const algumComQuantidade = produtosSelecionados.some(p => p.quantidade > 0);
+            
+                        if (algumComQuantidade) {
+                            const totalUnidades = produtosSelecionados.reduce((soma, p) => soma + (p.quantidade > 0 ? p.quantidade : 0), 0);
+                            const plural = totalUnidades > 1;
+                            Swal.fire({
+                                icon: 'warning',
+                                title: `${selecionados.length} produtos selecionados`,
+                                html: `No total, <strong>${totalUnidades} unidade${plural ? 's' : ''}</strong> ${plural ? 'serão excluídas' : 'será excluída'}. Esta ação é permanente`,
+                                showCancelButton: true,
+                                confirmButtonText: 'Excluir todos',
+                                cancelButtonText: 'Cancelar',
+                                customClass: {
+                                    confirmButton: 'swal2-remove-custom',
+                                    cancelButton: 'swal2-cancel-custom'
+                                },
+                                allowOutsideClick: false
+                            }).then((res) => {
+                                if (res.isConfirmed) {
+                                    Swal.fire({
+                                        title: 'Excluindo produtos...',
+                                        text: 'Aguarde enquanto os produtos são excluídos',
+                                        icon: 'info',
+                                        showConfirmButton: false,
+                                        timer: 1800,
+                                        timerProgressBar: true,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                            Promise.all(produtosSelecionados.map(p =>
+                                                fetch(`/produtos/excluir/${p.id}`, { method: 'DELETE' })
+                                            )).then(() => location.reload());
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            // Todos com quantidade 0: mostra "Removendo..." com cancelar durante o tempo
+                            let cancelado = false;
+                            Swal.fire({
+                                title: `Removendo ${selecionados.length} produtos...`,
+                                text: 'Os produtos serão excluídos definitivamente',
+                                icon: 'info',
+                                showCancelButton: true,
+                                showConfirmButton: false,
+                                cancelButtonText: 'Cancelar',
+                                customClass: {
+                                    cancelButton: 'swal2-remove-custom'
+                                },
+                                allowOutsideClick: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    const cancelBtn = Swal.getCancelButton();
+                                    if (cancelBtn) {
+                                        cancelBtn.style.width = '90px';
+                                        cancelBtn.style.maxWidth = '90px';
+                                        cancelBtn.style.border = 'none';
+                                    }
+                                    const swalTimer = setTimeout(() => {
+                                        if (!cancelado) {
+                                            Promise.all(produtosSelecionados.map(p =>
+                                                fetch(`/produtos/excluir/${p.id}`, { method: 'DELETE' })
+                                            )).then(() => location.reload());
+                                        }
+                                    }, 3000);
+            
+                                    Swal.getCancelButton().onclick = () => {
+                                        cancelado = true;
+                                        clearTimeout(swalTimer);
+                                        Swal.close();
+                                    };
+                                }
+                            });
+                        }
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        // Confirmação para restaurar todos
+                        // Confirmação para restaurar todos (mantém igual)
                         Swal.fire({
                             title: `${selecionados.length} produtos serão restaurados`,
                             icon: 'info',
@@ -182,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             };
-
             // Excluir individual
             document.querySelectorAll('.btn-excluir-definitivo').forEach(btn => {
                 btn.addEventListener('click', function(e) {
@@ -253,7 +301,7 @@ function excluirProdutoDefinitivo(id, nome, quantidade) {
         const unidadeTexto = quantidade === 1 ? 'unidade' : 'unidades';
         Swal.fire({
             title: `Excluir "${nomeProduto}"?`,
-            html: `Este produto possui <b>${quantidade} ${unidadeTexto}</b><br>Esta ação é permanente`,
+            html: `Este produto possui <strong>${quantidade} ${unidadeTexto}</strong>. Esta ação é permanente`,
             icon: 'warning',
             showCancelButton: true,
             allowOutsideClick: false,
