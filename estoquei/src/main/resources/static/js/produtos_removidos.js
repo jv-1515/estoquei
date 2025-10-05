@@ -97,7 +97,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td style="color: ${produto.quantidade > 0 ? '#43b04a' : 'inherit'}; font-weight: ${produto.quantidade > 0 ? 'bold' : 'normal'}">${produto.quantidade ?? '-'}</td>
                     <td>${produto.limiteMinimo ?? '-'}</td>
                     <td>${formatarData(produto.dataExclusao) || '-'}</td>
-                    <td>${produto.responsavelExclusao || '-'}</td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${produto.responsavelExclusao || '-'}">
+                        ${produto.responsavelExclusao ? `
+                            <div style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                                <div style="
+                                    width: 30px; height: 30px; border-radius: 50%;
+                                    background: ${corAvatar(produto.responsavelExclusao)};
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-weight: bold; font-size: 12px; color: rgba(0,0,0,0.7);
+                                    flex-shrink: 0;
+                                ">
+                                    ${getIniciais(produto.responsavelExclusao)}
+                                </div>
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${getCodigoResponsavel(produto.responsavelExclusao)}
+                                </span>
+                            </div>
+                        ` : '-'}
+                    </td>
                     <td style="text-align: right; padding-right:20px" class="actions">
                         <button class="btn-reverter" data-id="${produto.id}" title="Restaurar">
                             <i class="fa-solid fa-rotate-left"></i>
@@ -446,3 +463,26 @@ function excluirProdutoDefinitivo(id, nome, quantidade) {
         });
     }
 });
+
+//Avatar
+function getCodigoResponsavel(responsavel) {
+    if (!responsavel || !responsavel.includes(' - ')) return '-';
+    return responsavel.split(' - ')[0];
+}
+
+function getIniciais(nome) {
+    if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
+    const parteNome = nome.includes(' - ') ? nome.split(' - ')[1] : nome;
+    const partes = parteNome.trim().split(' ');
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function corAvatar(str) {
+    if (!str) return '#f1f1f1';
+    const parteHash = str.includes(' - ') ? str.split(' - ')[1] : str;
+    let hash = 0;
+    for (let i = 0; i < parteHash.length; i++) hash = parteHash.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 60%, 80%)`;
+}
