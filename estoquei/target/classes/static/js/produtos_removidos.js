@@ -93,8 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${capitalize(produto.categoria) || '-'}</td>
                     <td>${exibirTamanho(produto.tamanho) || '-'}</td>
                     <td>${capitalize(produto.genero) || '-'}</td>
-                    <td>${produto.preco ? 'R$ ' + Number(produto.preco).toFixed(2).replace('.', ',') : '-'}</td>
-                    <td>${produto.quantidade ?? '-'}</td>
+                    <td>${produto.preco !== undefined && produto.preco !== null ? Number(produto.preco).toFixed(2).replace('.', ',') : '-'}</td>
+                    <td style="color: ${produto.quantidade > 0 ? '#43b04a' : 'inherit'}; font-weight: ${produto.quantidade > 0 ? 'bold' : 'normal'}">${produto.quantidade ?? '-'}</td>
                     <td>${produto.limiteMinimo ?? '-'}</td>
                     <td>${formatarData(produto.dataExclusao) || '-'}</td>
                     <td>${produto.responsavelExclusao || '-'}</td>
