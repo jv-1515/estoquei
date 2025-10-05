@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+let paginaAtual = 1;
+let itensPorPagina = 10;
+
 //botão voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -73,19 +76,42 @@ window.adicionarRelatorio = function(relatorio) {
         });
 };
 
-function renderizarRelatorios(relatorios) {
+function renderizarRelatorios(lista) {
+    const registrosSelect = document.getElementById('registros-select');
+    let valorSelect = registrosSelect ? registrosSelect.value : '';
+    let totalItens = lista.length;
+    let itensPorPagina = valorSelect === "" ? totalItens : parseInt(valorSelect);
+
+    // ORDENAR ANTES DE PAGINAR
+    const campo = campoOrdenacaoRel[indiceOrdenacaoAtual];
+    let listaOrdenada = lista.slice().sort((a, b) => {
+        let valA = a[campo], valB = b[campo];
+        if (campo === 'dataCriacao') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
+        if (estadoOrdenacaoRel[indiceOrdenacaoAtual]) {
+            return valB > valA ? 1 : valB < valA ? -1 : 0;
+        } else {
+            return valA > valB ? 1 : valA < valB ? -1 : 0;
+        }
+    });
+
+    const totalPaginas = Math.ceil(totalItens / itensPorPagina) || 1;
+    if (paginaAtual > totalPaginas) paginaAtual = 1;
+    const inicio = (paginaAtual - 1) * itensPorPagina;
+    const fim = valorSelect === "" ? totalItens : inicio + itensPorPagina;
+    const pagina = listaOrdenada.slice(inicio, fim);
+
     const tbody = document.getElementById('relatorio-list');
     const thead = document.getElementById('relatorio-thead');
     const registrosPagina = document.getElementById('registros-pagina');
 
-    tbody.innerHTML = '';
-
-    if (relatorios.length === 0) {
+    if (pagina.length === 0) {
         if (thead) thead.style.display = 'none';
         if (registrosPagina) registrosPagina.style.display = 'none';
 
         if (relatoriosOriginais.length === 0) {
-            // Nenhum relatório cadastrado
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" style="text-align: center; padding: 30px 0; background-color: white">
@@ -98,7 +124,6 @@ function renderizarRelatorios(relatorios) {
                 </tr>
             `;
         } else {
-            // Nenhum relatório encontrado pelo filtro
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" style="text-align: center; padding: 30px 0; background-color: white">
@@ -111,49 +136,66 @@ function renderizarRelatorios(relatorios) {
                 </tr>
             `;
         }
+        document.getElementById('paginacao').innerHTML = '';
         return;
+    } else {
+        if (thead) thead.style.display = '';
+        if (registrosPagina) registrosPagina.style.display = '';
     }
-    if (thead) thead.style.display = '';
-    if (registrosPagina) registrosPagina.style.display = '';
 
-
-    relatorios = relatorios.slice().sort((a, b) => {
-        const campo = campoOrdenacaoRel[indiceOrdenacaoAtual];
-        let valA = a[campo], valB = b[campo];
-        if (campo === 'dataCriacao') {
-            valA = new Date(valA);
-            valB = new Date(valB);
-        }
-        if (estadoOrdenacaoRel[indiceOrdenacaoAtual]) {
-            return valB > valA ? 1 : valB < valA ? -1 : 0;
-        } else {
-            return valA > valB ? 1 : valA < valB ? -1 : 0;
-        }
-    });
-    relatorios.forEach(r => {
-        tbody.innerHTML += `
-            <tr>
+    tbody.innerHTML = pagina.map(r => `
+        <tr>
             <td>
-            <i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:6px;"></i>
-            ${r.nome}
+                <i class="fa-regular fa-file-pdf" style="color:#e74c3c; margin-right:6px;"></i>
+                ${r.nome}
             </td>
             <td>${r.dataCriacao ? new Date(r.dataCriacao).toLocaleDateString() : ''}</td>
             <td>${r.periodo || ''}</td>
             <td class="actions">
-            <a href="#" title="Baixar" onclick="baixarRelatorio('${r.id}'); return false;">
-            <i class="fa-solid fa-download"></i>
-            </a>
-            <a href="#" title="Renomear" onclick="renomearRelatorio('${r.id}'); return false;">
-            <i class="fa-solid fa-pen-to-square"></i>
-            </a>
-            <a href="#" title="Excluir" onclick="excluirRelatorio('${r.id}'); return false;">
-            <i class="fa-solid fa-trash"></i>
-            </a>
+                <a href="#" title="Baixar" onclick="baixarRelatorio('${r.id}'); return false;">
+                    <i class="fa-solid fa-download"></i>
+                </a>
+                <a href="#" title="Renomear" onclick="renomearRelatorio('${r.id}'); return false;">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a href="#" title="Excluir" onclick="excluirRelatorio('${r.id}'); return false;">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
             </td>
-            </tr>
-        `;
-    });
+        </tr>
+    `).join('');
+
+    renderizarPaginacaoRelatorios(totalPaginas);
 }
+
+function renderizarPaginacaoRelatorios(totalPaginas) {
+    const paginacaoDiv = document.getElementById('paginacao');
+    if (!paginacaoDiv) return;
+    paginacaoDiv.innerHTML = '';
+    if (totalPaginas <= 1) return;
+    for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = (i === paginaAtual) ? 'pagina-ativa' : '';
+        btn.onclick = function() {
+            paginaAtual = i;
+            renderizarRelatorios(window.relatoriosGerados);
+        };
+        paginacaoDiv.appendChild(btn);
+    }
+}
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const registrosSelect = document.getElementById('registros-select');
+    if (registrosSelect) {
+        registrosSelect.addEventListener('change', function() {
+            paginaAtual = 1;
+            renderizarRelatorios(window.relatoriosGerados);
+        });
+    }
+});
 
 // SweetAlert para remover relatório
 window.excluirRelatorio = function(id) {

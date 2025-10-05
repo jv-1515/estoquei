@@ -445,12 +445,14 @@ function renderizarFuncionarios(lista) {
             <tr tabindex="${idx + 1}">
                 <td style="padding-left: 20px">
                     <div class="avatar" style="
-                        width:30px;height:30px;
+                        width:30px;
+                        height:30px;
                         border-radius:50%;
                         background:${corAvatar(f.nome)};
                         display:flex;align-items:center;justify-content:center;
-                        font-weight:bold;font-size:12px;
-                        color: rgba(0,0,0,0.65);
+                        font-weight:bold;
+                        font-size:12px;
+                        color: rgba(0,0,0,0.7);
                         cursor:pointer;"
                         onclick="abrirDetalhesFuncionario('${f.id}')"
                         title="Ver detalhes"
