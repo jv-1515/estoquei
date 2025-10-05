@@ -898,7 +898,7 @@ function removerFuncionario(id) {
     }).then((res) => {
         if (res.isConfirmed) {
             Swal.fire({
-                title: `Excluindo "${funcionario.nome}"...`,
+                title: `Excluindo "${funcionario.nome}"`,
                 text: 'Aguarde enquanto o funcionário é excluído',
                 icon: 'info',
                 showConfirmButton: false,

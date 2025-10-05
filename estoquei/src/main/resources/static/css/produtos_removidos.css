@@ -159,7 +159,7 @@ th {
     font-weight: normal;
     background: #277580;
     border-right: 1px solid;
-    padding: 8px;
+    padding: 5px;
 }
 
 th:first-child,
@@ -545,8 +545,8 @@ select#registros-select option {
     min-width: 0;
     max-width: none;
     background: none;
-    min-width: 240px; 
-    width: 240px; 
+    min-width: 240px;
+    width: 240px;
     max-width: 240px;
 }
 
@@ -679,7 +679,7 @@ th input[type="checkbox"]#check-all {
     margin: 0 0 0 15px;
 }
 .skeleton-cell:last-child .skeleton-bar {
-    max-width: 110px;
+    max-width: 120px;
     margin: 0 20px 0 0;
 }
 @keyframes skeleton-loading {

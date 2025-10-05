@@ -1405,7 +1405,7 @@ function removerProduto(id, nome, quantidade) {
     if (quantidade === 0) {
         let cancelado = false;
         Swal.fire({
-            title: `Removendo "${nomeProduto}"...`,
+            title: `Removendo "${nomeProduto}"`,
             text: 'O produto será movido para a lixeira',
             icon: 'info',
             showConfirmButton: true,
@@ -1469,7 +1469,7 @@ function removerProduto(id, nome, quantidade) {
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.fire({
-                    title: `Removendo "${nomeProduto}"...`,
+                    title: `Removendo "${nomeProduto}"`,
                     text: 'O produto será movido para a lixeira',
                     icon: 'info',
                     showConfirmButton: false,

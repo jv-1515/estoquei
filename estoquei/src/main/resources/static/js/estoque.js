@@ -758,7 +758,7 @@ function removerProduto(id, nome, quantidade) {
     if (quantidade === 0) {
         let cancelado = false;
         Swal.fire({
-            title: `Removendo "${nomeProduto}"...`,
+            title: `Removendo "${nomeProduto}"`,
             text: 'O produto será movido para a lixeira',
             icon: 'info',
             showCancelButton: true,

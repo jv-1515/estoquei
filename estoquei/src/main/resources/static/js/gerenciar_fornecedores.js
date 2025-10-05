@@ -729,7 +729,7 @@ function removerFornecedor(id, nomeFornecedor) {
     }).then((res) => {
         if (res.isConfirmed) {
             Swal.fire({
-                title: `Excluindo "${nomeFornecedor}"...`,
+                title: `Excluindo "${nomeFornecedor}"`,
                 text: 'Aguarde enquanto o fornecedor é excluído',
                 icon: 'info',
                 showConfirmButton: false,

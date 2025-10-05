@@ -340,58 +340,114 @@ function removerProduto() {
         return;
     }
 
-    const nomeProduto = document.getElementById('nome').value || 'produto';
-    Swal.fire({
-        title: `Remover "${nomeProduto}"?`,
-        text: 'O produto irá para a lixeira',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Remover',
-        cancelButtonText: 'Cancelar',
-        allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'swal2-remove-custom',
-            cancelButton: 'swal2-cancel-custom'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/produtos/' + id, {
-                method: 'DELETE'
-            }).then(response => {
-                if (response.ok) {
-                    Swal.fire({
-                        title: `Removendo "${nomeProduto}"`,
-                        text: 'Aguarde...',
-                        icon: 'info',
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        timer: 1500,
-                    }).then(() => {
-                        history.back();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: `Não foi possível remover "${nomeProduto}". Verifique se ele não está associado a outras operações`,
-                        icon: 'error',
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        timer: 1500,
-                    });
-                }
-            }).catch(error => {
-                console.error('Erro ao remover produto:', error);
+    fetch(`/produtos/${id}`)
+        .then(response => response.json())
+        .then(produto => {
+            const nomeProduto = produto.nome || 'produto';
+            const quantidade = produto.quantidade || 0;
+
+            if (quantidade === 0) {
+                let cancelado = false;
                 Swal.fire({
-                    title: 'Erro de Conexão!',
-                    text: `Não foi possível se conectar ao servidor para remover "${nomeProduto}"`,
-                    icon: 'error',
+                    title: `Removendo "${nomeProduto}"`,
+                    text: 'O produto será movido para a lixeira',
+                    icon: 'info',
+                    showCancelButton: true,
                     showConfirmButton: false,
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        cancelButton: 'swal2-remove-custom'
+                    },
                     allowOutsideClick: false,
-                    timer: 1500
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        const cancelBtn = Swal.getCancelButton();
+                        if (cancelBtn) {
+                            cancelBtn.style.width = '90px';
+                            cancelBtn.style.maxWidth = '90px';
+                            cancelBtn.style.border = 'none';
+                            
+                            cancelBtn.addEventListener('mouseenter', function() {
+                                cancelBtn.style.backgroundColor = '#c82333';
+                                cancelBtn.style.borderColor = '#bd2130';
+                            });
+                            cancelBtn.addEventListener('mouseleave', function() {
+                                cancelBtn.style.backgroundColor = '#dc3545';
+                                cancelBtn.style.borderColor = '#dc3545';
+                            });
+                        }
+                        const swalTimer = setTimeout(() => {
+                            if (!cancelado) {
+                                fetch('/produtos/' + id, {
+                                    method: 'DELETE'
+                                }).then(response => {
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            title: `"${nomeProduto}" removido!`,
+                                            text: 'Produto movido para a lixeira',
+                                            icon: 'success',
+                                            showConfirmButton: false,
+                                            timer: 1500,
+                                        }).then(() => {
+                                            history.back();
+                                        });
+                                    } else {
+                                        Swal.fire('Erro!', `Não foi possível remover ${nomeProduto}. Tente novamente`, 'error');
+                                    }
+                                });
+                            }
+                        }, 3000);
+
+                        Swal.getCancelButton().onclick = () => {
+                            cancelado = true;
+                            clearTimeout(swalTimer);
+                            Swal.close();
+                        };
+                    }
                 });
-            });
-        }
-    });
+            } else {
+
+                const unidadeTexto = quantidade === 1 ? 'unidade' : 'unidades';
+                Swal.fire({
+                    title: `Excluir "${nomeProduto}"?`,
+                    html: `Este produto possui <b>${quantidade} ${unidadeTexto}</b><br>Esta ação é permanente`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    confirmButtonText: 'Remover',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'swal2-remove-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/produtos/' + id, {
+                            method: 'DELETE'
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire({
+                                    title: `"${nomeProduto}" removido!`,
+                                    text: 'Produto movido para a lixeira',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                }).then(() => {
+                                    history.back();
+                                });
+                            } else {
+                                Swal.fire('Erro!', `Não foi possível remover ${nomeProduto}. Tente novamente`, 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar produto:', error);
+            Swal.fire('Erro!', 'Erro ao carregar dados do produto', 'error');
+        });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
