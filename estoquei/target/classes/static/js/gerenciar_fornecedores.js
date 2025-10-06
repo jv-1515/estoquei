@@ -143,7 +143,7 @@ function renderizarFornecedores(lista) {
                         background:${corAvatarFornecedor(f.nome_empresa)};
                         display:flex;align-items:center;justify-content:center;
                         font-weight:bold;font-size:12px;
-                        color: rgba(0,0,0,0.65);
+                        color: #333333b3;
                         cursor:pointer;"
                         onclick="abrirDetalhesFornecedor('${f.id}', '${f.nome_empresa}')"
                         title="Ver detalhes"

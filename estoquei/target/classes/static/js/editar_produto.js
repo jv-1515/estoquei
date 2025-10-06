@@ -47,85 +47,338 @@ function previewImage(event) {
     }
 }
 
-function updateOptions(selectedCategory = null, selectedSize = null) {
-    const categoriaSelect = document.getElementById('categoria');
-    const tamanhoSelect = document.getElementById('tamanho');
-    let options = '<option value="" disabled selected hidden>Selecionar</option>';
+// function updateOptions(selectedCategory = null, selectedSize = null) {
+//     const categoriaSelect = document.getElementById('categoria');
+//     const tamanhoSelect = document.getElementById('tamanho');
+//     let options = '<option value="" disabled selected hidden>Selecionar</option>';
 
-    const tamLetra = [
-        { value: 'ÚNICO', label: 'Único' },
-        { value: 'PP', label: 'PP' },
-        { value: 'P', label: 'P' },
-        { value: 'M', label: 'M' },
-        { value: 'G', label: 'G' },
-        { value: 'GG', label: 'GG' },
-        { value: 'XG', label: 'XG' },
-        { value: 'XGG', label: 'XGG' },
-        { value: 'XXG', label: 'XXG' }
-    ];
+//     const tamLetra = [
+//         { value: 'ÚNICO', label: 'Único' },
+//         { value: 'PP', label: 'PP' },
+//         { value: 'P', label: 'P' },
+//         { value: 'M', label: 'M' },
+//         { value: 'G', label: 'G' },
+//         { value: 'GG', label: 'GG' },
+//         { value: 'XG', label: 'XG' },
+//         { value: 'XGG', label: 'XGG' },
+//         { value: 'XXG', label: 'XXG' }
+//     ];
 
-    const categoria = selectedCategory || categoriaSelect.value;
+//     const categoria = selectedCategory || categoriaSelect.value;
 
-    if (!categoria) {
-        tamanhoSelect.innerHTML = options;
-        return;
+//     if (!categoria) {
+//         tamanhoSelect.innerHTML = options;
+//         return;
+//     }
+
+//     if (categoria === 'SAPATO' || categoria === 'MEIA') {
+//         for (let i = 34; i <= 46; i++) {
+//             options += `<option value="_${i}">${i}</option>`;
+//         }
+//     } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'VESTIDO') {
+//         for (let i = 36; i <= 56; i += 2) {
+//             options += `<option value="_${i}">${i}</option>`;
+//         }
+//     } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
+//         tamLetra.forEach(t => {
+//             options += `<option value="${t.value}">${t.label}</option>`;
+//         });
+//     } else {
+//         tamLetra.forEach(t => {
+//             options += `<option value="${t.value}">${t.label}</option>`;
+//         });
+//         for (let i = 34; i <= 56; i++) {
+//             options += `<option value="_${i}">${i}</option>`;
+//         }
+//     }
+
+//     tamanhoSelect.innerHTML = options;
+
+//     if (selectedSize) {
+//         let found = false;
+//         for (let i = 0; i < tamanhoSelect.options.length; i++) {
+//             const optionValue = tamanhoSelect.options[i].value;
+//             if (optionValue === selectedSize || optionValue === `_${selectedSize}`) {
+//                 tamanhoSelect.value = optionValue;
+//                 found = true;
+//                 break;
+//             }
+//         }
+//         if (!found) {
+//             tamanhoSelect.value = "";
+//         }
+//     }
+// }
+
+
+// --- MULTISELECT PADRÃO CADASTRO ---
+
+// Arrays fixos (ajuste conforme seu cadastro)
+const categorias = [
+  { id: 1, nome: "Camisa", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 2, nome: "Camiseta", tipoTamanho: 1, tipoGenero: "T" },
+  { id: 3, nome: "Calça", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 4, nome: "Bermuda", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 5, nome: "Vestido", tipoTamanho: 1, tipoGenero: "F" },
+  { id: 6, nome: "Sapato", tipoTamanho: 2, tipoGenero: "T" },
+  { id: 7, nome: "Meia", tipoTamanho: 2, tipoGenero: "T" }
+];
+const tamanhosLetra = ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"];
+const tamanhosNumero = Array.from({length: 13}, (_,i)=>'_'+(34+i)); // _34 a _46
+const generosEnum = ["MASCULINO","FEMININO","UNISSEX"];
+
+// Categoria
+const categoriaInput = document.getElementById('categoria-multi');
+const radiosCategoria = document.getElementById('radios-categoria-multi');
+const chevronCategoria = document.querySelector('.chevron-categoria');
+
+// Preenche radios de categoria
+function preencherRadiosCategoria() {
+    radiosCategoria.innerHTML = '';
+    categorias.forEach(cat => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome.toUpperCase()}">${cat.nome}`;
+        radiosCategoria.appendChild(label);
+    });
+}
+preencherRadiosCategoria();
+
+// Abre/fecha lista
+function abrirFecharCategoriaMulti(e) {
+    if (e) e.stopPropagation();
+    radiosCategoria.style.display = radiosCategoria.style.display === 'block' ? 'none' : 'block';
+}
+categoriaInput.addEventListener('click', abrirFecharCategoriaMulti);
+chevronCategoria.addEventListener('click', abrirFecharCategoriaMulti);
+
+// Fecha ao clicar fora
+document.addEventListener('mousedown', function(e) {
+    if (radiosCategoria.style.display === 'block' && !radiosCategoria.contains(e.target) && e.target !== categoriaInput && e.target !== chevronCategoria) {
+        radiosCategoria.style.display = 'none';
     }
+});
 
-    if (categoria === 'SAPATO' || categoria === 'MEIA') {
-        for (let i = 34; i <= 46; i++) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
-    } else if (categoria === 'BERMUDA' || categoria === 'CALÇA' || categoria === 'VESTIDO') {
-        for (let i = 36; i <= 56; i += 2) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
-    } else if (categoria === 'CAMISA' || categoria === 'CAMISETA') {
-        tamLetra.forEach(t => {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        });
-    } else {
-        tamLetra.forEach(t => {
-            options += `<option value="${t.value}">${t.label}</option>`;
-        });
-        for (let i = 34; i <= 56; i++) {
-            options += `<option value="_${i}">${i}</option>`;
-        }
+// Seleciona categoria
+radiosCategoria.addEventListener('click', function(e) {
+    const label = e.target.closest('label');
+    if (!label) return;
+    radiosCategoria.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+    label.classList.add('selecionado');
+    const radio = label.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+    categoriaInput.value = label.textContent.trim();
+    categoriaInput.dataset.value = radio.value;
+    radiosCategoria.style.display = 'none';
+    atualizarTamanhosEGenerosPorCategoria(radio.value);
+});
+
+// Tamanho
+const tamanhoInput = document.getElementById('tamanho-multi');
+const radiosTamanho = document.getElementById('radios-tamanho-multi');
+const chevronTamanho = document.querySelector('.chevron-tamanho');
+
+function abrirFecharTamanhoMulti(e) {
+    if (e) e.stopPropagation();
+    radiosTamanho.style.display = radiosTamanho.style.display === 'block' ? 'none' : 'block';
+}
+tamanhoInput.addEventListener('click', abrirFecharTamanhoMulti);
+chevronTamanho.addEventListener('click', abrirFecharTamanhoMulti);
+
+document.addEventListener('mousedown', function(e) {
+    if (radiosTamanho.style.display === 'block' && !radiosTamanho.contains(e.target) && e.target !== tamanhoInput && e.target !== chevronTamanho) {
+        radiosTamanho.style.display = 'none';
     }
+});
 
-    tamanhoSelect.innerHTML = options;
+radiosTamanho.addEventListener('click', function(e) {
+    const label = e.target.closest('label');
+    if (!label) return;
+    radiosTamanho.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+    label.classList.add('selecionado');
+    const radio = label.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+    tamanhoInput.value = formatarTamanhoVisual(radio.value);
+    tamanhoInput.dataset.value = radio.value;
+    tamanhoInput.style.color = '#000';
+    radiosTamanho.style.display = 'none';
+});
 
-    if (selectedSize) {
-        let found = false;
-        for (let i = 0; i < tamanhoSelect.options.length; i++) {
-            const optionValue = tamanhoSelect.options[i].value;
-            if (optionValue === selectedSize || optionValue === `_${selectedSize}`) {
-                tamanhoSelect.value = optionValue;
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            tamanhoSelect.value = "";
-        }
-    }
+// Gênero
+const generoInput = document.getElementById('genero-multi');
+const radiosGenero = document.getElementById('radios-genero-multi');
+const chevronGenero = document.querySelector('.chevron-genero');
+
+function abrirFecharGeneroMulti(e) {
+  if (e) e.stopPropagation();
+  radiosGenero.style.display = radiosGenero.style.display === 'block' ? 'none' : 'block';
+}
+generoInput.addEventListener('click', abrirFecharGeneroMulti);
+chevronGenero.addEventListener('click', abrirFecharGeneroMulti);
+
+document.addEventListener('mousedown', function(e) {
+  if (radiosGenero.style.display === 'block' && !radiosGenero.contains(e.target) && e.target !== generoInput && e.target !== chevronGenero) {
+    radiosGenero.style.display = 'none';
+  }
+});
+
+radiosGenero.addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (!label) return;
+  radiosGenero.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+  label.classList.add('selecionado');
+  const radio = label.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+  generoInput.value = formatarGeneroVisual(radio.value);
+  generoInput.dataset.value = radio.value;
+  generoInput.style.color = '#000';
+  radiosGenero.style.display = 'none';
+});
+
+// Funções auxiliares
+function formatarGeneroVisual(gen) {
+  return gen.charAt(0) + gen.slice(1).toLowerCase();
+}
+function formatarTamanhoVisual(tam) {
+  if (tam === "ÚNICO" || tam === "UNICO") return "Único";
+  if (tam.startsWith("_")) return tam.slice(1);
+  return tam;
 }
 
+// Atualiza tamanhos e gêneros ao selecionar categoria
+function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
+    const categoriaObj = categorias.find(cat => cat.nome.toUpperCase() === (categoriaNome || '').toUpperCase());
+
+  // Tamanhos
+  radiosTamanho.innerHTML = '';
+  tamanhoInput.value = '';
+//   tamanhoInput.style.color = '#757575';
+  tamanhoInput.dataset.value = '';
+  tamanhoInput.disabled = !categoriaObj;
+
+  let tamanhosPermitidos = [];
+  if (categoriaObj) {
+    if (categoriaObj.tipoTamanho === 2) {
+      tamanhosPermitidos = tamanhosNumero;
+    } else if (categoriaObj.tipoTamanho === 1) {
+      tamanhosPermitidos = tamanhosLetra;
+    } else {
+      tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
+    }
+    tamanhosPermitidos.forEach(tam => {
+    const label = document.createElement('label');
+    label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam.toUpperCase()}">${formatarTamanhoVisual(tam)}`;
+    radiosTamanho.appendChild(label);
+    });
+    if (tamanhosPermitidos.length === 1) {
+      tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
+      tamanhoInput.style.color = '#000';
+      tamanhoInput.dataset.value = tamanhosPermitidos[0];
+      radiosTamanho.querySelector('input[type="radio"]').checked = true;
+    }
+  } else {
+    radiosTamanho.innerHTML = '<span style="color:#757575;">Selecionar</span>';
+    tamanhoInput.value = '';
+  }
+
+  // Gêneros
+  radiosGenero.innerHTML = '';
+  generoInput.value = '';
+//   generoInput.style.color = '#757575';
+  generoInput.dataset.value = '';
+  generoInput.disabled = !categoriaObj;
+
+  let generosPermitidos = [];
+  if (categoriaObj) {
+    switch (categoriaObj.tipoGenero) {
+      case "T":
+        generosPermitidos = generosEnum;
+        break;
+      case "F":
+        generosPermitidos = ["FEMININO"];
+        break;
+      case "M":
+        generosPermitidos = ["MASCULINO"];
+        break;
+      case "U":
+        generosPermitidos = ["UNISSEX"];
+        break;
+      case "FM":
+        generosPermitidos = ["MASCULINO", "FEMININO"];
+        break;
+      default:
+        generosPermitidos = generosEnum;
+    }
+    generosPermitidos.forEach(gen => {
+    const label = document.createElement('label');
+    label.innerHTML = `<input type="radio" name="genero-radio" value="${gen.toUpperCase()}">${formatarGeneroVisual(gen)}`;
+    radiosGenero.appendChild(label);
+    });
+    if (generosPermitidos.length === 1) {
+      generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
+      generoInput.style.color = '#000';
+      generoInput.dataset.value = generosPermitidos[0];
+      radiosGenero.querySelector('input[type="radio"]').checked = true;
+    }
+  } else {
+    radiosGenero.innerHTML = '<span style="color:#757575;">Selecionar</span>';
+    generoInput.value = '';
+  }
+}
+
+// Ao carregar, desabilita tamanho/genero até escolher categoria
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarTamanhosEGenerosPorCategoria(null);
+});
 
 function fillFields(product) {
     document.getElementById('codigo').value = product.codigo || '';
     document.getElementById('nome').value = product.nome || '';
 
-    const categoriaSelect = document.getElementById('categoria');
+    // Categoria
     if (product.categoria) {
-        categoriaSelect.value = product.categoria;
-        updateOptions(product.categoria, product.tamanho);
+        categoriaInput.value = product.categoria;
+        categoriaInput.dataset.value = product.categoria;
+        // Marca o radio correspondente
+        const radio = radiosCategoria.querySelector(`input[type="radio"][value="${(product.categoria || '').toUpperCase()}"]`);
+        if (radio) {
+            radio.checked = true;
+            radio.parentNode.classList.add('selecionado');
+        }
+        atualizarTamanhosEGenerosPorCategoria(product.categoria);
     } else {
-        updateOptions();
+        categoriaInput.value = '';
+        categoriaInput.dataset.value = '';
+        atualizarTamanhosEGenerosPorCategoria(null);
     }
 
-    const generoSelect = document.getElementById('genero');
+    // Tamanho
+    if (product.tamanho) {
+        tamanhoInput.value = formatarTamanhoVisual(product.tamanho);
+        tamanhoInput.dataset.value = product.tamanho;
+        // Marca o radio correspondente
+        const radio = radiosTamanho.querySelector(`input[type="radio"][value="${(product.tamanho || '').toUpperCase()}"]`);
+        if (radio) {
+            radio.checked = true;
+            radio.parentNode.classList.add('selecionado');
+        }
+    } else {
+        tamanhoInput.value = '';
+        tamanhoInput.dataset.value = '';
+    }
+
+    // Gênero
     if (product.genero) {
-        generoSelect.value = product.genero;
+        generoInput.value = formatarGeneroVisual(product.genero);
+        generoInput.dataset.value = product.genero;
+        // Marca o radio correspondente
+        const radio = radiosGenero.querySelector(`input[type="radio"][value="${(product.genero || '').toUpperCase()}"]`);
+        if (radio) {
+            radio.checked = true;
+            radio.parentNode.classList.add('selecionado');
+        }
+    } else {
+        generoInput.value = '';
+        generoInput.dataset.value = '';
     }
 
     document.getElementById('quantidade').value = (product.quantidade !== undefined && product.quantidade !== null) ? product.quantidade : '';
@@ -196,9 +449,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const produtoAtual = {
         codigo: document.getElementById('codigo').value.trim(),
         nome: document.getElementById('nome').value.trim(),
-        categoria: document.getElementById('categoria').value,
-        tamanho: document.getElementById('tamanho').value,
-        genero: document.getElementById('genero').value,
+        categoria: categoriaInput.dataset.value || '',
+        tamanho: tamanhoInput.dataset.value || '',
+        genero: generoInput.dataset.value || '',
         quantidade: document.getElementById('quantidade').value.trim(),
         limiteMinimo: document.getElementById('limiteMinimo').value.trim(),
         preco: document.getElementById('preco').value.replace(/[^\d,]/g, '').replace(',', '.'),
@@ -263,8 +516,10 @@ document.querySelector('form').addEventListener('submit', function(event) {
             precoInput.value = rawValue;
 
             const formData = new FormData(this);
-            formData.set('descricao', document.getElementById('descricao').value); // Garante que a descrição está no FormData
-            
+            formData.set('descricao', document.getElementById('descricao').value);
+            formData.set('categoria', (categoriaInput.dataset.value || '').toUpperCase());
+            formData.set('tamanho', (tamanhoInput.dataset.value || '').toUpperCase());
+            formData.set('genero', (generoInput.dataset.value || '').toUpperCase());
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
 
@@ -465,7 +720,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.getElementById('categoria').addEventListener('change', () => updateOptions());
+    // document.getElementById('categoria').addEventListener('change', () => updateOptions());
 
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
@@ -483,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(product => {
                 fillFields(product);
-                updateOptions(product.categoria, product.tamanho);
+                // updateOptions(product.categoria, product.tamanho);
             })
             .catch(error => {
                 console.error('Erro ao buscar o produto:', error);
@@ -600,9 +855,9 @@ document.addEventListener('DOMContentLoaded', function() {
             function descartarAlteracoes() {
                 const codigo = document.getElementById('codigo').value.trim();
                 const nome = document.getElementById('nome').value.trim();
-                const categoria = document.getElementById('categoria').value;
-                const tamanho = document.getElementById('tamanho').value;
-                const genero = document.getElementById('genero').value;
+                const categoria = categoriaInput.dataset.value || '';
+                const tamanho = tamanhoInput.dataset.value || '';
+                const genero = generoInput.dataset.value || '';
                 const quantidade = document.getElementById('quantidade').value.trim();
                 const limiteMinimo = document.getElementById('limiteMinimo').value.trim();
                 const preco = document.getElementById('preco').value.replace(/[^\d,]/g, '').replace(',', '.');
@@ -662,15 +917,15 @@ function aplicarEstiloInputs() {
         });
     });
 
-    const selects = document.querySelectorAll('select');
-    selects.forEach(select => {
-        select.addEventListener('focus', () => {
-            select.style.backgroundColor = 'white';
-        });
-        select.addEventListener('blur', () => {
-            select.style.backgroundColor = '';
-        });
-    });
+    // const selects = document.querySelectorAll('select');
+    // selects.forEach(select => {
+    //     select.addEventListener('focus', () => {
+    //         select.style.backgroundColor = 'white';
+    //     });
+    //     select.addEventListener('blur', () => {
+    //         select.style.backgroundColor = '';
+    //     });
+    // });
 
     const textarea = document.getElementById('descricao');
     const contador = document.getElementById('contador-descricao');

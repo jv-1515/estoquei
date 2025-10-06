@@ -1158,7 +1158,7 @@ function renderizarMovimentacoes(movimentacoes) {
                                     width: 30px; height: 30px; border-radius: 50%;
                                     background: ${corAvatar(m.parteEnvolvida)};
                                     display: flex; align-items: center; justify-content: center;
-                                    font-weight: bold; font-size: 12px; color: rgba(0,0,0,0.7);
+                                    font-weight: bold; font-size: 12px; color: #333333b3;
                                     flex-shrink: 0;
                                 ">
                                     ${getPrimeiraInicial(m.parteEnvolvida)}
@@ -1176,7 +1176,7 @@ function renderizarMovimentacoes(movimentacoes) {
                                     width: 30px; height: 30px; border-radius: 50%;
                                     background: ${corAvatar(m.responsavel)};
                                     display: flex; align-items: center; justify-content: center;
-                                    font-weight: bold; font-size: 12px; color: rgba(0,0,0,0.7);
+                                    font-weight: bold; font-size: 12px; color: #333333b3;
                                     flex-shrink: 0;
                                 ">
                                     ${getIniciais(m.responsavel)}

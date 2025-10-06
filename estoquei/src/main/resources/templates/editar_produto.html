@@ -28,30 +28,32 @@
             <label for="nome">Nome*</label>
             <input type="text" id="nome" name="nome" required placeholder="Nome do produto" maxlength="50" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
 
-            <label for="categoria">Categoria*</label>
-            <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3">
-                <option value="" disabled selected hidden>Selecionar</option>
-                <option value="CAMISA">Camisa</option>
-                <option value="CAMISETA">Camiseta</option>
-                <option value="BERMUDA">Bermuda</option>
-                <option value="CALÇA">Calça</option>
-                <option value="VESTIDO">Vestido</option>
-                <option value="SAPATO">Sapato</option>
-                <option value="MEIA">Meia</option>
-            </select>
-
-            <label for="tamanho">Tamanho*</label>
-            <select id="tamanho" name="tamanho" required tabindex="4">
-                <option value="" disabled selected hidden>Selecionar</option>
-            </select>
-
-            <label for="genero">Gênero*</label>
-            <select id="genero" name="genero" required tabindex="5">
-                <option value="" disabled selected hidden>Selecionar</option>
-                <option value="MASCULINO">Masculino</option>
-                <option value="FEMININO">Feminino</option>
-                <option value="UNISSEX">Unissex</option>
-            </select>
+            <label for="categoria-multi">Categoria*</label>
+            <div class="multiselect-categoria input-group" style="position: relative; width: 100%;">
+                <input type="text" id="categoria-multi" name="categoria" readonly placeholder="Selecionar" required tabindex="3" style="width: 100%;" />
+                <span class="chevron-categoria" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                <i class="fa-solid fa-chevron-down"></i>
+                </span>
+                <div id="radios-categoria-multi" class="checkboxes-categoria-multi"></div>
+            </div>
+            
+            <label for="tamanho-multi">Tamanho*</label>
+            <div class="multiselect-tamanho input-group" style="position: relative; width: 100%;">
+                <input type="text" id="tamanho-multi" name="tamanho" readonly placeholder="Selecionar" required tabindex="4" style="width: 100%;" />
+                <div id="radios-tamanho-multi" class="radios-tamanho-multi" style="display: none;"></div>
+                <span class="chevron-tamanho" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                <i class="fa-solid fa-chevron-down"></i>
+                </span>
+            </div>
+            
+            <label for="genero-multi">Gênero*</label>
+            <div class="multiselect-genero input-group" style="position: relative; width: 100%;">
+                <input type="text" id="genero-multi" name="genero" readonly placeholder="Selecionar" required tabindex="5" style="width: 100%;" />
+                <div id="radios-genero-multi" class="radios-genero-multi" style="display: none;"></div>
+                <span class="chevron-genero" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                <i class="fa-solid fa-chevron-down"></i>
+                </span>
+            </div>
             
             <label for="quantidade">Quantidade*</label>
             <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" max="999">
