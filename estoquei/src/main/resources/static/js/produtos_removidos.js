@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td style="width: 30px; max-width: 30px; padding-left:20px">
                         ${produto.url_imagem
                             ? `<img src="${produto.url_imagem}" alt="${produto.descricao || 'Foto do produto'}" class="produto-img">`
-                            : `<span class="produto-img icon" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#f5f5f5;border-radius:6px;color:#bbb;font-size:18px;">
+                            : `<span class="produto-img icon">
                                 <i class="fa-regular fa-image"></i>
                             </span>`
                         }

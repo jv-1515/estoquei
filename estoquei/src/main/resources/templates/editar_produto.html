@@ -21,14 +21,14 @@
         <h1>Editar Produto</h1>
         <form class="form-container" action="/produtos/" method="POST" enctype="multipart/form-data">
             <div class="form-column">
-            <label for="codigo" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Código*</label>
-            <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" th:readonly="${tipo == 'FUNCIONARIO'}" maxlength="9" minlength="9" pattern="\d{9}">
+            <label for="codigo">Código*</label>
+            <input type="text" id="codigo" name="codigo" required placeholder="000000000" tabindex="1" maxlength="9" minlength="9" pattern="\d{9}">
 
-            <label for="nome" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Nome*</label>
+            <label for="nome">Nome*</label>
             <input type="text" id="nome" name="nome" required placeholder="Nome do produto" maxlength="50" tabindex="2" th:readonly="${tipo == 'FUNCIONARIO'}">
 
-            <label for="categoria" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Categoria*</label>
-            <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3" th:disabled="${tipo == 'FUNCIONARIO'}">
+            <label for="categoria">Categoria*</label>
+            <select id="categoria" name="categoria" required onchange="updateOptions()" tabindex="3">
                 <option value="" disabled selected hidden>Selecionar</option>
                 <option value="CAMISA">Camisa</option>
                 <option value="CAMISETA">Camiseta</option>
@@ -39,21 +39,21 @@
                 <option value="MEIA">Meia</option>
             </select>
 
-            <label for="tamanho" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Tamanho*</label>
-            <select id="tamanho" name="tamanho" required tabindex="4" th:disabled="${tipo == 'FUNCIONARIO'}">
+            <label for="tamanho">Tamanho*</label>
+            <select id="tamanho" name="tamanho" required tabindex="4">
                 <option value="" disabled selected hidden>Selecionar</option>
             </select>
 
-            <label for="genero" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Gênero*</label>
-            <select id="genero" name="genero" required tabindex="5" th:disabled="${tipo == 'FUNCIONARIO'}">
+            <label for="genero">Gênero*</label>
+            <select id="genero" name="genero" required tabindex="5">
                 <option value="" disabled selected hidden>Selecionar</option>
                 <option value="MASCULINO">Masculino</option>
                 <option value="FEMININO">Feminino</option>
                 <option value="UNISSEX">Unissex</option>
             </select>
             
-            <label for="quantidade" th:style="${tipo == 'FUNCIONARIO'} ? 'color: #757575;' : ''">Quantidade*</label>
-            <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" th:readonly="${tipo == 'FUNCIONARIO'}" min="1" max="999">
+            <label for="quantidade">Quantidade*</label>
+            <input type="number" id="quantidade" name="quantidade" required placeholder="10" tabindex="6" max="999">
             
             <label for="limiteMinimo">Limite Mínimo*</label>
             <input type="number" id="limiteMinimo" name="limiteMinimo" required placeholder="10" tabindex="7" min="1" max="999">

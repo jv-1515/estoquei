@@ -214,7 +214,7 @@ tbody tr:nth-child(even) {
     outline: none;
 }
 
-tbody tr:nth-child(even) .produto-img {
+tbody tr:nth-child(odd) .produto-img {
     background: #f1f1f1;
 }
 

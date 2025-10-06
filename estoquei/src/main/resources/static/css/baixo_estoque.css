@@ -204,7 +204,7 @@ tbody tr:nth-child(even) {
     outline: none;
 }
 
-tbody tr:nth-child(even) .produto-img {
+tbody tr:nth-child(odd) .produto-img {
     background: #f1f1f1;
 }
 
@@ -220,7 +220,7 @@ tbody tr:nth-child(even) .produto-img {
 }
 .produto-img i {
     padding-top: 5px;
-}    
+}
 .produto-img:hover {
     color: #9d9d9d;
     transition: transform 0.2s;

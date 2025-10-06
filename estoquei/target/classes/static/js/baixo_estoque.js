@@ -1408,48 +1408,63 @@ function removerProduto(id, nome, quantidade) {
             title: `Removendo "${nomeProduto}"`,
             text: 'O produto será movido para a lixeira',
             icon: 'info',
-            showConfirmButton: true,
-            confirmButtonText: 'Cancelar',
-            showCancelButton: false,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
             customClass: {
-                confirmButton: 'swal2-remove-custom'
+            cancelButton: 'swal2-remove-custom'
             },
             allowOutsideClick: false,
             timer: 3000,
             timerProgressBar: true,
             didOpen: () => {
-                Swal.showLoading();
-                const swalTimer = setTimeout(() => {
-                    if (!cancelado) {
-                        fetch('/produtos/' + id, { method: 'DELETE' })
-                            .then(response => {
-                                if (response.ok) {
-                                    Swal.fire({
-                                        title: `"${nomeProduto}" removido!`,
-                                        icon: 'success',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        timerProgressBar: true
-                                    }).then(() => location.reload());
-                                } else {
-                                    Swal.fire({
-                                        title: 'Erro!',
-                                        text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
-                                        icon: 'error',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        timerProgressBar: true
-                                    });
-                                }
-                            });
+            const swalTimer = setTimeout(() => {
+                if (!cancelado) {
+                fetch('/produtos/' + id, { method: 'DELETE' })
+                    .then(response => {
+                    if (response.ok) {
+                        Swal.fire({
+                        title: `"${nomeProduto}" removido!`,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                        title: 'Erro!',
+                        text: `Não foi possível remover ${nomeProduto}. Tente novamente`,
+                        icon: 'error',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                        });
                     }
-                }, 3000);
+                    });
+                }
+            }, 3000);
 
-                Swal.getConfirmButton().onclick = () => {
-                    cancelado = true;
-                    clearTimeout(swalTimer);
-                    Swal.close();
-                };
+            const cancelBtn = Swal.getCancelButton();
+            if (cancelBtn) {
+                cancelBtn.style.width = '90px';
+                cancelBtn.style.maxWidth = '90px';
+                cancelBtn.style.border = 'none';
+
+                cancelBtn.addEventListener('mouseenter', function() {
+                cancelBtn.style.backgroundColor = '#c82333';
+                cancelBtn.style.borderColor = '#bd2130';
+                });
+                cancelBtn.addEventListener('mouseleave', function() {
+                cancelBtn.style.backgroundColor = '#dc3545';
+                cancelBtn.style.borderColor = '#dc3545';
+                });
+            }
+
+            Swal.getCancelButton().onclick = () => {
+                cancelado = true;
+                clearTimeout(swalTimer);
+                Swal.close();
+            };
             }
         });
     } else {
