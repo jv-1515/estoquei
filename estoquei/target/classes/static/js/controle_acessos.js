@@ -169,6 +169,22 @@ async function aplicarPermissoesBaixoEstoque() {
 }
 
 
+// ---------EDITAR PRODUTO ---------------
+async function aplicarPermissoesEditarProduto() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+    if (!cargo) return;
+    // Excluir produto = permissão 4 no módulo produtos
+    document.querySelectorAll('button.trash-icon, button[title="Remover"], .trash-icon').forEach(btn => {
+        if (!temPermissao(cargo, 'produtos', 4)) {
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+            btn.onclick = null;
+        }
+    });
+}
+
 
 
 // -------- MOVIMENTACOES --------
@@ -422,6 +438,7 @@ async function aplicarPermissoesFuncionarios() {
 // funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
 window.aplicarPermissoesBaixoEstoque = aplicarPermissoesBaixoEstoque;
+window.aplicarPermissoesEditarProduto = aplicarPermissoesEditarProduto;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
 window.aplicarPermissoesInicio = aplicarPermissoesInicio;

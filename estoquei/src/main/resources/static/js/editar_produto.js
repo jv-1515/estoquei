@@ -451,6 +451,10 @@ function removerProduto() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    if (window.aplicarPermissoesEditarProduto) {
+        window.aplicarPermissoesEditarProduto();
+    }
+
     const textarea = document.getElementById('descricao');
     const contador = document.getElementById('contador-descricao');
     if (textarea && contador) {
