@@ -142,6 +142,51 @@ async function aplicarPermissoesEstoque() {
         }
 }
 
+
+// -------- BAIXO ESTOQUE --------
+async function aplicarPermissoesBaixoEstoque() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+    if (!cargo) return;
+
+    // Editar produto nos detalhes (editar = 3)
+    const editLink = document.getElementById('detalhes-edit-link');
+    if (editLink && !temPermissao(cargo, 'produtos', 2)) {
+        editLink.removeAttribute('href');
+        editLink.title = 'Sem permissão';
+        editLink.style.cursor = 'not-allowed';
+        editLink.style.opacity = '0.6';
+    }
+
+    // Remover produto nos detalhes (excluir = 4)
+    const removeBtn = document.getElementById('detalhes-remove-btn');
+    if (removeBtn && !temPermissao(cargo, 'produtos', 4)) {
+        removeBtn.disabled = true;
+        removeBtn.title = 'Sem permissão';
+        removeBtn.style.cursor = 'not-allowed';
+        removeBtn.style.opacity = '0.6';
+        removeBtn.onclick = null;
+    }
+}
+
+
+// ---------EDITAR PRODUTO ---------------
+async function aplicarPermissoesEditarProduto() {
+    const { usuario, cargo } = await getPermissoesUsuario();
+    if (!cargo) return;
+    // Excluir produto = permissão 4 no módulo produtos
+    document.querySelectorAll('button.trash-icon, button[title="Remover"], .trash-icon').forEach(btn => {
+        if (!temPermissao(cargo, 'produtos', 4)) {
+            btn.disabled = true;
+            btn.title = 'Sem permissão';
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.6';
+            btn.onclick = null;
+        }
+    });
+}
+
+
+
 // -------- MOVIMENTACOES --------
 async function aplicarPermissoesMovimentacoes() {
     const { usuario, cargo } = await getPermissoesUsuario();
@@ -367,14 +412,6 @@ async function aplicarPermissoesFuncionarios() {
         }
     });
 
-    // Alerta dados incompletos (editar)
-    // document.querySelectorAll('span[title="Dados incompletos"]').forEach(alerta => {
-    //     if (!temPermissao(cargo, 'funcionarios', 3)) {
-    //         alerta.removeAttribute('onclick');
-    //         alerta.removeAttribute('href');
-    //     }
-    // });
-
     // Remover funcionário (excluir = 4)
     document.querySelectorAll('button[title="Excluir"], button[title="Remover"], a[title="Excluir"], a[title="Remover"]').forEach(btn => {
         if (!temPermissao(cargo, 'funcionarios', 4)) {
@@ -386,12 +423,22 @@ async function aplicarPermissoesFuncionarios() {
             btn.style.opacity = '0.6';
         }
     });
+
+    const btnPermissoes = document.querySelector('.btn-permissoes');
+    if (btnPermissoes && !temPermissao(cargo, 'funcionarios', 4)) {
+        btnPermissoes.disabled = true;
+        btnPermissoes.title = 'Sem permissão';
+        btnPermissoes.style.cursor = 'not-allowed';
+        btnPermissoes.style.backgroundColor = '#757575';
+    }
 }
 
 
 
 // funções para usar nos outros arquivos
 window.aplicarPermissoesEstoque = aplicarPermissoesEstoque;
+window.aplicarPermissoesBaixoEstoque = aplicarPermissoesBaixoEstoque;
+window.aplicarPermissoesEditarProduto = aplicarPermissoesEditarProduto;
 window.aplicarPermissoesMovimentacoes = aplicarPermissoesMovimentacoes;
 window.aplicarPermissoesMovimentarProduto = aplicarPermissoesMovimentarProduto;
 window.aplicarPermissoesInicio = aplicarPermissoesInicio;

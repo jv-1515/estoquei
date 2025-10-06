@@ -1151,8 +1151,42 @@ function renderizarMovimentacoes(movimentacoes) {
                     <td>${m.quantidadeMovimentada}</td>
                     <td>${m.estoqueFinal}</td>
                     <td>${valorFormatado}</td>
-                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">${m.parteEnvolvida || '-'}</td>
-                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.responsavel || '-'}">${m.responsavel || '-'}</td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.parteEnvolvida || '-'}">
+                        ${m.parteEnvolvida ? `
+                            <div style="display: flex; align-items: center; gap: 8px; padding-left:10px;">
+                                <div style="
+                                    width: 30px; height: 30px; border-radius: 50%;
+                                    background: ${corAvatar(m.parteEnvolvida)};
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-weight: bold; font-size: 12px; color: rgba(0,0,0,0.7);
+                                    flex-shrink: 0;
+                                ">
+                                    ${getPrimeiraInicial(m.parteEnvolvida)}
+                                </div>
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${m.parteEnvolvida}
+                                </span>
+                            </div>
+                        ` : '-'}
+                    </td>
+                    <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.responsavel || '-'}">
+                        ${m.responsavel ? `
+                            <div style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                                <div style="
+                                    width: 30px; height: 30px; border-radius: 50%;
+                                    background: ${corAvatar(m.responsavel)};
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-weight: bold; font-size: 12px; color: rgba(0,0,0,0.7);
+                                    flex-shrink: 0;
+                                ">
+                                    ${getIniciais(m.responsavel)}
+                                </div>
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${getCodigoResponsavel(m.responsavel)}
+                                </span>
+                            </div>
+                        ` : '-'}
+                    </td>
                     <td>${m.codigoProduto}</td>
                     <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${m.nome}">${m.nome}</td>
                     <td class="categoria">${categoria}</td>
@@ -1893,8 +1927,43 @@ if (btnLimparFiltrosExtras) {
             genTodos.checked = true;
             genChecks.forEach(cb => cb.checked = true);
             atualizarPlaceholderGeneroMulti();
-        }      
+        }
 
         filtrarMovimentacoes();
     });
+}
+
+
+function getIniciais(nome) {
+    if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
+    
+    // Para responsável, pega a parte depois do hífen se existir
+    const parteNome = nome.includes(' - ') ? nome.split(' - ')[1] : nome;
+    const partes = parteNome.trim().split(' ');
+    
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function corAvatar(str) {
+    if (!str) return '#f1f1f1';
+    
+    // Para responsável, usa a parte depois do hífen para o hash
+    const parteHash = str.includes(' - ') ? str.split(' - ')[1] : str;
+    
+    let hash = 0;
+    for (let i = 0; i < parteHash.length; i++) hash = parteHash.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 60%, 80%)`;
+}
+
+function getPrimeiraInicial(nome) {
+    if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
+    return nome.trim()[0].toUpperCase();
+}
+
+// Função para extrair código do funcionário do campo responsável
+function getCodigoResponsavel(responsavel) {
+    if (!responsavel || !responsavel.includes(' - ')) return 'N/A';
+    return responsavel.split(' - ')[0]; // Parte antes do hífen é o código
 }

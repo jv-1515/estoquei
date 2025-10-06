@@ -758,7 +758,7 @@ function removerProduto(id, nome, quantidade) {
     if (quantidade === 0) {
         let cancelado = false;
         Swal.fire({
-            title: `Removendo "${nomeProduto}"...`,
+            title: `Removendo "${nomeProduto}"`,
             text: 'O produto será movido para a lixeira',
             icon: 'info',
             showCancelButton: true,
@@ -987,7 +987,7 @@ function renderizarProdutos(produtos) {
                     <a href="/movimentar-produto?id=${p.id}" title="Abastecer produto" style="text-decoration:none;">
                         <span style="
                             display:inline-block;
-                            padding:2px 10px;
+                            padding:4px 10px;
                             border-radius:12px;
                             font-size:12px;
                             color:#fff;

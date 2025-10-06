@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (span) span.textContent = iniciais;
     else avatarCircle.textContent = iniciais;
 
-    // Cor pastel baseada no nome (igual home)
     let hash = 0;
     for (let i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
     const h = Math.abs(hash) % 360;
