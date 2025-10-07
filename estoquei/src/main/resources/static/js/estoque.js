@@ -1037,7 +1037,7 @@ function renderizarProdutos(produtos) {
             const rowHtml = `
                 <tr>
                     <td style="width: 30px; max-width: 30px; padding-left:20px">
-                        ${imageUrl 
+                        ${imageUrl
                             ? `<img src="${imageUrl}" alt="${p.descricao || 'Foto do produto'}" class="produto-img" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})' />`
                             : `<span class="produto-img icon" onclick='abrirDetalhesProduto(${JSON.stringify(produtoObj)}, ${JSON.stringify(movimentacaoObj)})'><i class="fa-regular fa-image"></i></span>`
                         }
@@ -1053,8 +1053,12 @@ function renderizarProdutos(produtos) {
                         ${iconeAbastecer}
                     </td>
                     <td>${p.limiteMinimo}</td>
-                    <td>${entradasHoje}</td>
-                    <td>${saidasHoje}</td>
+                    <td>
+                        <span style="${entradasHoje > 0 ? 'font-weight:bold;color:#43b04a;' : ''}">${entradasHoje}</span>
+                    </td>
+                    <td>
+                        <span style="${saidasHoje > 0 ? 'font-weight:bold;color:#ff5722;' : ''}">${saidasHoje}</span>
+                    </td>
                     <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>
                     <td style="padding-right:20px" class="actions">

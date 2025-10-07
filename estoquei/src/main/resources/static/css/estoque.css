@@ -149,7 +149,7 @@ table th.ordenar {
 
 td:nth-child(7) {
     text-align: right;
-    padding-right: 15px;
+    padding-right: 25px;
 }
 td:nth-child(3),
 td:nth-child(4),
@@ -465,7 +465,7 @@ select#filter-genero {
     z-index: 1000;
     border: 1px solid #aaa;
     display: none;
-    max-height: 90px;
+    max-height: 52px;
     overflow-y: auto;
     font-size: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);

@@ -452,7 +452,7 @@ function renderizarFuncionarios(lista) {
                         display:flex;align-items:center;justify-content:center;
                         font-weight:bold;
                         font-size:12px;
-                        color: rgba(0,0,0,0.7);
+                        color: #333333b3;
                         cursor:pointer;"
                         onclick="abrirDetalhesFuncionario('${f.id}')"
                         title="Ver detalhes"
