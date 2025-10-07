@@ -85,7 +85,7 @@ h3 {
     border-radius: 4px;
     font-size: 12px;
     padding: 7px;
-    color: #757575;
+    /* color: #757575; */
     background: #fff;
     transition: border-color 0.2s;
 }
