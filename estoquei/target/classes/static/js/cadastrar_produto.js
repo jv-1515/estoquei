@@ -57,8 +57,11 @@ form.addEventListener('submit', function(e) {
 
 
 // Array de categorias cadastrado no modal (com nível de tamanhos)
-let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
-
+let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal'));
+if (!categoriasModal || categoriasModal.length === 0) {
+  categoriasModal = [];
+  localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+}
 // Evento de clique do radio da categoria
 document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
     radio.addEventListener('click', function(e) {
@@ -394,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fecharModalCategorias() {
-  for(let i=1;i<=12;i++) {
+  for(let i=1;i<=categoriasModal.length;i++) {
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
     categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
@@ -458,18 +461,64 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
   });
 });
 
-// Ao abrir modal, salva snapshot
+function renderizarCategoriasModal() {
+  const container = document.querySelector('.categorias-table');
+  container.innerHTML = '';
+  categoriasModal.forEach((cat, idx) => {
+    const linhaValida = cat.nome && cat.nome.trim() && cat.tamanhos && cat.tamanhos.length && cat.generos && cat.generos.length;
+    container.innerHTML += `
+      <div class="categorias-row">
+        <div class="categorias-col">
+          ${idx === 0 ? `<label class="categorias-label" for="categoria_${idx+1}">Categoria</label>` : ''}
+          <input type="text" class="categorias-input" id="categoria_${idx+1}" maxlength="10" value="${cat.nome || ''}" placeholder="Digite o nome">
+        </div>
+        <div class="categorias-col">
+          ${idx === 0 ? `<label class="categorias-label" for="tamanho_input_${idx+1}">Tamanhos</label>` : ''}
+          <div class="multiselect-tamanho">
+            <input type="text" class="categorias-input" id="tamanho_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idx+1})" style="color: #757575;">
+            <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
+            <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idx+1}" style="display:none;">
+              <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+              <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+              <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
+            </div>
+          </div>
+        </div>
+        <div class="categorias-col">
+          ${idx === 0 ? `<label class="categorias-label" for="genero_input_${idx+1}">Gêneros</label>` : ''}
+          <div class="multiselect-genero">
+            <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
+            <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+            <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
+              <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
+              <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
+              <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
+              <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+            </div>
+          </div>
+        </div>
+        <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+          ${linhaValida ? `<button type="button" class="remover" data-idx="${idx+1}" title="Remover"><i class="fa-solid fa-delete-left"></i></button>` : ''}
+        </div>
+      </div>
+    `;
+  });
+  atualizarBotaoCriar();
+  preencherCamposCategorias();
+  adicionarListenersRemoverCategorias();
+}
+
 document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.getElementById('modal-categorias-bg').style.display = 'flex';
   document.body.style.overflow = 'hidden';
   categoriasModalSnapshot = JSON.stringify(categoriasModal);
-  preencherCamposCategorias();
+  renderizarCategoriasModal();
 });
 
 // Preenche os campos do modal com o array
 function preencherCamposCategorias() {
-  for(let i=1;i<=12;i++) {
+  for(let i=1;i<=categoriasModal.length;i++) {
     document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
     document.getElementById('categoria_'+i).maxLength = 10;
     atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
@@ -482,12 +531,13 @@ function preencherCamposCategorias() {
 // Atualiza checkboxes de tamanho
 function atualizarCheckboxesTamanho(idx, arr) {
   const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+  if (!checks.length) return;
   if(arr.includes("TODOS")) {
-    checks.forEach(cb => cb.checked = true); // Marca todos
+    checks.forEach(cb => cb.checked = true);
   } else {
     checks.forEach(cb => cb.checked = false);
-    if(arr.includes("LETRAS")) checks[1].checked = true;
-    if(arr.includes("NUMERICOS")) checks[2].checked = true;
+    if(arr.includes("LETRAS") && checks[1]) checks[1].checked = true;
+    if(arr.includes("NUMERICOS") && checks[2]) checks[2].checked = true;
   }
 }
 
@@ -550,6 +600,7 @@ function atualizarPlaceholderTamanhoMulti(idx) {
 }
 function atualizarArrayTamanho(idx) {
   const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  if (!div) return;
   const checks = div.querySelectorAll('.tamanho-multi-check');
   const todos = checks[0];
   const letras = checks[1];
@@ -608,7 +659,9 @@ function atualizarPlaceholderGeneroMulti(idx) {
 }
 function atualizarArrayGenero(idx) {
   const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  if (!div) return;
   const checks = div.querySelectorAll('.genero-multi-check');
+  if (!checks.length) return;
   categoriasModal[idx-1].generos = [];
   if (checks[0] && checks[0].checked) categoriasModal[idx-1].generos = ["TODOS"];
   else {
@@ -670,10 +723,9 @@ document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input,
 // Validação dos campos obrigatórios
 function validarCategoriasObrigatorias() {
   let ok = true;
-  for(let i=0;i<12;i++) {
+  for(let i=0;i<categoriasModal.length;i++) {
     const cat = categoriasModal[i];
     if(cat.nome.trim() && cat.tamanhos.length && cat.generos.length) continue;
-    // Se algum campo está preenchido, todos devem estar
     if(cat.nome.trim() || cat.tamanhos.length || cat.generos.length) {
       ok = false;
       break;
@@ -686,7 +738,7 @@ function validarCategoriasObrigatorias() {
 document.getElementById('form-categorias').addEventListener('submit', function(e) {
   e.preventDefault();
   // Atualiza arrays antes de comparar
-  for(let i=1;i<=12;i++) {
+  for(let i=1;i<=categoriasModal.length;i++) {
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
     categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
@@ -749,7 +801,6 @@ function adicionarListenersRemoverCategorias() {
   document.querySelectorAll('.remover').forEach((btn, idx) => {
     btn.onclick = function(e) {
       e.preventDefault();
-      // Só permite remover se houver mais de 1 preenchida
       const preenchidas = categoriasModal.filter(cat => cat.nome.trim());
       if (preenchidas.length <= 1) {
         Swal.fire({
@@ -762,18 +813,6 @@ function adicionarListenersRemoverCategorias() {
         return;
       }
 
-      // TODO: Verificar se existe produto cadastrado com essa categoria
-      // const nomeCategoria = categoriasModal[idx].nome.trim();
-      // if (existeProdutoComCategoria(nomeCategoria)) {
-      //   Swal.fire({
-      //     icon: 'error',
-      //     title: 'Não é possível remover',
-      //     text: 'Já existe produto cadastrado com essa categoria!',
-      //     timer: 1800,
-      //     showConfirmButton: false
-      //   });
-      //   return;
-      // }
 
       Swal.fire({
         icon: 'warning',
@@ -784,23 +823,15 @@ function adicionarListenersRemoverCategorias() {
         cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         customClass: {
-        confirmButton: 'swal2-remove-custom',
-        cancelButton: 'swal2-cancel-custom'
+          confirmButton: 'swal2-remove-custom',
+          cancelButton: 'swal2-cancel-custom'
         }
       }).then((result) => {
         if (result.isConfirmed) {
-
-            categoriasModal.splice(idx, 1);
-
-            categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
-
-            preencherCamposCategorias();
-
-            adicionarListenersRemoverCategorias();
-
-            categoriasModalSnapshot = JSON.stringify(categoriasModal);
-
-            localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+          categoriasModal.splice(idx, 1);
+          localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+          categoriasModalSnapshot = JSON.stringify(categoriasModal);
+          renderizarCategoriasModal();
         }
       });
     };
@@ -808,9 +839,12 @@ function adicionarListenersRemoverCategorias() {
 }
 
 function preencherCamposCategorias() {
-  for(let i=1;i<=12;i++) {
-    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
-    document.getElementById('categoria_'+i).maxLength = 10;
+  for(let i=1;i<=categoriasModal.length;i++) {
+    const nomeInput = document.getElementById('categoria_'+i);
+    if (nomeInput) {
+      nomeInput.value = categoriasModal[i-1].nome || "";
+      nomeInput.maxLength = 10;
+    }
     atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
     atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
     atualizarPlaceholderTamanhoMulti(i);
@@ -859,7 +893,7 @@ function aplicarEstiloInputs() {
                 nomeInput.style.border = `1px solid ${borderColor}`;
                 nomeInput.style.color = linhaValida ? "#fff" : "#000";
                 nomeInput.style.opacity = "1";
-                nomeInput.placeholder = "Criar categoria";
+                nomeInput.placeholder = "Digite o nome";
             }
 
             // Inputs de tamanho/gênero: cinza quando válidos, branco quando inválidos
@@ -1127,3 +1161,145 @@ document.addEventListener('DOMContentLoaded', function() {
   atualizarTamanhosEGenerosPorCategoria(null);
 });
 
+let MAX_CATEGORIAS = 20;
+
+// Função para contar linhas de categoria
+function contarCategorias() {
+  return document.querySelectorAll('.categorias-row').length;
+}
+
+// Atualiza texto do botão "+ Criar"
+function atualizarBotaoCriar() {
+  const btnCriar = document.getElementById('btn-criar-categoria');
+  if (!btnCriar) return;
+  btnCriar.textContent = `Adicionar (${contarCategorias()}/${MAX_CATEGORIAS})`;
+  btnCriar.disabled = contarCategorias() >= MAX_CATEGORIAS;
+}
+
+// Adiciona nova linha de categoria
+document.getElementById('btn-criar-categoria').onclick = function() {
+  if (contarCategorias() >= MAX_CATEGORIAS) return;
+
+  // Verifica se a última linha está preenchida
+  const linhas = document.querySelectorAll('.categorias-row');
+  if (linhas.length > 0) {
+    const idx = linhas.length;
+    const nome = document.getElementById(`categoria_${idx}`)?.value?.trim();
+    const tamanhos = Array.from(document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check:checked`));
+    const generos = Array.from(document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check:checked`));
+    if (!nome || tamanhos.length === 0 || generos.length === 0) {
+      const btnCriar = document.getElementById('btn-criar-categoria');
+      btnCriar.disabled = true;
+      return;
+    }
+  }
+
+  // Cria nova linha (copiando o HTML da última linha, mas limpando os valores)
+  const idxNovo = contarCategorias() + 1;
+  const novaLinha = document.createElement('div');
+  novaLinha.className = 'categorias-row';
+  novaLinha.innerHTML = `
+    <div class="categorias-col">
+      <input type="text" class="categorias-input" id="categoria_${idxNovo}" maxlength="10" placeholder="Digite o nome">
+    </div>
+    <div class="categorias-col">
+      <div class="multiselect-tamanho">
+        <input type="text" class="categorias-input" id="tamanho_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idxNovo})" style="color: #757575;">
+        <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
+        <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idxNovo}" style="display:none;">
+          <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
+        </div>
+      </div>
+    </div>
+    <div class="categorias-col">
+      <div class="multiselect-genero">
+        <input type="text" class="categorias-input" id="genero_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idxNovo})" style="color: #757575;">
+        <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+        <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idxNovo}" style="display:none;">
+          <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+          <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
+        </div>
+      </div>
+    </div>
+    <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+    </div>
+  `;
+  document.querySelector('.categorias-table').appendChild(novaLinha);
+  atualizarBotaoCriar();
+  atualizarBotaoRemover(idxNovo);
+};
+
+// Atualiza botão ao abrir modal
+document.getElementById('modal-categorias-bg').addEventListener('show', atualizarBotaoCriar);
+document.addEventListener('DOMContentLoaded', atualizarBotaoCriar);
+
+function atualizarBotaoRemover(idx) {
+  const nome = document.getElementById(`categoria_${idx}`)?.value?.trim();
+  const tamanhos = Array.from(document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check:checked`));
+  const generos = Array.from(document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check:checked`));
+  const colRemover = document.querySelectorAll('.categorias-row')[idx-1].querySelector('.categorias-col:last-child');
+  colRemover.innerHTML = ''; // Limpa
+
+  if (nome && tamanhos.length > 0 && generos.length > 0) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'remover';
+    btn.setAttribute('data-idx', idx);
+    btn.title = 'Remover';
+    btn.innerHTML = '<i class="fa-solid fa-delete-left"></i>';
+    btn.onclick = function(e) {
+      e.preventDefault();
+      const preenchidas = Array.from(document.querySelectorAll('.categorias-row')).filter((row, i) => {
+        const nomeVal = document.getElementById(`categoria_${i+1}`)?.value?.trim();
+        return nomeVal;
+      });
+      if (preenchidas.length <= 1) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Não é possível remover!',
+          text: 'Deve existir pelo menos 1 categoria',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: 'Remover categoria?',
+        text: 'Essa ação não pode ser desfeita',
+        showCancelButton: true,
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Voltar',
+        allowOutsideClick: false,
+        customClass: {
+          confirmButton: 'swal2-remove-custom',
+          cancelButton: 'swal2-cancel-custom'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.querySelectorAll('.categorias-row')[idx-1].remove();
+          atualizarBotaoCriar();
+        }
+      });
+    };
+    colRemover.appendChild(btn);
+  }
+}
+
+document.getElementById(`categoria_${idxNovo}`).addEventListener('input', function() {
+  atualizarBotaoRemover(idxNovo);
+});
+document.querySelectorAll(`#checkboxes-tamanho-multi-${idxNovo} .tamanho-multi-check`).forEach(cb => {
+  cb.addEventListener('change', function() {
+    atualizarBotaoRemover(idxNovo);
+  });
+});
+document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-check`).forEach(cb => {
+  cb.addEventListener('change', function() {
+    atualizarBotaoRemover(idxNovo);
+  });
+});

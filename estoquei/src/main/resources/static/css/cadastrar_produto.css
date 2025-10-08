@@ -107,6 +107,17 @@ h2 {
     background-color: #277580;
 }
 
+#btn-criar-categoria {
+    max-width: 130px;
+    background: #fff;
+    border: 2px solid #1E94A3;
+    color: #1E94A3;
+}
+
+#btn-salvar {
+    margin-right: 30px;
+}
+
 .right-column {
     flex: 1;
     display: flex;
@@ -189,6 +200,10 @@ select#genero {
     font-size: 12px;
     background: #fff;
     width: 200px;
+    color: #757575;
+}
+.categorias-input:valid {
+    color: #000;
 }
 
 .categorias-row .categorias-col:first-child .categorias-input::placeholder {
