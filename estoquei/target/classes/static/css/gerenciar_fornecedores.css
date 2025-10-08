@@ -554,6 +554,7 @@ th.ordenar.sorted .sort-icon {
   cursor: pointer;
 }
 
+#checkboxes-categoria-multi,
 #checkboxes-categoria-multi-filtro {
     display: none;
     border: 1px #aaa solid;
@@ -569,6 +570,7 @@ th.ordenar.sorted .sort-icon {
     scrollbar-color: #aaa #fff;
 }
 
+#checkboxes-categoria-multi label,
 #checkboxes-categoria-multi-filtro label {
     display: flex;
     align-items: center;

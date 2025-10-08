@@ -190,6 +190,54 @@ select#genero {
     flex-direction: column;
     width: 200px;
 }
+/* Labels fixas */
+.categorias-table-header {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+  color: #333;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Scroll apenas nas linhas */
+.categorias-table-scroll {
+  max-height: calc(48px * 10); /* 10 linhas de altura */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #1e94a3 #f1f1f1;
+  border-radius: 8px;
+  transition: max-height 0.2s;
+}
+
+/* Scrollbar à esquerda */
+.categorias-table-scroll::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+  position: absolute;
+  left: 0;
+}
+
+.categorias-table-scroll::-webkit-scrollbar-thumb {
+  background: #1e94a3;
+  border-radius: 8px;
+}
+
+.categorias-table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+/* Evita scroll lateral */
+.categorias-table {
+  overflow-x: hidden !important;
+}
 
 .categorias-input {
     height: 30px;
