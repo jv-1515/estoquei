@@ -508,9 +508,9 @@ function renderizarCategoriasModal() {
     `;
   });
   
-  // Adiciona scroll se houver mais de 10 linhas
+  // Adiciona scroll se houver 10 linhas
   const linhas = container.querySelectorAll('.categorias-row');
-  if (linhas.length > 10) {
+  if (linhas.length >= 10) {
     container.classList.add('categorias-table-scroll');
   } else {
     container.classList.remove('categorias-table-scroll');
@@ -624,8 +624,15 @@ function atualizarCheckboxesGenero(idx, arr) {
 
 // Multiselect Tamanhos
 function abrirTamanhoMulti(idx) {
-  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => div.style.display = 'none');
-  document.getElementById('checkboxes-tamanho-multi-' + idx).style.display = 'block';
+  const menu = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const input = document.getElementById('tamanho_input_' + idx);
+  if (!menu || !input) return;
+  // toggle: se já flutuando, fecha; caso contrário abre flutuando
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
 }
 
 document.querySelectorAll('.checkboxes-tamanho-multi').forEach((container, idx) => {
@@ -692,8 +699,14 @@ function atualizarArrayTamanho(idx) {
 
 // Multiselect Genero
 function abrirGeneroMulti(idx) {
-  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => div.style.display = 'none');
-  document.getElementById('checkboxes-genero-multi-' + idx).style.display = 'block';
+  const menu = document.getElementById('checkboxes-genero-multi-' + idx);
+  const input = document.getElementById('genero_input_' + idx);
+  if (!menu || !input) return;
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
 }
 
 document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) => {
@@ -756,12 +769,28 @@ function atualizarArrayGenero(idx) {
 }
 
 // Fecha popups ao clicar fora
+// ...existing code...
+/* novo handler: fecha dropdowns "flutuantes" sem apagar estilos residuais */
 document.addEventListener('mousedown', function(e) {
+  // checkboxes de tamanho
   document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
-    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('tamanho_input_' + idx) : null;
+    // se visível e clique fora do menu e fora do input -> fechar (restaura estilo floating)
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      if (typeof unfloatMenu === 'function') unfloatMenu(div);
+      else div.style.display = 'none';
+    }
   });
+
+  // checkboxes de genero
   document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
-    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('genero_input_' + idx) : null;
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      if (typeof unfloatMenu === 'function') unfloatMenu(div);
+      else div.style.display = 'none';
+    }
   });
 });
 
@@ -1443,3 +1472,79 @@ document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-che
     atualizarBotaoRemover(idxNovo);
   });
 });
+
+
+/* helper mínimo: torna um menu "flutuante" (fixed) alinhado ao input */
+function floatMenu(menuEl, inputEl) {
+  if (!menuEl || !inputEl) return;
+  // fecha outros menus primeiro
+  document.querySelectorAll('.checkboxes-tamanho-multi, .checkboxes-genero-multi').forEach(m => {
+    if (m !== menuEl) {
+      m.style.display = 'none';
+      m.classList.remove('floating');
+      // limpa estilos fixos caso existam
+      m.style.left = m.style.top = m.style.width = '';
+    }
+  });
+
+  const rect = inputEl.getBoundingClientRect();
+  // aplica classe floating (CSS .floating controla z-index/position)
+  menuEl.classList.add('floating');
+  // posiciona com base na viewport (fixed)
+  // tenta abrir abaixo, se não couber abre acima
+  const needed = Math.min(menuEl.scrollHeight || 160, 320);
+  const spaceBelow = window.innerHeight - rect.bottom;
+  if (spaceBelow < needed && rect.top > needed) {
+    // abre acima
+    menuEl.style.top = (rect.top - needed) + 'px';
+  } else {
+    // abre abaixo
+    menuEl.style.top = (rect.bottom) + 'px';
+  }
+  menuEl.style.left = rect.left + 'px';
+  menuEl.style.width = rect.width + 'px';
+  menuEl.style.display = 'block';
+  menuEl.dataset.floating = '1';
+}
+
+/* helper para fechar e restaurar menu */
+function unfloatMenu(menuEl) {
+  if (!menuEl) return;
+  menuEl.style.display = 'none';
+  menuEl.classList.remove('floating');
+  if (menuEl.dataset.floating === '1') {
+    menuEl.style.left = '';
+    menuEl.style.top = '';
+    menuEl.style.width = '';
+    delete menuEl.dataset.floating;
+  }
+}
+
+/* substituir abrirTamanhoMulti */
+
+
+/* substituir abrirGeneroMulti */
+
+
+/* substituir handler global que fecha dropdowns ao clicar fora */
+document.addEventListener('mousedown', function(e) {
+  // checkboxes de tamanho
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('tamanho_input_' + idx) : null;
+    // se visível e clique fora do menu e fora do input -> fechar
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      unfloatMenu(div);
+    }
+  });
+  // checkboxes de genero
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('genero_input_' + idx) : null;
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      unfloatMenu(div);
+    }
+  });
+});
+
+// ...existing code...
