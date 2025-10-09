@@ -57,8 +57,11 @@ form.addEventListener('submit', function(e) {
 
 
 // Array de categorias cadastrado no modal (com nível de tamanhos)
-let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
-
+let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal'));
+if (!categoriasModal || categoriasModal.length === 0) {
+  categoriasModal = [];
+  localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+}
 // Evento de clique do radio da categoria
 document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
     radio.addEventListener('click', function(e) {
@@ -394,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fecharModalCategorias() {
-  for(let i=1;i<=12;i++) {
+  for(let i=1;i<=categoriasModal.length;i++) {
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
     categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
@@ -421,6 +424,7 @@ function fecharModalCategorias() {
   }).then((result) => {
     if (result.isConfirmed) {
       document.getElementById('modal-categorias-bg').style.display = 'none';
+      aplicarEstiloInputs();
       document.body.style.overflow = '';
       // Restaura o array para o snapshot
       categoriasModal = JSON.parse(categoriasModalSnapshot);
@@ -458,36 +462,167 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
   });
 });
 
-// Ao abrir modal, salva snapshot
+function renderizarCategoriasModal() {
+  // Em vez de criar o container aqui, só limpa as linhas e insere nas linhas existentes do HTML fixo
+  const container = document.querySelector('.categorias-table');
+  if (!container) return;
+
+  // Remove todas as linhas exceto o header
+  Array.from(container.querySelectorAll('.categorias-row')).forEach(row => row.remove());
+
+  categoriasModal.forEach((cat, idx) => {
+    const linhaValida = cat.nome && cat.nome.trim() && cat.tamanhos && cat.tamanhos.length && cat.generos && cat.generos.length;
+    const novaLinha = document.createElement('div');
+    novaLinha.className = 'categorias-row';
+    novaLinha.innerHTML = `
+      <div class="categorias-col">
+        <input type="text" class="categorias-input" id="categoria_${idx+1}" maxlength="10" value="${cat.nome || ''}" placeholder="Digite o nome">
+      </div>
+      <div class="categorias-col">
+        <div class="multiselect-tamanho">
+          <input type="text" class="categorias-input" id="tamanho_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idx+1})" style="color: #757575;">
+          <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
+          <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idx+1}" style="display:none;">
+            <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
+          </div>
+        </div>
+      </div>
+      <div class="categorias-col">
+        <div class="multiselect-genero">
+          <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
+          <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+          <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
+            <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
+            <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
+            <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
+            <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+          </div>
+        </div>
+      </div>
+      <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+        ${linhaValida ? `<button type="button" class="remover" data-idx="${idx+1}" title="Remover"><i class="fa-solid fa-delete-left"></i></button>` : ''}
+      </div>
+    `;
+    container.appendChild(novaLinha);
+  });
+
+  // Adiciona scroll se houver 10 linhas
+  const linhas = container.querySelectorAll('.categorias-row');
+  const detalhesModal = document.querySelector('.detalhes-modal');
+  if (linhas.length >= 10) {
+    container.classList.add('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '520px';
+      detalhesModal.style.minWidth = '520px';
+    }
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) btnSalvar.style.marginRight = '40px';
+  } else {
+    container.classList.remove('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '510px';
+      detalhesModal.style.minWidth = '510px';
+    }
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) btnSalvar.style.marginRight = '30px';
+  }
+
+  requestAnimationFrame(() => {
+    container.scrollTo({ top: 0, behavior: 'auto' });
+  });
+
+  // Listeners dinâmicos
+  categoriasModal.forEach((cat, idx) => {
+    // Tamanhos
+    document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`).forEach(cb => {
+      cb.addEventListener('change', function() {
+        const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`);
+        const todos = checks[0];
+        const letras = checks[1];
+        const nums = checks[2];
+        if (cb.value === "TODOS") {
+          checks.forEach(c => c.checked = todos.checked);
+        } else {
+          todos.checked = letras.checked && nums.checked;
+        }
+        atualizarPlaceholderTamanhoMulti(idx+1);
+        atualizarArrayTamanho(idx+1);
+      });
+    });
+    atualizarPlaceholderTamanhoMulti(idx+1);
+
+    // Gêneros
+    document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`).forEach(cb => {
+      cb.addEventListener('change', function() {
+        const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`);
+        const todos = checks[0];
+        const masc = checks[1];
+        const fem = checks[2];
+        const uni = checks[3];
+        if (cb.value === "TODOS") {
+          checks.forEach(c => c.checked = todos.checked);
+        } else {
+          todos.checked = masc.checked && fem.checked && uni.checked;
+        }
+        atualizarPlaceholderGeneroMulti(idx+1);
+        atualizarArrayGenero(idx+1);
+      });
+    });
+    atualizarPlaceholderGeneroMulti(idx+1);
+  });
+
+  atualizarBotaoCriar();
+  preencherCamposCategorias();
+  adicionarListenersRemoverCategorias();
+  aplicarEstiloInputs();
+}
+
 document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.getElementById('modal-categorias-bg').style.display = 'flex';
   document.body.style.overflow = 'hidden';
   categoriasModalSnapshot = JSON.stringify(categoriasModal);
-  preencherCamposCategorias();
+  renderizarCategoriasModal();
 });
 
 // Preenche os campos do modal com o array
 function preencherCamposCategorias() {
-  for(let i=1;i<=12;i++) {
-    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
-    document.getElementById('categoria_'+i).maxLength = 10;
+  for(let i=1;i<=categoriasModal.length;i++) {
+    const nomeInput = document.getElementById('categoria_'+i);
+    if (nomeInput) {
+      nomeInput.value = categoriasModal[i-1].nome || "";
+      nomeInput.maxLength = 20;
+      nomeInput.placeholder = "Criar categoria";
+      nomeInput.style.backgroundColor = categoriasModal[i-1].nome.trim() ?
+        `rgb(${coresCategorias[i-1]})` : `rgba(${coresCategorias[i-1]},0.5)`;
+      nomeInput.style.color = categoriasModal[i-1].nome.trim() ? "#fff" : "#000";
+      nomeInput.style.border = `1px solid ${coresCategorias[i-1]}`;
+      nomeInput.style.opacity = "1";
+      nomeInput.addEventListener('input', function() {
+        categoriasModal[i-1].nome = nomeInput.value.slice(0,10);
+        preencherCamposCategorias();
+      });
+    }
     atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
     atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
     atualizarPlaceholderTamanhoMulti(i);
     atualizarPlaceholderGeneroMulti(i);
   }
+  adicionarListenersRemoverCategorias();
 }
 
 // Atualiza checkboxes de tamanho
 function atualizarCheckboxesTamanho(idx, arr) {
   const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+  if (!checks.length) return;
   if(arr.includes("TODOS")) {
-    checks.forEach(cb => cb.checked = true); // Marca todos
+    checks.forEach(cb => cb.checked = true);
   } else {
     checks.forEach(cb => cb.checked = false);
-    if(arr.includes("LETRAS")) checks[1].checked = true;
-    if(arr.includes("NUMERICOS")) checks[2].checked = true;
+    if(arr.includes("LETRAS") && checks[1]) checks[1].checked = true;
+    if(arr.includes("NUMERICOS") && checks[2]) checks[2].checked = true;
   }
 }
 
@@ -506,9 +641,17 @@ function atualizarCheckboxesGenero(idx, arr) {
 
 // Multiselect Tamanhos
 function abrirTamanhoMulti(idx) {
-  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => div.style.display = 'none');
-  document.getElementById('checkboxes-tamanho-multi-' + idx).style.display = 'block';
+  const menu = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const input = document.getElementById('tamanho_input_' + idx);
+  if (!menu || !input) return;
+  // toggle: se já flutuando, fecha; caso contrário abre flutuando
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
 }
+
 document.querySelectorAll('.checkboxes-tamanho-multi').forEach((container, idx) => {
   container.addEventListener('change', function(e) {
     if (e.target.classList.contains('tamanho-multi-check')) {
@@ -526,6 +669,9 @@ document.querySelectorAll('.checkboxes-tamanho-multi').forEach((container, idx) 
     }
   });
 });
+
+
+
 function atualizarPlaceholderTamanhoMulti(idx) {
   const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
   const checks = div.querySelectorAll('.tamanho-multi-check');
@@ -537,19 +683,25 @@ function atualizarPlaceholderTamanhoMulti(idx) {
   if (todos && todos.checked) {
     texto = 'Todos';
     color = '#000';
-  } else {
-    let arr = [];
-    if (letras && letras.checked) arr.push('Letras');
-    if (nums && nums.checked) arr.push('Numéricos');
-    texto = arr.length ? arr.join(', ') : 'Selecionar';
-    color = arr.length ? '#000' : '#757575';
+  } else if (letras.checked && !nums.checked) {
+    texto = 'Letras';
+    color = '#000';
+  } else if (!letras.checked && nums.checked) {
+    texto = 'Numéricos';
+    color = '#000';
+  } else if (letras.checked && nums.checked) {
+    texto = 'Letras, Numéricos';
+    color = '#000';
   }
   const input = document.getElementById('tamanho_input_' + idx);
   input.value = texto;
   input.style.color = color;
 }
+
+
 function atualizarArrayTamanho(idx) {
   const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  if (!div) return;
   const checks = div.querySelectorAll('.tamanho-multi-check');
   const todos = checks[0];
   const letras = checks[1];
@@ -564,9 +716,16 @@ function atualizarArrayTamanho(idx) {
 
 // Multiselect Genero
 function abrirGeneroMulti(idx) {
-  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => div.style.display = 'none');
-  document.getElementById('checkboxes-genero-multi-' + idx).style.display = 'block';
+  const menu = document.getElementById('checkboxes-genero-multi-' + idx);
+  const input = document.getElementById('genero_input_' + idx);
+  if (!menu || !input) return;
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
 }
+
 document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) => {
   container.addEventListener('change', function(e) {
     if (e.target.classList.contains('genero-multi-check')) {
@@ -585,6 +744,9 @@ document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) =
     }
   });
 });
+
+
+
 function atualizarPlaceholderGeneroMulti(idx) {
   const div = document.getElementById('checkboxes-genero-multi-' + idx);
   const checks = div.querySelectorAll('.genero-multi-check');
@@ -606,9 +768,14 @@ function atualizarPlaceholderGeneroMulti(idx) {
   input.value = texto;
   input.style.color = color;
 }
+
+
+
 function atualizarArrayGenero(idx) {
   const div = document.getElementById('checkboxes-genero-multi-' + idx);
+  if (!div) return;
   const checks = div.querySelectorAll('.genero-multi-check');
+  if (!checks.length) return;
   categoriasModal[idx-1].generos = [];
   if (checks[0] && checks[0].checked) categoriasModal[idx-1].generos = ["TODOS"];
   else {
@@ -619,12 +786,28 @@ function atualizarArrayGenero(idx) {
 }
 
 // Fecha popups ao clicar fora
+// ...existing code...
+/* novo handler: fecha dropdowns "flutuantes" sem apagar estilos residuais */
 document.addEventListener('mousedown', function(e) {
+  // checkboxes de tamanho
   document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
-    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('tamanho_input_' + idx) : null;
+    // se visível e clique fora do menu e fora do input -> fechar (restaura estilo floating)
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      if (typeof unfloatMenu === 'function') unfloatMenu(div);
+      else div.style.display = 'none';
+    }
   });
+
+  // checkboxes de genero
   document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
-    if (div.style.display === 'block' && !div.contains(e.target)) div.style.display = 'none';
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('genero_input_' + idx) : null;
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      if (typeof unfloatMenu === 'function') unfloatMenu(div);
+      else div.style.display = 'none';
+    }
   });
 });
 
@@ -670,10 +853,9 @@ document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input,
 // Validação dos campos obrigatórios
 function validarCategoriasObrigatorias() {
   let ok = true;
-  for(let i=0;i<12;i++) {
+  for(let i=0;i<categoriasModal.length;i++) {
     const cat = categoriasModal[i];
     if(cat.nome.trim() && cat.tamanhos.length && cat.generos.length) continue;
-    // Se algum campo está preenchido, todos devem estar
     if(cat.nome.trim() || cat.tamanhos.length || cat.generos.length) {
       ok = false;
       break;
@@ -686,7 +868,7 @@ function validarCategoriasObrigatorias() {
 document.getElementById('form-categorias').addEventListener('submit', function(e) {
   e.preventDefault();
   // Atualiza arrays antes de comparar
-  for(let i=1;i<=12;i++) {
+  for(let i=1;i<=categoriasModal.length;i++) {
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
     categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
@@ -749,7 +931,6 @@ function adicionarListenersRemoverCategorias() {
   document.querySelectorAll('.remover').forEach((btn, idx) => {
     btn.onclick = function(e) {
       e.preventDefault();
-      // Só permite remover se houver mais de 1 preenchida
       const preenchidas = categoriasModal.filter(cat => cat.nome.trim());
       if (preenchidas.length <= 1) {
         Swal.fire({
@@ -762,18 +943,6 @@ function adicionarListenersRemoverCategorias() {
         return;
       }
 
-      // TODO: Verificar se existe produto cadastrado com essa categoria
-      // const nomeCategoria = categoriasModal[idx].nome.trim();
-      // if (existeProdutoComCategoria(nomeCategoria)) {
-      //   Swal.fire({
-      //     icon: 'error',
-      //     title: 'Não é possível remover',
-      //     text: 'Já existe produto cadastrado com essa categoria!',
-      //     timer: 1800,
-      //     showConfirmButton: false
-      //   });
-      //   return;
-      // }
 
       Swal.fire({
         icon: 'warning',
@@ -784,23 +953,15 @@ function adicionarListenersRemoverCategorias() {
         cancelButtonText: 'Voltar',
         allowOutsideClick: false,
         customClass: {
-        confirmButton: 'swal2-remove-custom',
-        cancelButton: 'swal2-cancel-custom'
+          confirmButton: 'swal2-remove-custom',
+          cancelButton: 'swal2-cancel-custom'
         }
       }).then((result) => {
         if (result.isConfirmed) {
-
-            categoriasModal.splice(idx, 1);
-
-            categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
-
-            preencherCamposCategorias();
-
-            adicionarListenersRemoverCategorias();
-
-            categoriasModalSnapshot = JSON.stringify(categoriasModal);
-
-            localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+          categoriasModal.splice(idx, 1);
+          localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+          categoriasModalSnapshot = JSON.stringify(categoriasModal);
+          renderizarCategoriasModal();
         }
       });
     };
@@ -808,9 +969,12 @@ function adicionarListenersRemoverCategorias() {
 }
 
 function preencherCamposCategorias() {
-  for(let i=1;i<=12;i++) {
-    document.getElementById('categoria_'+i).value = categoriasModal[i-1].nome || "";
-    document.getElementById('categoria_'+i).maxLength = 10;
+  for(let i=1;i<=categoriasModal.length;i++) {
+    const nomeInput = document.getElementById('categoria_'+i);
+    if (nomeInput) {
+      nomeInput.value = categoriasModal[i-1].nome || "";
+      nomeInput.maxLength = 10;
+    }
     atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
     atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
     atualizarPlaceholderTamanhoMulti(i);
@@ -833,6 +997,14 @@ const coresCategorias = [
     "190,148,84",   // #be9454
     "242,109,141",  // #f26d8d
     "255,152,86",   // #ff9856
+    "52,152,219",   // #3498db
+    "46,204,113",   // #2ecc71
+    "241,196,15",   // #f1c40f
+    "155,89,182",   // #9b59b6
+    "52,73,94",     // #34495e
+    "127,140,141",  // #46adb4ff
+    "231,76,60",    // #e74c3c
+    "45,166,196"   // #2da6c4
 ];
 
 function aplicarEstiloInputs() {
@@ -859,7 +1031,7 @@ function aplicarEstiloInputs() {
                 nomeInput.style.border = `1px solid ${borderColor}`;
                 nomeInput.style.color = linhaValida ? "#fff" : "#000";
                 nomeInput.style.opacity = "1";
-                nomeInput.placeholder = "Criar categoria";
+                nomeInput.placeholder = "Digite o nome";
             }
 
             // Inputs de tamanho/gênero: cinza quando válidos, branco quando inválidos
@@ -1127,3 +1299,273 @@ document.addEventListener('DOMContentLoaded', function() {
   atualizarTamanhosEGenerosPorCategoria(null);
 });
 
+let MAX_CATEGORIAS = 20;
+
+// Função para contar linhas de categoria
+function contarCategorias() {
+  return document.querySelectorAll('.categorias-row').length;
+}
+
+// Atualiza texto do botão "+ Criar"
+function atualizarBotaoCriar() {
+  const btnCriar = document.getElementById('btn-criar-categoria');
+  if (!btnCriar) return;
+  btnCriar.textContent = `Adicionar (${contarCategorias()}/${MAX_CATEGORIAS})`;
+  btnCriar.disabled = contarCategorias() >= MAX_CATEGORIAS;
+}
+
+// Adiciona nova linha de categoria
+document.getElementById('btn-criar-categoria').onclick = function() {
+  if (contarCategorias() >= MAX_CATEGORIAS) return;
+
+  // Verifica se a última linha está preenchida
+  const linhas = document.querySelectorAll('.categorias-row');
+  if (linhas.length > 0) {
+    const idx = linhas.length;
+    const nome = document.getElementById(`categoria_${idx}`)?.value?.trim();
+    const tamanhos = Array.from(document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check:checked`));
+    const generos = Array.from(document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check:checked`));
+    if (!nome || tamanhos.length === 0 || generos.length === 0) {
+      const btnCriar = document.getElementById('btn-criar-categoria');
+      btnCriar.disabled = true;
+      return;
+    }
+  }
+  categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
+
+  const idxNovo = contarCategorias() + 1;
+  const novaLinha = document.createElement('div');
+  novaLinha.className = 'categorias-row';
+  novaLinha.innerHTML = `
+    <div class="categorias-col">
+      <input type="text" class="categorias-input" id="categoria_${idxNovo}" maxlength="10" placeholder="Digite o nome">
+    </div>
+    <div class="categorias-col">
+      <div class="multiselect-tamanho">
+        <input type="text" class="categorias-input" id="tamanho_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idxNovo})" style="color: #757575;">
+        <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
+        <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idxNovo}" style="display:none;">
+          <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
+        </div>
+      </div>
+    </div>
+    <div class="categorias-col">
+      <div class="multiselect-genero">
+        <input type="text" class="categorias-input" id="genero_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idxNovo})" style="color: #757575;">
+        <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+        <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idxNovo}" style="display:none;">
+          <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
+          <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
+        </div>
+      </div>
+    </div>
+    <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
+    </div>
+  `;
+  document.querySelector('.categorias-table').appendChild(novaLinha);
+  const container = document.querySelector('.categorias-table');
+  requestAnimationFrame(() => {
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  });
+
+  const nomeInput = document.getElementById(`categoria_${idxNovo}`);
+  const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idxNovo} .tamanho-multi-check`);
+  const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-check`);
+
+  function atualizarCorLinha() {
+    const nomeValido = nomeInput && nomeInput.value.trim() !== '';
+    const algumTamanho = Array.from(tamanhoChecks).some(cb => cb.checked);
+    const algumGenero = Array.from(generoChecks).some(cb => cb.checked);
+    const linhaValida = nomeValido && algumTamanho && algumGenero;
+    const corRgb = coresCategorias[idxNovo - 1] || "204,204,204";
+    if (nomeInput) {
+      nomeInput.style.backgroundColor = linhaValida ? `rgb(${corRgb})` : `rgba(${corRgb},0.5)`;
+      nomeInput.style.color = linhaValida ? "#fff" : "#000";
+      nomeInput.style.border = `1px solid ${corRgb}`;
+      nomeInput.style.opacity = "1";
+      nomeInput.placeholder = "Digite o nome";
+    }
+    const tamanhoInput = document.getElementById('tamanho_input_' + idxNovo);
+    const generoInput = document.getElementById('genero_input_' + idxNovo);
+    [tamanhoInput, generoInput].forEach(input => {
+      if (input) input.style.backgroundColor = linhaValida ? '#f1f1f1' : 'white';
+    });
+    atualizarBotaoRemover(idxNovo);
+  }
+
+  // Listeners para nova linha
+  nomeInput.addEventListener('input', atualizarCorLinha);
+  nomeInput.addEventListener('blur', atualizarCorLinha);
+  tamanhoChecks.forEach(cb => {
+    cb.addEventListener('change', function() {
+      atualizarArrayTamanho(idxNovo);
+      atualizarPlaceholderTamanhoMulti(idxNovo);
+      atualizarCorLinha();
+    });
+  });
+  generoChecks.forEach(cb => {
+    cb.addEventListener('change', function() {
+      atualizarArrayGenero(idxNovo);
+      atualizarPlaceholderGeneroMulti(idxNovo);
+      atualizarCorLinha();
+    });
+  });
+
+  // Inicializa placeholders e cor da linha
+  atualizarPlaceholderTamanhoMulti(idxNovo);
+  atualizarPlaceholderGeneroMulti(idxNovo);
+  atualizarCorLinha();
+  atualizarBotaoCriar();
+  atualizarBotaoRemover(idxNovo);
+};
+
+// Atualiza botão ao abrir modal
+document.getElementById('modal-categorias-bg').addEventListener('show', atualizarBotaoCriar);
+document.addEventListener('DOMContentLoaded', atualizarBotaoCriar);
+
+function atualizarBotaoRemover(idx) {
+  const nome = document.getElementById(`categoria_${idx}`)?.value?.trim();
+  const tamanhos = Array.from(document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check:checked`));
+  const generos = Array.from(document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check:checked`));
+  const colRemover = document.querySelectorAll('.categorias-row')[idx-1].querySelector('.categorias-col:last-child');
+  colRemover.innerHTML = ''; // Limpa
+
+  if (nome && tamanhos.length > 0 && generos.length > 0) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'remover';
+    btn.setAttribute('data-idx', idx);
+    btn.title = 'Remover';
+    btn.innerHTML = '<i class="fa-solid fa-delete-left"></i>';
+    btn.onclick = function(e) {
+      e.preventDefault();
+      const preenchidas = Array.from(document.querySelectorAll('.categorias-row')).filter((row, i) => {
+        const nomeVal = document.getElementById(`categoria_${i+1}`)?.value?.trim();
+        return nomeVal;
+      });
+      if (preenchidas.length <= 1) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Não é possível remover!',
+          text: 'Deve existir pelo menos 1 categoria',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: 'Remover categoria?',
+        text: 'Essa ação não pode ser desfeita',
+        showCancelButton: true,
+        confirmButtonText: 'Remover',
+        cancelButtonText: 'Voltar',
+        allowOutsideClick: false,
+        customClass: {
+          confirmButton: 'swal2-remove-custom',
+          cancelButton: 'swal2-cancel-custom'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.querySelectorAll('.categorias-row')[idx-1].remove();
+          atualizarBotaoCriar();
+        }
+      });
+    };
+    colRemover.appendChild(btn);
+  }
+}
+
+document.getElementById(`categoria_${idxNovo}`).addEventListener('input', function() {
+  atualizarBotaoRemover(idxNovo);
+});
+document.querySelectorAll(`#checkboxes-tamanho-multi-${idxNovo} .tamanho-multi-check`).forEach(cb => {
+  cb.addEventListener('change', function() {
+    atualizarBotaoRemover(idxNovo);
+  });
+});
+document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-check`).forEach(cb => {
+  cb.addEventListener('change', function() {
+    atualizarBotaoRemover(idxNovo);
+  });
+});
+
+
+/* helper mínimo: torna um menu "flutuante" (fixed) alinhado ao input */
+function floatMenu(menuEl, inputEl) {
+  if (!menuEl || !inputEl) return;
+  // fecha outros menus primeiro
+  document.querySelectorAll('.checkboxes-tamanho-multi, .checkboxes-genero-multi').forEach(m => {
+    if (m !== menuEl) {
+      m.style.display = 'none';
+      m.classList.remove('floating');
+      // limpa estilos fixos caso existam
+      m.style.left = m.style.top = m.style.width = '';
+    }
+  });
+
+  const rect = inputEl.getBoundingClientRect();
+  // aplica classe floating (CSS .floating controla z-index/position)
+  menuEl.classList.add('floating');
+  // posiciona com base na viewport (fixed)
+  // tenta abrir abaixo, se não couber abre acima
+  const needed = Math.min(menuEl.scrollHeight || 160, 320);
+  const spaceBelow = window.innerHeight - rect.bottom;
+  if (spaceBelow < needed && rect.top > needed) {
+    // abre acima
+    menuEl.style.top = (rect.top - needed) + 'px';
+  } else {
+    // abre abaixo
+    menuEl.style.top = (rect.bottom) + 'px';
+  }
+  menuEl.style.left = rect.left + 'px';
+  menuEl.style.width = rect.width + 'px';
+  menuEl.style.display = 'block';
+  menuEl.dataset.floating = '1';
+}
+
+/* helper para fechar e restaurar menu */
+function unfloatMenu(menuEl) {
+  if (!menuEl) return;
+  menuEl.style.display = 'none';
+  menuEl.classList.remove('floating');
+  if (menuEl.dataset.floating === '1') {
+    menuEl.style.left = '';
+    menuEl.style.top = '';
+    menuEl.style.width = '';
+    delete menuEl.dataset.floating;
+  }
+}
+
+/* substituir abrirTamanhoMulti */
+
+
+/* substituir abrirGeneroMulti */
+
+
+/* substituir handler global que fecha dropdowns ao clicar fora */
+document.addEventListener('mousedown', function(e) {
+  // checkboxes de tamanho
+  document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('tamanho_input_' + idx) : null;
+    // se visível e clique fora do menu e fora do input -> fechar
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      unfloatMenu(div);
+    }
+  });
+  // checkboxes de genero
+  document.querySelectorAll('.checkboxes-genero-multi').forEach(div => {
+    const idx = div.id ? div.id.split('-').pop() : null;
+    const input = idx ? document.getElementById('genero_input_' + idx) : null;
+    if (div.style.display === 'block' && !div.contains(e.target) && e.target !== input) {
+      unfloatMenu(div);
+    }
+  });
+});
+
+// ...existing code...

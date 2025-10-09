@@ -107,6 +107,17 @@ h2 {
     background-color: #277580;
 }
 
+#btn-criar-categoria {
+    max-width: 130px;
+    background: #fff;
+    border: 2px solid #1E94A3;
+    color: #1E94A3;
+}
+
+#btn-salvar {
+    margin-right: 30px;
+}
+
 .right-column {
     flex: 1;
     display: flex;
@@ -164,7 +175,7 @@ select#genero {
 .categorias-table {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .categorias-row {
     display: flex;
@@ -180,6 +191,70 @@ select#genero {
     width: 200px;
 }
 
+.categorias-table-header .categorias-col:first-child,
+.categorias-table-header .categorias-col:nth-child(3) {
+    min-width: 130px;
+    width: 130px;
+    max-width: 130px;
+    margin-bottom: 5px;
+}
+
+.categorias-table-header .categorias-col:nth-child(2) {
+    min-width: 200px;
+    width: 200px;
+    max-width: 200px;
+    margin-bottom: 5px;
+}
+/* Labels fixas */
+.categorias-table-header {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+  color: #333;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Scroll apenas nas linhas */
+.categorias-table-scroll,
+.categorias-table.categorias-table-scroll {
+    max-height: 390px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    border-radius: 4px;
+    transition: max-height 0.2s;
+    box-sizing: border-box;
+}
+
+/* Scrollbar à esquerda */
+.categorias-table-scroll::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+  position: absolute;
+  left: 0;
+}
+
+.categorias-table-scroll::-webkit-scrollbar-thumb {
+  background: #1e94a3;
+  border-radius: 8px;
+}
+
+.categorias-table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+/* Evita scroll lateral */
+.categorias-table {
+  overflow-x: hidden !important;
+}
+
 .categorias-input {
     height: 30px;
     box-sizing: border-box;
@@ -189,6 +264,10 @@ select#genero {
     font-size: 12px;
     background: #fff;
     width: 200px;
+    color: #757575;
+}
+.categorias-input:valid {
+    color: #000;
 }
 
 .categorias-row .categorias-col:first-child .categorias-input::placeholder {
@@ -238,10 +317,10 @@ input[type="checkbox"] {
     border-radius: 4px 0 0 4px;
     background: #fff;
     position: absolute;
-    top: 100% !important;
+    /* top: 100% !important; */
     z-index: 1000;
     width: 100%;
-    max-height: 74px;
+    max-height: 40px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #aaa #fff;
@@ -258,7 +337,7 @@ input[type="checkbox"] {
     font-weight: normal;
     flex-direction: row-reverse;
     justify-content: space-between;
-    padding: 4px 0 4px 8px;
+    padding: 2px 0 2px 8px;
 }
 .checkboxes-tamanho-multi label:hover,
 .checkboxes-genero-multi label:hover {
@@ -469,4 +548,16 @@ input[type="checkbox"] {
 .swal2-timer-progress-bar {
     border-radius: 0px 0 0 10px;
     margin-left: 3px;
+}
+
+/* Aparência da scrollbar (opcional tweaks) */
+.categorias-table.categorias-table-scroll::-webkit-scrollbar { width: 8px; }
+.categorias-table.categorias-table-scroll::-webkit-scrollbar-thumb { background: #1e94a3; border-radius: 8px; }
+.categorias-table.categorias-table-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+
+/* Quando o dropdown for "flutuante" (JS adiciona .floating), ele sai do fluxo e fica acima de tudo */
+.checkboxes-tamanho-multi.floating,
+.checkboxes-genero-multi.floating {
+  position: fixed !important;
+  z-index: 9999 !important;
 }
