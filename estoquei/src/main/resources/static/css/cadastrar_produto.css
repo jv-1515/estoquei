@@ -189,6 +189,20 @@ select#genero {
     display: flex;
     flex-direction: column;
     width: 200px;
+    margin-bottom: 5px;
+}
+
+.categorias-row .categorias-col:first-child,
+.categorias-row .categorias-col:nth-child(3) {
+    min-width: 130px;
+    width: 130px;
+    max-width: 130px;
+}
+
+.categorias-row .categorias-col:nth-child(2) {
+    min-width: 200px;
+    width: 200px;
+    max-width: 200px;
 }
 /* Labels fixas */
 .categorias-table-header {
@@ -207,12 +221,12 @@ select#genero {
 
 /* Scroll apenas nas linhas */
 .categorias-table-scroll {
-  max-height: calc(48px * 10); /* 10 linhas de altura */
+  max-height: 480px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #1e94a3 #f1f1f1;
-  border-radius: 8px;
+  /* scrollbar-color: #1e94a3 #f1f1f1; */
+  border-radius: 4px;
   transition: max-height 0.2s;
 }
 

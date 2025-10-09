@@ -463,60 +463,69 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
 });
 
 function renderizarCategoriasModal() {
+  // Em vez de criar o container aqui, só limpa as linhas e insere nas linhas existentes do HTML fixo
   const container = document.querySelector('.categorias-table');
-    container.innerHTML = `
-    <div class="categorias-table-header">
-      <div class="categorias-col" style="max-width:130px;">Categoria</div>
-      <div class="categorias-col" style="min-width:200px;">Tamanhos</div>
-      <div class="categorias-col" style="min-width:130px;">Gêneros</div>
-    </div>
-    `;
+  if (!container) return;
+
+  // Remove todas as linhas exceto o header
+  Array.from(container.querySelectorAll('.categorias-row')).forEach(row => row.remove());
+
   categoriasModal.forEach((cat, idx) => {
     const linhaValida = cat.nome && cat.nome.trim() && cat.tamanhos && cat.tamanhos.length && cat.generos && cat.generos.length;
-    container.innerHTML += `
-      <div class="categorias-row">
+    const novaLinha = document.createElement('div');
+    novaLinha.className = 'categorias-row';
+    novaLinha.innerHTML = `
       <div class="categorias-col">
-      <input type="text" class="categorias-input" id="categoria_${idx+1}" maxlength="10" value="${cat.nome || ''}" placeholder="Digite o nome">
-      </div>
-      <div class="categorias-col">
-      <div class="multiselect-tamanho">
-      <input type="text" class="categorias-input" id="tamanho_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idx+1})" style="color: #757575;">
-      <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
-      <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idx+1}" style="display:none;">
-        <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
-        <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
-        <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
-      </div>
-      </div>
+        <input type="text" class="categorias-input" id="categoria_${idx+1}" maxlength="10" value="${cat.nome || ''}" placeholder="Digite o nome">
       </div>
       <div class="categorias-col">
-      <div class="multiselect-genero">
-      <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
-      <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
-      <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
-        <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
-        <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-        <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-        <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+        <div class="multiselect-tamanho">
+          <input type="text" class="categorias-input" id="tamanho_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idx+1})" style="color: #757575;">
+          <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
+          <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idx+1}" style="display:none;">
+            <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
+          </div>
+        </div>
       </div>
-      </div>
+      <div class="categorias-col">
+        <div class="multiselect-genero">
+          <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
+          <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+          <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
+            <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
+            <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
+            <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
+            <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+          </div>
+        </div>
       </div>
       <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
-      ${linhaValida ? `<button type="button" class="remover" data-idx="${idx+1}" title="Remover"><i class="fa-solid fa-delete-left"></i></button>` : ''}
-      </div>
+        ${linhaValida ? `<button type="button" class="remover" data-idx="${idx+1}" title="Remover"><i class="fa-solid fa-delete-left"></i></button>` : ''}
       </div>
     `;
+    container.appendChild(novaLinha);
   });
-  
+
   // Adiciona scroll se houver 10 linhas
   const linhas = container.querySelectorAll('.categorias-row');
+  const detalhesModal = document.querySelector('.detalhes-modal');
   if (linhas.length >= 10) {
     container.classList.add('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '520px';
+      detalhesModal.style.minWidth = '520px';
+    }
   } else {
     container.classList.remove('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '510px';
+      detalhesModal.style.minWidth = '510px';
+    }
   }
 
-    // --- LISTENERS DINÂMICOS ---
+  // Listeners dinâmicos
   categoriasModal.forEach((cat, idx) => {
     // Tamanhos
     document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`).forEach(cb => {
@@ -555,7 +564,7 @@ function renderizarCategoriasModal() {
     });
     atualizarPlaceholderGeneroMulti(idx+1);
   });
-  
+
   atualizarBotaoCriar();
   preencherCamposCategorias();
   adicionarListenersRemoverCategorias();

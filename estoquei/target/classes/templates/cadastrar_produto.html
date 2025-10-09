@@ -94,11 +94,19 @@
     <!-- Modal Gerenciar Categorias -->
     <div id="modal-categorias-bg" class="detalhes-modal-bg" style="display:none;">
         <div class="detalhes-modal">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <h2 style="color:#277580; font-size:20px; margin:0;">Gerenciar Categorias</h2>
-          <button type="button" onclick="fecharModalCategorias()" class="close-icon" title="Fechar">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+        <div style="align-items:center; justify-content:space-between;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color:#277580; font-size:20px; margin:0;">Gerenciar Categorias</h2>
+            <button type="button" onclick="fecharModalCategorias()" class="close-icon" title="Fechar">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="categorias-table-header">
+            <div class="categorias-col" style="min-width:130px; width: 130px; max-width: 130px;">Nomes</div>
+            <div class="categorias-col" style="min-width:200px; width: 200px; max-width: 200px;">Tamanhos</div>
+            <div class="categorias-col" style="min-width:130px; width: 130px; max-width: 130px;">Gêneros</div>
+            <div></div>
+          </div>
         </div>
         <form id="form-categorias" action="#" autocomplete="off">
         <div class="categorias-table"></div>
