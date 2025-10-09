@@ -1521,23 +1521,22 @@ function floatMenu(menuEl, inputEl) {
     if (m !== menuEl) {
       m.style.display = 'none';
       m.classList.remove('floating');
-      // limpa estilos fixos caso existam
       m.style.left = m.style.top = m.style.width = '';
     }
   });
 
   const rect = inputEl.getBoundingClientRect();
-  // aplica classe floating (CSS .floating controla z-index/position)
   menuEl.classList.add('floating');
-  // posiciona com base na viewport (fixed)
-  // tenta abrir abaixo, se não couber abre acima
+  // Adiciona pointer-events:none à .categorias-table-scroll
+  const container = document.querySelector('.categorias-table');
+  if (container) {
+    container.style.pointerEvents = 'none';
+  }
   const needed = Math.min(menuEl.scrollHeight || 160, 320);
   const spaceBelow = window.innerHeight - rect.bottom;
   if (spaceBelow < needed && rect.top > needed) {
-    // abre acima
     menuEl.style.top = (rect.top - needed) + 'px';
   } else {
-    // abre abaixo
     menuEl.style.top = (rect.bottom) + 'px';
   }
   menuEl.style.left = rect.left + 'px';
@@ -1555,6 +1554,11 @@ function unfloatMenu(menuEl) {
     menuEl.style.top = '';
     menuEl.style.width = '';
     delete menuEl.dataset.floating;
+  }
+  // Remove pointer-events:none da .categorias-table-scroll
+  const container = document.querySelector('.categorias-table');
+  if (container) {
+    container.style.pointerEvents = '';
   }
 }
 
