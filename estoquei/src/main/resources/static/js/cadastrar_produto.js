@@ -517,13 +517,21 @@ function renderizarCategoriasModal() {
       detalhesModal.style.width = '520px';
       detalhesModal.style.minWidth = '520px';
     }
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) btnSalvar.style.marginRight = '40px';
   } else {
     container.classList.remove('categorias-table-scroll');
     if (detalhesModal) {
       detalhesModal.style.width = '510px';
       detalhesModal.style.minWidth = '510px';
     }
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) btnSalvar.style.marginRight = '30px';
   }
+
+  requestAnimationFrame(() => {
+    container.scrollTo({ top: 0, behavior: 'auto' });
+  });
 
   // Listeners dinâmicos
   categoriasModal.forEach((cat, idx) => {
@@ -1359,6 +1367,10 @@ document.getElementById('btn-criar-categoria').onclick = function() {
     </div>
   `;
   document.querySelector('.categorias-table').appendChild(novaLinha);
+  const container = document.querySelector('.categorias-table');
+  requestAnimationFrame(() => {
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  });
 
   const nomeInput = document.getElementById(`categoria_${idxNovo}`);
   const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idxNovo} .tamanho-multi-check`);

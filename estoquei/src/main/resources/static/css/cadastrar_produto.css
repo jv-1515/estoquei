@@ -189,20 +189,21 @@ select#genero {
     display: flex;
     flex-direction: column;
     width: 200px;
-    margin-bottom: 5px;
 }
 
-.categorias-row .categorias-col:first-child,
-.categorias-row .categorias-col:nth-child(3) {
+.categorias-table-header .categorias-col:first-child,
+.categorias-table-header .categorias-col:nth-child(3) {
     min-width: 130px;
     width: 130px;
     max-width: 130px;
+    margin-bottom: 5px;
 }
 
-.categorias-row .categorias-col:nth-child(2) {
+.categorias-table-header .categorias-col:nth-child(2) {
     min-width: 200px;
     width: 200px;
     max-width: 200px;
+    margin-bottom: 5px;
 }
 /* Labels fixas */
 .categorias-table-header {
@@ -220,14 +221,15 @@ select#genero {
 }
 
 /* Scroll apenas nas linhas */
-.categorias-table-scroll {
-  max-height: 480px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  /* scrollbar-color: #1e94a3 #f1f1f1; */
-  border-radius: 4px;
-  transition: max-height 0.2s;
+.categorias-table-scroll,
+.categorias-table.categorias-table-scroll {
+    max-height: 390px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    border-radius: 4px;
+    transition: max-height 0.2s;
+    box-sizing: border-box;
 }
 
 /* Scrollbar à esquerda */
@@ -548,19 +550,6 @@ input[type="checkbox"] {
     margin-left: 3px;
 }
 
-
-/* ...existing code... */
-
-/* Força scroll no container .categorias-table quando ativo (10 linhas) */
-/* altura exata solicitada: 10 inputs * 30px + 9 gaps * 10px = 390px */
-.categorias-table.categorias-table-scroll {
-  max-height: 390px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  box-sizing: border-box;
-  padding-right: 14px; /* reserva espaço para a scrollbar, não cobrir ícones */
-}
-
 /* Aparência da scrollbar (opcional tweaks) */
 .categorias-table.categorias-table-scroll::-webkit-scrollbar { width: 8px; }
 .categorias-table.categorias-table-scroll::-webkit-scrollbar-thumb { background: #1e94a3; border-radius: 8px; }
@@ -571,12 +560,4 @@ input[type="checkbox"] {
 .checkboxes-genero-multi.floating {
   position: fixed !important;
   z-index: 9999 !important;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-  max-height: 320px;
-  overflow-y: auto;
 }
-
-/* garante que o header continue visível (stick dentro do container) */
-.categorias-table .categorias-table-header { position: sticky; top: 0; z-index: 5; background: #fff; }
-
-/* ...existing code... */
