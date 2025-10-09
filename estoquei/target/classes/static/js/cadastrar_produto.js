@@ -397,18 +397,40 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fecharModalCategorias() {
-  for(let i=1;i<=categoriasModal.length;i++) {
+  // sincroniza inputs para o array
+  for (let i = 1; i <= categoriasModal.length; i++) {
+    const el = document.getElementById('categoria_' + i);
+    categoriasModal[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categoriasModal[i - 1].nome || '');
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
-    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
   }
 
+  // remove entradas TRAILING (últimas) que estiverem completamente vazias
+  let trimmed = categoriasModal.slice();
+  while (trimmed.length > 0) {
+    const last = trimmed[trimmed.length - 1];
+    const nomeVazio = !last.nome || !last.nome.toString().trim();
+    if (nomeVazio) {
+      trimmed.pop();
+    } else {
+      break;
+    }
+  }
+  // atualiza array em memória (sem salvar localStorage)
+  if (trimmed.length !== categoriasModal.length) {
+    categoriasModal = trimmed;
+  }
+
+  // se nada mudou em relação ao snapshot (após aparar), fecha sem prompt
   if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
     document.getElementById('modal-categorias-bg').style.display = 'none';
     document.body.style.overflow = '';
+    // re-renderiza para garantir UI sem linhas vazias (opcional)
+    renderizarCategoriasModal();
     return;
   }
 
+  // caso existam alterações reais, pede confirmação antes de descartar
   Swal.fire({
     icon: 'warning',
     title: 'Descartar alterações?',
@@ -423,12 +445,12 @@ function fecharModalCategorias() {
     }
   }).then((result) => {
     if (result.isConfirmed) {
+      // descarta alterações e restaura snapshot
+      categoriasModal = JSON.parse(categoriasModalSnapshot);
+      preencherCamposCategorias();
       document.getElementById('modal-categorias-bg').style.display = 'none';
       aplicarEstiloInputs();
       document.body.style.overflow = '';
-      // Restaura o array para o snapshot
-      categoriasModal = JSON.parse(categoriasModalSnapshot);
-      preencherCamposCategorias();
     }
   });
 }
@@ -463,7 +485,6 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
 });
 
 function renderizarCategoriasModal() {
-  // Em vez de criar o container aqui, só limpa as linhas e insere nas linhas existentes do HTML fixo
   const container = document.querySelector('.categorias-table');
   if (!container) return;
 
@@ -508,26 +529,8 @@ function renderizarCategoriasModal() {
     container.appendChild(novaLinha);
   });
 
-  // Adiciona scroll se houver 10 linhas
-  const linhas = container.querySelectorAll('.categorias-row');
-  const detalhesModal = document.querySelector('.detalhes-modal');
-  if (linhas.length >= 10) {
-    container.classList.add('categorias-table-scroll');
-    if (detalhesModal) {
-      detalhesModal.style.width = '520px';
-      detalhesModal.style.minWidth = '520px';
-    }
-    const btnSalvar = document.getElementById('btn-salvar');
-    if (btnSalvar) btnSalvar.style.marginRight = '40px';
-  } else {
-    container.classList.remove('categorias-table-scroll');
-    if (detalhesModal) {
-      detalhesModal.style.width = '510px';
-      detalhesModal.style.minWidth = '510px';
-    }
-    const btnSalvar = document.getElementById('btn-salvar');
-    if (btnSalvar) btnSalvar.style.marginRight = '30px';
-  }
+  atualizarEstadoScrollCategorias();
+
 
   requestAnimationFrame(() => {
     container.scrollTo({ top: 0, behavior: 'auto' });
@@ -587,31 +590,6 @@ document.querySelector('[title="Categorias"]').addEventListener('click', functio
   renderizarCategoriasModal();
 });
 
-// Preenche os campos do modal com o array
-function preencherCamposCategorias() {
-  for(let i=1;i<=categoriasModal.length;i++) {
-    const nomeInput = document.getElementById('categoria_'+i);
-    if (nomeInput) {
-      nomeInput.value = categoriasModal[i-1].nome || "";
-      nomeInput.maxLength = 20;
-      nomeInput.placeholder = "Criar categoria";
-      nomeInput.style.backgroundColor = categoriasModal[i-1].nome.trim() ?
-        `rgb(${coresCategorias[i-1]})` : `rgba(${coresCategorias[i-1]},0.5)`;
-      nomeInput.style.color = categoriasModal[i-1].nome.trim() ? "#fff" : "#000";
-      nomeInput.style.border = `1px solid ${coresCategorias[i-1]}`;
-      nomeInput.style.opacity = "1";
-      nomeInput.addEventListener('input', function() {
-        categoriasModal[i-1].nome = nomeInput.value.slice(0,10);
-        preencherCamposCategorias();
-      });
-    }
-    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
-    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
-    atualizarPlaceholderTamanhoMulti(i);
-    atualizarPlaceholderGeneroMulti(i);
-  }
-  adicionarListenersRemoverCategorias();
-}
 
 // Atualiza checkboxes de tamanho
 function atualizarCheckboxesTamanho(idx, arr) {
@@ -786,7 +764,6 @@ function atualizarArrayGenero(idx) {
 }
 
 // Fecha popups ao clicar fora
-// ...existing code...
 /* novo handler: fecha dropdowns "flutuantes" sem apagar estilos residuais */
 document.addEventListener('mousedown', function(e) {
   // checkboxes de tamanho
@@ -867,25 +844,37 @@ function validarCategoriasObrigatorias() {
 // Salvar alterações
 document.getElementById('form-categorias').addEventListener('submit', function(e) {
   e.preventDefault();
-  // Atualiza arrays antes de comparar
-  for(let i=1;i<=categoriasModal.length;i++) {
+
+  // 1) sincroniza DOM -> array
+  for (let i = 1; i <= categoriasModal.length; i++) {
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
-    categoriasModal[i-1].nome = document.getElementById('categoria_'+i).value.slice(0,10);
+    const el = document.getElementById('categoria_' + i);
+    categoriasModal[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categoriasModal[i - 1].nome || '');
   }
-  // Validação obrigatória
-  if(!validarCategoriasObrigatorias()) {
+
+  // 2) remove linhas TRAILING sem NOME (garante que linha "criada" e vazia suma)
+  while (categoriasModal.length > 0) {
+    const last = categoriasModal[categoriasModal.length - 1];
+    const nomeVazio = !last.nome || !last.nome.toString().trim();
+    if (nomeVazio) categoriasModal.pop();
+    else break;
+  }
+
+  // 3) valida obrigatoriedade por linha (não permite salvar com linhas parciais)
+  if (!validarCategoriasObrigatorias()) {
     Swal.fire({
       icon: 'warning',
       title: 'Preencha todos os campos!',
-      text: 'São obrigatórios para cada categoria',
-      timer: 1500,
+      text: 'Cada categoria deve ter nome, pelo menos um tamanho e pelo menos um gênero',
+      timer: 1600,
       showConfirmButton: false
     });
     return;
   }
-  // Comparação
-  if(JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+
+  // 4) sem alterações → fecha
+  if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
     Swal.fire({
       icon: 'info',
       title: 'Sem alterações',
@@ -899,7 +888,8 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     document.body.style.overflow = '';
     return;
   }
-  // Salva no localStorage
+
+  // 5) confirma e salva
   Swal.fire({
     icon: 'question',
     title: 'Tem certeza?',
@@ -969,17 +959,48 @@ function adicionarListenersRemoverCategorias() {
 }
 
 function preencherCamposCategorias() {
-  for(let i=1;i<=categoriasModal.length;i++) {
-    const nomeInput = document.getElementById('categoria_'+i);
+  for (let i = 1; i <= categoriasModal.length; i++) {
+    const nomeInput = document.getElementById('categoria_' + i);
+    // prepara valores no array se ausentes
+    if (!categoriasModal[i - 1]) categoriasModal[i - 1] = { id: i, nome: '', tamanhos: [], generos: [] };
+
     if (nomeInput) {
-      nomeInput.value = categoriasModal[i-1].nome || "";
+      // valor e restrições
+      nomeInput.value = categoriasModal[i - 1].nome || "";
       nomeInput.maxLength = 10;
+      nomeInput.placeholder = "Digite o nome";
+
+      // remove listener anterior para evitar duplicatas
+      if (nomeInput._handler) nomeInput.removeEventListener('input', nomeInput._handler);
+
+      // aplica cor/estilo conforme validade da linha
+      const nomeValido = categoriasModal[i - 1].nome && categoriasModal[i - 1].nome.toString().trim() !== '';
+      const algumTamanho = categoriasModal[i - 1].tamanhos && categoriasModal[i - 1].tamanhos.length > 0;
+      const algumGenero = categoriasModal[i - 1].generos && categoriasModal[i - 1].generos.length > 0;
+      const linhaValida = nomeValido && algumTamanho && algumGenero;
+      const corRgb = (typeof coresCategorias !== 'undefined' && coresCategorias[i - 1]) ? coresCategorias[i - 1] : "204,204,204";
+
+      nomeInput.style.backgroundColor = linhaValida ? `rgb(${corRgb})` : `rgba(${corRgb},0.5)`;
+      nomeInput.style.color = linhaValida ? "#fff" : "#000";
+      nomeInput.style.border = `1px solid rgba(${corRgb}, ${linhaValida ? 1 : 0.5})`;
+      nomeInput.style.opacity = "1";
+
+      // handler atualiza array e reaplica estilos
+      nomeInput._handler = function () {
+        categoriasModal[i - 1].nome = nomeInput.value.slice(0, 10);
+        preencherCamposCategorias();
+      };
+      nomeInput.addEventListener('input', nomeInput._handler);
     }
-    atualizarCheckboxesTamanho(i, categoriasModal[i-1].tamanhos);
-    atualizarCheckboxesGenero(i, categoriasModal[i-1].generos);
+
+    // atualiza checkboxes / placeholders mesmo se inputs não existirem
+    atualizarCheckboxesTamanho(i, categoriasModal[i - 1].tamanhos || []);
+    atualizarCheckboxesGenero(i, categoriasModal[i - 1].generos || []);
     atualizarPlaceholderTamanhoMulti(i);
     atualizarPlaceholderGeneroMulti(i);
   }
+
+  // reaplica listeners de remover e estilos dinâmicos que dependem do DOM
   adicionarListenersRemoverCategorias();
   aplicarEstiloInputs();
 }
@@ -1091,9 +1112,6 @@ const categorias = [
   { id: 6, nome: "Sapato", tipoTamanho: 2, tipoGenero: "T" },
   { id: 7, nome: "Meia", tipoTamanho: 2, tipoGenero: "T" }
 ];
-
-// tipoTamanho: 0 = todos, 1 = letras, 2 = numéricos
-// tipoGenero: 0 = todos, 1 = feminino, 2 = masculino, 3 = unissex
 
 const categoriaInput = document.getElementById('categoria-multi');
 const radiosDiv = document.getElementById('radios-categoria-multi');
@@ -1473,6 +1491,7 @@ function atualizarBotaoRemover(idx) {
         if (result.isConfirmed) {
           document.querySelectorAll('.categorias-row')[idx-1].remove();
           atualizarBotaoCriar();
+          atualizarEstadoScrollCategorias();
         }
       });
     };
@@ -1495,7 +1514,6 @@ document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-che
 });
 
 
-/* helper mínimo: torna um menu "flutuante" (fixed) alinhado ao input */
 function floatMenu(menuEl, inputEl) {
   if (!menuEl || !inputEl) return;
   // fecha outros menus primeiro
@@ -1528,7 +1546,6 @@ function floatMenu(menuEl, inputEl) {
   menuEl.dataset.floating = '1';
 }
 
-/* helper para fechar e restaurar menu */
 function unfloatMenu(menuEl) {
   if (!menuEl) return;
   menuEl.style.display = 'none';
@@ -1540,11 +1557,6 @@ function unfloatMenu(menuEl) {
     delete menuEl.dataset.floating;
   }
 }
-
-/* substituir abrirTamanhoMulti */
-
-
-/* substituir abrirGeneroMulti */
 
 
 /* substituir handler global que fecha dropdowns ao clicar fora */
@@ -1568,4 +1580,26 @@ document.addEventListener('mousedown', function(e) {
   });
 });
 
-// ...existing code...
+function atualizarEstadoScrollCategorias() {
+  const container = document.querySelector('.categorias-table');
+  if (!container) return;
+  const linhas = container.querySelectorAll('.categorias-row');
+  const detalhesModal = document.querySelector('.detalhes-modal');
+  const btnSalvar = document.getElementById('btn-salvar');
+
+  if (linhas.length >= 10) {
+    container.classList.add('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '520px';
+      detalhesModal.style.minWidth = '520px';
+    }
+    if (btnSalvar) btnSalvar.style.marginRight = '40px';
+  } else {
+    container.classList.remove('categorias-table-scroll');
+    if (detalhesModal) {
+      detalhesModal.style.width = '510px';
+      detalhesModal.style.minWidth = '510px';
+    }
+    if (btnSalvar) btnSalvar.style.marginRight = '30px';
+  }
+}

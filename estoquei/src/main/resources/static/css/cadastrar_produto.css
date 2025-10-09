@@ -349,7 +349,7 @@ input[type="checkbox"] {
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: #555;
   display: flex;
   align-items: center;
   justify-content: flex-start;
