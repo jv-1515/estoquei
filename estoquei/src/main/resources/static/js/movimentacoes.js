@@ -1989,58 +1989,94 @@ function getCategoriasDoLocalStorage(){
 function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
 
+// ...existing code...
+// controle de início/offset (mantém CAT_PAGE_SIZE)
+let catStartIndex = 0;
+
 function renderCategoriaCards(summaryArray){
   const wrapper = document.getElementById('categoria-cards');
-  const viewport = document.getElementById('categoria-cards-viewport');
   const btnPrev = document.getElementById('cat-prev');
   const btnNext = document.getElementById('cat-next');
-  if(!wrapper||!viewport||!btnPrev||!btnNext) return;
+  if(!wrapper||!btnPrev||!btnNext) return;
 
+  // ordena por estoque e id (estável)
   summaryArray.sort((a,b)=>{ const d=(b.estoque||0)-(a.estoque||0); return d!==0?d:((a.id||0)-(b.id||0)); });
   const n = summaryArray.length;
-  catTotalPages = Math.max(1, Math.ceil(n / CAT_PAGE_SIZE));
-  if(catPageIndex >= catTotalPages) catPageIndex = 0;
-  wrapper.innerHTML = '';
-  const useProportional = n>0 && n<=CAT_PAGE_SIZE;
+  if(n === 0){ wrapper.innerHTML=''; btnPrev.style.display='none'; btnNext.style.display='none'; return; }
 
-  summaryArray.forEach((c,idx)=>{
-    const card = document.createElement('div');
-    card.className='categoria-card';
-    if(useProportional){ card.style.flex=`0 0 ${100/n}%`; card.style.minWidth='120px'; } else { card.style.flex='0 0 120px'; }
-    const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+  // quantos mostrar agora (máx CAT_PAGE_SIZE)
+  const visible = Math.min(CAT_PAGE_SIZE, n);
+  const maxStart = Math.max(0, n - visible);
+
+  // normaliza índice
+  if(catStartIndex < 0) catStartIndex = 0;
+  if(catStartIndex > maxStart) catStartIndex = 0;
+
+  // fatia a renderizar
+  const slice = summaryArray.slice(catStartIndex, catStartIndex + visible);
+
+  // renderiza somente a fatia (sem usar transform global que sumia)
+  wrapper.innerHTML = '';
+  slice.forEach((c, idx) => {
+    const color = CORES_CATEGORIAS[(catStartIndex + idx) % CORES_CATEGORIAS.length];
     const borderColor = `rgb(${color})`;
     const textColor = `rgb(${color})`;
-
+    const card = document.createElement('div');
+    card.className = 'categoria-card';
+    card.style.flex = (n <= visible) ? `0 0 ${100 / Math.max(1, slice.length)}%` : '0 0 120px';
+    card.style.minWidth = '120px';
     card.innerHTML = `
-      <div class="categoria-title">${escapeHtml(c.nome||('Cat '+(c.id||idx+1)))}</div>
+      <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (catStartIndex + idx + 1))))}</div>
       <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
         <div class="label">Estoque</div>
-        <div class="value" data-cat-estoque="${escapeHtml((c.nome||'').toUpperCase())}">${numberFormatInt(c.estoque||0)}</div>
+        <div class="value">${numberFormatInt(c.estoque || 0)}</div>
       </div>
       <div class="categoria-rows">
-        <div class="row entradas"><span>Entradas</span><span data-cat-entradas="${escapeHtml((c.nome||'').toUpperCase())}">${numberFormatInt(c.entradas||0)}</span></div>
-        <div class="row saidas"><span>Saídas</span><span data-cat-saidas="${escapeHtml((c.nome||'').toUpperCase())}">${numberFormatInt(c.saidas||0)}</span></div>
+        <div class="row entradas"><span>Entradas</span><span>${numberFormatInt(c.entradas || 0)}</span></div>
+        <div class="row saidas"><span>Saídas</span><span>${numberFormatInt(c.saidas || 0)}</span></div>
       </div>
     `;
     wrapper.appendChild(card);
   });
 
-  const vw = document.getElementById('categoria-cards-viewport').clientWidth;
-  wrapper.style.transform = `translateX(${-catPageIndex * vw}px)`;
-  btnPrev.style.display = (catPageIndex > 0) ? '' : 'none';
-  btnNext.style.display = (catPageIndex < catTotalPages - 1) ? '' : 'none';
+  // botões: prev visível se há itens antes; next se há itens depois
+  btnPrev.style.display = (catStartIndex > 0) ? '' : 'none';
+  btnNext.style.display = (catStartIndex < maxStart) ? '' : 'none';
 
-  btnPrev.onclick = ()=>{ if(catPageIndex>0){ catPageIndex--; animateCategoriaScroll(vw); btnPrev.style.display=(catPageIndex>0)?'':'none'; btnNext.style.display=(catPageIndex<catTotalPages-1)?'':''; } };
-  btnNext.onclick = ()=>{ if(catPageIndex<catTotalPages-1){ catPageIndex++; animateCategoriaScroll(vw); btnPrev.style.display=(catPageIndex>0)?'':'none'; btnNext.style.display=(catPageIndex<catTotalPages-1)?'':''; } };
+  // handlers: avançam/regredem pelo menor passo disponível (1..visible)
+  btnPrev.onclick = function(){
+    if(catStartIndex <= 0) return;
+    const step = Math.min(visible, catStartIndex);
+    catStartIndex = Math.max(0, catStartIndex - step);
+    animateCategoriaScroll('left', wrapper);
+    renderCategoriaCards(summaryArray);
+  };
+  btnNext.onclick = function(){
+    if(catStartIndex >= maxStart) return;
+    const remaining = n - (catStartIndex + visible);
+    const step = Math.min(visible, Math.max(1, remaining));
+    catStartIndex = Math.min(maxStart, catStartIndex + step);
+    animateCategoriaScroll('right', wrapper);
+    renderCategoriaCards(summaryArray);
+  };
 }
 
-function animateCategoriaScroll(viewportWidth){
-  const wrapper = document.getElementById('categoria-cards');
-  wrapper.style.transition = 'transform 420ms cubic-bezier(.22,.9,.2,1)';
-  wrapper.style.transform = `translateX(${-catPageIndex * viewportWidth}px)`;
-  setTimeout(()=>wrapper.style.transition = '', 520);
+function animateCategoriaScroll(direction, wrapperEl){
+  try {
+    const el = wrapperEl || document.getElementById('categoria-cards');
+    if(!el) return;
+    el.style.transition = 'transform 900ms cubic-bezier(0.23, 1, 0.32, 1), opacity 600ms ease';
+    const offset = direction === 'left' ? -12 : 12;
+    el.style.transform = `translateX(${offset}px)`;
+    el.style.opacity = '0.85';
+    setTimeout(()=> {
+      el.style.transform = 'translateX(0)';
+      el.style.opacity = '1';
+      setTimeout(()=> el.style.transition = '', 60);
+    }, 260);
+  } catch(e){ /* silencioso */ }
 }
-
+// ...existing code...
 function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
   const catsLS = getCategoriasDoLocalStorage();
   const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];

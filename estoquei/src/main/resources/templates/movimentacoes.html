@@ -270,13 +270,17 @@
         <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; height: 165px; justify-content: flex-end;">
 
             <div id="categoria-cards-container" style="display:flex; align-items:center; gap:8px; width:100%; box-sizing:border-box;">
-              <button id="cat-prev" class="cat-arrow" aria-label="Anterior" style="display:none;">‹</button>
-            
-              <div id="categoria-cards-viewport" style="overflow:hidden; flex:1;">
-                <div id="categoria-cards" class="categoria-cards" style="display:flex; gap:10px; transition: transform 420ms cubic-bezier(.22,.9,.2,1); will-change: transform;"></div>
-              </div>
-            
-              <button id="cat-next" class="cat-arrow" aria-label="Próximo" style="display:none;">›</button>
+                <button id="cat-prev" class="cat-arrow" aria-label="Anterior" style="display:none;">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <div id="categoria-cards-viewport" style="overflow:hidden; flex:1;">
+                    <div id="categoria-cards" class="categoria-cards" style="display:flex; gap:10px; transition: transform 420ms cubic-bezier(.22,.9,.2,1); will-change: transform;"></div>
+                </div>
+
+                <button id="cat-next" class="cat-arrow" aria-label="Próximo" style="display:none;">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </div>
