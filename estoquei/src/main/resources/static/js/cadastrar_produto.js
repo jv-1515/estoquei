@@ -582,7 +582,7 @@ function renderizarCategoriasModal() {
   aplicarEstiloInputs();
 }
 
-document.querySelector('[title="Categorias"]').addEventListener('click', function(e) {
+document.querySelector('[title="Gerenciar categorias"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.getElementById('modal-categorias-bg').style.display = 'flex';
   document.body.style.overflow = 'hidden';
