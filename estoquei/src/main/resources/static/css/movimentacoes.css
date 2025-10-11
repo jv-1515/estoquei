@@ -720,6 +720,33 @@ input:focus[readonly] {
 #cat-prev[disabled], #cat-next[disabled] { opacity: .36; pointer-events: none; }
 
 
+/* ...existing code... */
+
+/* Wrapper dos cards deve rolar horizontalmente com comportamento suave */
+#categoria-cards {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  overflow-x: auto;           /* permite rolagem real */
+  scroll-behavior: smooth;    /* rolagem suave ao usar scrollBy */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;        /* espaço para scrollbar */
+}
+
+/* mantém viewport com recorte visual (não modificar se já tiver) */
+.categoria-cards-viewport {
+  overflow: hidden; /* mantém recorte visual, o wrapper por baixo rola */
+}
+
+/* estilização leve da scrollbar (opcional) */
+#categoria-cards::-webkit-scrollbar { height: 8px; }
+#categoria-cards::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
+/* ...existing code... */
+
+/* garante viewport fixa e scroll suave */
+.categoria-cards-viewport { width: 900px !important; max-width: 900px !important; overflow: hidden !important; position: relative; }
+#categoria-cards { overflow-x: auto !important; scroll-behavior: smooth !important; -webkit-overflow-scrolling: touch; }
+
 /* sweetAlert */
 .swal2-popup {
     width: 400px;
