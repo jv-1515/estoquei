@@ -2097,10 +2097,7 @@ function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
 }
 
 
-// ...existing code...
 
-// --- Garantir viewport e scroll suave mínimo para os cards de categoria ---
-// Cole este bloco no final do arquivo (ou dentro do DOMContentLoaded)
 (function ensureCategoriaScroll() {
   function setup() {
     const cards = document.getElementById('categoria-cards');
@@ -2129,7 +2126,6 @@ function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
     cards.style.alignItems = 'flex-start';
     cards.style.overflowX = 'auto';
     cards.style.scrollBehavior = 'smooth';
-    cards.style.paddingBottom = cards.style.paddingBottom || '6px';
     // impede que o wrapper expanda o parent (gera scrollbar interno)
     cards.style.boxSizing = 'border-box';
 

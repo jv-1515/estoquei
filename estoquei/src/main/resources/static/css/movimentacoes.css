@@ -604,15 +604,15 @@ input:focus[readonly] {
 #categoria-cards-container { position: relative; align-items: center; }
 #categoria-cards { display:flex; gap:10px; align-items:flex-start; }
 .categoria-card {
-  box-sizing: border-box;
-  background:#fff;
-  border-radius:8px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  min-height:100px;
-  flex: 0 0 120px;
-  justify-content: flex-end;
+    box-sizing: border-box;
+    background:#fff;
+    border-radius:8px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height:100px;
+    flex: 0 0 120px;
+    justify-content: flex-end;
 }
 .categoria-title {
     font-size: 12px;
@@ -678,17 +678,25 @@ input:focus[readonly] {
     border: none;
     box-shadow: 0 0 8px 2px rgba(0,0,0,0.18);
 }
-.cat-arrow[disabled]{ opacity:.36; pointer-events:none; }
+.cat-arrow[disabled] {
+    opacity: .36;
+    pointer-events: none;
+}
 
-#categoria-cards-container { position: relative; display:flex; align-items:center; justify-content:center; }
+#categoria-cards-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .categoria-cards-viewport {
-  width: 900px;
-  max-width: 900px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  position: relative;
+    width: 900px;
+    max-width: 900px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    position: relative;
 }
 
 
@@ -720,32 +728,44 @@ input:focus[readonly] {
 #cat-prev[disabled], #cat-next[disabled] { opacity: .36; pointer-events: none; }
 
 
-/* ...existing code... */
-
-/* Wrapper dos cards deve rolar horizontalmente com comportamento suave */
 #categoria-cards {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  overflow-x: auto;           /* permite rolagem real */
-  scroll-behavior: smooth;    /* rolagem suave ao usar scrollBy */
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 6px;        /* espaço para scrollbar */
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px;
 }
-
-/* mantém viewport com recorte visual (não modificar se já tiver) */
 .categoria-cards-viewport {
-  overflow: hidden; /* mantém recorte visual, o wrapper por baixo rola */
+    overflow: hidden;
 }
 
-/* estilização leve da scrollbar (opcional) */
-#categoria-cards::-webkit-scrollbar { height: 8px; }
-#categoria-cards::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
-/* ...existing code... */
+#categoria-cards::-webkit-scrollbar {
+    height: 6px;
+}
+#categoria-cards::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow-x: hidden !important;
+}
+#categoria-cards::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
 
-/* garante viewport fixa e scroll suave */
-.categoria-cards-viewport { width: 900px !important; max-width: 900px !important; overflow: hidden !important; position: relative; }
-#categoria-cards { overflow-x: auto !important; scroll-behavior: smooth !important; -webkit-overflow-scrolling: touch; }
+.categoria-cards-viewport {
+    width: 900px !important;
+    max-width: 900px !important;
+    overflow: hidden !important;
+    position: relative;
+}
+#categoria-cards {
+    overflow-x: auto !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+
 
 /* sweetAlert */
 .swal2-popup {
