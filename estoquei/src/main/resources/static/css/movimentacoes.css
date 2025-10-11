@@ -356,7 +356,8 @@ th.ordenar.sorted .sort-icon {
 
 .fa-arrow-left:hover,
 .fa-house:hover,
-.fa-arrow-up:hover {
+.fa-arrow-up:hover,
+.fa-bell:hover {
     color: #1E94A3;
     transition: color 0.2s;
 }
@@ -608,16 +609,17 @@ input:focus[readonly] {
   border-radius:8px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
   min-height:100px;
   flex: 0 0 120px;
   justify-content: flex-end;
 }
 .categoria-title {
     font-size: 12px;
-    font-weight: 700;
+    font-weight: bold;
     color: #333;
     text-align: center;
+    margin-bottom: -5px;
 }
 .categoria-estoque {
     border-radius: 8px;
@@ -625,7 +627,7 @@ input:focus[readonly] {
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 .categoria-estoque .label {
     font-weight: 700;
@@ -639,7 +641,7 @@ input:focus[readonly] {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-top: 4px;
+    height: 65px;
 }
 .row {
     border-radius: 8px;
@@ -649,15 +651,18 @@ input:focus[readonly] {
     align-items: center;
     font-size: 12px;
 }
+.row.entradas,
+.row.saidas {
+    font-weight: bold;
+    height: 100%;
+}
 .row.entradas {
     background: #e8f5e8;
     color: #2e7d32;
-    font-weight: bold;
 }
 .row.saidas {
     background: #fff3e0;
     color: #e65100;
-    font-weight: bold;
 }
 .cat-arrow {
     background: #fff;
@@ -704,9 +709,9 @@ input:focus[readonly] {
     color: #000;
 }
 
-#cat-prev:hover, 
+#cat-prev:hover,
 #cat-next:hover {
-    color: #277580;
+    color: #1E94A3;
 }
 
 #cat-prev { left: calc(50% - 900px / 2 - 10px); }
