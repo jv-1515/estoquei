@@ -229,4 +229,30 @@ public class MovimentacaoProdutoResource {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping(params = "data")
+    public List<MovimentacaoProduto> listarPorData(@RequestParam("data") String dataIso) {
+        LocalDate data;
+        try {
+            data = LocalDate.parse(dataIso);
+        } catch (Exception e) {
+            return List.of(); // retorna lista vazia em caso de formato inválido
+        }
+        return movimentacaoRepo.findByDataOrderByDataDesc(data);
+    }
+
+    @GetMapping(params = {"dataInicio", "dataFim"})
+    public List<MovimentacaoProduto> listarPorPeriodo(
+        @RequestParam("dataInicio") String dataInicioIso,
+        @RequestParam("dataFim") String dataFimIso
+    ) {
+        LocalDate inicio, fim;
+        try {
+            inicio = LocalDate.parse(dataInicioIso);
+            fim = LocalDate.parse(dataFimIso);
+        } catch (Exception e) {
+            return List.of();
+        }
+        return movimentacaoRepo.findByDataBetweenOrderByDataDesc(inicio, fim);
+    }
 }

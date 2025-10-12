@@ -599,8 +599,6 @@ input:focus[readonly] {
     }
 }
 
-
-
 #categoria-cards-container { position: relative; align-items: center; }
 #categoria-cards { display:flex; gap:10px; align-items:flex-start; }
 .categoria-card {
@@ -748,6 +746,7 @@ input:focus[readonly] {
     background: #e0e0e0;
     border-radius: 6px;
     overflow-x: hidden !important;
+    cursor: pointer !important;
 }
 #categoria-cards::-webkit-scrollbar-thumb:hover {
     background: #aaa;

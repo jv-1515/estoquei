@@ -158,6 +158,9 @@ document.addEventListener('mousedown', function(e) {
         dataInicio.value = '';
         dataFim.value = '';
         periodoInput.value = '';
+        buscarCardsHoje();
+        filtrarMovimentacoes();
+        
         // Remove borda/cor do período
         periodoInput.style.border = '';
         periodoInput.style.color = '';
@@ -918,7 +921,41 @@ function filtrarMovimentacoes() {
     paginaAtual = 1;
     renderizarMovimentacoes(filtradas);
     atualizarDetalhesInfo(filtradas);
-    atualizarCardsMovimentacoes(filtradas);
+
+    const dataInicioVal = (document.getElementById('periodo-data-inicio') || {}).value;
+    const dataFimVal = (document.getElementById('periodo-data-fim') || {}).value;
+    if (dataInicioVal || dataFimVal) {
+        // Se período está preenchido, busca do backend e atualiza os cards
+        buscarCardsPeriodo(dataInicioVal, dataFimVal);
+    } else {
+        // Se período está vazio, mostra HOJE
+        buscarCardsHoje();
+    }
+
+    // atualizarCardsMovimentacoes(filtradas);
+}
+
+function buscarCardsPeriodo(dataInicio, dataFim) {
+    let url = '/api/movimentacoes';
+    if (dataInicio && dataFim) {
+        url += `?dataInicio=${dataInicio}&dataFim=${dataFim}`;
+    } else if (dataInicio) {
+        url += `?data=${dataInicio}`;
+    } else if (dataFim) {
+        url += `?data=${dataFim}`;
+    }
+    url += (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+
+    fetch(url)
+        .then(r => r.json())
+        .then(movs => {
+            atualizarCardsMovimentacoes(movs);
+            atualizarDetalhesInfoLocal(movs);
+        })
+        .catch(err => {
+            atualizarCardsMovimentacoes([]);
+            atualizarDetalhesInfoLocal([]);
+        });
 }
 
 
@@ -1471,7 +1508,7 @@ function carregarMovimentacoes(top) {
             movimentacoesOriginais = [...movimentacoes];
 
             const nomes = [...new Set(movimentacoes.map(m => m.responsavel).filter(Boolean))];
-            montarCheckboxesResponsavel(nomes);            
+            montarCheckboxesResponsavel(nomes);
             
             const produtosUnicos = [];
             const codigosSet = new Set();
@@ -1506,12 +1543,56 @@ function carregarMovimentacoes(top) {
             filtradas = [...movimentacoes];
             renderizarMovimentacoes(filtradas);
             atualizarDetalhesInfo(filtradas);
-            atualizarCardsMovimentacoes(filtradas);
+            // atualizarCardsMovimentacoes(filtradas);
+
+            buscarCardsHoje();
+
+            // fetch('/api/movimentacoes?data=' + encodeURIComponent(hoje) + '&_t=' + Date.now())
+            //     .then(r => {
+            //         if (!r.ok) return [];
+            //         return r.json();
+            //     })
+            //     .then(movHoje => {
+            //         atualizarCardsMovimentacoes(movHoje);
+            //         atualizarDetalhesInfoLocal(movHoje);
+            //     })
+            //     .catch(err => {
+            //         console.warn('Não foi possível carregar movimentações de hoje para cards:', err);
+            //         atualizarCardsMovimentacoes(movimentacoes.filter(m => (m.data || '').slice(0,10) === hoje));
+            //     });
+            // renderizarMovimentacoes(filtradas);
+            // atualizarDetalhesInfo(filtradas);
+
+            // if (typeof filtrarMovimentacoes === 'function') {
+            //     filtrarMovimentacoes();
+            // } else {
+            //     const base = Array.isArray(movimentacoes) ? movimentacoes : [];
+            //     const movHoje = base.filter(m => (m.data || '').slice(0,10) === hoje);
+            //     atualizarCardsMovimentacoes(movHoje);
+            //     atualizarDetalhesInfoLocal(movHoje);
+            // }
         })
         .catch(error => {
             console.error('Erro na API:', error);
             const tbody = document.getElementById('movimentacao-table-body');
             tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: red; padding: 10px; font-size: 16px;">Erro ao carregar movimentações. Verifique o console.</td></tr>`;
+        });
+}
+
+
+function buscarCardsHoje() {
+    const hoje = new Date().toISOString().slice(0,10);
+    fetch('/api/movimentacoes?data=' + encodeURIComponent(hoje) + '&_t=' + Date.now())
+        .then(r => r.json())
+        .then(movHoje => {
+            atualizarCardsMovimentacoes(movHoje);
+            atualizarDetalhesInfoLocal(movHoje);
+        })
+        .catch(err => {
+            // fallback: filtra localmente
+            const movHoje = movimentacoes.filter(m => (m.data || '').slice(0,10) === hoje);
+            atualizarCardsMovimentacoes(movHoje);
+            atualizarDetalhesInfoLocal(movHoje);
         });
 }
 
@@ -1527,7 +1608,6 @@ function atualizarDetalhesInfo(movimentacoes) {
         const produtosCadastrados = produtos.length;
         const baixoEstoque = produtos.filter(p => (Number(p.quantidade) > 0) && (Number(p.quantidade) <= 2 * Number(p.limiteMinimo))).length;
         const zerados = produtos.filter(p => Number(p.quantidade) === 0).length;
-        // const totalProdutos = produtos.length;
         
         document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoes;
         document.getElementById('detalhe-entradas-hoje').textContent = entradasHoje;
@@ -1615,7 +1695,6 @@ function atualizarCardsMovimentacoes(movimentacoes) {
 }
 
 window.onload = function() {
-    // Inicializa radios personalizados de registros por página (igual estoque.js)
     const registrosInput = document.getElementById('registros-multi');
     const radiosDiv = document.getElementById('radios-registros-multi');
     const chevron = document.querySelector('.chevron-registros');
@@ -2022,17 +2101,15 @@ function renderCategoriaCards(summaryArray){
         <div class="value">${numberFormatInt(c.estoque || 0)}</div>
       </div>
       <div class="categoria-rows">
-        <div class="row entradas"><span>Entradas</span><span>${numberFormatInt(c.entradas || 0)}</span></div>
-        <div class="row saidas"><span>Saídas</span><span>${numberFormatInt(c.saidas || 0)}</span></div>
+        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+        <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
       </div>
     `;
     wrapper.appendChild(card);
   });
 
-  // --- lógica de botões: mostra/oculta e faz scroll suave (não re-render) ---
   if(!btnPrev || !btnNext){
-    // se não existir botões, não tenta criar handlers
-    updateButtons(); 
+    updateButtons();
     return;
   }
 

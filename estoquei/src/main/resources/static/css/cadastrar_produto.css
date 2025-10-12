@@ -561,3 +561,12 @@ input[type="checkbox"] {
     border-radius: 0px 0 0 10px;
     margin-left: 3px;
 }
+
+.multiselect-tamanho::-webkit-scrollbar,
+.multiselect-genero::-webkit-scrollbar {
+    width: 5px;
+}
+
+#radios-tamanho-multi::-webkit-scrollbar {
+    width: 5px;
+}

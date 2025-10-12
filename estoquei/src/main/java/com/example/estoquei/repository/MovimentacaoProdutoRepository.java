@@ -33,4 +33,10 @@ public interface MovimentacaoProdutoRepository extends JpaRepository<Movimentaca
 
     @Query("SELECT COALESCE(SUM(m.quantidadeMovimentada), 0) FROM MovimentacaoProduto m WHERE m.codigoProduto = ?1 AND m.tipoMovimentacao = ?2 AND m.data = ?3")
     int somaMovimentacaoHojePorCodigo(String codigo, String tipo, LocalDate data);
+
+    @Query("SELECT m FROM MovimentacaoProduto m WHERE m.data = :data ORDER BY m.data DESC, m.id DESC")
+    List<MovimentacaoProduto> findByDataOrderByDataDesc(@Param("data") LocalDate data);
+
+    @Query("SELECT m FROM MovimentacaoProduto m WHERE m.data >= :inicio AND m.data <= :fim ORDER BY m.data DESC, m.id DESC")
+    List<MovimentacaoProduto> findByDataBetweenOrderByDataDesc(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
 }
