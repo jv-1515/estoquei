@@ -746,6 +746,7 @@ input:focus[readonly] {
     background: #e0e0e0;
     border-radius: 6px;
     overflow-x: hidden !important;
+    cursor: pointer !important;
 }
 #categoria-cards::-webkit-scrollbar-thumb:hover {
     background: #aaa;
