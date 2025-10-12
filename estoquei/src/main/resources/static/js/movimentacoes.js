@@ -1605,6 +1605,8 @@ function atualizarCardsMovimentacoes(movimentacoes) {
                 if (elementoEstoque) {
                     elementoEstoque.textContent = estoqueAtual;
                 }
+                
+                montarResumoCategoriasEgerarCards(produtos, movimentacoes);    
             });
         })
         .catch(error => {
@@ -1967,3 +1969,200 @@ function getCodigoResponsavel(responsavel) {
     if (!responsavel || !responsavel.includes(' - ')) return 'N/A';
     return responsavel.split(' - ')[0]; // Parte antes do hífen é o código
 }
+
+
+const CAT_PAGE_SIZE = 7;
+let catPageIndex = 0;
+let catTotalPages = 1;
+const CORES_CATEGORIAS = ["30,148,163","39,117,128","191,161,0","192,57,43","230,103,34","142,68,173","22,160,133","63,106,179","59,69,138","190,148,84","242,109,141","255,152,86","52,152,219","46,204,113","241,196,15","155,89,182","52,73,94","127,140,141","231,76,60","45,166,196"];
+
+function getCategoriasDoLocalStorage(){
+  try{
+    const raw = localStorage.getItem('categoriasModal');
+    if(!raw) return null;
+    const arr = JSON.parse(raw);
+    if(!Array.isArray(arr)) return null;
+    return arr.filter(c=>c && (c.nome||c.name)).map((c,idx)=>({ id:c.id||(idx+1), nome:c.nome||c.name }));
+  }catch(e){ return null; }
+}
+
+function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
+
+// ...existing code...
+// controle de início/offset (mantém CAT_PAGE_SIZE)
+let catStartIndex = 0;
+
+function renderCategoriaCards(summaryArray){
+  const wrapper = document.getElementById('categoria-cards');
+  const btnPrev = document.getElementById('cat-prev');
+  const btnNext = document.getElementById('cat-next');
+  if(!wrapper) return;
+
+  // ordena por estoque e id (estável)
+  summaryArray.sort((a,b)=>{ const d=(b.estoque||0)-(a.estoque||0); return d!==0?d:((a.id||0)-(b.id||0)); });
+  const n = summaryArray.length;
+  if(n === 0){ wrapper.innerHTML=''; if(btnPrev) btnPrev.style.display='none'; if(btnNext) btnNext.style.display='none'; return; }
+
+  // Renderiza TODOS os cards (uma única vez)
+  wrapper.innerHTML = '';
+  summaryArray.forEach((c, idx) => {
+    const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+    const borderColor = `rgb(${color})`;
+    const textColor = `rgb(${color})`;
+    const card = document.createElement('div');
+    card.className = 'categoria-card';
+    // garante tamanho fixo para cálculo de scroll; ajuste 120px se seu CSS usar outra largura
+    card.style.flex = '0 0 120px';
+    card.style.minWidth = '120px';
+    card.innerHTML = `
+      <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
+      <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
+        <div class="label">Estoque</div>
+        <div class="value">${numberFormatInt(c.estoque || 0)}</div>
+      </div>
+      <div class="categoria-rows">
+        <div class="row entradas"><span>Entradas</span><span>${numberFormatInt(c.entradas || 0)}</span></div>
+        <div class="row saidas"><span>Saídas</span><span>${numberFormatInt(c.saidas || 0)}</span></div>
+      </div>
+    `;
+    wrapper.appendChild(card);
+  });
+
+  // --- lógica de botões: mostra/oculta e faz scroll suave (não re-render) ---
+  if(!btnPrev || !btnNext){
+    // se não existir botões, não tenta criar handlers
+    updateButtons(); 
+    return;
+  }
+
+  // calcula passo: largura visível do "viewport" (pai) — se não houver viewport, usa wrapper.clientWidth
+  const viewport = document.querySelector('.categoria-cards-viewport') || wrapper.parentElement || wrapper;
+  const getStep = () => Math.max(120, Math.floor((viewport.clientWidth || 900)));
+
+  // exibe/oculta botões com base em overflow e posição
+  function updateButtons(){
+    const maxScrollLeft = Math.max(0, wrapper.scrollWidth - wrapper.clientWidth);
+    const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 2;
+    btnPrev.style.display = hasOverflow && wrapper.scrollLeft > 2 ? '' : 'none';
+    btnNext.style.display = hasOverflow && wrapper.scrollLeft < (maxScrollLeft - 2) ? '' : 'none';
+  }
+
+  // attach handlers (substitui handlers anteriores)
+  btnPrev.onclick = () => {
+    wrapper.scrollBy({ left: -getStep(), behavior: 'smooth' });
+    setTimeout(updateButtons, 360);
+  };
+  btnNext.onclick = () => {
+    wrapper.scrollBy({ left: getStep(), behavior: 'smooth' });
+    setTimeout(updateButtons, 360);
+  };
+
+  // sincroniza botões com scroll manual
+  wrapper.removeEventListener('scroll', wrapper._catScrollHandler || (()=>{}));
+  wrapper._catScrollHandler = updateButtons;
+  wrapper.addEventListener('scroll', wrapper._catScrollHandler);
+
+  // garantir estado inicial coerente (não reseta scroll automaticamente)
+  setTimeout(updateButtons, 20);
+}
+
+// ...existing code...
+function animateCategoriaScroll(direction, wrapperEl){
+  // função agora faz apenas um efeito visual sutil (sem manipular o DOM nem re-render)
+  try {
+    const el = wrapperEl || document.getElementById('categoria-cards');
+    if(!el) return;
+    el.style.transition = 'opacity 150ms ease';
+    el.style.opacity = '0.95';
+    setTimeout(()=> { el.style.opacity = '1'; el.style.transition = ''; }, 160);
+  } catch(e){ /* silencioso */ }
+}
+// ...existing code...
+// ...existing code...
+function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
+  const catsLS = getCategoriasDoLocalStorage();
+  const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];
+  const cats = (catsLS && catsLS.length) ? catsLS : defaultCats.map((n,idx)=>({ id: idx+1, nome: n }));
+
+  const summary = cats.map((c,idx)=>{
+    const key = (c.nome||'').toString().toUpperCase();
+    const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
+    const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
+    const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
+    return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
+  });
+
+  renderCategoriaCards(summary);
+}
+
+
+
+(function ensureCategoriaScroll() {
+  function setup() {
+    const cards = document.getElementById('categoria-cards');
+    if (!cards) return;
+
+    // se não existir a viewport, cria e envolve #categoria-cards
+    let viewport = document.querySelector('.categoria-cards-viewport');
+    if (!viewport) {
+      viewport = document.createElement('div');
+      viewport.className = 'categoria-cards-viewport';
+      // insere viewport onde #categoria-cards estava
+      const parent = cards.parentNode;
+      parent.insertBefore(viewport, cards);
+      viewport.appendChild(cards);
+    }
+
+    // força CSS inline mínimo para garantir o comportamento que você quer
+    viewport.style.width = '900px';
+    viewport.style.maxWidth = '900px';
+    viewport.style.overflow = 'hidden';
+    viewport.style.position = 'relative';
+
+    // garante que o wrapper role horizontalmente e com smooth (apenas configura; já tem CSS)
+    cards.style.display = 'flex';
+    cards.style.gap = cards.style.gap || '10px';
+    cards.style.alignItems = 'flex-start';
+    cards.style.overflowX = 'auto';
+    cards.style.scrollBehavior = 'smooth';
+    // impede que o wrapper expanda o parent (gera scrollbar interno)
+    cards.style.boxSizing = 'border-box';
+
+    // configura botões Prev/Next para rolagem suave simples
+    const btnPrev = document.getElementById('cat-prev');
+    const btnNext = document.getElementById('cat-next');
+    if (!btnPrev || !btnNext) return;
+
+    const getStep = () => Math.max(120, Math.floor(viewport.clientWidth || 900));
+
+    function updateButtons() {
+      const max = Math.max(0, cards.scrollWidth - cards.clientWidth);
+      btnPrev.style.display = cards.scrollLeft > 2 ? '' : 'none';
+      btnNext.style.display = cards.scrollLeft < max - 2 ? '' : 'none';
+    }
+
+    btnPrev.onclick = () => {
+      cards.scrollBy({ left: -getStep(), behavior: 'smooth' });
+      setTimeout(updateButtons, 360);
+    };
+    btnNext.onclick = () => {
+      cards.scrollBy({ left: getStep(), behavior: 'smooth' });
+      setTimeout(updateButtons, 360);
+    };
+
+    // manter sincronizado com scroll manual
+    cards.removeEventListener('scroll', cards._catScrollHandler || (()=>{}));
+    cards._catScrollHandler = updateButtons;
+    cards.addEventListener('scroll', cards._catScrollHandler);
+
+    // initial
+    setTimeout(updateButtons, 20);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+})();

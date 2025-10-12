@@ -165,17 +165,21 @@ select#genero {
   color: #000;
 }
 
+#categorias {
+    color: #333;
+}
+
 .fa-arrow-left:hover,
-.fa-tags:hover {
+.fa-tags:hover,
+#categorias:hover {
     color: #1E94A3;
     transition: color 0.2s;
 }
 
-
 .categorias-table {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 .categorias-row {
     display: flex;
@@ -349,7 +353,7 @@ input[type="checkbox"] {
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: #555;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -443,6 +447,14 @@ input[type="checkbox"] {
 #radios-tamanho-multi input[type="radio"] {
     display: none;
 }
+
+.checkboxes-tamanho-multi.floating,
+.checkboxes-genero-multi.floating {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
 
 /* sweetAlert */
 .swal2-popup {
@@ -548,16 +560,4 @@ input[type="checkbox"] {
 .swal2-timer-progress-bar {
     border-radius: 0px 0 0 10px;
     margin-left: 3px;
-}
-
-/* Aparência da scrollbar (opcional tweaks) */
-.categorias-table.categorias-table-scroll::-webkit-scrollbar { width: 8px; }
-.categorias-table.categorias-table-scroll::-webkit-scrollbar-thumb { background: #1e94a3; border-radius: 8px; }
-.categorias-table.categorias-table-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
-
-/* Quando o dropdown for "flutuante" (JS adiciona .floating), ele sai do fluxo e fica acima de tudo */
-.checkboxes-tamanho-multi.floating,
-.checkboxes-genero-multi.floating {
-  position: fixed !important;
-  z-index: 9999 !important;
 }
