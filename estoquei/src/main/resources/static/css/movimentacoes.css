@@ -599,8 +599,6 @@ input:focus[readonly] {
     }
 }
 
-
-
 #categoria-cards-container { position: relative; align-items: center; }
 #categoria-cards { display:flex; gap:10px; align-items:flex-start; }
 .categoria-card {
