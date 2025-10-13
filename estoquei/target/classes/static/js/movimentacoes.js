@@ -2178,7 +2178,7 @@ function animateCategoriaScroll(direction, wrapperEl){
     el.style.transition = 'opacity 150ms ease';
     el.style.opacity = '0.95';
     setTimeout(()=> { el.style.opacity = '1'; el.style.transition = ''; }, 160);
-  } catch(e){ /* silencioso */ }
+  } catch(e){  }
 }
 function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
   const catsLS = getCategoriasDoLocalStorage();
