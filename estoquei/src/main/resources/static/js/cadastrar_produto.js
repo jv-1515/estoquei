@@ -1317,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', function() {
   atualizarTamanhosEGenerosPorCategoria(null);
 });
 
-let MAX_CATEGORIAS = 20;
+let MAX_CATEGORIAS = 50;
 
 // Função para contar linhas de categoria
 function contarCategorias() {
@@ -1327,8 +1327,11 @@ function contarCategorias() {
 // Atualiza texto do botão "+ Criar"
 function atualizarBotaoCriar() {
   const btnCriar = document.getElementById('btn-criar-categoria');
+  const contadorSpan = document.getElementById('contador');
+  if (contadorSpan) {
+    contadorSpan.textContent = String(contarCategorias()).padStart(2, '0');
+  }
   if (!btnCriar) return;
-  btnCriar.textContent = `Adicionar (${contarCategorias()}/${MAX_CATEGORIAS})`;
   btnCriar.disabled = contarCategorias() >= MAX_CATEGORIAS;
 }
 
