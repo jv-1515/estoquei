@@ -160,7 +160,7 @@ document.addEventListener('mousedown', function(e) {
         periodoInput.value = '';
         buscarCardsHoje();
         filtrarMovimentacoes();
-        
+
         // Remove borda/cor do período
         periodoInput.style.border = '';
         periodoInput.style.color = '';
@@ -936,6 +936,8 @@ function filtrarMovimentacoes() {
 }
 
 function buscarCardsPeriodo(dataInicio, dataFim) {
+    renderCategoriaCardsSkeleton();
+
     let url = '/api/movimentacoes';
     if (dataInicio && dataFim) {
         url += `?dataInicio=${dataInicio}&dataFim=${dataFim}`;
@@ -1489,6 +1491,8 @@ function renderizarPaginacao(totalPaginas) {
 }
 
 function carregarMovimentacoes(top) {
+    renderCategoriaCardsSkeleton();
+
     let url = '/api/movimentacoes';
     if (top && top !== "") {
         url += `?top=${top}`;
@@ -1581,6 +1585,8 @@ function carregarMovimentacoes(top) {
 
 
 function buscarCardsHoje() {
+    renderCategoriaCardsSkeleton();
+
     const hoje = new Date().toISOString().slice(0,10);
     fetch('/api/movimentacoes?data=' + encodeURIComponent(hoje) + '&_t=' + Date.now())
         .then(r => r.json())
@@ -2068,8 +2074,28 @@ function getCategoriasDoLocalStorage(){
 function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
 
-// ...existing code...
-// controle de início/offset (mantém CAT_PAGE_SIZE)
+
+function renderCategoriaCardsSkeleton() {
+    const wrapper = document.getElementById('categoria-cards');
+    if (!wrapper) return;
+    wrapper.innerHTML = '';
+    for (let i = 0; i < 7; i++) {
+        const card = document.createElement('div');
+        card.className = 'categoria-card categoria-card-skeleton';
+        card.innerHTML = `
+            <div style="display:flex; flex-direction:column;gap:10px;">
+            <div class="categoria-card-skeleton-bar title"></div>
+            <div class="categoria-card-skeleton-bar value"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; height:65px; gap:10px;">
+            <div class="categoria-card-skeleton-bar row"></div>
+            <div class="categoria-card-skeleton-bar row"></div>
+            </div>
+        `;
+        wrapper.appendChild(card);
+    }
+}
+
 let catStartIndex = 0;
 
 function renderCategoriaCards(summaryArray){
@@ -2144,7 +2170,6 @@ function renderCategoriaCards(summaryArray){
   setTimeout(updateButtons, 20);
 }
 
-// ...existing code...
 function animateCategoriaScroll(direction, wrapperEl){
   // função agora faz apenas um efeito visual sutil (sem manipular o DOM nem re-render)
   try {
@@ -2153,10 +2178,8 @@ function animateCategoriaScroll(direction, wrapperEl){
     el.style.transition = 'opacity 150ms ease';
     el.style.opacity = '0.95';
     setTimeout(()=> { el.style.opacity = '1'; el.style.transition = ''; }, 160);
-  } catch(e){ /* silencioso */ }
+  } catch(e){  }
 }
-// ...existing code...
-// ...existing code...
 function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
   const catsLS = getCategoriasDoLocalStorage();
   const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];

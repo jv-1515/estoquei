@@ -376,7 +376,7 @@ async function atualizarLista() {
 
     if (filtrados.length === 0) {
         exibirNenhumProduto();
-        // Limpe os cards e gráficos se quiser
+
         atualizarDetalhesPrevia([], filtros);
         window.atualizarDetalhesEstoque([]);
         return;
@@ -384,6 +384,7 @@ async function atualizarLista() {
 
     atualizarDetalhesPrevia(filtrados, filtros); // Atualiza os 6 cards
     window.atualizarDetalhesEstoque(filtrados);  // Atualiza os gráficos
+    atualizarMovimentacoesResumo();
 }
 
 async function gerarRelatorio() {
@@ -752,6 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(produtos => {
             todosProdutos = produtos;
             montarCheckboxesProduto(produtos);
+            const categorias = [...new Set(produtos.map(p => p.categoria))];
             montarCheckboxesCategoria(produtos);
             montarCheckboxesTamanho(produtos);
             montarCheckboxesGenero(produtos);
@@ -1581,3 +1583,240 @@ function atualizarDetalhesPrevia(produtos, filtros) {
         produtos.filter(p => Number(p.quantidade) === 0).length;
         
 }
+
+
+
+
+
+function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
+
+function getCategoriasDoLocalStorage(){
+  try{
+    const raw = localStorage.getItem('categoriasModal');
+    if(!raw) return null;
+    const arr = JSON.parse(raw);
+    if(!Array.isArray(arr)) return null;
+    return arr.filter(c=>c && (c.nome||c.name)).map((c,idx)=>({ id:c.id||(idx+1), nome:c.nome||c.name }));
+  }catch(e){ return null; }
+}
+
+let categoriaResumoArray = [];
+const CORES_CATEGORIAS = [
+    "30,148,163","39,117,128","191,161,0","192,57,43","230,103,34","142,68,173",
+    "22,160,133","63,106,179","59,69,138","190,148,84","242,109,141","255,152,86",
+    "52,152,219","46,204,113","241,196,15","155,89,182","52,73,94","127,140,141",
+    "231,76,60","45,166,196"
+];
+
+function animateCategoriaScroll(direction, wrapperEl){
+    const step = 120 + 10;
+    wrapperEl.scrollBy({ left: direction * step * 3, behavior: 'smooth' });
+}
+
+function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
+  const catsLS = getCategoriasDoLocalStorage();
+  const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];
+  const cats = (catsLS && catsLS.length) ? catsLS : defaultCats.map((n,idx)=>({ id: idx+1, nome: n }));
+
+  const summary = cats.map((c,idx)=>{
+    const key = (c.nome||'').toString().toUpperCase();
+    const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
+    const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
+    const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
+    return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
+  });
+
+  renderCategoriaCards(summary);
+}
+
+function renderCategoriaCards(summaryArray){
+    const wrapper = document.getElementById('categoria-cards');
+    const btnPrev = document.getElementById('cat-prev');
+    const btnNext = document.getElementById('cat-next');
+    if(!wrapper) return;
+
+    wrapper.innerHTML = '';
+    summaryArray.forEach((c, idx) => {
+        const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+        const borderColor = `rgb(${color})`;
+        const textColor = `rgb(${color})`;
+        const card = document.createElement('div');
+        card.className = 'categoria-card';
+        card.style.flex = '0 0 120px';
+        card.style.minWidth = '120px';
+        card.innerHTML = `
+          <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
+          <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
+            <div class="label">Estoque</div>
+            <div class="value">${numberFormatInt(c.estoque || 0)}</div>
+          </div>
+          <div class="categoria-rows">
+            <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+            <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
+          </div>
+        `;
+        wrapper.appendChild(card);
+    });
+
+    btnPrev.onclick = () => animateCategoriaScroll(-1, wrapper);
+    btnNext.onclick = () => animateCategoriaScroll(1, wrapper);
+
+    function updateButtons(){
+        const maxScrollLeft = Math.max(0, wrapper.scrollWidth - wrapper.clientWidth);
+        const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 2;
+        btnPrev.style.display = hasOverflow && wrapper.scrollLeft > 2 ? '' : 'none';
+        btnNext.style.display = hasOverflow && wrapper.scrollLeft < (maxScrollLeft - 2) ? '' : 'none';
+    }
+    wrapper.removeEventListener('scroll', wrapper._catScrollHandler || (()=>{}));
+    wrapper._catScrollHandler = updateButtons;
+    wrapper.addEventListener('scroll', wrapper._catScrollHandler);
+    setTimeout(updateButtons, 20);
+}
+
+function renderCategoriaCardsSkeleton() {
+    const container = document.getElementById('categoria-cards');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < CAT_PAGE_SIZE; i++) {
+        container.innerHTML += `
+            <div class="categoria-card-skeleton">
+                <div class="categoria-card-skeleton-bar title"></div>
+                <div class="categoria-card-skeleton-bar value"></div>
+            </div>
+        `;
+    }
+}
+
+// function montarResumoCategoriasEgerarCards(produtos, movimentacoes) {
+//     const todasCategorias = [...new Set(produtos.map(p => p.categoria))];
+//     const resumo = {};
+//     todasCategorias.forEach(cat => {
+//         resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
+//     });
+//     movimentacoes.forEach(m => {
+//         const cat = m.categoria || 'Sem Categoria';
+//         if (!resumo[cat]) {
+//             resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
+//         }
+//         if (m.tipoMovimentacao === 'ENTRADA') resumo[cat].entradas += m.quantidadeMovimentada;
+//         if (m.tipoMovimentacao === 'SAIDA') resumo[cat].saidas += m.quantidadeMovimentada;
+//         resumo[cat].total += m.quantidadeMovimentada;
+//     });
+//     return Object.values(resumo).sort((a, b) => b.total - a.total);
+// }
+
+
+
+function renderCategoriaCards(summaryArray){
+  const wrapper = document.getElementById('categoria-cards');
+  const btnPrev = document.getElementById('cat-prev');
+  const btnNext = document.getElementById('cat-next');
+  if(!wrapper) return;
+
+  summaryArray.sort((a,b)=>{ const d=(b.estoque||0)-(a.estoque||0); return d!==0?d:((a.id||0)-(b.id||0)); });
+  const n = summaryArray.length;
+  if(n === 0){ wrapper.innerHTML=''; if(btnPrev) btnPrev.style.display='none'; if(btnNext) btnNext.style.display='none'; return; }
+
+  wrapper.innerHTML = '';
+  summaryArray.forEach((c, idx) => {
+    const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+    const borderColor = `rgb(${color})`;
+    const textColor = `rgb(${color})`;
+    const card = document.createElement('div');
+    card.className = 'categoria-card';
+    card.style.flex = '0 0 120px';
+    card.style.minWidth = '120px';
+    card.innerHTML = `
+      <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
+      <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
+        <div class="label">Estoque</div>
+        <div class="value">${numberFormatInt(c.estoque || 0)}</div>
+      </div>
+      <div class="categoria-rows">
+        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+        <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
+      </div>
+    `;
+    wrapper.appendChild(card);
+  });
+
+  // Scroll horizontal igual movimentacoes.js
+  const viewport = document.querySelector('.categoria-cards-viewport') || wrapper.parentElement || wrapper;
+  const getStep = () => Math.max(120, Math.floor((viewport.clientWidth || 900)));
+
+  function updateButtons(){
+    const maxScrollLeft = Math.max(0, wrapper.scrollWidth - wrapper.clientWidth);
+    const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 2;
+    btnPrev.style.display = hasOverflow && wrapper.scrollLeft > 2 ? '' : 'none';
+    btnNext.style.display = hasOverflow && wrapper.scrollLeft < (maxScrollLeft - 2) ? '' : 'none';
+  }
+
+  btnPrev.onclick = () => {
+    wrapper.scrollBy({ left: -getStep(), behavior: 'smooth' });
+    setTimeout(updateButtons, 360);
+  };
+  btnNext.onclick = () => {
+    wrapper.scrollBy({ left: getStep(), behavior: 'smooth' });
+    setTimeout(updateButtons, 360);
+  };
+
+  wrapper.removeEventListener('scroll', wrapper._catScrollHandler || (()=>{}));
+  wrapper._catScrollHandler = updateButtons;
+  wrapper.addEventListener('scroll', wrapper._catScrollHandler);
+
+  setTimeout(updateButtons, 20);
+}
+
+// document.getElementById('cat-prev').addEventListener('click', function() {
+//     if (catPageIndex > 0) {
+//         catPageIndex--;
+//         renderCategoriaCards(categoriaResumo);
+//     }
+// });
+// document.getElementById('cat-next').addEventListener('click', function() {
+//     if (catPageIndex < catTotalPages - 1) {
+//         catPageIndex++;
+//         renderCategoriaCards(categoriaResumo);
+//     }
+// });
+
+async function atualizarMovimentacoesResumo() {
+    const filtros = getFiltrosSelecionados();
+    const { dataInicio, dataFim, idsSelecionados, categorias, tamanhos, generos } = filtros;
+
+    let movimentacoes = [];
+    let url = '/api/movimentacoes';
+
+    // Se período está preenchido, busca filtrado
+    if (dataInicio && dataFim) {
+        url += `?dataInicio=${encodeURIComponent(dataInicio)}&dataFim=${encodeURIComponent(dataFim)}`;
+    }
+
+    try {
+        const res = await fetch(url);
+        movimentacoes = await res.json();
+    } catch (e) {
+        movimentacoes = [];
+    }
+
+    // Filtra conforme os filtros selecionados
+    let movFiltradas = movimentacoes.filter(m => {
+        let ok = true;
+        if (idsSelecionados.length > 0) ok = ok && idsSelecionados.includes(Number(m.codigoProduto));
+        if (categorias.length > 0) ok = ok && categorias.includes(m.categoria);
+        if (tamanhos.length > 0) ok = ok && tamanhos.includes(m.tamanho);
+        if (generos.length > 0) ok = ok && generos.includes(m.genero);
+        return ok;
+    });
+
+    const resumo = montarResumoCategoriasEgerarCards(todosProdutos, movFiltradas);
+    renderCategoriaCards(resumo);
+}
+
+['periodo-data-inicio','periodo-data-fim','filter-produto','filter-categoria','filter-tamanho','filter-genero'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', atualizarMovimentacoesResumo);
+});
+document.addEventListener('DOMContentLoaded', atualizarMovimentacoesResumo);

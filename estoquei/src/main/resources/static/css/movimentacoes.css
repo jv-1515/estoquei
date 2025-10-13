@@ -566,7 +566,7 @@ input:focus[readonly] {
 }
 
 
-/* Skeleton */
+/* Skeleton tabela */
 .skeleton-table-row {
     height: 40px;
 }
@@ -599,6 +599,47 @@ input:focus[readonly] {
     }
 }
 
+/* Skeleton cards */
+.categoria-card-skeleton {
+    box-sizing: border-box;
+    background: #f3f3f3;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100px;
+    flex: 0 0 120px;
+    min-width: 120px;
+    max-width: 120px;
+    justify-content: flex-end;
+    position: relative;
+    margin-bottom: 5px;
+    animation: skeleton-loading 1.2s infinite linear;
+}
+.categoria-card-skeleton-bar {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+    animation: skeleton-loading 1.2s infinite linear;
+}
+.categoria-card-skeleton-bar.title {
+    height: 8px;
+    width: 60%;
+    margin: 12px auto -5px auto;
+}
+.categoria-card-skeleton-bar.value {
+    height: 55px;
+    width: 100%;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+}
+
+
+
+
 #categoria-cards-container { position: relative; align-items: center; }
 #categoria-cards { display:flex; gap:10px; align-items:flex-start; }
 .categoria-card {
@@ -625,15 +666,16 @@ input:focus[readonly] {
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    box-sizing: border-box;
+    height: 55px;
 }
 .categoria-estoque .label {
-    font-weight: 700;
+    font-weight: bold;
     font-size: 12px;
 }
 .categoria-estoque .value {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: bold;
 }
 .categoria-rows {
     display: flex;
