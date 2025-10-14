@@ -532,8 +532,12 @@ async function gerarRelatorio() {
         Swal.close();
         // preview na tela
         document.getElementById('preview-relatorio').innerHTML =
-          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}" width="100%" height="600px"></iframe>`;        })
-    .catch(() => {
+          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}"></iframe>`;
+        setTimeout(() => {
+            document.getElementById('preview-relatorio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+        })
+        .catch(() => {
         Swal.close();
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
@@ -1725,25 +1729,6 @@ function renderCategoriaCardsSkeleton() {
         `;
     }
 }
-
-// function montarResumoCategoriasEgerarCards(produtos, movimentacoes) {
-//     const todasCategorias = [...new Set(produtos.map(p => p.categoria))];
-//     const resumo = {};
-//     todasCategorias.forEach(cat => {
-//         resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
-//     });
-//     movimentacoes.forEach(m => {
-//         const cat = m.categoria || 'Sem Categoria';
-//         if (!resumo[cat]) {
-//             resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
-//         }
-//         if (m.tipoMovimentacao === 'ENTRADA') resumo[cat].entradas += m.quantidadeMovimentada;
-//         if (m.tipoMovimentacao === 'SAIDA') resumo[cat].saidas += m.quantidadeMovimentada;
-//         resumo[cat].total += m.quantidadeMovimentada;
-//     });
-//     return Object.values(resumo).sort((a, b) => b.total - a.total);
-// }
-
 
 
 function renderCategoriaCards(summaryArray){

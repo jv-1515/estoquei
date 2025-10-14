@@ -256,6 +256,8 @@ th.ordenar.sorted .sort-icon {
 iframe {
     min-height: 770px;
     height: 770px;
+    max-width: 1300px;
+    width: 100%;
 }
 
 #filter-quantidade.quantidade-ativa {
@@ -413,6 +415,44 @@ select#filter-genero {
     width: 12px !important;
     height: 12px !important;
     accent-color: #1E94A3;
+}
+
+/* Skeleton cards */
+.categoria-card-skeleton {
+    box-sizing: border-box;
+    background: #f3f3f3;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100px;
+    flex: 0 0 120px;
+    min-width: 120px;
+    max-width: 120px;
+    justify-content: flex-end;
+    position: relative;
+    margin-bottom: 5px;
+    animation: skeleton-loading 1.2s infinite linear;
+}
+.categoria-card-skeleton-bar {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+    animation: skeleton-loading 1.2s infinite linear;
+}
+.categoria-card-skeleton-bar.title {
+    height: 8px;
+    width: 60%;
+    margin: 12px auto -5px auto;
+}
+.categoria-card-skeleton-bar.value {
+    height: 55px;
+    width: 100%;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
 }
 
 #categoria-cards-container { position: relative; align-items: center; }
