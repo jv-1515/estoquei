@@ -280,7 +280,26 @@
 
 
 
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
 
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
 
 
 //novo
@@ -1690,6 +1709,8 @@ function renderCategoriaCards(summaryArray){
     wrapper.addEventListener('scroll', wrapper._catScrollHandler);
     setTimeout(updateButtons, 20);
 }
+
+const CAT_PAGE_SIZE = 7;
 
 function renderCategoriaCardsSkeleton() {
     const container = document.getElementById('categoria-cards');

@@ -58,7 +58,7 @@ h2 {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    align-items: flex-end; 
+    align-items: flex-end;
 }
 
 #filter-data-inicio,
@@ -251,6 +251,11 @@ th.ordenar.sorted .sort-icon {
 #preview-relatorio {
     max-width: 1300px;
     margin: 0px auto;
+}
+
+iframe {
+    min-height: 770px;
+    height: 770px;
 }
 
 #filter-quantidade.quantidade-ativa {
