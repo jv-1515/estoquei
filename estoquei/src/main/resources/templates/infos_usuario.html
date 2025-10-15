@@ -74,6 +74,29 @@
                     </span>
                 </div>
 
+                <div id="nova-senha-requisitos" style="display: flex; gap: 32px; margin: 8px 0 0 0;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i id="icon-nova-senha-8" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
+                            <span style="color: #757575">Mínimo 8 caracteres</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i id="icon-nova-senha-maiuscula" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
+                            <span style="color: #757575">Mínimo 1 maiúscula</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i id="icon-nova-senha-numero" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
+                            <span style="color: #757575">Mínimo 1 número</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i id="icon-nova-senha-especial" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
+                            <span style="color: #757575">Mínimo 1 caractere especial</span>
+                        </div>
+                    </div>
+                </div>
+
                 <label for="confirmar-nova-senha">Confirmar nova senha*</label>
                 <div style="position: relative; display: flex; align-items: center;">
                     <input type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" autocomplete="new-password" style="padding-right: 36px; flex: 1;">
