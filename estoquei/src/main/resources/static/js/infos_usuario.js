@@ -177,23 +177,59 @@ function togglePassword(inputId) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const btnRedefinir = document.getElementById('btn-redefinir-senha');
-    const senhaFields = document.getElementById('senha-fields');
-    const form = document.querySelector('.form-container');
-
-    if (btnRedefinir && senhaFields) {
+    const modalBg = document.getElementById('modal-redefinir-bg');
+    const fecharModal = document.getElementById('fechar-modal-redefinir');
+    const formModal = document.getElementById('form-redefinir-senha');
+    
+    if (btnRedefinir && modalBg) {
         btnRedefinir.addEventListener('click', function() {
-            senhaFields.style.display = senhaFields.style.display === 'none' ? 'flex' : 'none';
-            if (senhaFields.style.display === 'flex') {
-                btnRedefinir.textContent = 'Fechar';
-                btnRedefinir.style.backgroundColor = '#fff';
-                btnRedefinir.style.color = '#1e94a3';
-                btnRedefinir.style.border = '1px solid #1e94a3';
-            } else {
-                btnRedefinir.textContent = 'Redefinir';
-                btnRedefinir.style.backgroundColor = '';
-                btnRedefinir.style.color = '';
-                btnRedefinir.style.border = '';
-                senhaFields.querySelectorAll('input').forEach(i => i.value = '');
+            modalBg.style.display = 'flex';
+        });
+    }
+    if (fecharModal && modalBg) {
+        fecharModal.addEventListener('click', function() {
+            modalBg.style.display = 'none';
+            formModal.reset();
+            ['senha-atual', 'nova-senha', 'confirmar-nova-senha'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.style.border = '';
+                const icon = document.getElementById('icon-' + id);
+                if (icon) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+            ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) {
+                    icon.className = 'fa-solid fa-circle-xmark';
+                    icon.style.color = '#757575';
+                }
+            });
+        });
+    }
+    if (modalBg) {
+        modalBg.addEventListener('click', function(e) {
+            if (e.target === modalBg) {
+                modalBg.style.display = 'none';
+                formModal.reset();
+                ['senha-atual', 'nova-senha', 'confirmar-nova-senha'].forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) input.style.border = '';
+                    const icon = document.getElementById('icon-' + id);
+                    if (icon) {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    }
+                });
+                
+                ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
+                    const icon = document.getElementById(id);
+                    if (icon) {
+                        icon.className = 'fa-solid fa-circle-xmark';
+                        icon.style.color = '#757575';
+                    }
+                });
             }
         });
     }
@@ -204,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const senhaAtual = senhaAtualInput.value || '';
             if (!senhaAtual) return;
             if (!usuarioLogado || !usuarioLogado.id) {
-                console.error('[DEBUG] usuarioLogado ou usuarioLogado.id indefinido ao tentar validar senha:', usuarioLogado);
+                console.error('usuarioLogado ou usuarioLogado.id indefinido ao tentar validar senha:', usuarioLogado);
                 senhaAtualInput.dataset.valida = 'false';
                 senhaAtualInput.style.borderColor = '#f27474';
                 Swal.fire('Erro', 'Usuário não carregado. Tente novamente em instantes.', 'error');
@@ -226,8 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     senhaAtualInput.dataset.valida = 'false';
                     senhaAtualInput.style.border = '2px solid #f27474';
                     Swal.fire({
-                        title: 'Erro',
-                        text: 'Senha atual incorreta',
+                        title: 'Senha atual incorreta',
+                        text: 'Tente novamente',
                         icon: 'error',
                         showConfirmButton: false,
                         timer: 1000,
@@ -236,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch((err) => {
-                console.error('[DEBUG] Erro ao validar senha:', err);
+                console.error('Erro ao validar senha:', err);
                 senhaAtualInput.dataset.valida = 'false';
                 senhaAtualInput.style.border = '2px solid #f27474';
                 Swal.fire({
@@ -264,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = document.getElementById(r.id);
             if (icon) {
                 icon.className = r.valid ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
-                icon.style.color = r.valid ? '#1e94a3' : '#aaa';
+                icon.style.color = r.valid ? '#1e94a3' : '#757575';
             }
         });
     }
@@ -276,139 +312,147 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarRequisitosNovaSenha(novaSenhaInput.value);
     }
 
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            if (senhaFields.style.display === 'flex') {
-                const atual = document.getElementById('senha-atual').value;
-                const nova = document.getElementById('nova-senha').value;
-                const confirmar = document.getElementById('confirmar-nova-senha').value;
-
-                if (!atual || !nova || !confirmar) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Atenção',
-                        text: 'Preencha todos os campos obrigatórios',
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true
-                    });
-                    return;
-                }
-                // --- REQUISITOS DE SENHA ---
-                if (
-                    nova.length < 8 ||
-                    !/[A-Z]/.test(nova) ||
-                    !/\d/.test(nova) ||
-                    !/[^A-Za-z0-9]/.test(nova)
-                ) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Senha inválida!',
-                        text: 'Preencha todos os requisitos',
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true
-                    });
-                    return;
-                }
-                if (nova === atual) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Senha inválida!',
-                        text: 'A nova senha deve ser diferente da atual',
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true
-                    });
-                    return;
-                }
-                if (nova !== confirmar) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Senha inválida!',
-                        text: 'As senhas não coincidem. Ambas devem ser iguais',
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 1200,
-                        timerProgressBar: true
-                    });
-                    return;
-                }
-                if (document.getElementById('senha-atual').dataset.valida !== 'true') {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Senha inválida!',
-                        text: 'Confirme a senha atual correta',
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true
-                    });
-                    return;
-                }
+    // ...existing code...
+    if (formModal) {
+        formModal.addEventListener('submit', function(e) {
+            const atual = document.getElementById('senha-atual').value;
+            const nova = document.getElementById('nova-senha').value;
+            const confirmar = document.getElementById('confirmar-nova-senha').value;
+    
+            if (!atual || !nova || !confirmar) {
                 e.preventDefault();
-                const usuarioId = usuarioLogado?.id;
-                if (!usuarioId) {
-                    Swal.fire('Erro', 'ID do usuário não encontrado.', 'error');
-                    return;
-                }
-                fetch(`/usuarios/${usuarioId}/senha`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ senha: nova })
-                })
-                .then(res => {
-                    if (res.ok) {
-                        Swal.fire({
-                            title: 'Sucesso!',
-                            text: 'Sua senha foi atualizada',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1000,
-                            timerProgressBar: true
-                        });
-                        fetch(`/usuarios/${usuarioId}`)
-                            .then(res => res.json())
-                            .then(usuarioAtualizado => {
-                                usuarioLogado = usuarioAtualizado;
-                                const campoSenha = document.getElementById('senha');
-                                if (campoSenha && usuarioAtualizado && usuarioAtualizado.senha) {
-                                    campoSenha.value = usuarioAtualizado.senha;
-                                }
-                            });
-                        const btnRedefinir = document.getElementById('btn-redefinir-senha');
-                        if (btnRedefinir) {
-                            btnRedefinir.textContent = 'Redefinir senha';
-                            btnRedefinir.style.backgroundColor = '';
-                            btnRedefinir.style.color = '';
-                            btnRedefinir.style.border = '';
-                        }
-                        ['senha-atual', 'nova-senha', 'confirmar-nova-senha'].forEach(id => {
-                            const input = document.getElementById(id);
-                            if (input) {
-                                input.style.border = '';
-                                input.type = 'password';
-                                const icon = document.getElementById('icon-' + id);
-                                if (icon) {
-                                    icon.classList.remove('fa-eye');
-                                    icon.classList.add('fa-eye-slash');
-                                }
+                Swal.fire({
+                    title: 'Atenção',
+                    text: 'Preencha todos os campos obrigatórios',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            // --- REQUISITOS DE SENHA ---
+            if (
+                nova.length < 8 ||
+                !/[A-Z]/.test(nova) ||
+                !/\d/.test(nova) ||
+                !/[^A-Za-z0-9]/.test(nova)
+            ) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Senha inválida!',
+                    text: 'Preencha todos os requisitos',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            if (nova === atual) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Senha inválida!',
+                    text: 'A nova senha deve ser diferente da atual',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            if (/\s/.test(nova)) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Senha inválida!',
+                    text: 'A senha não pode conter espaços vazios',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            if (nova !== confirmar) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Senha inválida!',
+                    text: 'As senhas não coincidem. Ambas devem ser iguais',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            if (document.getElementById('senha-atual').dataset.valida !== 'true') {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Senha inválida!',
+                    text: 'Confirme a senha atual correta',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+                return;
+            }
+            e.preventDefault();
+            const usuarioId = usuarioLogado?.id;
+            if (!usuarioId) {
+                Swal.fire('Erro', 'ID do usuário não encontrado.', 'error');
+                return;
+            }
+            fetch(`/usuarios/${usuarioId}/senha`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha: nova })
+            })
+            .then(res => {
+                if (res.ok) {
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: 'Sua senha foi atualizada',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    fetch(`/usuarios/${usuarioId}`)
+                        .then(res => res.json())
+                        .then(usuarioAtualizado => {
+                            usuarioLogado = usuarioAtualizado;
+                            const campoSenha = document.getElementById('senha');
+                            if (campoSenha && usuarioAtualizado && usuarioAtualizado.senha) {
+                                campoSenha.value = usuarioAtualizado.senha;
                             }
                         });
-                        senhaFields.style.display = 'none';
-                        form.reset();
-                    } else {
-                        Swal.fire('Erro', 'Não foi possível atualizar a senha.', 'error');
-                    }
-                })
-                .catch((err) => {
-                    console.error('Erro no fetch PUT /usuarios/{id}/senha:', err);
-                    Swal.fire('Erro', 'Erro de conexão ao atualizar senha.', 'error');
-                });
-            }
+                    modalBg.style.display = 'none';
+                    formModal.reset();
+                    ['senha-atual', 'nova-senha', 'confirmar-nova-senha'].forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input) input.style.border = '';
+                        const icon = document.getElementById('icon-' + id);
+                        if (icon) {
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        }
+                    });
+                    ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
+                        const icon = document.getElementById(id);
+                        if (icon) {
+                            icon.className = 'fa-solid fa-circle-xmark';
+                            icon.style.color = '#757575';
+                        }
+                    });
+                } else {
+                    Swal.fire('Erro', 'Não foi possível atualizar a senha.', 'error');
+                }
+            })
+            .catch((err) => {
+                console.error('Erro no fetch PUT /usuarios/{id}/senha:', err);
+                Swal.fire('Erro', 'Erro de conexão ao atualizar senha.', 'error');
+            });
         });
     }
 });
