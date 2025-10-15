@@ -2852,7 +2852,8 @@ function aplicarEstiloInputs() {
         'cad-email',
         'cad-cpf',
         'cad-nascimento',
-        'cad-contato'
+        'cad-contato',
+        'registros-multi'
     ];
 
     const inputs = Array.from(document.querySelectorAll('input')).filter(

@@ -199,11 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon.classList.add('fa-eye-slash');
                 }
             });
-            ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
-                const icon = document.getElementById(id);
-                if (icon) {
-                    icon.className = 'fa-solid fa-circle-xmark';
-                    icon.style.color = '#757575';
+            ['requisito-nova-senha-8', 'requisito-nova-senha-maiuscula', 'requisito-nova-senha-numero', 'requisito-nova-senha-especial'].forEach(id => {
+                const div = document.getElementById(id);
+                if (div) {
+                    div.style.color = '#757575';
+                    const icon = div.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fa-solid fa-circle-xmark';
+                    }
                 }
             });
         });
@@ -222,12 +225,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon.classList.add('fa-eye-slash');
                     }
                 });
-                
-                ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
-                    const icon = document.getElementById(id);
-                    if (icon) {
-                        icon.className = 'fa-solid fa-circle-xmark';
-                        icon.style.color = '#757575';
+
+                ['requisito-nova-senha-8', 'requisito-nova-senha-maiuscula', 'requisito-nova-senha-numero', 'requisito-nova-senha-especial'].forEach(id => {
+                    const div = document.getElementById(id);
+                    if (div) {
+                        div.style.color = '#757575';
+                        const icon = div.querySelector('i');
+                        if (icon) {
+                            icon.className = 'fa-solid fa-circle-xmark';
+                        }
                     }
                 });
             }
@@ -291,19 +297,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const novaSenhaInput = document.getElementById('nova-senha');
     function atualizarRequisitosNovaSenha(valor) {
         const requisitos = [
-            { id: 'icon-nova-senha-8', valid: valor.length >= 8 },
-            { id: 'icon-nova-senha-maiuscula', valid: /[A-Z]/.test(valor) },
-            { id: 'icon-nova-senha-numero', valid: /\d/.test(valor) },
-            { id: 'icon-nova-senha-especial', valid: /[^A-Za-z0-9]/.test(valor) }
+            { id: 'requisito-nova-senha-8', valid: valor.length >= 8 },
+            { id: 'requisito-nova-senha-maiuscula', valid: /[A-Z]/.test(valor) },
+            { id: 'requisito-nova-senha-numero', valid: /\d/.test(valor) },
+            { id: 'requisito-nova-senha-especial', valid: /[^A-Za-z0-9]/.test(valor) }
         ];
         requisitos.forEach(r => {
-            const icon = document.getElementById(r.id);
-            if (icon) {
-                icon.className = r.valid ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
-                icon.style.color = r.valid ? '#1e94a3' : '#757575';
+            const div = document.getElementById(r.id);
+            if (div) {
+                div.style.color = r.valid ? '#1e94a3' : '#757575';
+                const icon = div.querySelector('i');
+                if (icon) {
+                    icon.className = r.valid ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+                }
             }
         });
     }
+    
     if (novaSenhaInput) {
         novaSenhaInput.addEventListener('input', function() {
             atualizarRequisitosNovaSenha(this.value);
@@ -312,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarRequisitosNovaSenha(novaSenhaInput.value);
     }
 
-    // ...existing code...
     if (formModal) {
         formModal.addEventListener('submit', function(e) {
             const atual = document.getElementById('senha-atual').value;
@@ -438,11 +447,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             icon.classList.add('fa-eye-slash');
                         }
                     });
-                    ['icon-nova-senha-8', 'icon-nova-senha-maiuscula', 'icon-nova-senha-numero', 'icon-nova-senha-especial'].forEach(id => {
-                        const icon = document.getElementById(id);
-                        if (icon) {
-                            icon.className = 'fa-solid fa-circle-xmark';
-                            icon.style.color = '#757575';
+                    ['requisito-nova-senha-8', 'requisito-nova-senha-maiuscula', 'requisito-nova-senha-numero', 'requisito-nova-senha-especial'].forEach(id => {
+                        const div = document.getElementById(id);
+                        if (div) {
+                            div.style.color = '#757575';
+                            const icon = div.querySelector('i');
+                            if (icon) {
+                                icon.className = 'fa-solid fa-circle-xmark';
+                            }
                         }
                     });
                 } else {

@@ -26,7 +26,7 @@
             <div>
                 <label for="senha">Senha:</label>
                 <div class="input-group">
-                    <input type="password" id="senha" name="senha" placeholder="Senha de 8 caracteres" required minlength="8" th:value="${senha}" />
+                    <input type="password" id="senha" name="senha" placeholder="Senha de 8 caracteres" required minlength="8" maxlength="30" th:value="${senha}" />
                     <span class="lock-open">
                         <i class="fa-solid fa-eye-slash" id="fa-eye-slash"></i>
                     </span>
@@ -34,7 +34,7 @@
             </div>
             <button type="submit">Entrar</button>
             <div class="register-link">
-                <a href="#">Esqueceu sua senha? Clique aqui</a>
+                <a href="/andamento">Esqueceu sua senha? Clique aqui</a>
             </div>
         </form>
         <div class="login-logo-box">

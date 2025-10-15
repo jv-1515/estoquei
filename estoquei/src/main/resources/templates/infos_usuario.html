@@ -71,7 +71,7 @@
                 <div class="form-column">
                     <label for="senha-atual">Senha atual*</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input style="width: 100%;" type="password" id="senha-atual" name="senha-atual" placeholder="Digite sua senha atual" minlength="8" autocomplete="current-password">
+                        <input style="width: 100%;" type="password" id="senha-atual" name="senha-atual" placeholder="Digite sua senha atual" minlength="8" maxlength="30" autocomplete="current-password">
                         <span class="lock-open" onclick="togglePassword('senha-atual')" style="position: absolute; right: 10px; cursor: pointer;">
                             <i class="fa-solid fa-eye-slash" id="icon-senha-atual"></i>
                         </span>
@@ -79,7 +79,7 @@
             
                     <label for="nova-senha">Nova senha*</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input style="width: 100%;" type="password" id="nova-senha" name="nova-senha" placeholder="Digite a nova senha" minlength="8" autocomplete="new-password">
+                        <input style="width: 100%;" type="password" id="nova-senha" name="nova-senha" placeholder="Digite a nova senha" minlength="8" maxlength="30" autocomplete="new-password">
                         <span class="lock-open" onclick="togglePassword('nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
                             <i class="fa-solid fa-eye-slash" id="icon-nova-senha"></i>
                         </span>
@@ -87,30 +87,30 @@
             
                     <div id="nova-senha-requisitos">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i id="icon-nova-senha-8" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
-                                <span style="color: #757575">8 caracteres</span>
+                            <div id="requisito-nova-senha-8" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>8 caracteres</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i id="icon-nova-senha-maiuscula" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
-                                <span style="color: #757575">1 maiúscula</span>
+                            <div id="requisito-nova-senha-maiuscula" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>1 maiúscula</span>
                             </div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i id="icon-nova-senha-numero" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
-                                <span style="color: #757575">1 número</span>
+                            <div id="requisito-nova-senha-numero" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>1 número</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i id="icon-nova-senha-especial" class="fa-solid fa-circle-xmark" style="color:#aaa;"></i>
-                                <span style="color: #757575">1 caractere especial</span>
+                            <div id="requisito-nova-senha-especial" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>1 caractere especial</span>
                             </div>
                         </div>
                     </div>
             
                     <label for="confirmar-nova-senha">Confirmar senha*</label>
                     <div style="position: relative; display: flex; align-items: center;">
-                        <input style="width: 100%;" type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" autocomplete="new-password">
+                        <input style="width: 100%;" type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" maxlength="30" autocomplete="new-password">
                         <span class="lock-open" onclick="togglePassword('confirmar-nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
                             <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
                         </span>
