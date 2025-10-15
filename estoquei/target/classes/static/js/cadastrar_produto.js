@@ -1029,7 +1029,7 @@ const coresCategorias = [
 ];
 
 function aplicarEstiloInputs() {
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 50; i++) {
         const nomeInput = document.getElementById('categoria_' + i);
         const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${i} .tamanho-multi-check`);
         const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${i} .genero-multi-check`);
@@ -1317,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', function() {
   atualizarTamanhosEGenerosPorCategoria(null);
 });
 
-let MAX_CATEGORIAS = 20;
+let MAX_CATEGORIAS = 50;
 
 // Função para contar linhas de categoria
 function contarCategorias() {
@@ -1327,8 +1327,11 @@ function contarCategorias() {
 // Atualiza texto do botão "+ Criar"
 function atualizarBotaoCriar() {
   const btnCriar = document.getElementById('btn-criar-categoria');
+  const contadorSpan = document.getElementById('contador');
+  if (contadorSpan) {
+    contadorSpan.textContent = String(contarCategorias()).padStart(2, '0');
+  }
   if (!btnCriar) return;
-  btnCriar.textContent = `Adicionar (${contarCategorias()}/${MAX_CATEGORIAS})`;
   btnCriar.disabled = contarCategorias() >= MAX_CATEGORIAS;
 }
 
@@ -1349,7 +1352,10 @@ document.getElementById('btn-criar-categoria').onclick = function() {
       return;
     }
   }
-  categoriasModal.push({id: categoriasModal.length+1, nome:"", tamanhos:[], generos:[]});
+
+  //IDS temporarios
+  const novoId = categoriasModal.length > 0 ? Math.max(...categoriasModal.map(c => c.id || 0)) + 1 : 1;
+  categoriasModal.push({id: novoId, nome:"", tamanhos:[], generos:[]});
 
   const idxNovo = contarCategorias() + 1;
   const novaLinha = document.createElement('div');

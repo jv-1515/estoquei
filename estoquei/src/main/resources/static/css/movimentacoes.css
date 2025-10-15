@@ -921,3 +921,7 @@ input:focus[readonly] {
     border-radius: 0px 0 0 10px;
     margin-left: 3px;
 }
+
+.swal2-input:focus {
+    box-shadow: none !important;
+}

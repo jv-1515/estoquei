@@ -96,7 +96,13 @@
         <div class="detalhes-modal">
         <div style="align-items:center; justify-content:space-between;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="color:#277580; font-size:20px; margin:0;">Gerenciar Categorias</h2>
+            <div style="display:flex; width: 480px;justify-content:space-between;">
+              <h2 style="color:#277580; font-size:20px; margin:0;">Gerenciar Categorias</h2>
+                <div style="font-size: 12px; margin: 0; border: solid 2px #1e94a3; border-radius: 20px; padding: 3px 5px 0 5px; color: #1e94a3;">
+                  <span id="contador" style="font-size: 14px; font-weight: bold; margin-right: -2px;">00</span>
+                  <span>/50</span>
+                </div>
+            </div>
             <button type="button" onclick="fecharModalCategorias()" class="close-icon" title="Fechar">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -111,7 +117,9 @@
         <form id="form-categorias" action="#" autocomplete="off">
         <div class="categorias-table"></div>
           <div style="display: flex; gap: 10px; align-items: flex-end;">
-            <button type="button" id="btn-criar-categoria" class="btn">Adicionar (0/20)</button>
+            <button type="button" id="btn-criar-categoria" class="btn">
+              <i class="fa-solid fa-plus"></i> Nova Categoria
+            </button>
             <button type="submit" id="btn-salvar" class="btn">Salvar Alterações</button>
           </div>
       </form>

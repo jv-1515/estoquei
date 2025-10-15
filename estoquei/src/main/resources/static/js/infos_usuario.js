@@ -251,6 +251,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- VALIDAÇÃO DOS REQUISITOS DE SENHA ---
+    const novaSenhaInput = document.getElementById('nova-senha');
+    function atualizarRequisitosNovaSenha(valor) {
+        const requisitos = [
+            { id: 'icon-nova-senha-8', valid: valor.length >= 8 },
+            { id: 'icon-nova-senha-maiuscula', valid: /[A-Z]/.test(valor) },
+            { id: 'icon-nova-senha-numero', valid: /\d/.test(valor) },
+            { id: 'icon-nova-senha-especial', valid: /[^A-Za-z0-9]/.test(valor) }
+        ];
+        requisitos.forEach(r => {
+            const icon = document.getElementById(r.id);
+            if (icon) {
+                icon.className = r.valid ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+                icon.style.color = r.valid ? '#1e94a3' : '#aaa';
+            }
+        });
+    }
+    if (novaSenhaInput) {
+        novaSenhaInput.addEventListener('input', function() {
+            atualizarRequisitosNovaSenha(this.value);
+        });
+        // Atualiza ao carregar
+        atualizarRequisitosNovaSenha(novaSenhaInput.value);
+    }
+
     if (form) {
         form.addEventListener('submit', function(e) {
             if (senhaFields.style.display === 'flex') {
@@ -265,7 +290,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         text: 'Preencha todos os campos obrigatórios',
                         icon: 'warning',
                         showConfirmButton: false,
-                        timer: 1000,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
+                // --- REQUISITOS DE SENHA ---
+                if (
+                    nova.length < 8 ||
+                    !/[A-Z]/.test(nova) ||
+                    !/\d/.test(nova) ||
+                    !/[^A-Za-z0-9]/.test(nova)
+                ) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Senha inválida!',
+                        text: 'Preencha todos os requisitos',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1500,
                         timerProgressBar: true
                     });
                     return;
@@ -273,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nova === atual) {
                     e.preventDefault();
                     Swal.fire({
-                        title: 'Atenção',
+                        title: 'Senha inválida!',
                         text: 'A nova senha deve ser diferente da atual',
                         icon: 'warning',
                         showConfirmButton: false,
@@ -285,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (nova !== confirmar) {
                     e.preventDefault();
                     Swal.fire({
-                        title: 'Atenção',
+                        title: 'Senha inválida!',
                         text: 'As senhas não coincidem. Ambas devem ser iguais',
                         icon: 'warning',
                         showConfirmButton: false,
@@ -297,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (document.getElementById('senha-atual').dataset.valida !== 'true') {
                     e.preventDefault();
                     Swal.fire({
-                        title: 'Atenção',
+                        title: 'Senha inválida!',
                         text: 'Confirme a senha atual correta',
                         icon: 'warning',
                         showConfirmButton: false,
@@ -362,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .catch((err) => {
-                    console.error('[DEBUG] Erro no fetch PUT /usuarios/{id}/senha:', err);
+                    console.error('Erro no fetch PUT /usuarios/{id}/senha:', err);
                     Swal.fire('Erro', 'Erro de conexão ao atualizar senha.', 'error');
                 });
             }

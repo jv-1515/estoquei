@@ -112,6 +112,13 @@ h2 {
     background: #fff;
     border: 2px solid #1E94A3;
     color: #1E94A3;
+    font-size: 12px;
+}
+
+#btn-criar-categoria:hover {
+    background: #277580;
+    border: 2px solid #277580;
+    color: #fff;
 }
 
 #btn-salvar {

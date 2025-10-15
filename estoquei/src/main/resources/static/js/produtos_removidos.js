@@ -1,3 +1,24 @@
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
+
 function exibirTamanho(tamanho) {
     if (tamanho === 'ÚNICO') return 'Único';
     if (typeof tamanho === 'string' && tamanho.startsWith('_')) return tamanho.substring(1);

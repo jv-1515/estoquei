@@ -1032,3 +1032,7 @@ th.ordenar.sorted .sort-icon {
     margin: 0;
     padding-top: 0;
 }
+
+.swal2-input:focus {
+    box-shadow: none !important;
+}

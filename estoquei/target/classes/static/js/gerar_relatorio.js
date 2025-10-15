@@ -280,7 +280,26 @@
 
 
 
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
 
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
 
 
 //novo
@@ -513,8 +532,12 @@ async function gerarRelatorio() {
         Swal.close();
         // preview na tela
         document.getElementById('preview-relatorio').innerHTML =
-          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}" width="100%" height="600px"></iframe>`;        })
-    .catch(() => {
+          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}"></iframe>`;
+        setTimeout(() => {
+            document.getElementById('preview-relatorio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+        })
+        .catch(() => {
         Swal.close();
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
@@ -1603,11 +1626,27 @@ function getCategoriasDoLocalStorage(){
 }
 
 let categoriaResumoArray = [];
-const CORES_CATEGORIAS = [
-    "30,148,163","39,117,128","191,161,0","192,57,43","230,103,34","142,68,173",
-    "22,160,133","63,106,179","59,69,138","190,148,84","242,109,141","255,152,86",
-    "52,152,219","46,204,113","241,196,15","155,89,182","52,73,94","127,140,141",
-    "231,76,60","45,166,196"
+const coresCategorias = [
+    "30,148,163",   // #1e94a3
+    "39,117,128",   // #277580
+    "191,161,0",    // #bfa100
+    "192,57,43",    // #c0392b
+    "230,103,34",   // #e67e22
+    "142,68,173",   // #8e44ad
+    "22,160,133",   // #16a085
+    "63,106,179",   // #3f6ab3
+    "59,69,138",    // #3b458a
+    "190,148,84",   // #be9454
+    "242,109,141",  // #f26d8d
+    "255,152,86",   // #ff9856
+    "52,152,219",   // #3498db
+    "46,204,113",   // #2ecc71
+    "241,196,15",   // #f1c40f
+    "155,89,182",   // #9b59b6
+    "52,73,94",     // #34495e
+    "127,140,141",  // #46adb4ff
+    "231,76,60",    // #e74c3c
+    "45,166,196"   // #2da6c4
 ];
 
 function animateCategoriaScroll(direction, wrapperEl){
@@ -1639,7 +1678,7 @@ function renderCategoriaCards(summaryArray){
 
     wrapper.innerHTML = '';
     summaryArray.forEach((c, idx) => {
-        const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+        const color = coresCategorias[idx % coresCategorias.length];
         const borderColor = `rgb(${color})`;
         const textColor = `rgb(${color})`;
         const card = document.createElement('div');
@@ -1675,6 +1714,8 @@ function renderCategoriaCards(summaryArray){
     setTimeout(updateButtons, 20);
 }
 
+const CAT_PAGE_SIZE = 7;
+
 function renderCategoriaCardsSkeleton() {
     const container = document.getElementById('categoria-cards');
     if (!container) return;
@@ -1689,25 +1730,6 @@ function renderCategoriaCardsSkeleton() {
     }
 }
 
-// function montarResumoCategoriasEgerarCards(produtos, movimentacoes) {
-//     const todasCategorias = [...new Set(produtos.map(p => p.categoria))];
-//     const resumo = {};
-//     todasCategorias.forEach(cat => {
-//         resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
-//     });
-//     movimentacoes.forEach(m => {
-//         const cat = m.categoria || 'Sem Categoria';
-//         if (!resumo[cat]) {
-//             resumo[cat] = { entradas: 0, saidas: 0, total: 0, categoria: cat };
-//         }
-//         if (m.tipoMovimentacao === 'ENTRADA') resumo[cat].entradas += m.quantidadeMovimentada;
-//         if (m.tipoMovimentacao === 'SAIDA') resumo[cat].saidas += m.quantidadeMovimentada;
-//         resumo[cat].total += m.quantidadeMovimentada;
-//     });
-//     return Object.values(resumo).sort((a, b) => b.total - a.total);
-// }
-
-
 
 function renderCategoriaCards(summaryArray){
   const wrapper = document.getElementById('categoria-cards');
@@ -1721,7 +1743,7 @@ function renderCategoriaCards(summaryArray){
 
   wrapper.innerHTML = '';
   summaryArray.forEach((c, idx) => {
-    const color = CORES_CATEGORIAS[idx % CORES_CATEGORIAS.length];
+    const color = coresCategorias[idx % coresCategorias.length];
     const borderColor = `rgb(${color})`;
     const textColor = `rgb(${color})`;
     const card = document.createElement('div');

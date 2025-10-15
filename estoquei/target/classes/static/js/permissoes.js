@@ -1,19 +1,25 @@
 const MODULOS = ["produtos", "movimentacoes", "relatorios", "fornecedores", "funcionarios"];
-// const CARGOS_PADRAO = [
-//   {
-//     id: 1,
-//     nome: "Gerente",
-//     produtos: 4,
-//     movimentacoes: 4,
-//     relatorios: 4,
-//     fornecedores: 4,
-//     funcionarios: 4
-//   }
-// ];
 
-// if (!localStorage.getItem('cargosPermissoes')) {
-//   localStorage.setItem('cargosPermissoes', JSON.stringify(CARGOS_PADRAO));
-// }
+//botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btn-topo');
+    if (window.scrollY > 100) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarBadgeBaixoEstoque();
+    const btn = document.getElementById('btn-topo');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
 
 let cargosBackend = [];
 
