@@ -1,5 +1,39 @@
 const MODULOS = ["produtos", "movimentacoes", "relatorios", "fornecedores", "funcionarios"];
 
+document.addEventListener('DOMContentLoaded', function() {
+    const btnVoltarA = document.getElementById('btn-voltar');
+    const btnVoltarBtn = btnVoltarA ? btnVoltarA.querySelector('button') : null;
+
+    if (btnVoltarBtn) {
+        btnVoltarBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Verifica se existe edição aberta
+            const algumEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
+                .some(btn => btn.offsetParent !== null);
+            if (algumEditando) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Descartar alterações?',
+                    text: 'As alterações não serão salvas',
+                    showCancelButton: true,
+                    confirmButtonText: 'Descartar',
+                    cancelButtonText: 'Voltar',
+                    allowOutsideClick: false,
+                    customClass: {
+                        confirmButton: 'swal2-deny'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        history.back();
+                    }
+                });
+            } else {
+                history.back();
+            }
+        });
+    }
+});
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -108,7 +142,7 @@ function renderizarPermissoes() {
             // Tabela de permissões igual ao gerente
             let tabela = `
                 <div class="permissoes-table">
-                    <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div class="permissoes-cell modulo-header" style="flex:1;">
                             <h2 title="${cargo.nome}" style="display:flex; align-items:center;">
                                 ${cargo.nome}
@@ -138,7 +172,7 @@ function renderizarPermissoes() {
                         </div>
                     </div>
                     ${MODULOS.map((mod, mIdx) => `
-                        <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:flex-end;">
                             <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
                                 <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}" title="${permissoes[mIdx].label}">${permissoes[mIdx].label}</span>
                                 ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
@@ -199,6 +233,7 @@ function renderizarPermissoes() {
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
                 div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.disabled = false;
+                    cb.style.pointerEvents = '';
                     cb.style.opacity = '1';
                 });
                 btnEditar.style.display = 'none';
@@ -235,6 +270,7 @@ function renderizarPermissoes() {
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
                 div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.disabled = false;
+                    cb.style.pointerEvents = '';
                     cb.style.opacity = '1';
                 });
                 btnEditar.style.display = 'none';
@@ -245,15 +281,29 @@ function renderizarPermissoes() {
             
             // SALVAR
             btnSalvar.addEventListener('click', function() {
+                // Validação: pelo menos um checkbox marcado
+                const algumMarcado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => cb.checked);
+                if (!algumMarcado) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Permissão obrigatória!',
+                        text: 'Selecione ao menos uma permissão para este cargo',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    return;
+                }
                 salvarPermissoesCargo(cargo.id, div);
                 div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.disabled = true;
+                    cb.style.pointerEvents = 'none';
                     cb.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
                 btnCancelar.style.display = 'none';
-                // btnCancelar.classList.remove('btn', 'btn-primary');
+                if (btnRenomear) btnRenomear.style.display = 'none';
             });
 
 

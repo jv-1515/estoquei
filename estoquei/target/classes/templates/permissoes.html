@@ -12,7 +12,7 @@
     <script src="/js/permissoes.js" defer></script>
 </head>
 <body>
-    <a th:href="@{/gerenciar-funcionarios}" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <a th:href="@{/gerenciar-funcionarios}" id="btn-voltar" title="Voltar" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
         <button tabindex="12" style="border-radius: 50%; width: 40px; height: 40px; background-color: white; color: black; border: none; cursor: pointer; margin-top: 0; padding-top: 3px">
             <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
         </button>
@@ -37,7 +37,7 @@
 
     <div class="main-container" id="permissoes-cargo-gerente">
         <div class="permissoes-table">
-            <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div class="permissoes-cell modulo-header" style="flex:1;">
                     <h2 style="display:flex; align-items:center;">
                         Gerente
