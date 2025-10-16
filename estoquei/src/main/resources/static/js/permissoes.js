@@ -306,6 +306,19 @@ function renderizarPermissoes() {
                 if (btnRenomear) btnRenomear.style.display = 'none';
             });
 
+            const NovoCargo = MODULOS.every(mod => cargo[mod] === 0);
+            
+            if (NovoCargo) {
+                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = false;
+                    cb.style.pointerEvents = '';
+                    cb.style.opacity = '1';
+                });
+                if (btnEditar) btnEditar.style.display = 'none';
+                if (btnSalvar) btnSalvar.style.display = '';
+                if (btnRenomear) btnRenomear.style.display = '';
+                if (btnCancelar) btnCancelar.style.display = 'none';
+            }
 
             // Listeners dos checkboxes
             MODULOS.forEach(mod => {
