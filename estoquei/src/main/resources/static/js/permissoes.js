@@ -103,69 +103,88 @@ function renderizarPermissoes() {
             } else {
                 return;
             }
-            div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div>
-                        <h2 style="margin-bottom: 5px;">
-                            ${cargo.nome}
-                        <span class="actions" title="Excluir">
-                                <i class="fa-solid fa-delete-left" style="cursor:pointer;" onclick="removerCargo(${cargo.id})"></i>
-                            </span>
-                        </h2>
-                        <div class="permissoes">
-                            <p style="margin:0;">Produtos</p>
-                            <p style="margin:0;">Movimentações</p>
-                            <p style="margin:0;">Relatórios</p>
-                            <p style="margin:0; font-weight: bold;">Fornecedores <i class="fa-solid fa-circle-info" title="Módulo sensível" style="left: 0;"></i></p>
-                            <p style="margin:0; font-weight: bold;">Funcionários <i class="fa-solid fa-circle-info" title="Módulo sensível"></i></p>
+
+            // Tabela de permissões igual ao gerente
+            let tabela = `
+                <div class="permissoes-table">
+                    <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="permissoes-cell modulo-header" style="flex:1;"></div>
+                        <div class="permissoes-cell acoes-header" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
+                            <div class="cell">Visualizar</div>
+                            <div class="cell">Criar</div>
+                            <div class="cell">Editar</div>
+                            <div class="cell">Excluir</div>
+                            <div class="cell"></div>
                         </div>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        ${['visualizar','criar','editar','excluir','tudo'].map((tipo, idx) => `
-                            <div class="permissoes-col ${tipo}">
-                                ${tipo !== 'tudo' ? `<span>${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</span>` : ''}
-                                ${MODULOS.map((mod, mIdx) => {
-                                    if (tipo === 'tudo') {
-                                        return `<input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''}/>`;
-                                    } else {
-                                        return `<input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="${idx+1}" data-cargo="${cargo.id}" ${cargo[mod] >= idx+1 ? 'checked' : ''}/>`;
-                                    }
-                                }).join('')}
+                    ${MODULOS.map((mod, mIdx) => `
+                        <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
+                                <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}">${permissoes[mIdx].label}</span>
+                                ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
                             </div>
-                        `).join('')}
-                    </div>
+                            <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
+                                <div class="cell">
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''}/>
+                                </div>
+                                <div class="cell">
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="2" data-cargo="${cargo.id}" ${cargo[mod] >= 2 ? 'checked' : ''}/>
+                                </div>
+                                <div class="cell">
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="3" data-cargo="${cargo.id}" ${cargo[mod] >= 3 ? 'checked' : ''}/>
+                                </div>
+                                <div class="cell">
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="4" data-cargo="${cargo.id}" ${cargo[mod] >= 4 ? 'checked' : ''}/>
+                                </div>
+                                <div class="cell">
+                                    <input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''}/>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             `;
+
+            // Botões Editar/Excluir ao lado do nome do cargo
+            tabela = `
+                <div style="display:flex; align-items:center; justify-content:space-between;padding-left: 20px">
+                    <h2 style="display:flex; align-items:center;">
+                        ${cargo.nome}
+                        <button class="btn-editar-cargo" data-cargo="${cargo.id}">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </button>
+                        <button class="btn-excluir-cargo" data-cargo="${cargo.id}">
+                            <i class="fa-solid fa-trash"></i> Excluir
+                        </button>
+                    </h2>
+                </div>
+                ${tabela}
+            `;
+
+            div.innerHTML = tabela;
             container.appendChild(div);
 
-            // Listeners progressivos
+            // Listeners dos checkboxes (igual ao seu código atual)
             MODULOS.forEach(mod => {
-                // Colunas Visualizar, Criar, Editar, Excluir
                 [1,2,3,4].forEach(nivel => {
                     const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${nivel}"]`);
                     if (cb) {
                         cb.addEventListener('change', function() {
                             const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
                             if (cb.checked) {
-                                // Marca todos anteriores
                                 for (let i = 0; i < nivel; i++) checks[i].checked = true;
                                 cargo[mod] = nivel;
                             } else {
-                                // Desmarca todos posteriores
                                 for (let i = nivel-1; i < 4; i++) checks[i].checked = false;
-                                // Define novo nível
                                 let novoNivel = 0;
                                 for (let i = 0; i < 4; i++) if (checks[i].checked) novoNivel = i+1;
                                 cargo[mod] = novoNivel;
                             }
-                            // Atualiza "tudo"
                             const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
                             tudoCb.checked = cargo[mod] === 4;
-                            salvarPermissoes();
                         });
                     }
                 });
-                // Coluna "Tudo" (linha toda)
                 const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
                 if (tudoCb) {
                     tudoCb.addEventListener('change', function() {
@@ -177,12 +196,14 @@ function renderizarPermissoes() {
                             checks.forEach(cb => cb.checked = false);
                             cargo[mod] = 0;
                         }
-                        salvarPermissoes();
                     });
                 }
             });
+
+            // Listeners dos botões Editar/Excluir (próxima etapa)
         });
 }
+
 document.addEventListener('DOMContentLoaded', renderizarPermissoes);
 
 function salvarPermissoes() {
