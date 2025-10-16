@@ -53,9 +53,10 @@ function renderizarCargos() {
     btn.className = `cargo-btn cargo-${i}`;
 
     if (cargo) {
-    btn.innerHTML = `${cargo.nome} ${i !== 1 ? '<i class="fa-solid fa-pen" title="Renomear"></i>' : ''}`;
+    btn.innerHTML = `${cargo.nome}`;
         btn.onclick = () => {
-        if (cargo.id !== 1) abrirEditarCargo(cargo.id);
+            const bloco = document.getElementById(`permissoes-cargo-${cargo.id}`);
+            if (bloco) bloco.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
       btn.classList.remove('novo-cargo');
     } else {
@@ -111,16 +112,19 @@ function renderizarPermissoes() {
                         <div class="permissoes-cell modulo-header" style="flex:1;">
                             <h2 title="${cargo.nome}" style="display:flex; align-items:center;">
                                 ${cargo.nome}
-                                <button class="btn-editar-cargo" data-cargo="${cargo.id}" title="Editar cargo ${cargo.nome}">
+                                <button class="btn-editar-cargo" data-cargo="${cargo.id}" title="Editar">
                                     <i class="fa-solid fa-pen"></i> Editar
                                 </button>
-                                <button class="btn-cancelar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Cancelar edição de ${cargo.nome}">
+                                <button class="btn-cancelar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Cancelar">
                                     <i class="fa-solid fa-xmark"></i> Cancelar
                                 </button>
-                                <button class="btn-salvar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Salvar alterações de ${cargo.nome}">
+                                <button class="btn-renomear-cargo" data-cargo="${cargo.id}" style="display:none;" title="Renomear">
+                                    <i class="fa-solid fa-pen-to-square"></i> Renomear
+                                </button>
+                                <button class="btn-salvar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Salvar">
                                     <i class="fa-solid fa-check"></i> Salvar
                                 </button>
-                                <button class="btn-excluir-cargo" data-cargo="${cargo.id}" title="Excluir cargo ${cargo.nome}">
+                                <button class="btn-excluir-cargo" data-cargo="${cargo.id}" title="Excluir">
                                     <i class="fa-solid fa-trash"></i> Excluir
                                 </button>
                             </h2>
@@ -175,7 +179,13 @@ function renderizarPermissoes() {
             const btnEditar = div.querySelector('.btn-editar-cargo');
             const btnSalvar = div.querySelector('.btn-salvar-cargo');
             const btnCancelar = div.querySelector('.btn-cancelar-cargo');
+            const btnRenomear = div.querySelector('.btn-renomear-cargo');
             
+            if (btnRenomear) {
+                btnRenomear.onclick = function() {
+                    abrirRenomearCargo(cargo.id);
+                };
+            }
             // EDITAR
             btnEditar.onclick = function() {
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
@@ -186,6 +196,7 @@ function renderizarPermissoes() {
                 btnEditar.style.display = 'none';
                 btnCancelar.style.display = '';
                 btnSalvar.style.display = '';
+                btnRenomear.style.display = '';
             };
             
             // CANCELAR
@@ -202,14 +213,27 @@ function renderizarPermissoes() {
                     cargo[mod] = nivel;
                 });
                 div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.style.pointerEvents = 'none';
+                    cb.style.pointerEvents = '';
                     cb.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
                 btnCancelar.style.display = 'none';
+                btnRenomear.style.display = 'none';
                 // btnCancelar.classList.remove('btn', 'btn-primary');
             });
+
+            btnEditar.onclick = function() {
+                div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
+                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = false;
+                    cb.style.opacity = '1';
+                });
+                btnEditar.style.display = 'none';
+                btnCancelar.style.display = '';
+                btnSalvar.style.display = '';
+                btnRenomear.style.display = '';
+            };
             
             // SALVAR
             btnSalvar.addEventListener('click', function() {
@@ -384,7 +408,7 @@ function criarCargo(id, nome) {
     });
 }
 
-function abrirEditarCargo(id) {
+function abrirRenomearCargo(id) {
   const cargos = cargosBackend;
   const cargo = cargos.find(c => c.id === id);
   if (!cargo) return;

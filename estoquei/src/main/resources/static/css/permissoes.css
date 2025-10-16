@@ -343,6 +343,10 @@ input, select {
     transition: background 0.2s;
 }
 
+.permissoes-header.permissoes-row{
+    align-items: flex-end;
+}
+
 .permissoes-row:not(.permissoes-header):hover {
     background: #f1f1f1;
 }
@@ -362,9 +366,8 @@ input, select {
 
 .permissoes-cell.acoes-header,
 .permissoes-cell.modulo-header {
-    padding: 0 8px;
+    padding: 0 8px 4px 0;
 }
-
 .modulo-header, .modulo-nome {
     font-weight: bold;
 }
@@ -401,7 +404,7 @@ input, select {
     border: 2px solid #1e94a3;
     color: #1e94a3;
     background: #fff;
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 4px 8px;
     font-size: 12px;
     cursor: pointer;
@@ -422,7 +425,7 @@ input, select {
     border: 2px solid #d33;
     color: #d33;
     background: #fff;
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 4px 8px;
     font-size: 12px;
     cursor: pointer;
@@ -440,7 +443,7 @@ input, select {
 }
 
 .btn-cancelar-cargo {
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 4px 8px;
     font-size: 12px;
     cursor: pointer;
@@ -461,6 +464,26 @@ input, select {
     background: #aaa;
     color: #fff;
     border-color: #aaa;
+}
+
+.btn-renomear-cargo {
+    border: 2px solid #277580;
+    color: #277580;
+    background: #fff;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn-renomear-cargo:hover {
+    background: #277580;
+    color: #fff;
+    border-color: #277580;
 }
 
 
