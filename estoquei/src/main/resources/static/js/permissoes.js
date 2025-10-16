@@ -108,36 +108,52 @@ function renderizarPermissoes() {
             let tabela = `
                 <div class="permissoes-table">
                     <div class="permissoes-header permissoes-row" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div class="permissoes-cell modulo-header" style="flex:1;"></div>
+                        <div class="permissoes-cell modulo-header" style="flex:1;">
+                            <h2 title="${cargo.nome}" style="display:flex; align-items:center;">
+                                ${cargo.nome}
+                                <button class="btn-editar-cargo" data-cargo="${cargo.id}" title="Editar cargo ${cargo.nome}">
+                                    <i class="fa-solid fa-pen"></i> Editar
+                                </button>
+                                <button class="btn-cancelar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Cancelar edição de ${cargo.nome}">
+                                    <i class="fa-solid fa-xmark"></i> Cancelar
+                                </button>
+                                <button class="btn-salvar-cargo" data-cargo="${cargo.id}" style="display:none;" title="Salvar alterações de ${cargo.nome}">
+                                    <i class="fa-solid fa-check"></i> Salvar
+                                </button>
+                                <button class="btn-excluir-cargo" data-cargo="${cargo.id}" title="Excluir cargo ${cargo.nome}">
+                                    <i class="fa-solid fa-trash"></i> Excluir
+                                </button>
+                            </h2>
+                        </div>
                         <div class="permissoes-cell acoes-header" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                            <div class="cell">Visualizar</div>
-                            <div class="cell">Criar</div>
-                            <div class="cell">Editar</div>
-                            <div class="cell">Excluir</div>
-                            <div class="cell"></div>
+                            <div class="cell" title="Visualizar">Visualizar</div>
+                            <div class="cell" title="Criar">Criar</div>
+                            <div class="cell" title="Editar">Editar</div>
+                            <div class="cell" title="Excluir">Excluir</div>
+                            <div class="cell" title="Tudo"></div>
                         </div>
                     </div>
                     ${MODULOS.map((mod, mIdx) => `
                         <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:center;">
                             <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
-                                <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}">${permissoes[mIdx].label}</span>
+                                <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}" title="${permissoes[mIdx].label}">${permissoes[mIdx].label}</span>
                                 ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
                             </div>
                             <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''}/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Visualizar ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="2" data-cargo="${cargo.id}" ${cargo[mod] >= 2 ? 'checked' : ''}/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="2" data-cargo="${cargo.id}" ${cargo[mod] >= 2 ? 'checked' : ''} title="Criar ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="3" data-cargo="${cargo.id}" ${cargo[mod] >= 3 ? 'checked' : ''}/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="3" data-cargo="${cargo.id}" ${cargo[mod] >= 3 ? 'checked' : ''} title="Editar ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="4" data-cargo="${cargo.id}" ${cargo[mod] >= 4 ? 'checked' : ''}/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="4" data-cargo="${cargo.id}" ${cargo[mod] >= 4 ? 'checked' : ''} title="Excluir ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''}/>
+                                    <input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''} title="Tudo: ${permissoes[mIdx].label}"/>
                                 </div>
                             </div>
                         </div>
@@ -145,26 +161,71 @@ function renderizarPermissoes() {
                 </div>
             `;
 
-            // Botões Editar/Excluir ao lado do nome do cargo
-            tabela = `
-                <div style="display:flex; align-items:center; justify-content:space-between;padding-left: 20px">
-                    <h2 style="display:flex; align-items:center;">
-                        ${cargo.nome}
-                        <button class="btn-editar-cargo" data-cargo="${cargo.id}">
-                            <i class="fa-solid fa-pen"></i> Editar
-                        </button>
-                        <button class="btn-excluir-cargo" data-cargo="${cargo.id}">
-                            <i class="fa-solid fa-trash"></i> Excluir
-                        </button>
-                    </h2>
-                </div>
-                ${tabela}
-            `;
-
+            
             div.innerHTML = tabela;
             container.appendChild(div);
+            
+            // BLOQUEIA CHECKBOXES
+            div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.style.pointerEvents = 'none';
+                cb.style.opacity = '0.5';
+            });
+            
+            // CAPTURA OS BOTÕES
+            const btnEditar = div.querySelector('.btn-editar-cargo');
+            const btnSalvar = div.querySelector('.btn-salvar-cargo');
+            const btnCancelar = div.querySelector('.btn-cancelar-cargo');
+            
+            // EDITAR
+            btnEditar.onclick = function() {
+                div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
+                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = false;
+                    cb.style.opacity = '1';
+                });
+                btnEditar.style.display = 'none';
+                btnCancelar.style.display = '';
+                btnSalvar.style.display = '';
+            };
+            
+            // CANCELAR
+            btnCancelar.addEventListener('click', function() {
+                const originais = JSON.parse(div.dataset.permissoesOriginais || '[]');
+                MODULOS.forEach((mod, idx) => {
+                    let nivel = originais[idx] || 0;
+                    [1,2,3,4].forEach(n => {
+                        const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
+                        if (cb) cb.checked = n <= nivel;
+                    });
+                    const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                    if (tudoCb) tudoCb.checked = nivel === 4;
+                    cargo[mod] = nivel;
+                });
+                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.style.pointerEvents = 'none';
+                    cb.style.opacity = '0.5';
+                });
+                btnEditar.style.display = '';
+                btnSalvar.style.display = 'none';
+                btnCancelar.style.display = 'none';
+                // btnCancelar.classList.remove('btn', 'btn-primary');
+            });
+            
+            // SALVAR
+            btnSalvar.addEventListener('click', function() {
+                salvarPermissoesCargo(cargo.id, div);
+                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = true;
+                    cb.style.opacity = '0.5';
+                });
+                btnEditar.style.display = '';
+                btnSalvar.style.display = 'none';
+                btnCancelar.style.display = 'none';
+                // btnCancelar.classList.remove('btn', 'btn-primary');
+            });
 
-            // Listeners dos checkboxes (igual ao seu código atual)
+
+            // Listeners dos checkboxes
             MODULOS.forEach(mod => {
                 [1,2,3,4].forEach(nivel => {
                     const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${nivel}"]`);
@@ -200,36 +261,97 @@ function renderizarPermissoes() {
                 }
             });
 
-            // Listeners dos botões Editar/Excluir (próxima etapa)
+            //     div.querySelector('.btn-editar-cargo').addEventListener('click', function() {
+            //     // Salva estado original para possível desfazer
+            //     div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
+            
+            //     // Habilita edição dos checkboxes
+            //     div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            //         cb.style.pointerEvents = 'auto';
+            //         cb.style.opacity = '1';
+            //     });
+            
+            //     // Troca botão para "Salvar"
+            //     // this.classList.add('btn');
+            //     // this.classList.remove('btn-editar-cargo');
+            //     // this.classList.add('btn-salvar-cargo');
+            //     // this.innerHTML = '<i class="fa-solid fa-check"></i> Salvar';
+            
+            //     // Adiciona listener para salvar
+            //     this.onclick = function() {
+            //         // Envia para backend
+            //         salvarPermissoesCargo(cargo.id, div);
+            //         // Bloqueia novamente
+            //         div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            //             cb.style.pointerEvents = 'none';
+            //             cb.style.opacity = '0.7';
+            //         });
+            //         // Volta botão para "Editar"
+            //         this.classList.remove('btn');
+            //         this.classList.remove('btn-salvar-cargo');
+            //         this.classList.add('btn-editar-cargo');
+            //         this.innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
+            //         // Reativa listener de editar
+            //         this.onclick = arguments.callee;
+            //     };
+            // });
         });
 }
 
 document.addEventListener('DOMContentLoaded', renderizarPermissoes);
 
-function salvarPermissoes() {
-    const cargos = [];
-    document.querySelectorAll('#permissoes-list .main-container').forEach(div => {
-        const id = parseInt(div.id.replace('permissoes-cargo-',''));
-        const nome = div.querySelector('h2').childNodes[0].textContent.trim();
-        const cargo = { id, nome };
-        MODULOS.forEach(mod => {
-            let nivel = 0;
-            [1,2,3,4].forEach(n => {
-                const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
-                if (cb && cb.checked) nivel = n;
-            });
-            cargo[mod] = nivel;
-        });
-        cargos.push(cargo);
-    });
-    const gerente = cargosBackend.find(c => c.id === 1);
-    if (gerente) cargos.unshift(gerente);
+// function salvarPermissoes() {
+//     const cargos = [];
+//     document.querySelectorAll('#permissoes-list .main-container').forEach(div => {
+//         const id = parseInt(div.id.replace('permissoes-cargo-',''));
+//         const nome = div.querySelector('h2').childNodes[0].textContent.trim();
+//         const cargo = { id, nome };
+//         MODULOS.forEach(mod => {
+//             let nivel = 0;
+//             [1,2,3,4].forEach(n => {
+//                 const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
+//                 if (cb && cb.checked) nivel = n;
+//             });
+//             cargo[mod] = nivel;
+//         });
+//         cargos.push(cargo);
+//     });
+//     const gerente = cargosBackend.find(c => c.id === 1);
+//     if (gerente) cargos.unshift(gerente);
 
-    cargos.forEach(cargo => {
-        fetch(`/cargos/${cargo.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cargo)
+//     cargos.forEach(cargo => {
+//         fetch(`/cargos/${cargo.id}`, {
+//             method: 'PUT',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(cargo)
+//         });
+//     });
+// }
+
+function salvarPermissoesCargo(id, div) {
+    const cargo = cargosBackend.find(c => c.id === id);
+    if (!cargo) return;
+    MODULOS.forEach(mod => {
+        let nivel = 0;
+        [1,2,3,4].forEach(n => {
+            const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
+            if (cb && cb.checked) nivel = n;
+        });
+        cargo[mod] = nivel;
+    });
+    fetch(`/cargos/${cargo.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cargo)
+    }).then(() => {
+        carregarCargosBackend();
+        renderizarPermissoes();
+        Swal.fire({
+            icon: 'success',
+            title: 'Permissões salvas!',
+            showConfirmButton: false,
+            timer: 1200,
+            timerProgressBar: true
         });
     });
 }

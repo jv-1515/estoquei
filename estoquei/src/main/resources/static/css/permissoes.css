@@ -43,7 +43,7 @@ h2 {
     margin: 0;
 }
 
-.produto-img {
+/* .produto-img {
     width: 30px;
     height: 30px;
     border-radius: 6px;
@@ -59,7 +59,7 @@ h2 {
     height: 30px;
     background: #f3f3f3;
     border-radius: 6px;
-}
+} */
 .fa-delete-left:hover {
     color: red;
 }
@@ -360,12 +360,12 @@ input, select {
     box-sizing: border-box;
 }
 
-.permissoes-cell .acoes-header {
-    padding-top: 0;
+.permissoes-cell.acoes-header,
+.permissoes-cell.modulo-header {
+    padding: 0 8px;
 }
 
 .modulo-header, .modulo-nome {
-    /* max-width: 60px; */
     font-weight: bold;
 }
 
@@ -374,6 +374,10 @@ input, select {
     font-size: 14px;
     font-weight: normal;
     padding-left: 20px;
+}
+
+.permissoes-cell.modulo-header {
+    padding-left:20px;
 }
 
 .permissoes-cell input[type="checkbox"] {
@@ -392,7 +396,8 @@ input, select {
 .permissoes-cell input[type="checkbox"].perm-check[data-nivel="4"] { accent-color: #c0392b; }
 .permissoes-cell input[type="checkbox"].perm-check-all { accent-color: #1e94a3; border-radius: 50%; }
 
-.btn-editar-cargo, .btn-excluir-cargo {
+.btn-editar-cargo,
+.btn-salvar-cargo {
     border: 2px solid #1e94a3;
     color: #1e94a3;
     background: #fff;
@@ -404,13 +409,59 @@ input, select {
     display: flex;
     align-items: center;
     gap: 4px;
-    transition: background 0.2s, color 0.2s;
-}
-.btn-editar-cargo:hover, .btn-excluir-cargo:hover {
-    background: #1e94a3;
-    color: #fff;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
+.btn-editar-cargo:hover,
+.btn-salvar-cargo:hover {
+    background: #1e94a3;
+    color: #fff;
+    border-color: #1e94a3;
+}
+.btn-excluir-cargo {
+    border: 2px solid #d33;
+    color: #d33;
+    background: #fff;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+/* excluir fica vermelho no hover */
+.btn-excluir-cargo:hover {
+    background: #d33;
+    color: #fff;
+    border-color: #d33;
+}
+
+.btn-cancelar-cargo {
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    background: #fff;
+}
+
+.btn-cancelar-cargo {
+    border: 2px solid #aaa;
+    color: #aaa;
+    background: #fff;
+}
+.btn-cancelar-cargo:hover {
+    background: #aaa;
+    color: #fff;
+    border-color: #aaa;
+}
 
 
 
