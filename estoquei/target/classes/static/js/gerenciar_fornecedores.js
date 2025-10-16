@@ -601,8 +601,67 @@ function preencherCamposEdicaoFornecedor(f) {
     document.getElementById('edit-cnpj').value = f.cnpj ? aplicarMascaraCNPJ(f.cnpj) : '';
     document.getElementById('edit-email').value = f.email || '';
 
-    // Categorias (pode ser vazio)
+    // Categorias
     document.getElementById('edit-categorias').value = getCategoriasTexto(f) || '';
+    
+    // Marcar checkboxes de categorias no editar conforme os booleans do fornecedor
+    const checks = Array.from(document.querySelectorAll('.edit-categoria-multi-check'));
+    const todas = checks[0];
+    const nomesCategorias = [
+        'CAMISA', 'CAMISETA', 'CALÇA', 'BERMUDA', 'VESTIDO', 'SAPATO', 'MEIA'
+    ];
+    const bools = [
+        f.camisa, f.camiseta, f['calça'] ?? f.calca, f.bermuda, f.vestido, f.sapato, f.meia
+    ];
+    
+    // Desmarca todos primeiro
+    checks.forEach(cb => cb.checked = false);
+    
+    // Marca cada checkbox conforme o boolean
+    checks.slice(1).forEach((cb, idx) => {
+        cb.checked = !!bools[idx];
+    });
+    
+    // Marca "Todas" se todos estiverem marcados
+    todas.checked = checks.slice(1).every(cb => cb.checked);
+    
+    // Atualiza o input de categorias
+    const selecionados = checks.slice(1)
+        .filter(cb => cb.checked)
+        .map(cb => cb.parentNode.textContent.trim());
+    
+    // if (selecionados.length === 0) {
+    //     document.getElementById('edit-categorias').value = 'Selecione';
+    // } else if (todas.checked) {
+    //     document.getElementById('edit-categorias').value = 'Todas';
+    // } else {
+    //     document.getElementById('edit-categorias').value = selecionados.join(', ');
+    // }
+    
+    /*
+    // --- FUTURO: quando o backend retornar uma lista de IDs das categorias ---
+    const categoriaIdMap = {
+        1: 'CAMISA',
+        2: 'CAMISETA',
+        3: 'CALÇA',
+        4: 'BERMUDA',
+        5: 'VESTIDO',
+        6: 'SAPATO',
+        7: 'MEIA'
+    };
+    // Supondo que f.categorias seja um array de IDs, ex: [1,3,5]
+    if (Array.isArray(f.categorias)) {
+        checks.forEach(cb => cb.checked = false);
+        f.categorias.forEach(id => {
+            const nome = categoriaIdMap[id];
+            checks.slice(1).forEach(cb => {
+                if (cb.value === nome) cb.checked = true;
+            });
+        });
+        todas.checked = checks.slice(1).every(cb => cb.checked);
+        // Atualiza o input igual acima
+    }
+    */
 
     // ETAPA 2 e 3 - opcionais
     document.getElementById('edit-nome-responsavel').value = f.nome_responsavel || '';
@@ -620,7 +679,7 @@ function preencherCamposEdicaoFornecedor(f) {
     // Avatar
     const avatarDiv = document.getElementById('edit-avatar');
     const iniciaisSpan = document.getElementById('edit-avatar-iniciais');
-    const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+    const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user-tie') : null;
     const nomeEmpresa = f.nome_empresa || '';
     if (avatarDiv && iniciaisSpan) {
         avatarDiv.style.background = corAvatarFornecedor(nomeEmpresa);
@@ -670,10 +729,6 @@ function preencherCamposEdicaoFornecedor(f) {
 // Fechar edição
 function fecharEditarFornecedor() {
     const orig = window.dadosOriginaisEdicaoFornecedor || {};
-    const codigo = document.getElementById('edit-codigo').value.trim();
-    const nome_empresa = document.getElementById('edit-nome-empresa').value.trim();
-    const cnpj = document.getElementById('edit-cnpj').value.replace(/\D/g, '');
-    const email = document.getElementById('edit-email').value.trim();
 
     const houveMudanca =
         document.getElementById('edit-codigo').value.trim() !== (orig.codigo || '') ||
@@ -707,11 +762,13 @@ function fecharEditarFornecedor() {
             if (result.isConfirmed) {
                 document.getElementById('editar-fornecedor-bg').style.display = 'none';
                 document.body.style.overflow = '';
+                document.getElementById('checkboxes-edit-categoria-multi').style.display = 'none';
             }
         });
     } else {
         document.getElementById('editar-fornecedor-bg').style.display = 'none';
         document.body.style.overflow = '';
+        document.getElementById('checkboxes-edit-categoria-multi').style.display = 'none';
     }
 }
 
@@ -898,10 +955,11 @@ async function validarFornecedorEdit() {
     const cnpjMasked = document.getElementById('edit-cnpj').value.trim();
     const cnpj = cnpjMasked.replace(/\D/g, '');
     const email = document.getElementById('edit-email').value.trim();
-    const categorias = document.getElementById('edit-categorias').value.trim();
+    const categorias = Array.from(document.querySelectorAll('.edit-categoria-multi-check:not(#edit-categoria-multi-todas)'));
+    const algumaMarcada = categorias.some(cb => cb.checked);
 
     // Campos opcionais
-    const nome_responsavel = document.getElementById('edit-nome-responsavel').value.trim();
+    // const nome_responsavel = document.getElementById('edit-nome-responsavel').value.trim();
     const email_responsavel = document.getElementById('edit-email-responsavel').value.trim();
     const telefoneMasked = document.getElementById('edit-telefone').value.trim();
     const telefone = telefoneMasked.replace(/\D/g, '');
@@ -950,6 +1008,20 @@ async function validarFornecedorEdit() {
             icon: 'warning',
             title: 'Código já cadastrado!',
             text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+
+    //Categorias
+    if (!algumaMarcada) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Categorias obrigatórias!',
+            text: 'Selecione pelo menos uma categoria',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,
@@ -1051,7 +1123,7 @@ async function validarFornecedorEdit() {
     }
 
     // Categorias
-    if (!categorias || categorias === 'Nenhuma') {
+    if (!categorias || categorias === 'Selecionar') {
         Swal.fire({
             icon: 'warning',
             title: 'Categorias obrigatórias!',
@@ -1311,7 +1383,7 @@ function atualizarAvatarFornecedor() {
     // ETAPA 1
     const avatar1 = document.getElementById('cad-avatar');
     const iniciais1 = document.getElementById('cad-avatar-iniciais');
-    const icon1 = avatar1 ? avatar1.querySelector('i.fa-user') : null;
+    const icon1 = avatar1 ? avatar1.querySelector('i.fa-user-tie') : null;
     if (avatar1) avatar1.style.background = corAvatarFornecedor(nome);
     if (iniciais1) iniciais1.textContent = iniciais;
     if (icon1) icon1.style.display = nome.trim() ? 'none' : '';
@@ -1319,7 +1391,7 @@ function atualizarAvatarFornecedor() {
     // ETAPA 2
     const avatar2 = document.getElementById('cad-avatar-2');
     const iniciais2 = document.getElementById('cad-avatar-iniciais-2');
-    const icon2 = avatar2 ? avatar2.querySelector('i.fa-user') : null;
+    const icon2 = avatar2 ? avatar2.querySelector('i.fa-user-tie') : null;
     if (avatar2) avatar2.style.background = corAvatarFornecedor(nome);
     if (iniciais2) iniciais2.textContent = iniciais;
     if (icon2) icon2.style.display = nome.trim() ? 'none' : '';
@@ -1327,7 +1399,7 @@ function atualizarAvatarFornecedor() {
     // ETAPA 4 (revisão)
     const avatar4 = document.getElementById('rev-avatar');
     const iniciais4 = document.getElementById('rev-avatar-iniciais');
-    const icon4 = avatar4 ? avatar4.querySelector('i.fa-user') : null;
+    const icon4 = avatar4 ? avatar4.querySelector('i.fa-user-tie') : null;
     if (avatar4) avatar4.style.background = corAvatarFornecedor(nome);
     if (iniciais4) iniciais4.textContent = iniciais;
     if (icon4) icon4.style.display = nome.trim() ? 'none' : '';
@@ -1343,28 +1415,101 @@ document.addEventListener('click', function(e) {
         document.getElementById('checkboxes-categoria-multi').style.display = 'none';
     }
 });
-document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-    cb.addEventListener('change', atualizarCategoriasInput);
-});
-document.getElementById('categoria-multi-todas').addEventListener('change', function() {
-    const checked = this.checked;
-    document.querySelectorAll('.categoria-multi-check:not(#categoria-multi-todas)').forEach(cb => {
-        cb.checked = checked;
+
+window.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0]; // O primeiro é "Todas"
+
+    // "Todas" marca/desmarca todos
+    todas.addEventListener('change', function() {
+        checks.forEach(cb => cb.checked = todas.checked);
+        atualizarPlaceholderCategoriaMulti();
     });
-    atualizarCategoriasInput();
+
+    // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarPlaceholderCategoriaMulti();
+        });
+    });
+
+    function atualizarPlaceholderCategoriaMulti() {
+        const input = document.getElementById('cad-categorias-input');
+        const selecionados = checks.slice(1)
+            .filter(cb => cb.checked)
+            .map(cb => cb.parentNode.textContent.trim());
+        todas.checked = checks.slice(1).every(cb => cb.checked);
+
+        if (selecionados.length === 0) {
+            input.value = 'Selecionar';
+        } else if (todas.checked) {
+            input.value = 'Todas';
+        } else if (selecionados.length === 1) {
+            input.value = selecionados[0];
+        } else {
+            input.value = selecionados.join(', ');
+        }
+    }
+
+    atualizarPlaceholderCategoriaMulti();
 });
-function atualizarCategoriasInput() {
-    const todas = document.getElementById('categoria-multi-todas');
-    const checks = Array.from(document.querySelectorAll('.categoria-multi-check:not(#categoria-multi-todas)'));
-    const selecionadas = checks.filter(cb => cb.checked).map(cb => cb.parentElement.textContent.trim());
-    if (selecionadas.length === checks.length) {
-        todas.checked = true;
-        document.getElementById('cad-categorias-input').value = 'Todas';
+
+
+function showCheckboxesEditCategorias() {
+    var checkboxes = document.getElementById("checkboxes-edit-categoria-multi");
+    if (checkboxes.style.display === "block") {
+        checkboxes.style.display = "none";
     } else {
-        todas.checked = false;
-        document.getElementById('cad-categorias-input').value = selecionadas.join(', ') || 'Nenhuma';
+        checkboxes.style.display = "block";
     }
 }
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#edit-categorias-multi')) {
+        document.getElementById('checkboxes-edit-categoria-multi').style.display = 'none';
+    }
+});
+
+// Lógica dos checkboxes no editar
+window.addEventListener('DOMContentLoaded', function() {
+    const checks = Array.from(document.querySelectorAll('.edit-categoria-multi-check'));
+    const todas = checks[0];
+    const input = document.getElementById('edit-categorias');
+
+    todas.addEventListener('change', function() {
+        checks.forEach(cb => cb.checked = todas.checked);
+        atualizarEditCategoriasInput();
+    });
+
+    checks.slice(1).forEach(cb => {
+        cb.addEventListener('change', function() {
+            todas.checked = checks.slice(1).every(c => c.checked);
+            atualizarEditCategoriasInput();
+        });
+    });
+
+    function atualizarEditCategoriasInput() {
+        const selecionados = checks.slice(1)
+            .filter(cb => cb.checked)
+            .map(cb => cb.parentNode.textContent.trim());
+        todas.checked = checks.slice(1).every(cb => cb.checked);
+
+        if (selecionados.length === 0) {
+            input.value = 'Selecionar';
+        } else if (todas.checked) {
+            input.value = 'Todas';
+        } else if (selecionados.length === 1) {
+            input.value = selecionados[0];
+        } else {
+            input.value = selecionados.join(', ');
+        }
+    }
+
+    // Inicializa ao abrir modal de edição
+    atualizarEditCategoriasInput();
+});
+
 
 // Navegação entre etapas
 document.getElementById('btn-proximo-1').onclick = async function() {
@@ -1436,7 +1581,7 @@ function preencherRevisaoFornecedor() {
     // const iniciais = getIniciaisFornecedor(nome);
     // const avatarDiv = document.getElementById('rev-avatar');
     // const iniciaisSpan = document.getElementById('rev-avatar-iniciais');
-    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user') : null;
+    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user-tie') : null;
     // if (avatarDiv) avatarDiv.style.background = corAvatarFornecedor(nome);
     // if (iniciaisSpan) iniciaisSpan.textContent = iniciais;
     // if (icon) icon.style.display = nome.trim() ? 'none' : '';
@@ -1679,6 +1824,9 @@ document.getElementById('cad-cnpj').addEventListener('blur', function () {
 // Validação da etapa 1 (padrão igual funcionários)
 async function validarEtapa1Fornecedor() {
     const codigo = document.getElementById('cad-codigo').value.trim();
+    const categorias = Array.from(document.querySelectorAll('.categoria-multi-check:not(#categoria-multi-todas)'));
+    const algumaMarcada = categorias.some(cb => cb.checked);
+
     const nome = document.getElementById('cad-nome-empresa').value.trim();
     const cnpjMasked = document.getElementById('cad-cnpj').value.trim();
     const cnpj = cnpjMasked.replace(/\D/g, '');
@@ -1720,6 +1868,19 @@ async function validarEtapa1Fornecedor() {
             icon: 'warning',
             title: 'Código já cadastrado!',
             text: 'Informe outro código',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        return false;
+    }
+    // Categorias
+    if (!algumaMarcada) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Categorias obrigatórias!',
+            text: 'Selecione pelo menos uma categoria',
             timer: 1500,
             showConfirmButton: false,
             timerProgressBar: true,

@@ -554,6 +554,7 @@ th.ordenar.sorted .sort-icon {
   cursor: pointer;
 }
 
+#checkboxes-edit-categoria-multi,
 #checkboxes-categoria-multi,
 #checkboxes-categoria-multi-filtro {
     display: none;
@@ -570,6 +571,7 @@ th.ordenar.sorted .sort-icon {
     scrollbar-color: #aaa #fff;
 }
 
+#checkboxes-edit-categoria-multi label,
 #checkboxes-categoria-multi label,
 #checkboxes-categoria-multi-filtro label {
     display: flex;
@@ -583,12 +585,14 @@ th.ordenar.sorted .sort-icon {
     accent-color: #1E94A3;
 }
 
+#checkboxes-edit-categoria-multi label:hover,
 #checkboxes-categoria-multi label:hover,
 #checkboxes-categoria-multi-filtro label:hover {
     background-color: #f3f3f3;
     color: black !important;
 }
 
+#checkboxes-edit-categoria-multi input[type="checkbox"],
 #checkboxes-categoria-multi input[type="checkbox"],
 #checkboxes-categoria-multi-filtro input[type="checkbox"] {
     margin: 0 0 0 8px !important;

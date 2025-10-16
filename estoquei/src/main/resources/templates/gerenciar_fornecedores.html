@@ -154,7 +154,7 @@
                     <div style="display: flex; align-items: flex-end; height: 100%;">
                         <div id="cad-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #333333b3; position: relative;">
                             <span id="cad-avatar-iniciais"></span>
-                            <i class="fa-solid fa-user" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
+                            <i class="fa-solid fa-user-tie" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
                         </div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
                     <div style="display: flex; align-items: flex-end; height: 100%;">
                         <div id="cad-avatar-2" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #333333b3; position: relative;">
                             <span id="cad-avatar-iniciais-2"></span>
-                            <i class="fa-solid fa-user" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
+                            <i class="fa-solid fa-user-tie" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
                         </div>
                     </div>
                 </div>
@@ -280,7 +280,7 @@
                             <div style="display: flex; align-items: flex-end; height: 100%;">
                                 <div id="rev-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #333333b3; position: relative;">
                                     <span id="rev-avatar-iniciais"></span>
-                                    <i class="fa-solid fa-user" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
+                                    <i class="fa-solid fa-user-tie" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
                                 </div>
                             </div>
                         </div>
@@ -301,10 +301,12 @@
                             <input type="text" id="rev-nome-responsavel" readonly placeholder="Não informado" />
                         </div>
                         <button class="btn" type="submit" style="margin-top: 10px; width: 100%">Cadastrar</button>
-                                        <div class="cadastro-bullets" style="justify-content: unset;">
+                        <div class="cadastro-bullets" style="justify-content: unset;">
+                    
                     <button type="button" id="btn-voltar-4" class="btn-voltar" style="padding:0 72px 0 0;">
                         <i class="fa-solid fa-arrow-left"></i> Voltar
                     </button>
+                    
                     <span class="bullet active"></span>
                     <span class="bullet active"></span>
                     <span class="bullet active"></span>
@@ -457,20 +459,40 @@
             <div style="display: flex; flex-direction: row; gap: 20px;">
                 <!-- COLUNA ESQUERDA -->
                 <div class="form-column" style="flex:1; max-width: 300px;">
+                    <!-- ...existing code... -->
                     <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px;">
-                        <div style="display: flex; flex-direction: column; flex: 1;">
+                        <div style="display: flex; flex-direction: column; flex: 1; max-height: 107px;">
                             <label for="edit-codigo">Código*</label>
                             <input type="text" id="edit-codigo" name="codigo" required maxlength="9" placeholder="000000000" />
                             <label for="edit-categorias">Categorias*</label>
-                            <input type="text" id="edit-categorias" name="categorias" readonly />
+                            <div class="multiselect input-group" id="edit-categorias-multi" style="max-width: 100%;">
+                                <div style="position:relative;">
+                                    <input type="text" id="edit-categorias" name="categorias" readonly style="cursor:pointer; padding-right:20px;" />
+                                    <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </span>
+                                    <div class="overSelect" onclick="showCheckboxesEditCategorias()"></div>
+                                </div>
+                                <div id="checkboxes-edit-categoria-multi" style="display:none;">
+                                    <label><input type="checkbox" id="edit-categoria-multi-todas" class="edit-categoria-multi-check" value="" /> Todas</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="CAMISA" /> Camisa</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="CAMISETA" /> Camiseta</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="CALÇA" /> Calça</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="BERMUDA" /> Bermuda</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="VESTIDO" /> Vestido</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="SAPATO" /> Sapato</label>
+                                    <label><input type="checkbox" class="edit-categoria-multi-check" value="MEIA" /> Meia</label>
+                                </div>
+                            </div>
                         </div>
                         <div style="display: flex; align-items: flex-end; height: 100%;">
                             <div id="edit-avatar" style="width: 85px; height: 85px; border-radius: 50%; background: #f1f1f1; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: #333333b3; position: relative;">
                                 <span id="edit-avatar-iniciais"></span>
-                                <i class="fa-solid fa-user" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
+                                <i class="fa-solid fa-user-tie" style="position: absolute; font-size: 32px; color: #bbb; z-index: 0;"></i>
                             </div>
                         </div>
                     </div>
+                    <!-- ...existing code... -->
                     <div style="display: flex; flex-direction: column;">
                         <label for="edit-nome-empresa">Nome da Empresa*</label>
                         <input type="text" id="edit-nome-empresa" name="nome_empresa" required maxlength="50" placeholder="Nome da empresa" />

@@ -933,11 +933,23 @@ function removerFuncionario(id) {
 
 // Cadastro
 function gerarSenhaProvisoria() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz';
+    const numeros = '23456789';
+    const especiais = '!@#$';
     let senha = '';
-    for (let i = 0; i < 8; i++) {
-        senha += chars.charAt(Math.floor(Math.random() * chars.length));
+    
+    //minimo requisitos
+    senha += letras.charAt(Math.floor(Math.random() * letras.length));
+    senha += letras.toUpperCase().charAt(Math.floor(Math.random() * letras.length));
+    senha += numeros.charAt(Math.floor(Math.random() * numeros.length));
+    senha += especiais.charAt(Math.floor(Math.random() * especiais.length));
+
+    const all = letras + numeros + especiais;
+    while (senha.length < 8) {
+        senha += all.charAt(Math.floor(Math.random() * all.length));
     }
+
+    senha = senha.split('').sort(() => Math.random() - 0.5).join('');
     document.getElementById('cad-senha').value = senha;
 }
 
@@ -2840,7 +2852,8 @@ function aplicarEstiloInputs() {
         'cad-email',
         'cad-cpf',
         'cad-nascimento',
-        'cad-contato'
+        'cad-contato',
+        'registros-multi'
     ];
 
     const inputs = Array.from(document.querySelectorAll('input')).filter(
