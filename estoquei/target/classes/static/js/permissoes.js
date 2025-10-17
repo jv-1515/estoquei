@@ -163,12 +163,29 @@ function renderizarPermissoes() {
                                 </button>
                             </h2>
                         </div>
-                        <div class="permissoes-cell acoes-header" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                            <div class="cell" title="Visualizar">Visualizar</div>
-                            <div class="cell" title="Criar">Criar</div>
-                            <div class="cell" title="Editar">Editar</div>
-                            <div class="cell" title="Excluir">Excluir</div>
-                            <div class="cell" title="Tudo"></div>
+                        <div class="permissoes-cell acoes-header" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                            <div class="cell" title="Visualizar">
+                                <button class="perm-col-btn" data-col="visualizar" title="Marcar toda coluna Visualizar">
+                                    <i class="fa-solid fa-eye"></i><span">Visualizar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Criar">
+                                <button class="perm-col-btn" data-col="criar" title="Marcar toda coluna Criar">
+                                    <i class="fa-solid fa-plus"></i><span">Criar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Editar">
+                                <button class="perm-col-btn" data-col="editar" title="Marcar toda coluna Editar">
+                                    <i class="fa-solid fa-pen"></i><span">Editar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Excluir">
+                                <button class="perm-col-btn" data-col="excluir" title="Marcar toda coluna Excluir">
+                                    <i class="fa-solid fa-trash"></i><span">Excluir</span>
+                                </button>
+                            </div>
+                            <div style="min-width: 30px">
+                            </div>
                         </div>
                     </div>
                     ${MODULOS.map((mod, mIdx) => `
@@ -177,7 +194,7 @@ function renderizarPermissoes() {
                                 <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}" title="${permissoes[mIdx].label}">${permissoes[mIdx].label}</span>
                                 ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
                             </div>
-                            <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
+                            <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
                                 <div class="cell">
                                     <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Visualizar ${permissoes[mIdx].label}"/>
                                 </div>
@@ -190,8 +207,10 @@ function renderizarPermissoes() {
                                 <div class="cell">
                                     <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="4" data-cargo="${cargo.id}" ${cargo[mod] >= 4 ? 'checked' : ''} title="Excluir ${permissoes[mIdx].label}"/>
                                 </div>
-                                <div class="cell">
-                                    <input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''} title="Tudo: ${permissoes[mIdx].label}"/>
+                                <div style="max-width:30px;">
+                                    <button class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" title="Tudo: ${permissoes[mIdx].label}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -202,6 +221,47 @@ function renderizarPermissoes() {
             
             div.innerHTML = tabela;
             container.appendChild(div);
+
+            div.querySelectorAll('.perm-check-all').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Só funciona se checkboxes estão desbloqueados
+                    const algumDesbloqueado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => !cb.disabled);
+                    if (!algumDesbloqueado) return;
+            
+                    const mod = btn.dataset.modulo;
+                    const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                    const marcar = checks.some(cb => !cb.checked);
+                    checks.forEach(cb => {
+                        cb.checked = marcar;
+                        cb.dispatchEvent(new Event('change'));
+                    });
+                    // Visual feedback
+                    btn.style.color = marcar ? '#1e94a3' : '#aaa';
+                });
+            });
+
+            div.querySelectorAll('.perm-col-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Só funciona se checkboxes estão desbloqueados
+                    const algumDesbloqueado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => !cb.disabled);
+                    if (!algumDesbloqueado) return;
+            
+                    const col = btn.dataset.col;
+                    let nivel = 1;
+                    if (col === 'criar') nivel = 2;
+                    if (col === 'editar') nivel = 3;
+                    if (col === 'excluir') nivel = 4;
+            
+                    // Marcar/desmarcar todos os checkboxes da coluna
+                    const checks = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
+                    const marcar = Array.from(checks).some(cb => !cb.checked);
+                    checks.forEach(cb => {
+                        cb.checked = marcar;
+                        cb.dispatchEvent(new Event('change'));
+                    });
+                });
+            });
             
             // BLOQUEIA CHECKBOXES
             div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
@@ -251,9 +311,9 @@ function renderizarPermissoes() {
                         const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
                         if (cb) cb.checked = n <= nivel;
                     });
-                    const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
-                    if (tudoCb) tudoCb.checked = nivel === 4;
-                    cargo[mod] = nivel;
+                //     const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                //     if (tudoCb) tudoCb.checked = nivel === 4;
+                //     cargo[mod] = nivel;
                 });
                 div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.style.pointerEvents = '';
