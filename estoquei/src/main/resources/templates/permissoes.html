@@ -43,79 +43,155 @@
                         Gerente
                     </h2>
                 </div>
-                <div class="permissoes-cell acoes-header" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell" title="Visualizar">Visualizar</div>
-                    <div class="cell" title="Criar">Criar</div>
-                    <div class="cell" title="Editar">Editar</div>
-                    <div class="cell" title="Excluir">Excluir</div>
-                    <div class="cell" title="Tudo"></div>
+                <div class="permissoes-cell acoes-header" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell" title="Acessar">
+                        <button class="perm-col-btn selected-acessar" data-col="acessar" title="Todos: Acessar">
+                            <i class="fa-solid fa-eye"></i><span>Acessar</span>
+                        </button>
+                    </div>
+                    <div class="cell" title="Criar">
+                        <button class="perm-col-btn selected-criar" data-col="criar" title="Todos: Criar">
+                            <i class="fa-solid fa-plus"></i><span>Criar</span>
+                        </button>
+                    </div>
+                    <div class="cell" title="Editar">
+                        <button class="perm-col-btn selected-editar" data-col="editar" title="Todos: Editar">
+                            <i class="fa-solid fa-pen"></i><span>Editar</span>
+                        </button>
+                    </div>
+                    <div class="cell" title="Excluir">
+                        <button class="perm-col-btn selected-excluir" data-col="excluir" title="Todos: Excluir">
+                            <i class="fa-solid fa-trash"></i><span>Excluir</span>
+                        </button>
+                    </div>
+                    <div style="min-width: 30px"></div>
                 </div>
             </div>
             <!-- Produtos -->
-            <div class="permissoes-row" data-modulo="produtos" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="permissoes-row" data-modulo="produtos" style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
                     <span>Produtos</span>
                 </div>
-                <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="1" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="2" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="3" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="4" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check-all" checked /></div>
+                <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="1" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="2" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="3" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="4" checked>
+                    </div>
+                    <div style="max-width:30px;">
+                        <button class="perm-check-all selected" checked title="Tudo: Produtos">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Movimentações -->
-            <div class="permissoes-row" data-modulo="movimentacoes" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="permissoes-row" data-modulo="movimentacoes" style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
                     <span>Movimentações</span>
                 </div>
-                <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="1" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="2" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="3" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="4" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check-all" checked /></div>
+                <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="1" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="2" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="3" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="4" checked>
+                    </div>
+                    <div style="max-width:30px;">
+                        <button class="perm-check-all selected" checked title="Tudo: Movimentações">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Relatórios -->
-            <div class="permissoes-row" data-modulo="relatorios" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="permissoes-row" data-modulo="relatorios" style="display:flex; justify-content:space-between; align-items:flex-end;">
                 <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
                     <span>Relatórios</span>
                 </div>
-                <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="1" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="2" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="3" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="4" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check-all" checked /></div>
+                <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="1" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="2" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="3" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="4" checked>
+                    </div>
+                    <div style="max-width:30px;">
+                        <button class="perm-check-all selected" checked title="Tudo: Relatórios">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Fornecedores -->
-            <div class="permissoes-row" data-modulo="fornecedores" style="display:flex; justify-content:space-between; align-items:center;">
-                <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
+            <div class="permissoes-row" data-modulo="fornecedores" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:0;">
                     <span style="font-weight:bold;">Fornecedores</span>
                     <i class="fa-solid fa-circle-info" title="Módulo sensível"></i>
                 </div>
-                <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="1" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="2" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="3" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="4" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check-all" checked /></div>
+                <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="1" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="2" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="3" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="4" checked>
+                    </div>
+                    <div style="max-width:30px;">
+                        <button class="perm-check-all selected" checked title="Tudo: Fornecedores">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Funcionários -->
-            <div class="permissoes-row" data-modulo="funcionarios" style="display:flex; justify-content:space-between; align-items:center;">
-                <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
+            <div class="permissoes-row" data-modulo="funcionarios" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:4px;">
                     <span style="font-weight:bold;">Funcionários</span>
                     <i class="fa-solid fa-circle-info" title="Módulo sensível"></i>
                 </div>
-                <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="1" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="2" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="3" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check" data-nivel="4" checked /></div>
-                    <div class="cell"><input type="checkbox" class="perm-check-all" checked /></div>
+                <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="1" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="2" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="3" checked>
+                    </div>
+                    <div class="cell">
+                        <input type="checkbox" class="perm-check" data-nivel="4" checked>
+                    </div>
+                    <div style="max-width:30px;">
+                        <button class="perm-check-all selected" checked title="Tudo: Funcionários">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

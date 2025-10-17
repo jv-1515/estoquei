@@ -94,7 +94,7 @@ async function aplicarPermissoesEstoque() {
         btnMovimentar.title = 'Sem permissão';
     }
 
-    // Detalhes/histórico (visualizar movimentações = 1)
+    // Detalhes/histórico (Acessar movimentações = 1)
     document.querySelectorAll('.detalhes-historico-link').forEach(link => {
         if (!temPermissao(cargo, 'movimentacoes', 1)) {
             link.removeAttribute('href');
@@ -385,11 +385,11 @@ async function aplicarPermissoesFuncionarios() {
     const { usuario, cargo } = await getPermissoesUsuario();
 
     // Visualizar funcionários (nível 1)
-    const mainContainer = document.querySelector('.main-container');
-    if (mainContainer && !temPermissao(cargo, 'funcionarios', 1)) {
-        mainContainer.style.display = 'none';
-        Swal.fire('Sem permissão', 'Você não pode visualizar funcionários.', 'warning');
-    }
+    // const mainContainer = document.querySelector('.main-container');
+    // if (mainContainer && !temPermissao(cargo, 'funcionarios', 1)) {
+    //     mainContainer.style.display = 'none';
+    //     Swal.fire('Sem permissão', 'Você não pode visualizar funcionários.', 'warning');
+    // }
 
     // Cadastrar funcionário (criar = 2)
     const btnCadastrar = document.querySelector('button[onclick*="abrirCadastroFuncionario"]');

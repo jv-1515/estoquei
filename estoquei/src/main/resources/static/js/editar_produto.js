@@ -466,7 +466,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
             showCloseButton: true,
             showCancelButton: true,
             showConfirmButton: true,
-            confirmButtonText: 'Visualizar Estoque',
+            confirmButtonText: 'Acessar Estoque',
             cancelButtonText: 'Voltar para Início',
             allowOutsideClick: false,
             customClass: {
@@ -548,7 +548,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
                     showCloseButton: true,
                     showCancelButton: true,
                     showConfirmButton: true,
-                    confirmButtonText: 'Visualizar Estoque',
+                    confirmButtonText: 'Acessar Estoque',
                     cancelButtonText: 'Voltar para Início',
                     allowOutsideClick: false,
                     customClass: {

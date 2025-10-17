@@ -115,7 +115,7 @@ const permissoes = [
 ];
 
 const tiposPerm = [
-    { key: "visualizar", cor: "#43b04a", texto: "Visualizar" },
+    { key: "acessar", cor: "#43b04a", texto: "Acessar" },
     { key: "criar", cor: "#bfa100", texto: "Criar" },
     { key: "editar", cor: "#e67e22", texto: "Editar" },
     { key: "excluir", cor: "#c0392b", texto: "Excluir" },
@@ -163,23 +163,40 @@ function renderizarPermissoes() {
                                 </button>
                             </h2>
                         </div>
-                        <div class="permissoes-cell acoes-header" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
-                            <div class="cell" title="Visualizar">Visualizar</div>
-                            <div class="cell" title="Criar">Criar</div>
-                            <div class="cell" title="Editar">Editar</div>
-                            <div class="cell" title="Excluir">Excluir</div>
-                            <div class="cell" title="Tudo"></div>
+                        <div class="permissoes-cell acoes-header" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
+                            <div class="cell" title="Acessar">
+                                <button class="perm-col-btn" data-col="acessar" title="Todos: Acessar">
+                                    <i class="fa-solid fa-eye"></i><span">Acessar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Criar">
+                                <button class="perm-col-btn" data-col="criar" title="Todos: Criar">
+                                    <i class="fa-solid fa-plus"></i><span">Criar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Editar">
+                                <button class="perm-col-btn" data-col="editar" title="Todos: Editar">
+                                    <i class="fa-solid fa-pen"></i><span">Editar</span>
+                                </button>
+                            </div>
+                            <div class="cell" title="Excluir">
+                                <button class="perm-col-btn" data-col="excluir" title="Todos: Excluir">
+                                    <i class="fa-solid fa-trash"></i><span">Excluir</span>
+                                </button>
+                            </div>
+                            <div style="min-width: 30px">
+                            </div>
                         </div>
                     </div>
                     ${MODULOS.map((mod, mIdx) => `
                         <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                            <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
+                            <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:${mIdx === MODULOS.length - 1 ? '4px' : '0'};">
                                 <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}" title="${permissoes[mIdx].label}">${permissoes[mIdx].label}</span>
                                 ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
                             </div>
-                            <div class="permissoes-cell checboxes-container" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; width:auto;">
+                            <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Visualizar ${permissoes[mIdx].label}"/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Acessar ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
                                     <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="2" data-cargo="${cargo.id}" ${cargo[mod] >= 2 ? 'checked' : ''} title="Criar ${permissoes[mIdx].label}"/>
@@ -190,8 +207,10 @@ function renderizarPermissoes() {
                                 <div class="cell">
                                     <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="4" data-cargo="${cargo.id}" ${cargo[mod] >= 4 ? 'checked' : ''} title="Excluir ${permissoes[mIdx].label}"/>
                                 </div>
-                                <div class="cell">
-                                    <input type="checkbox" class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" ${cargo[mod] === 4 ? 'checked' : ''} title="Tudo: ${permissoes[mIdx].label}"/>
+                                <div style="max-width:30px;">
+                                    <button class="perm-check-all" data-modulo="${mod}" data-cargo="${cargo.id}" title="Tudo: ${permissoes[mIdx].label}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -202,11 +221,76 @@ function renderizarPermissoes() {
             
             div.innerHTML = tabela;
             container.appendChild(div);
+
+            // Reset visual dos botões "Tudo"
+            // div.querySelectorAll('.perm-check-all').forEach(btn => {
+            //     btn.classList.remove('selected');
+            // });
             
-            // BLOQUEIA CHECKBOXES
-            div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.style.pointerEvents = 'none';
-                cb.style.opacity = '0.5';
+            // // Reset visual dos botões de coluna
+            // div.querySelectorAll('.perm-col-btn').forEach(btn => {
+            //     btn.classList.remove('selected-acessar', 'selected-criar', 'selected-editar', 'selected-excluir');
+            // });
+
+            div.querySelectorAll('.perm-check-all').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Só funciona se checkboxes estão desbloqueados
+                    const algumDesbloqueado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => !cb.disabled);
+                    if (!algumDesbloqueado) return;
+            
+                    const mod = btn.dataset.modulo;
+                    const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                    const marcar = checks.some(cb => !cb.checked);
+            
+                    checks.forEach(cb => {
+                        cb.checked = marcar;
+                        cb.dispatchEvent(new Event('change'));
+                    });
+            
+                    // Atualiza visual do botão "Tudo"
+                    if (marcar) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                });
+            });
+
+            div.querySelectorAll('.perm-col-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Só funciona se checkboxes estão desbloqueados
+                    const algumDesbloqueado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => !cb.disabled);
+                    if (!algumDesbloqueado) return;
+                
+                    const col = btn.dataset.col;
+                    let nivel = 1;
+                    if (col === 'criar') nivel = 2;
+                    if (col === 'editar') nivel = 3;
+                    if (col === 'excluir') nivel = 4;
+                
+                    // Marcar/desmarcar todos os checkboxes da coluna
+                    const checks = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
+                    const marcar = Array.from(checks).some(cb => !cb.checked);
+                    checks.forEach(cb => {
+                        cb.checked = marcar;
+                        cb.dispatchEvent(new Event('change'));
+                    });
+                
+                    // Visual feedback
+                    if (marcar) {
+                        btn.classList.add('selected-' + col);
+                    } else {
+                        btn.classList.remove('selected-' + col);
+                    }
+                });
+            });
+            
+            // BLOQUEIA TUDO (checkboxes e botões de coluna/"Tudo") quando NÃO está editando
+            div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                el.disabled = true;
+                el.style.pointerEvents = 'none';
+                el.style.opacity = '0.5';
             });
             
             // CAPTURA OS BOTÕES
@@ -231,10 +315,10 @@ function renderizarPermissoes() {
             // EDITAR
             btnEditar.onclick = function() {
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = false;
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '1';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = false;
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
                 });
                 btnEditar.style.display = 'none';
                 btnCancelar.style.display = '';
@@ -251,33 +335,17 @@ function renderizarPermissoes() {
                         const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
                         if (cb) cb.checked = n <= nivel;
                     });
-                    const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
-                    if (tudoCb) tudoCb.checked = nivel === 4;
-                    cargo[mod] = nivel;
                 });
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '0.5';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = true;
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
                 btnCancelar.style.display = 'none';
                 btnRenomear.style.display = 'none';
-                // btnCancelar.classList.remove('btn', 'btn-primary');
             });
-
-            btnEditar.onclick = function() {
-                div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = false;
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '1';
-                });
-                btnEditar.style.display = 'none';
-                btnCancelar.style.display = '';
-                btnSalvar.style.display = '';
-                btnRenomear.style.display = '';
-            };
             
             // SALVAR
             btnSalvar.addEventListener('click', function() {
@@ -295,10 +363,10 @@ function renderizarPermissoes() {
                     return;
                 }
                 salvarPermissoesCargo(cargo.id, div);
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = true;
-                    cb.style.pointerEvents = 'none';
-                    cb.style.opacity = '0.5';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = true;
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
@@ -306,7 +374,44 @@ function renderizarPermissoes() {
                 if (btnRenomear) btnRenomear.style.display = 'none';
             });
 
+            const NovoCargo = MODULOS.every(mod => cargo[mod] === 0);
+            
+            if (NovoCargo) {
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = false;
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
+                });
+                if (btnEditar) btnEditar.style.display = 'none';
+                if (btnSalvar) btnSalvar.style.display = '';
+                if (btnRenomear) btnRenomear.style.display = '';
+                if (btnCancelar) btnCancelar.style.display = 'none';
+            }
 
+            // Atualiza visual dos botões "Tudo" e de coluna conforme checkboxes
+            MODULOS.forEach(mod => {
+                const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                const tudoBtn = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                if (tudoBtn) {
+                    if (checks.every(cb => cb && cb.checked)) {
+                        tudoBtn.classList.add('selected');
+                    } else {
+                        tudoBtn.classList.remove('selected');
+                    }
+                }
+            });
+            [1,2,3,4].forEach(nivel => {
+                const colKey = ['acessar', 'criar', 'editar', 'excluir'][nivel-1];
+                const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
+                if (colBtn) {
+                    const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
+                    if (Array.from(checksCol).every(cb => cb.checked)) {
+                        colBtn.classList.add('selected-' + colKey);
+                    } else {
+                        colBtn.classList.remove('selected-' + colKey);
+                    }
+                }
+            });
             // Listeners dos checkboxes
             MODULOS.forEach(mod => {
                 [1,2,3,4].forEach(nivel => {
@@ -315,16 +420,44 @@ function renderizarPermissoes() {
                         cb.addEventListener('change', function() {
                             const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
                             if (cb.checked) {
-                                for (let i = 0; i < nivel; i++) checks[i].checked = true;
+                                for (let i = 0; i < nivel; i++) {
+                                    if (!checks[i].checked) {
+                                        checks[i].checked = true;
+                                        checks[i].dispatchEvent(new Event('change'));
+                                    }
+                                }
                                 cargo[mod] = nivel;
                             } else {
-                                for (let i = nivel-1; i < 4; i++) checks[i].checked = false;
+                                for (let i = nivel-1; i < 4; i++) {
+                                    if (checks[i].checked) {
+                                        checks[i].checked = false;
+                                        checks[i].dispatchEvent(new Event('change'));
+                                    }
+                                }
                                 let novoNivel = 0;
                                 for (let i = 0; i < 4; i++) if (checks[i].checked) novoNivel = i+1;
                                 cargo[mod] = novoNivel;
                             }
-                            const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
-                            tudoCb.checked = cargo[mod] === 4;
+                            const tudoBtn = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                            if (tudoBtn) {
+                                if (cargo[mod] === 4) {
+                                    tudoBtn.classList.add('selected');
+                                } else {
+                                    tudoBtn.classList.remove('selected');
+                                }
+                            }
+
+                            const nivelCol = nivel;
+                            const colKey = ['acessar', 'criar', 'editar', 'excluir'][nivelCol-1];
+                            const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
+                            if (colBtn) {
+                                const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivelCol}"]`);
+                                if (Array.from(checksCol).every(cb => cb.checked)) {
+                                    colBtn.classList.add('selected-' + colKey);
+                                } else {
+                                    colBtn.classList.remove('selected-' + colKey);
+                                }
+                            }
                         });
                     }
                 });
@@ -664,40 +797,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('#permissoes-cargo-gerente .perm-check').forEach(cb => {
+    const gerente = document.getElementById('permissoes-cargo-gerente');
+    if (!gerente) return;
+
+    const showGerenteWarning = () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ação não permitida!',
+            text: 'Cargo de Gerente não pode ser editado',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+    };
+
+    // Checkboxes: mantêm-se marcados e exibem aviso se tentar desmarcar
+    gerente.querySelectorAll('.perm-check').forEach(cb => {
         cb.checked = true;
-        cb.addEventListener('change', function(e) {
+        cb.addEventListener('change', function() {
             if (!cb.checked) {
                 cb.checked = true;
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Cargo de Gerente não pode ser editado',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
+                showGerenteWarning();
             }
         });
     });
-    document.querySelectorAll('#permissoes-cargo-gerente .perm-check-all').forEach(cb => {
-        cb.checked = true;
-        cb.addEventListener('change', function(e) {
-            if (!cb.checked) {
-                cb.checked = true;
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Cargo de Gerente não pode ser editado',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-            }
+
+    // "Tudo" controls: podem ser <button> ou <input> — interceptar clicks/changes
+    gerente.querySelectorAll('.perm-check-all').forEach(el => {
+        // visual
+        el.classList.add('selected');
+
+        if (el.tagName === 'INPUT') {
+            el.checked = true;
+            el.addEventListener('change', function() {
+                if (!el.checked) {
+                    el.checked = true;
+                    showGerenteWarning();
+                }
+            });
+        } else {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                showGerenteWarning();
+            });
+        }
+    });
+
+    // Colunas (Acessar/Criar/Editar/Excluir): impedir clique
+    gerente.querySelectorAll('.perm-col-btn').forEach(btn => {
+        // keep visual classes if present
+        const col = btn.dataset.col || 'acessar';
+        btn.classList.add('selected-' + col);
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showGerenteWarning();
+        });
+    });
+
+    // Cabeçalho / ações (editar, salvar, cancelar, renomear, excluir) — impedir ação
+    ['.btn-editar-cargo', '.btn-salvar-cargo', '.btn-cancelar-cargo', '.btn-renomear-cargo', '.btn-excluir-cargo'].forEach(sel => {
+        gerente.querySelectorAll(sel).forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showGerenteWarning();
+            });
         });
     });
 });
