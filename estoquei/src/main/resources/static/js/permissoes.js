@@ -115,7 +115,7 @@ const permissoes = [
 ];
 
 const tiposPerm = [
-    { key: "visualizar", cor: "#43b04a", texto: "Visualizar" },
+    { key: "acessar", cor: "#43b04a", texto: "Acessar" },
     { key: "criar", cor: "#bfa100", texto: "Criar" },
     { key: "editar", cor: "#e67e22", texto: "Editar" },
     { key: "excluir", cor: "#c0392b", texto: "Excluir" },
@@ -164,23 +164,23 @@ function renderizarPermissoes() {
                             </h2>
                         </div>
                         <div class="permissoes-cell acoes-header" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
-                            <div class="cell" title="Visualizar">
-                                <button class="perm-col-btn" data-col="visualizar" title="Marcar toda coluna Visualizar">
-                                    <i class="fa-solid fa-eye"></i><span">Visualizar</span>
+                            <div class="cell" title="Acessar">
+                                <button class="perm-col-btn" data-col="acessar" title="Todos: Acessar">
+                                    <i class="fa-solid fa-eye"></i><span">Acessar</span>
                                 </button>
                             </div>
                             <div class="cell" title="Criar">
-                                <button class="perm-col-btn" data-col="criar" title="Marcar toda coluna Criar">
+                                <button class="perm-col-btn" data-col="criar" title="Todos: Criar">
                                     <i class="fa-solid fa-plus"></i><span">Criar</span>
                                 </button>
                             </div>
                             <div class="cell" title="Editar">
-                                <button class="perm-col-btn" data-col="editar" title="Marcar toda coluna Editar">
+                                <button class="perm-col-btn" data-col="editar" title="Todos: Editar">
                                     <i class="fa-solid fa-pen"></i><span">Editar</span>
                                 </button>
                             </div>
                             <div class="cell" title="Excluir">
-                                <button class="perm-col-btn" data-col="excluir" title="Marcar toda coluna Excluir">
+                                <button class="perm-col-btn" data-col="excluir" title="Todos: Excluir">
                                     <i class="fa-solid fa-trash"></i><span">Excluir</span>
                                 </button>
                             </div>
@@ -190,13 +190,13 @@ function renderizarPermissoes() {
                     </div>
                     ${MODULOS.map((mod, mIdx) => `
                         <div class="permissoes-row" data-modulo="${mod}" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                            <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:8px;">
+                            <div class="permissoes-cell modulo-nome" style="flex:1; display:flex; align-items:center; gap:${mIdx === MODULOS.length - 1 ? '4px' : '0'};">
                                 <span style="${permissoes[mIdx].info ? 'font-weight:bold;' : ''}" title="${permissoes[mIdx].label}">${permissoes[mIdx].label}</span>
                                 ${permissoes[mIdx].info ? '<i class="fa-solid fa-circle-info" title="Módulo sensível"></i>' : ''}
                             </div>
                             <div class="permissoes-cell checboxes-container" style="display:flex; align-items:center; justify-content:flex-end; width:auto;">
                                 <div class="cell">
-                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Visualizar ${permissoes[mIdx].label}"/>
+                                    <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="1" data-cargo="${cargo.id}" ${cargo[mod] >= 1 ? 'checked' : ''} title="Acessar ${permissoes[mIdx].label}"/>
                                 </div>
                                 <div class="cell">
                                     <input type="checkbox" class="perm-check" data-modulo="${mod}" data-nivel="2" data-cargo="${cargo.id}" ${cargo[mod] >= 2 ? 'checked' : ''} title="Criar ${permissoes[mIdx].label}"/>
@@ -229,7 +229,7 @@ function renderizarPermissoes() {
             
             // // Reset visual dos botões de coluna
             // div.querySelectorAll('.perm-col-btn').forEach(btn => {
-            //     btn.classList.remove('selected-visualizar', 'selected-criar', 'selected-editar', 'selected-excluir');
+            //     btn.classList.remove('selected-acessar', 'selected-criar', 'selected-editar', 'selected-excluir');
             // });
 
             div.querySelectorAll('.perm-check-all').forEach(btn => {
@@ -401,7 +401,7 @@ function renderizarPermissoes() {
                 }
             });
             [1,2,3,4].forEach(nivel => {
-                const colKey = ['visualizar', 'criar', 'editar', 'excluir'][nivel-1];
+                const colKey = ['acessar', 'criar', 'editar', 'excluir'][nivel-1];
                 const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
                 if (colBtn) {
                     const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
@@ -448,7 +448,7 @@ function renderizarPermissoes() {
                             }
 
                             const nivelCol = nivel;
-                            const colKey = ['visualizar', 'criar', 'editar', 'excluir'][nivelCol-1];
+                            const colKey = ['acessar', 'criar', 'editar', 'excluir'][nivelCol-1];
                             const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
                             if (colBtn) {
                                 const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivelCol}"]`);
@@ -797,40 +797,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('#permissoes-cargo-gerente .perm-check').forEach(cb => {
+    const gerente = document.getElementById('permissoes-cargo-gerente');
+    if (!gerente) return;
+
+    const showGerenteWarning = () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ação não permitida!',
+            text: 'Cargo de Gerente não pode ser editado',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+    };
+
+    // Checkboxes: mantêm-se marcados e exibem aviso se tentar desmarcar
+    gerente.querySelectorAll('.perm-check').forEach(cb => {
         cb.checked = true;
-        cb.addEventListener('change', function(e) {
+        cb.addEventListener('change', function() {
             if (!cb.checked) {
                 cb.checked = true;
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Cargo de Gerente não pode ser editado',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
+                showGerenteWarning();
             }
         });
     });
-    document.querySelectorAll('#permissoes-cargo-gerente .perm-check-all').forEach(cb => {
-        cb.checked = true;
-        cb.addEventListener('change', function(e) {
-            if (!cb.checked) {
-                cb.checked = true;
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Cargo de Gerente não pode ser editado',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-            }
+
+    // "Tudo" controls: podem ser <button> ou <input> — interceptar clicks/changes
+    gerente.querySelectorAll('.perm-check-all').forEach(el => {
+        // visual
+        el.classList.add('selected');
+
+        if (el.tagName === 'INPUT') {
+            el.checked = true;
+            el.addEventListener('change', function() {
+                if (!el.checked) {
+                    el.checked = true;
+                    showGerenteWarning();
+                }
+            });
+        } else {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                showGerenteWarning();
+            });
+        }
+    });
+
+    // Colunas (Acessar/Criar/Editar/Excluir): impedir clique
+    gerente.querySelectorAll('.perm-col-btn').forEach(btn => {
+        // keep visual classes if present
+        const col = btn.dataset.col || 'acessar';
+        btn.classList.add('selected-' + col);
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showGerenteWarning();
+        });
+    });
+
+    // Cabeçalho / ações (editar, salvar, cancelar, renomear, excluir) — impedir ação
+    ['.btn-editar-cargo', '.btn-salvar-cargo', '.btn-cancelar-cargo', '.btn-renomear-cargo', '.btn-excluir-cargo'].forEach(sel => {
+        gerente.querySelectorAll(sel).forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showGerenteWarning();
+            });
         });
     });
 });

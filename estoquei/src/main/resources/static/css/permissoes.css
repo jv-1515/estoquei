@@ -69,7 +69,7 @@ h2 {
     border-radius: 10px;
     margin: 0 auto;
     box-sizing: border-box;
-    padding: 20px 0;
+    padding: 20px 0 10px 0;
     max-width: 900px;
     min-width: 900px;
     margin: 0 auto 20px auto;
@@ -318,7 +318,7 @@ input, select {
     font-size: 14px;
 }
 
-.permissoes-col.visualizar input { accent-color: #4c9f52; }
+.permissoes-col.acessar input { accent-color: #4c9f52; }
 .permissoes-col.criar input { accent-color: #bc8620; }
 .permissoes-col.editar input { accent-color: #dc7820; }
 .permissoes-col.excluir input { accent-color: #c0392b; }
@@ -352,8 +352,8 @@ input, select {
 }
 
 .cell {
-    min-width: 75px;
-    /* max-width: 75px; */
+    min-width: 80px;
+    max-width: 80px;
     display: flex;
     justify-content: center;
 }
@@ -524,7 +524,7 @@ input, select {
     transition: background 0.2s, color 0.2s, border 0.2s;
 }
 
-.perm-col-btn.selected-visualizar {
+.perm-col-btn.selected-acessar {
     background: #fff;
     color: #43b04a;
     border-color: #43b04a;
