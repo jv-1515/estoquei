@@ -222,6 +222,16 @@ function renderizarPermissoes() {
             div.innerHTML = tabela;
             container.appendChild(div);
 
+            // Reset visual dos botões "Tudo"
+            // div.querySelectorAll('.perm-check-all').forEach(btn => {
+            //     btn.classList.remove('selected');
+            // });
+            
+            // // Reset visual dos botões de coluna
+            // div.querySelectorAll('.perm-col-btn').forEach(btn => {
+            //     btn.classList.remove('selected-visualizar', 'selected-criar', 'selected-editar', 'selected-excluir');
+            // });
+
             div.querySelectorAll('.perm-check-all').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -232,12 +242,18 @@ function renderizarPermissoes() {
                     const mod = btn.dataset.modulo;
                     const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
                     const marcar = checks.some(cb => !cb.checked);
+            
                     checks.forEach(cb => {
                         cb.checked = marcar;
                         cb.dispatchEvent(new Event('change'));
                     });
-                    // Visual feedback
-                    btn.style.color = marcar ? '#1e94a3' : '#aaa';
+            
+                    // Atualiza visual do botão "Tudo"
+                    if (marcar) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
                 });
             });
 
@@ -246,13 +262,13 @@ function renderizarPermissoes() {
                     // Só funciona se checkboxes estão desbloqueados
                     const algumDesbloqueado = Array.from(div.querySelectorAll('input[type="checkbox"]')).some(cb => !cb.disabled);
                     if (!algumDesbloqueado) return;
-            
+                
                     const col = btn.dataset.col;
                     let nivel = 1;
                     if (col === 'criar') nivel = 2;
                     if (col === 'editar') nivel = 3;
                     if (col === 'excluir') nivel = 4;
-            
+                
                     // Marcar/desmarcar todos os checkboxes da coluna
                     const checks = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
                     const marcar = Array.from(checks).some(cb => !cb.checked);
@@ -260,13 +276,21 @@ function renderizarPermissoes() {
                         cb.checked = marcar;
                         cb.dispatchEvent(new Event('change'));
                     });
+                
+                    // Visual feedback
+                    if (marcar) {
+                        btn.classList.add('selected-' + col);
+                    } else {
+                        btn.classList.remove('selected-' + col);
+                    }
                 });
             });
             
-            // BLOQUEIA CHECKBOXES
-            div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.style.pointerEvents = 'none';
-                cb.style.opacity = '0.5';
+            // BLOQUEIA TUDO (checkboxes e botões de coluna/"Tudo") quando NÃO está editando
+            div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                el.disabled = true;
+                el.style.pointerEvents = 'none';
+                el.style.opacity = '0.5';
             });
             
             // CAPTURA OS BOTÕES
@@ -291,10 +315,10 @@ function renderizarPermissoes() {
             // EDITAR
             btnEditar.onclick = function() {
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = false;
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '1';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = false;
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
                 });
                 btnEditar.style.display = 'none';
                 btnCancelar.style.display = '';
@@ -311,33 +335,17 @@ function renderizarPermissoes() {
                         const cb = div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`);
                         if (cb) cb.checked = n <= nivel;
                     });
-                //     const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
-                //     if (tudoCb) tudoCb.checked = nivel === 4;
-                //     cargo[mod] = nivel;
                 });
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '0.5';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = true;
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
                 btnCancelar.style.display = 'none';
                 btnRenomear.style.display = 'none';
-                // btnCancelar.classList.remove('btn', 'btn-primary');
             });
-
-            btnEditar.onclick = function() {
-                div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = false;
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '1';
-                });
-                btnEditar.style.display = 'none';
-                btnCancelar.style.display = '';
-                btnSalvar.style.display = '';
-                btnRenomear.style.display = '';
-            };
             
             // SALVAR
             btnSalvar.addEventListener('click', function() {
@@ -355,10 +363,10 @@ function renderizarPermissoes() {
                     return;
                 }
                 salvarPermissoesCargo(cargo.id, div);
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = true;
-                    cb.style.pointerEvents = 'none';
-                    cb.style.opacity = '0.5';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = true;
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.5';
                 });
                 btnEditar.style.display = '';
                 btnSalvar.style.display = 'none';
@@ -369,10 +377,10 @@ function renderizarPermissoes() {
             const NovoCargo = MODULOS.every(mod => cargo[mod] === 0);
             
             if (NovoCargo) {
-                div.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.disabled = false;
-                    cb.style.pointerEvents = '';
-                    cb.style.opacity = '1';
+                div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
+                    el.disabled = false;
+                    el.style.pointerEvents = 'auto';
+                    el.style.opacity = '1';
                 });
                 if (btnEditar) btnEditar.style.display = 'none';
                 if (btnSalvar) btnSalvar.style.display = '';
@@ -380,6 +388,30 @@ function renderizarPermissoes() {
                 if (btnCancelar) btnCancelar.style.display = 'none';
             }
 
+            // Atualiza visual dos botões "Tudo" e de coluna conforme checkboxes
+            MODULOS.forEach(mod => {
+                const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
+                const tudoBtn = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                if (tudoBtn) {
+                    if (checks.every(cb => cb && cb.checked)) {
+                        tudoBtn.classList.add('selected');
+                    } else {
+                        tudoBtn.classList.remove('selected');
+                    }
+                }
+            });
+            [1,2,3,4].forEach(nivel => {
+                const colKey = ['visualizar', 'criar', 'editar', 'excluir'][nivel-1];
+                const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
+                if (colBtn) {
+                    const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivel}"]`);
+                    if (Array.from(checksCol).every(cb => cb.checked)) {
+                        colBtn.classList.add('selected-' + colKey);
+                    } else {
+                        colBtn.classList.remove('selected-' + colKey);
+                    }
+                }
+            });
             // Listeners dos checkboxes
             MODULOS.forEach(mod => {
                 [1,2,3,4].forEach(nivel => {
@@ -388,16 +420,44 @@ function renderizarPermissoes() {
                         cb.addEventListener('change', function() {
                             const checks = [1,2,3,4].map(n => div.querySelector(`.perm-check[data-modulo="${mod}"][data-nivel="${n}"]`));
                             if (cb.checked) {
-                                for (let i = 0; i < nivel; i++) checks[i].checked = true;
+                                for (let i = 0; i < nivel; i++) {
+                                    if (!checks[i].checked) {
+                                        checks[i].checked = true;
+                                        checks[i].dispatchEvent(new Event('change'));
+                                    }
+                                }
                                 cargo[mod] = nivel;
                             } else {
-                                for (let i = nivel-1; i < 4; i++) checks[i].checked = false;
+                                for (let i = nivel-1; i < 4; i++) {
+                                    if (checks[i].checked) {
+                                        checks[i].checked = false;
+                                        checks[i].dispatchEvent(new Event('change'));
+                                    }
+                                }
                                 let novoNivel = 0;
                                 for (let i = 0; i < 4; i++) if (checks[i].checked) novoNivel = i+1;
                                 cargo[mod] = novoNivel;
                             }
-                            const tudoCb = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
-                            tudoCb.checked = cargo[mod] === 4;
+                            const tudoBtn = div.querySelector(`.perm-check-all[data-modulo="${mod}"]`);
+                            if (tudoBtn) {
+                                if (cargo[mod] === 4) {
+                                    tudoBtn.classList.add('selected');
+                                } else {
+                                    tudoBtn.classList.remove('selected');
+                                }
+                            }
+
+                            const nivelCol = nivel;
+                            const colKey = ['visualizar', 'criar', 'editar', 'excluir'][nivelCol-1];
+                            const colBtn = div.querySelector(`.perm-col-btn[data-col="${colKey}"]`);
+                            if (colBtn) {
+                                const checksCol = div.querySelectorAll(`.perm-check[data-nivel="${nivelCol}"]`);
+                                if (Array.from(checksCol).every(cb => cb.checked)) {
+                                    colBtn.classList.add('selected-' + colKey);
+                                } else {
+                                    colBtn.classList.remove('selected-' + colKey);
+                                }
+                            }
                         });
                     }
                 });
