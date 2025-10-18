@@ -781,7 +781,7 @@ select#filter-genero {
     overflow-x: hidden;
     height: 130px;
     width: 100%;
-    min-width: 95px;
+    min-width: 90px;
     padding-left: 0;
 }
 #lista-categorias {
@@ -812,7 +812,7 @@ li {
 #categoria-lista-scroll::-webkit-scrollbar-thumb:hover {
     background: #aaa;
 }
-.cat-arrow {
+/* .cat-arrow {
     background: #fff;
     width: 22px;
     height: 22px;
@@ -834,7 +834,7 @@ li {
 }
 .cat-arrow:hover {
     color: #1E94A3;
-}
+} */
 
 
 /* sweetAlert */

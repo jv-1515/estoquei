@@ -67,75 +67,75 @@
         <h2>Filtrar Produtos</h2>
         <div class="filters-row" style="display:flex; gap:8px;">
             <div class="multiselect multiselect-categoria input-group">
-              <label for="filter-categoria-multi">Categorias</label>
+            <label for="filter-categoria-multi">Categorias</label>
               <div style="position:relative;">
                 <input type="text" id="filter-categoria" placeholder="Todas" readonly style="cursor:pointer; padding-right: 20px;" />
                 <span class="chevron-categoria" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-                  <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-chevron-down"></i>
                 </span>
                 <div class="overSelect" onclick="showCheckboxesCategoriaMulti()"></div>
-              </div>
-              <div id="checkboxes-categoria-multi" style="display:none;">
+            </div>
+            <div id="checkboxes-categoria-multi" style="display:none;">
                 <label>
-                  <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
+                    <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked onclick="marcarOuDesmarcarTodasCategorias()" /> Todas                
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
+                    <input type="checkbox" id="categoria-multi-camisa" class="categoria-multi-check" value="CAMISA" checked /> Camisa
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
+                    <input type="checkbox" id="categoria-multi-camiseta" class="categoria-multi-check" value="CAMISETA" checked /> Camiseta
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
+                    <input type="checkbox" id="categoria-multi-bermuda" class="categoria-multi-check" value="BERMUDA" checked /> Bermuda
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
+                    <input type="checkbox" id="categoria-multi-calca" class="categoria-multi-check" value="CALÇA" checked /> Calça
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-vestido" class="categoria-multi-check" value="VESTIDO" checked /> Vestido
+                    <input type="checkbox" id="categoria-multi-vestido" class="categoria-multi-check" value="VESTIDO" checked /> Vestido
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
+                    <input type="checkbox" id="categoria-multi-sapato" class="categoria-multi-check" value="SAPATO" checked /> Sapato
                 </label>
                 <label>
-                  <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
+                    <input type="checkbox" id="categoria-multi-meia" class="categoria-multi-check" value="MEIA" checked /> Meia
                 </label>
-              </div>
+                </div>
             </div>
             <div class="multiselect multiselect-tamanho input-group">
-              <label for="filter-tamanho-multi">Tamanhos</label>
-              <div style="position:relative;">
+            <label for="filter-tamanho-multi">Tamanhos</label>
+            <div style="position:relative;">
                 <input type="text" id="filter-tamanho" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
                 <span class="chevron-tamanho" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-                  <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-chevron-down"></i>
                 </span>
                 <div class="overSelect" onclick="showCheckboxesTamanhoMulti()"></div>
-              </div>
-              <div id="checkboxes-tamanho-multi" style="display:none;"></div>
+                </div>
+                <div id="checkboxes-tamanho-multi" style="display:none;"></div>
             </div>
             <div class="multiselect multiselect-genero input-group">
-              <label for="filter-genero-multi">Gêneros</label>
-              <div style="position:relative;">
+                <label for="filter-genero-multi">Gêneros</label>
+                <div style="position:relative;">
                 <input type="text" id="filter-genero" placeholder="Todos" readonly style="cursor:pointer; padding-right: 20px;" />
                 <span class="chevron-genero" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-                  <i class="fa fa-chevron-down"></i>
+                    <i class="fa fa-chevron-down"></i>
                 </span>
                 <div class="overSelect" onclick="showCheckboxesGeneroMulti()"></div>
-              </div>
-              <div id="checkboxes-genero-multi" style="display:none;">
+            </div>
+            <div id="checkboxes-genero-multi" style="display:none;">
                 <label>
-                  <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
+                    <input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked onclick="marcarOuDesmarcarTodosGeneros()" /> Todos                    
                 </label>
                 <label>
-                  <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
+                    <input type="checkbox" class="genero-multi-check" value="MASCULINO" checked /> Masculino
                 </label>
                 <label>
-                  <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
+                    <input type="checkbox" class="genero-multi-check" value="FEMININO" checked /> Feminino
                 </label>
                 <label>
-                  <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
+                    <input type="checkbox" class="genero-multi-check" value="UNISSEX" checked /> Unissex
                 </label>
-              </div>
+                </div>
             </div>
                 <div class="input-group">
                 <label for="filter-quantidade">Quantidades</label>
@@ -216,7 +216,7 @@
         </div>
     </div>
     <div id="detalhes-estoque"
-     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 10px; align-items: flex-end;">
+    style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 15px; align-items: flex-end;">
     <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
             <h2 style="margin: 0; font-size: 20px;">Detalhes dos Produtos</h2>
@@ -272,15 +272,9 @@
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
                 <canvas id="grafico-categoria" width="130" height="130"></canvas>
                 <div id="categoria-lista-viewport" style="position:relative; height:130px; width:90px; display:flex; flex-direction:column; align-items:flex-start;">
-                    <button id="cat-prev" class="cat-arrow" aria-label="Anterior" style="position:absolute; left:0; top:0; width:22px; height:22px; display:none; z-index:2;">
-                        <i class="fa-solid fa-chevron-up"></i>
-                    </button>
                     <div id="categoria-lista-scroll">
                         <ul id="lista-categorias"></ul>
                     </div>
-                    <button id="cat-next" class="cat-arrow" aria-label="Próximo" style="position:absolute; left:0; bottom:0; width:22px; height:22px; display:none; z-index:2;">
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -355,10 +349,10 @@
         <div id="paginacao" style="text-align: center; margin-top: 8px"></div>
     </div>
         <div id="detalhes-produto-popup" class="detalhes-modal-bg" style="display:none;">
-          <div class="detalhes-modal">
+            <div class="detalhes-modal">
 
             <form class="detalhes-form-container">
-              <div class="detalhes-left-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
+            <div class="detalhes-left-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
                 <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start;">
                     <div style="max-width: 240px; width: 100%; display: flex; flex-direction: column;">
                         <h2 style="font-size: 20px; color: #277580; margin: 0;">Detalhes do Produto</h2>
@@ -366,19 +360,19 @@
                     </div>
                 </div>
                 <div class="detalhes-img-preview">
-                  <img id="detalhe-imagem" src="" alt="Imagem do produto" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img id="detalhe-imagem" src="" alt="Imagem do produto" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="height: 8px;"></div>
                 <h3 style="font-size: 16px; color: #277580; margin: 0;">Últimas movimentações</h3>
                 <div style="display: flex; flex-direction: column; gap: 0;">
-                  <label for="detalhe-ultima-entrada">Última Entrada</label>
-                  <input type="text" id="detalhe-ultima-entrada" readonly>
-                  <label for="detalhe-qtd-entrada">Quantidade</label>
-                  <input type="text" id="detalhe-qtd-entrada" readonly>
-                  <label for="detalhe-valor-compra">Valor Compra</label>
-                  <input type="text" id="detalhe-valor-compra" readonly>
-                  <label for="detalhe-fornecedor">Fornecedor</label>
-                  <input type="text" id="detalhe-fornecedor" readonly>
+                    <label for="detalhe-ultima-entrada">Última Entrada</label>
+                    <input type="text" id="detalhe-ultima-entrada" readonly>
+                    <label for="detalhe-qtd-entrada">Quantidade</label>
+                    <input type="text" id="detalhe-qtd-entrada" readonly>
+                    <label for="detalhe-valor-compra">Valor Compra</label>
+                    <input type="text" id="detalhe-valor-compra" readonly>
+                    <label for="detalhe-fornecedor">Fornecedor</label>
+                    <input type="text" id="detalhe-fornecedor" readonly>
                 </div>
                 <div style="display: inline-flex; align-items: center; margin-top: 5px;">
                     <i class="fa-solid fa-clock-rotate-left" style="color: #1e94a3; margin-right: 6px; vertical-align: middle;"></i>
@@ -386,16 +380,16 @@
                         Acessar histórico completo
                     </a>
                 </div>
-              </div>
-              <div class="detalhes-right-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
+            </div>
+            <div class="detalhes-right-column" style="flex: 1; display: flex; flex-direction: column; gap: 0;">
                 <div style="display: flex; gap: 10px;">
                 <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
                     <label for="detalhe-codigo">Código</label>
                     <input type="text" id="detalhe-codigo" style="width: 74px; max-width: 74px; padding: 2px 4px 2px 8px;" readonly>
-                  </div>
-                  <div style="flex: 2; display: flex; flex-direction: column;">
+                </div>
+                <div style="flex: 2; display: flex; flex-direction: column;">
                     <div style="display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between;">
-                      <label for="detalhe-nome">Nome</label>
+                        <label for="detalhe-nome">Nome</label>
                         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
                             <div style="display: flex; gap: 5px;">
                                 <a id="detalhes-edit-link" href="#" title="Editar" class="edit-icon">
@@ -411,54 +405,54 @@
                         </div>
                         </div>
                     <input type="text" id="detalhe-nome" style="width: 156px; max-width: 156px" readonly>
-                  </div>
+                </div>
 
                 </div>
                 <div style="display: flex; gap: 10px;">
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-categoria">Categoria</label>
                     <input type="text" id="detalhe-categoria" style="width: 74px; max-width: 74px" readonly>
-                  </div>
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-tamanho">Tamanho</label>
                     <input type="text" id="detalhe-tamanho" style="width: 73px; max-width: 73px" readonly>
-                  </div>
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-genero">Gênero</label>
                     <input type="text" id="detalhe-genero" style="width: 73px; max-width: 73px" readonly>
-                  </div>
+                </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-quantidade">Quantidade</label>
                     <input type="text" id="detalhe-quantidade" style="width: 74px; max-width: 74px" readonly>
-                  </div>
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-limite">Limite</label>
                     <input type="text" id="detalhe-limite" style="width: 73px; max-width: 73px" readonly>
-                  </div>
-                  <div style="flex: 1; display: flex; flex-direction: column;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column;">
                     <label for="detalhe-preco">Preço</label>
                     <input type="text" id="detalhe-preco" style="width: 73px; max-width: 73px" readonly>
-                  </div>
+                </div>
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                  <label for="detalhe-descricao">Descrição</label>
-                  <textarea id="detalhe-descricao" readonly placeholder="Sem descrição"></textarea>
+                    <label for="detalhe-descricao">Descrição</label>
+                    <textarea id="detalhe-descricao" readonly placeholder="Sem descrição"></textarea>
                 </div>
                 <div class="detalhes-saida-box" style="display: flex; flex-direction: column; gap: 0;">
-                  <label for="detalhe-ultima-saida" style="margin-top: 26px;">Última Saída</label>
-                  <input type="text" id="detalhe-ultima-saida" readonly>
-                  <label for="detalhe-qtd-saida">Quantidade</label>
-                  <input type="text" id="detalhe-qtd-saida" readonly>
-                  <label for="detalhe-valor-venda">Valor Venda</label>
-                  <input type="text" id="detalhe-valor-venda" readonly>
-                  <label for="detalhe-cliente">Cliente</label>
-                  <input type="text" id="detalhe-cliente" readonly>
+                    <label for="detalhe-ultima-saida" style="margin-top: 26px;">Última Saída</label>
+                    <input type="text" id="detalhe-ultima-saida" readonly>
+                    <label for="detalhe-qtd-saida">Quantidade</label>
+                    <input type="text" id="detalhe-qtd-saida" readonly>
+                    <label for="detalhe-valor-venda">Valor Venda</label>
+                    <input type="text" id="detalhe-valor-venda" readonly>
+                    <label for="detalhe-cliente">Cliente</label>
+                    <input type="text" id="detalhe-cliente" readonly>
                 </div>
-              </div>
+            </div>
             </form>
-          </div>
+        </div>
         </div>
 
     <a id="btn-topo" title="Voltar ao topo" href="#" style="display:none; position: fixed; bottom: 30px; right: 20px; z-index: 100;">
