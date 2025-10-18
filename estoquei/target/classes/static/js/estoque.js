@@ -2288,3 +2288,114 @@ function formatarData(data) {
 document.addEventListener('DOMContentLoaded', function() {
     if (window.aplicarPermissoesEstoque) window.aplicarPermissoesEstoque();
 });
+
+function getCategoriasDoLocalStorage() {
+    try {
+        const arr = JSON.parse(localStorage.getItem('categoriasModal'));
+        if (Array.isArray(arr) && arr.length) return arr;
+    } catch(e) {}
+    // fallback padrão
+    return [
+        { id: 1, nome: "Camisa", cor: "#1e94a3", qtd: 0 },
+        { id: 2, nome: "Camiseta", cor: "#277580", qtd: 0 },
+        { id: 3, nome: "Bermuda", cor: "#bfa100", qtd: 0 },
+        { id: 4, nome: "Calça", cor: "#c0392b", qtd: 0 },
+        { id: 5, nome: "Vestido", cor: "#e67e22", qtd: 0 },
+        { id: 6, nome: "Sapato", cor: "#8e44ad", qtd: 0 },
+        { id: 7, nome: "Meia", cor: "#16a085", qtd: 0 }
+    ];
+}
+
+function renderizarCategoriasDinamicas(produtos) {
+    const ul = document.getElementById('lista-categorias');
+    ul.innerHTML = '';
+    const categorias = getCategoriasDoLocalStorage();
+    categorias.forEach((cat, i) => {
+        // Conta produtos da categoria
+        const qtd = produtos.filter(p => (p.categoria || '').toUpperCase() === cat.nome.toUpperCase()).length;
+        const cor = cat.cor || "#1e94a3";
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.style.marginBottom = '2px';
+        li.innerHTML = `
+            <span style="
+                display:inline-block;
+                min-width:2ch;
+                text-align:right;
+                font-weight:bold;
+                color:#fff;
+                background:${cor};
+                border-radius:4px;
+                padding:2px 5px 2px 10px;
+                margin-right:5px;
+                font-size:10px;
+            ">${qtd}</span>
+            <span style="font-size:10px;">${cat.nome}</span>
+        `;
+        ul.appendChild(li);
+    });
+    atualizarCategoriaListaSetas();
+}
+
+function atualizarCategoriaListaSetas() {
+    const scrollDiv = document.getElementById('categoria-lista-scroll');
+    const btnPrev = document.getElementById('cat-prev');
+    const btnNext = document.getElementById('cat-next');
+
+    function updateButtons() {
+        btnPrev.style.display = scrollDiv.scrollTop > 0 ? 'flex' : 'none';
+        btnNext.style.display = (scrollDiv.scrollTop + scrollDiv.clientHeight < scrollDiv.scrollHeight) ? 'flex' : 'none';
+    }
+
+    btnPrev.onclick = () => {
+        scrollDiv.scrollBy({ top: -60, behavior: 'smooth' });
+        setTimeout(updateButtons, 200);
+    };
+    btnNext.onclick = () => {
+        scrollDiv.scrollBy({ top: 60, behavior: 'smooth' });
+        setTimeout(updateButtons, 200);
+    };
+
+    scrollDiv.addEventListener('scroll', updateButtons);
+    setTimeout(updateButtons, 50);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Chame renderizarCategoriasDinamicas após carregar produtos
+    fetch('/produtos')
+        .then(res => res.json())
+        .then(produtos => {
+            renderizarCategoriasDinamicas(produtos);
+        });
+});
+
+
+
+function atualizarCategoriaListaSetas() {
+    const scrollDiv = document.getElementById('categoria-lista-scroll');
+    const btnPrev = document.getElementById('cat-prev');
+    const btnNext = document.getElementById('cat-next');
+
+    function updateButtons() {
+        btnPrev.style.display = scrollDiv.scrollTop > 0 ? 'flex' : 'none';
+        btnNext.style.display = (scrollDiv.scrollTop + scrollDiv.clientHeight < scrollDiv.scrollHeight) ? 'flex' : 'none';
+    }
+
+    btnPrev.onclick = () => {
+        scrollDiv.scrollBy({ top: -60, behavior: 'smooth' });
+        setTimeout(updateButtons, 200);
+    };
+    btnNext.onclick = () => {
+        scrollDiv.scrollBy({ top: 60, behavior: 'smooth' });
+        setTimeout(updateButtons, 200);
+    };
+
+    scrollDiv.addEventListener('scroll', updateButtons);
+    setTimeout(updateButtons, 50);
+}
+
+// Chame SEMPRE após renderizar a lista:
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarCategoriaListaSetas();
+});

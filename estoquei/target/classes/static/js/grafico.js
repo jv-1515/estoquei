@@ -1,21 +1,36 @@
 window.atualizarDetalhesEstoque = function(produtos) {
 
     // 2. Gráfico de categoria
-    const categorias = [
-        "CAMISA", "CAMISETA", "BERMUDA", "CALÇA", "VESTIDO", "SAPATO", "MEIA"
-    ];
-    const categoriasTipo = [
-        "Camisa", "Camiseta", "Bermuda", "Calça", "Vestido", "Sapato", "Meia"
-    ];
-    const categoriasPlural = [
-        "Camisas", "Camisetas", "Bermudas", "Calças", "Vestidos", "Sapatos", "Meias"
-    ];
-    const cores = [
-        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085"
-    ];
-    const dados = categorias.map(cat =>
-        produtos.filter(p => p.categoria && p.categoria.toUpperCase() === cat).length
+    function getCategoriasDoLocalStorage() {
+        try {
+            const arr = JSON.parse(localStorage.getItem('categoriasModal'));
+            if (Array.isArray(arr) && arr.length) return arr;
+        } catch(e) {}
+        // fallback padrão
+        return [
+            { nome: "Camisa", cor: "#1e94a3" },
+            { nome: "Camiseta", cor: "#277580" },
+            { nome: "Bermuda", cor: "#bfa100" },
+            { nome: "Calça", cor: "#c0392b" },
+            { nome: "Vestido", cor: "#e67e22" },
+            { nome: "Sapato", cor: "#8e44ad" },
+            { nome: "Meia", cor: "#16a085" }
+        ];
+    }
+
+    const categoriasLS = getCategoriasDoLocalStorage();
+    const dados = categoriasLS.map(cat =>
+        produtos.filter(p => (p.categoria || '').toUpperCase() === cat.nome.toUpperCase()).length
     );
+    const coresCategorias = [
+        "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
+        "#3f6ab3", "#3b458a", "#be9454", "#f26d8d", "#ff9856", "#3498db", "#2ecc71",
+        "#f1c40f", "#9b59b6", "#34495e", "#46adb4", "#e74c3c", "#2da6c4"
+    ];
+    
+    // Ao criar categoria:
+    const cores = categoriasLS.map((cat, i) => coresCategorias[i % coresCategorias.length]);
+    const nomes = categoriasLS.map(cat => cat.nome);
 
     // Gráfico Rosca
     if (window.graficoCategoria) window.graficoCategoria.destroy();
@@ -27,7 +42,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
     window.graficoCategoria = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: todosZero ? ['Sem dados'] : categoriasPlural,
+            labels: todosZero ? ['Sem dados'] : nomes,
             datasets: [{
                 data: todosZero ? [1] : dados,
                 backgroundColor: todosZero ? ['#cccccc'] : cores,
@@ -46,17 +61,13 @@ window.atualizarDetalhesEstoque = function(produtos) {
     // Lista de categorias ao lado
     const lista = document.getElementById('lista-categorias');
     lista.innerHTML = '';
-    // Descobre o maior número para alinhar todos
-    const maxValor = Math.max(...dados);
-    const maxDigitos = String(maxValor).length < 2 ? 2 : String(maxValor).length;
-
-    categorias.forEach((cat, i) => {
+    categoriasLS.forEach((cat, i) => {
         const valor = dados[i];
-        const nome = valor === 1 ? categoriasTipo[i] : categoriasPlural[i];
+        const nome = cat.nome;
+        const cor = coresCategorias[i % coresCategorias.length];
         const li = document.createElement('li');
         li.style.display = 'flex';
         li.style.alignItems = 'center';
-        li.style.marginBottom = '2px';
         li.innerHTML = `
             <span style="
                 display:inline-block;
@@ -64,7 +75,7 @@ window.atualizarDetalhesEstoque = function(produtos) {
                 text-align:right;
                 font-weight:bold;
                 color:#fff;
-                background:${cores[i]};
+                background:${cor};
                 border-radius:4px;
                 padding:2px 5px 2px 10px;
                 margin-right:5px;

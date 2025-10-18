@@ -216,7 +216,7 @@
         </div>
     </div>
     <div id="detalhes-estoque"
-     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 20px; align-items: flex-end;">
+     style="display: flex; flex-direction: row; margin: 0 auto 20px auto; box-sizing: border-box; width: 1300px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; gap: 10px; align-items: flex-end;">
     <div style="display: flex; flex-direction: column; width: 340px; min-width: 340px; flex-shrink: 0;">
         <div style="display: flex; align-items: flex-end; height: 28px;">
             <h2 style="margin: 0; font-size: 20px;">Detalhes dos Produtos</h2>
@@ -271,11 +271,17 @@
             <span style="font-size:12px; font-weight:bold; color:#333; text-align:center; margin-bottom:6px; max-width: 130px;">Categorias</span>
             <div style="display: flex; flex-direction: row; align-items: flex-end; gap: 10px; height:130px;">
                 <canvas id="grafico-categoria" width="130" height="130"></canvas>
-                <ul id="lista-categorias"
-                    style="list-style: none; padding: 0; margin: 0; font-size: 10px;
-                        display: flex; flex-direction: column;
-                        justify-content: space-between; height:130px;">
-                </ul>
+                <div id="categoria-lista-viewport" style="position:relative; height:130px; width:90px; display:flex; flex-direction:column; align-items:flex-start;">
+                    <button id="cat-prev" class="cat-arrow" aria-label="Anterior" style="position:absolute; left:0; top:0; width:22px; height:22px; display:none; z-index:2;">
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </button>
+                    <div id="categoria-lista-scroll">
+                        <ul id="lista-categorias"></ul>
+                    </div>
+                    <button id="cat-next" class="cat-arrow" aria-label="Próximo" style="position:absolute; left:0; bottom:0; width:22px; height:22px; display:none; z-index:2;">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
             </div>
         </div>
         <!-- Gráfico Tamanhos (Numéricos + Letras juntos) -->
