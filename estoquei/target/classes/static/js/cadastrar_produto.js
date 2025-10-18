@@ -582,6 +582,48 @@ function renderizarCategoriasModal() {
   aplicarEstiloInputs();
 }
 
+// Validação de duplicidade para todos inputs de categoria
+document.querySelector('.categorias-table').addEventListener('blur', function(e) {
+  if (e.target && e.target.classList.contains('categorias-input') && /^categoria_\d+$/.test(e.target.id)) {
+    const input = e.target;
+    const idx = Number(input.id.split('_')[1]) - 1;
+    const nomeAtual = input.value.trim().toLowerCase();
+    if (!nomeAtual) return;
+    if (/\d/.test(nomeAtual)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Nome inválido!',
+        text: 'O nome não pode conter números!',
+        timer: 2000,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didClose: () => input.focus()
+      });
+      input.value = '';
+      categoriasModal[idx].nome = '';
+      return;
+    }
+    const nomes = categoriasModal.map((cat, i) => i !== idx ? (cat.nome || '').trim().toLowerCase() : null).filter(n => n);
+    if (nomes.includes(nomeAtual)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Categoria já cadastrada!',
+        text: 'Escolha outro nome',
+        timer: 2000,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didClose: () => input.focus()
+      });
+      input.value = '';
+      categoriasModal[idx].nome = '';
+    }
+  }
+}, true);
+
+
+
 document.querySelector('[title="Gerenciar categorias"]').addEventListener('click', function(e) {
   e.preventDefault();
   document.getElementById('modal-categorias-bg').style.display = 'flex';
@@ -789,43 +831,44 @@ document.addEventListener('mousedown', function(e) {
 });
 
 // Sincroniza nome da categoria no array
-document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input, idx) => {
-  function verificarDuplicidade() {
-    const nomeAtual = input.value.trim().toLowerCase();
-    if (!nomeAtual) return;
-        if (/\d/.test(nomeAtual)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Nome inválido!',
-            text: 'O nome da categoria não pode conter números!',
-            timer: 1500,
-            timerProgressBar: true,
-            allowOutsideClick: false,
-            showConfirmButton: false
-        });
-        input.value = '';
-        categoriasModal[idx].nome = '';
-        input.focus();
-        return;
-    }
-    const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
-    if (nomes.includes(nomeAtual)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Categoria já criada!',
-        text: 'Escolha outro nome',
-        timer: 1500,
-        timerProgressBar: true,
-        allowOutsideClick: false,
-        showConfirmButton: false
-      });
-      input.value = '';
-      categoriasModal[idx].nome = '';
-      input.focus();
-    }
-  }
-  input.addEventListener('blur', verificarDuplicidade);
-});
+// document.querySelectorAll('.categorias-input[id^="categoria_"]').forEach((input, idx) => {
+//   function verificarDuplicidade() {
+//     const nomeAtual = input.value.trim().toLowerCase();
+//     if (!nomeAtual) return;
+//         if (/\d/.test(nomeAtual)) {
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Nome inválido!',
+//             text: 'O nome da categoria não pode conter números!',
+//             timer: 1500,
+//             timerProgressBar: true,
+//             allowOutsideClick: false,
+//             showConfirmButton: false
+//         });
+//         input.value = '';
+//         categoriasModal[idx].nome = '';
+//         input.focus();
+//         return;
+//     }
+//     const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
+//     if (nomes.includes(nomeAtual)) {
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Categoria já cadastrada!',
+//         text: 'Escolha outro nome',
+//         timer: 1500,
+//         timerProgressBar: true,
+//         allowOutsideClick: false,
+//         showConfirmButton: false,
+//         didClose: () => input.focus()
+//       });
+//       input.value = '';
+//       categoriasModal[idx].nome = '';
+//       input.focus();
+//     }
+//   }
+//   input.addEventListener('blur', verificarDuplicidade);
+// });
 
 // Validação dos campos obrigatórios
 function validarCategoriasObrigatorias() {
@@ -839,6 +882,18 @@ function validarCategoriasObrigatorias() {
     }
   }
   return ok;
+}
+
+function validarCategoriasDuplicadas() {
+  const nomes = categoriasModal
+    .map(cat => (cat.nome || '').trim().toUpperCase())
+    .filter(nome => nome !== '');
+  const nomesSet = new Set();
+  for (const nome of nomes) {
+    if (nomesSet.has(nome)) return true;
+    nomesSet.add(nome);
+  }
+  return false;
 }
 
 // Salvar alterações
@@ -861,19 +916,33 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     else break;
   }
 
-  // 3) valida obrigatoriedade por linha (não permite salvar com linhas parciais)
+  // 3) valida obrigatoriedade por linha
   if (!validarCategoriasObrigatorias()) {
     Swal.fire({
       icon: 'warning',
-      title: 'Preencha todos os campos!',
-      text: 'Cada categoria deve ter nome, pelo menos um tamanho e pelo menos um gênero',
-      timer: 1600,
+      title: 'Campos vazios!',
+      text: 'Preencha todos os campos',
+      timer: 1500,
+      timerProgressBar: true,
       showConfirmButton: false
     });
     return;
   }
 
-  // 4) sem alterações → fecha
+  // 4) categorias repetidas
+  if (validarCategoriasDuplicadas()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Categoria já cadastrada!',
+      text: 'Escolha outro nome',
+      timer: 1500,
+      timerProgressBar: true,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  // 5) sem alterações → fecha
   if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
     Swal.fire({
       icon: 'info',
@@ -889,7 +958,7 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     return;
   }
 
-  // 5) confirma e salva
+  // 6) confirma e salva
   Swal.fire({
     icon: 'question',
     title: 'Tem certeza?',
@@ -1397,6 +1466,10 @@ document.getElementById('btn-criar-categoria').onclick = function() {
   });
 
   const nomeInput = document.getElementById(`categoria_${idxNovo}`);
+  setTimeout(() => {
+    if (nomeInput) nomeInput.focus();
+  }, 300);
+
   const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idxNovo} .tamanho-multi-check`);
   const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${idxNovo} .genero-multi-check`);
 
