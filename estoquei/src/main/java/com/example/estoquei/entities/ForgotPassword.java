@@ -1,6 +1,8 @@
 package com.example.estoquei.entities;
 
 import java.util.Date;
+import java.util.Objects;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +24,7 @@ public class ForgotPassword {
     private Date expirationTime;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "usuario_id")
     private Usuario user;
 
     public ForgotPassword() {
@@ -65,5 +67,18 @@ public class ForgotPassword {
 
     public void setUser(Usuario user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ForgotPassword that = (ForgotPassword) o;
+        return Objects.equals(forgotPasswordID, that.forgotPasswordID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(forgotPasswordID);
     }
 }

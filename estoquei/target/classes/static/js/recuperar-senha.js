@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'sucesso') {
+                    sessionStorage.setItem('email_recuperacao', email);
                     Swal.fire({
                         icon: 'success',
                         title: 'Sucesso!',
@@ -155,10 +156,36 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 1000);
             };
             startTimer();
+
             resendBtn.addEventListener('click', () => {
-                if (!resendBtn.disabled) {
-                    startTimer();
+                if (resendBtn.disabled) return;
+
+                const email = sessionStorage.getItem('email_recuperacao');
+                if (!email) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível encontrar o e-mail. Por favor, volte ao início.' });
+                    return;
                 }
+                
+                startTimer();
+
+                const formData = new FormData();
+                formData.append('email', email);
+
+                fetch('/admin/enviar-codigo-recuperacao', {
+                    method: 'POST',
+                    body: new URLSearchParams(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'sucesso') {
+                        Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Um novo código foi enviado para o seu e-mail.', timer: 2000, showConfirmButton: false });
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Ocorreu um erro', text: data.message });
+                    }
+                }).catch(error => {
+                    console.error('Erro ao reenviar:', error);
+                    Swal.fire({ icon: 'error', title: 'Erro de comunicação', text: 'Não foi possível reenviar o código.' });
+                });
             });
         }
     }

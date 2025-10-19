@@ -147,7 +147,7 @@ public class AdminController {
     }
 
     @PostMapping("/redefinir-senha")
-    @ResponseBody // Adicionar esta anotação
+    @ResponseBody
     public ResponseEntity<Map<String, String>> redefinirSenha(@RequestParam("nova-senha") String novaSenha, 
                                                                 @RequestParam("confirmar-senha") String confirmarSenha, 
                                                                 HttpSession session) {

@@ -1,13 +1,16 @@
 package com.example.estoquei.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.example.estoquei.dto.MailBody;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 
 @Service
@@ -23,14 +26,18 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendSimpleMessage(MailBody mailBody) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        
-        message.setTo(mailBody.to());
-        message.setFrom(fromEmail);
-        message.setSubject(mailBody.subject());
-        message.setText(mailBody.text());
-        
-        javaMailSender.send(message);
+    public void sendHtmlMessageWithInlineImage(MailBody mailBody, String htmlContent, String imageCid, String imagePath) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+        helper.setFrom(fromEmail);
+        helper.setTo(mailBody.to());
+        helper.setSubject(mailBody.subject());
+        helper.setText(htmlContent, true);
+
+        ClassPathResource image = new ClassPathResource(imagePath);
+        helper.addInline(imageCid, image);
+
+        javaMailSender.send(mimeMessage);
     }
 }

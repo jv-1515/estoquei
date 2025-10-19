@@ -14,6 +14,12 @@ import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.ForgotPasswordRepository;
 import com.example.estoquei.repository.UsuarioFiltroRepository;
 import com.example.estoquei.repository.UsuarioRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class UsuarioService {
@@ -29,6 +35,9 @@ public class UsuarioService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public Usuario autenticar(String email, String senha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
@@ -91,29 +100,53 @@ public class UsuarioService {
         return usuarioRepository.findByCargoId(cargoId);
     }
 
+    @Transactional
     public void forgotPassword(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o e-mail: " + email));
-
-        ForgotPassword fp = forgotPasswordRepository.findByUser(usuario)
-            .orElse(new ForgotPassword());
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o e-mail: " + email));
 
         int otp = new Random().nextInt(900000) + 100000;
-        
-        fp.setOtp(otp);
-        fp.setExpirationTime(new Date(System.currentTimeMillis() + 10 * 60 * 1000));
-        fp.setUser(usuario);
+        Date expirationTime = new Date(System.currentTimeMillis() + 10 * 60 * 1000);
 
-        forgotPasswordRepository.save(fp);
+        Optional<ForgotPassword> fpOpt = forgotPasswordRepository.findByUser(usuario);
+
+        if (fpOpt.isPresent()) {
+            ForgotPassword existingFp = fpOpt.get();
+            forgotPasswordRepository.updateOtpAndExpiration(existingFp.getForgotPasswordID(), otp, expirationTime);
+        } else {
+            ForgotPassword newFp = new ForgotPassword();
+            newFp.setOtp(otp);
+            newFp.setExpirationTime(expirationTime);
+            newFp.setUser(usuario);
+            forgotPasswordRepository.save(newFp);
+        }
+
+        Context context = new Context();
+        context.setVariable("nomeUsuario", usuario.getNome());
+        context.setVariable("otp", String.valueOf(otp));
+
+        String htmlContent = templateEngine.process("emails/otp-email", context);
 
         MailBody mailBody = new MailBody(
             usuario.getEmail(),
-            "Código de Verificação - Stok+",
-            "Olá " + usuario.getNome() + ",\n\nSeu código de verificação é: **" + otp + "**\n\nEste código irá expirar em 10 minutos.\n\nSe você não solicitou esta alteração, por favor ignore este e-mail.\n\nAtenciosamente,\nEquipe Stok+"
+            "Seu Código de Verificação - Stok+",
+            ""
         );
-        emailService.sendSimpleMessage(mailBody);
+        
+        try {
+            emailService.sendHtmlMessageWithInlineImage(
+                mailBody, 
+                htmlContent, 
+                "logo_icon",
+                "static/images/logo_icon.png"
+            );
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Não foi possível enviar o e-mail de recuperação.", e);
+        }
     }
 
+    @Transactional(readOnly = true)
     public boolean validarCodigo(String otp) {
         try {
             Integer otpCode = Integer.parseInt(otp);
@@ -136,6 +169,7 @@ public class UsuarioService {
         }
     }
     
+    @Transactional
     public void redefinirSenha(String tokenOtp, String novaSenha) {
         Integer otpCode = Integer.parseInt(tokenOtp);
         ForgotPassword fp = forgotPasswordRepository.findByOtp(otpCode)
