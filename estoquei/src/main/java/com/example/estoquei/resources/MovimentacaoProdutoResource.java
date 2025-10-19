@@ -138,10 +138,12 @@ public class MovimentacaoProdutoResource {
             movimentacao.setData(LocalDate.parse(dataEntrada));
             movimentacao.setCodigoProduto(codigo);
             movimentacao.setNome(produto.getNome());
-            
-            movimentacao.setCategoria(produto.getCategoria());
-            movimentacao.setTamanho(produto.getTamanho());    
-            movimentacao.setGenero(produto.getGenero());      
+    
+            movimentacao.setCategoria(
+                produto.getCategoria() != null ? produto.getCategoria().getNome() : null
+            );
+            movimentacao.setTamanho(produto.getTamanho());
+            movimentacao.setGenero(produto.getGenero());
             
             movimentacao.setTipoMovimentacao("ENTRADA");
             movimentacao.setCodigoMovimentacao(codigoCompra);
@@ -202,7 +204,11 @@ public class MovimentacaoProdutoResource {
             movimentacao.setData(LocalDate.parse(dataSaida));
             movimentacao.setCodigoProduto(codigo);
             movimentacao.setNome(produto.getNome());
-            movimentacao.setCategoria(produto.getCategoria());
+            
+            movimentacao.setCategoria(
+                produto.getCategoria() != null ? produto.getCategoria().getNome() : null
+            );
+            
             movimentacao.setTamanho(produto.getTamanho());
             movimentacao.setGenero(produto.getGenero());
 

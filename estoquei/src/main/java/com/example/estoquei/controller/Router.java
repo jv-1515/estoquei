@@ -1,6 +1,8 @@
 package com.example.estoquei.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.estoquei.dto.CategoriaDTO;
 import com.example.estoquei.model.Usuario;
+import com.example.estoquei.repository.CategoriaRepository;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +22,9 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/")
 public class Router {
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+    
     @Autowired
     private MovimentacaoProdutoRepository movimentacaoRepo;
 
@@ -93,6 +100,18 @@ public class Router {
         return "produtos_removidos";
     }
 
+    @GetMapping("/categorias")
+    @ResponseBody
+    public List<CategoriaDTO> listarCategorias() {
+        return categoriaRepository.findAll().stream().map(cat -> {
+            CategoriaDTO dto = new CategoriaDTO();
+            dto.id = cat.getId();
+            dto.nome = cat.getNome();
+            dto.tipoTamanho = cat.getTipoTamanho();
+            dto.tipoGenero = cat.getTipoGenero();
+            return dto;
+        }).collect(Collectors.toList());
+    }
     //funcionario
     // @GetMapping("/cadastrar-funcionario")
     // public String cadastrarFuncionario(HttpSession session) {

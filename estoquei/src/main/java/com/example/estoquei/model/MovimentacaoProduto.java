@@ -27,8 +27,7 @@ public class MovimentacaoProduto {
 
     private String nome;
 
-    @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    private String categoria;
 
     @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
@@ -64,7 +63,7 @@ public class MovimentacaoProduto {
         LocalDate data,
         String codigoProduto,
         String nome,
-        Categoria categoria,
+        String categoria,
         Tamanho tamanho,
         Genero genero,
         String codigoMovimentacao,
@@ -100,8 +99,8 @@ public class MovimentacaoProduto {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public Categoria getCategoria() { return categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
 
     public Tamanho getTamanho() { return tamanho; }
     public void setTamanho(Tamanho tamanho) { this.tamanho = tamanho; }

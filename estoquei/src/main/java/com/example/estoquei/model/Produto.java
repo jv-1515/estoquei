@@ -9,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "produtos")
@@ -21,7 +23,8 @@ public class Produto {
 
     private String nome;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
     @Enumerated(EnumType.STRING)
@@ -99,7 +102,7 @@ public class Produto {
     public Categoria getCategoria() {
         return categoria;
     }
-
+    
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }

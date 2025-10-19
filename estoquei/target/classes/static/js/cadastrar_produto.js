@@ -1187,12 +1187,16 @@ const radiosDiv = document.getElementById('radios-categoria-multi');
 const chevron = document.querySelector('.chevron-categoria');
 
 function preencherRadiosCategoria() {
+  const radiosDiv = document.getElementById('radios-categoria-multi');
+  if (!radiosDiv) return;
   radiosDiv.innerHTML = '';
-  categorias.forEach(cat => {
-    const label = document.createElement('label');
-    label.className = 'categoria-multi-label';
-    label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome}" style="display:none;">${cat.nome}`;
-    radiosDiv.appendChild(label);
+  categoriasModal.forEach((cat, idx) => {
+    if (cat.nome && cat.nome.trim()) {
+      const label = document.createElement('label');
+      label.className = 'categoria-multi-label';
+      label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome}" style="display:none;">${cat.nome}`;
+      radiosDiv.appendChild(label);
+    }
   });
 }
 preencherRadiosCategoria();
@@ -1259,7 +1263,7 @@ document.addEventListener('mousedown', function(e) {
 
 // Função para atualizar tamanhos e gêneros customizados
 function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
-  const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
+  const categoriaObj = categoriasModal.find(cat => cat.nome === categoriaNome);
 
   // Tamanhos
   const tamanhoInput = document.getElementById('tamanho-multi');
@@ -1270,48 +1274,35 @@ function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
   tamanhoInput.disabled = !categoriaObj;
 
   let tamanhosPermitidos = [];
-  if (categoriaObj) {
-    if (categoriaObj.tipoTamanho === 2) {
-      tamanhosPermitidos = tamanhosNumero;
-    } else if (categoriaObj.tipoTamanho === 1) {
-      tamanhosPermitidos = tamanhosLetra;
-    } else {
+  if (categoriaObj && categoriaObj.tamanhos && categoriaObj.tamanhos.length > 0) {
+    if (categoriaObj.tamanhos.includes("TODOS")) {
       tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
+    } else {
+      if (categoriaObj.tamanhos.includes("LETRAS")) tamanhosPermitidos = tamanhosPermitidos.concat(tamanhosLetra);
+      if (categoriaObj.tamanhos.includes("NUMERICOS")) tamanhosPermitidos = tamanhosPermitidos.concat(tamanhosNumero);
     }
-    tamanhosPermitidos.forEach(tam => {
-      const label = document.createElement('label');
-      label.className = 'tamanho-multi-label';
-            // Formata visualmente o tamanho
-      function formatarTamanhoVisual(tam) {
-          if (tam === "ÚNICO") return "Único";
-          if (tam.startsWith("_")) return tam.slice(1);
-          return tam;
-      }
-      
-      label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
-      radiosTamanhoDiv.appendChild(label);
-    });
-    // Se só tem uma opção, já seleciona
+  }
+  tamanhosPermitidos.forEach(tam => {
+    const label = document.createElement('label');
+    label.className = 'tamanho-multi-label';
+    label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
+    radiosTamanhoDiv.appendChild(label);
+  });
   if (tamanhosPermitidos.length === 1) {
     tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
     tamanhoInput.style.color = '#000';
     tamanhoInput.dataset.value = tamanhosPermitidos[0];
     radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
   }
-  } else {
-    radiosTamanhoDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
-    tamanhoInput.value = '';
-  }
 
-  // Evento para atualizar input ao selecionar tamanho
   radiosTamanhoDiv.addEventListener('click', function(e) {
-      const radio = e.target.closest('input[type="radio"]');
-      if (radio) {
-          tamanhoInput.value = formatarTamanhoVisual(radio.value);
-          tamanhoInput.style.color = '#000';
-          tamanhoInput.dataset.value = radio.value;
-          radiosTamanhoDiv.style.display = 'none';
-      }
+    const radio = e.target.closest('input[type="radio"]');
+    if (radio) {
+      tamanhoInput.value = formatarTamanhoVisual(radio.value);
+      tamanhoInput.style.color = '#000';
+      tamanhoInput.dataset.value = radio.value;
+      radiosTamanhoDiv.style.display = 'none';
+    }
   });
 
   // Gêneros
@@ -1323,54 +1314,34 @@ function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
   generoInput.disabled = !categoriaObj;
 
   let generosPermitidos = [];
-  if (categoriaObj) {
-    switch (categoriaObj.tipoGenero) {
-      case "T":
-        generosPermitidos = generosEnum;
-        break;
-      case "F":
-        generosPermitidos = generosEnum.filter(g => g === "FEMININO");
-        break;
-      case "M":
-        generosPermitidos = generosEnum.filter(g => g === "MASCULINO");
-        break;
-      case "U":
-        generosPermitidos = generosEnum.filter(g => g === "UNISSEX");
-        break;
-      case "FM":
-        generosPermitidos = generosEnum.filter(g => g === "MASCULINO" || g === "FEMININO");
-        break;
-      default:
-        generosPermitidos = generosEnum;
+  if (categoriaObj && categoriaObj.generos && categoriaObj.generos.length > 0) {
+    if (categoriaObj.generos.includes("TODOS")) {
+      generosPermitidos = generosEnum.slice();
+    } else {
+      generosPermitidos = generosEnum.filter(g => categoriaObj.generos.includes(g));
     }
-    generosPermitidos.forEach(gen => {
-      const label = document.createElement('label');
-      label.className = 'genero-multi-label';
-      
-      label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
-      radiosGeneroDiv.appendChild(label);
-    });
-    // Se só tem uma opção, já seleciona
-    if (generosPermitidos.length === 1) {
-      generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
-      generoInput.style.color = '#000';
-      generoInput.dataset.value = generosPermitidos[0];
-      radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
-    }
-  } else {
-    radiosGeneroDiv.innerHTML = '<span style="color:#757575;">Selecionar</span>';
-    generoInput.value = '';
+  }
+  generosPermitidos.forEach(gen => {
+    const label = document.createElement('label');
+    label.className = 'genero-multi-label';
+    label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
+    radiosGeneroDiv.appendChild(label);
+  });
+  if (generosPermitidos.length === 1) {
+    generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
+    generoInput.style.color = '#000';
+    generoInput.dataset.value = generosPermitidos[0];
+    radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
   }
 
-  // Evento para atualizar input ao selecionar gênero
   radiosGeneroDiv.addEventListener('click', function(e) {
-      const radio = e.target.closest('input[type="radio"]');
-      if (radio) {
-          generoInput.value = formatarGeneroVisual(radio.value);
-          generoInput.style.color = '#000';
-          generoInput.dataset.value = radio.value; 
-          radiosGeneroDiv.style.display = 'none';
-      }
+    const radio = e.target.closest('input[type="radio"]');
+    if (radio) {
+      generoInput.value = formatarGeneroVisual(radio.value);
+      generoInput.style.color = '#000';
+      generoInput.dataset.value = radio.value; 
+      radiosGeneroDiv.style.display = 'none';
+    }
   });
 }
 

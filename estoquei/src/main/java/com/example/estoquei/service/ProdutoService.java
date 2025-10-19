@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.estoquei.model.Produto;
+import com.example.estoquei.model.Categoria;
 import com.example.estoquei.repository.ProdutoRepository;
+import com.example.estoquei.repository.CategoriaRepository;
 
 
 @Service
@@ -16,14 +18,27 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
     private final FirebaseStorageService firebaseStorageService;
+    private final CategoriaRepository categoriaRepository;
 
     @Autowired
-    public ProdutoService(ProdutoRepository produtoRepository, FirebaseStorageService firebaseStorageService) {
+    public ProdutoService(ProdutoRepository produtoRepository, FirebaseStorageService firebaseStorageService, CategoriaRepository categoriaRepository) {
         this.produtoRepository = produtoRepository;
         this.firebaseStorageService = firebaseStorageService;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public Produto salvar(Produto produto, MultipartFile foto) throws IOException {
+        if (produto.getCategoria() != null && produto.getCategoria().getNome() != null) {
+            String nomeCategoria = produto.getCategoria().getNome();
+            Categoria categoria = categoriaRepository.findByNome(nomeCategoria);
+            if (categoria == null) {
+                throw new RuntimeException("Categoria não encontrada: " + nomeCategoria);
+            }
+            produto.setCategoria(categoria);
+        } else {
+            throw new RuntimeException("Categoria não informada!");
+        }
+
         if (foto != null && !foto.isEmpty()) {
             String imageUrl = firebaseStorageService.uploadFile(foto, "imagens");
             produto.setUrl_imagem(imageUrl);
@@ -74,8 +89,11 @@ public class ProdutoService {
             if (novoProduto.getCodigo() != null && !novoProduto.getCodigo().isEmpty())
                 p.setCodigo(novoProduto.getCodigo());
 
-            if (novoProduto.getCategoria() != null)
-                p.setCategoria(novoProduto.getCategoria());
+            if (novoProduto.getCategoria() != null && novoProduto.getCategoria().getNome() != null) {
+                Categoria categoria = categoriaRepository.findByNome(novoProduto.getCategoria().getNome());
+                if (categoria == null) throw new RuntimeException("Categoria não encontrada!");
+                p.setCategoria(categoria);
+            }
 
             if (novoProduto.getTamanho() != null)
                 p.setTamanho(novoProduto.getTamanho());
@@ -83,7 +101,6 @@ public class ProdutoService {
             if (novoProduto.getGenero() != null)
                 p.setGenero(novoProduto.getGenero());
 
-            // Sempre atualiza campos numéricos (int não aceita null)
             p.setQuantidade(novoProduto.getQuantidade());
             p.setLimiteMinimo(novoProduto.getLimiteMinimo());
 

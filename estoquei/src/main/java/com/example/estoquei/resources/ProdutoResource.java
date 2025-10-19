@@ -80,31 +80,31 @@ public class ProdutoResource {
     public List<Map<String, Object>> listarProdutos() {
         List<Produto> produtos = produtoService.listarTodos();
         LocalDate hoje = LocalDate.now();
-        
+
         List<Object[]> entradasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("ENTRADA", hoje);
         List<Object[]> saidasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("SAIDA", hoje);
-        
+
         Map<String, Integer> entradasPorCodigo = entradasHoje.stream()
             .collect(Collectors.toMap(
-                row -> (String) row[0], // codigo_produto
-                row -> ((Number) row[1]).intValue() // quantidade
+                row -> (String) row[0],
+                row -> ((Number) row[1]).intValue()
             ));
-        
+
         Map<String, Integer> saidasPorCodigo = saidasHoje.stream()
             .collect(Collectors.toMap(
-                row -> (String) row[0], // codigo_produto
-                row -> ((Number) row[1]).intValue() // quantidade
+                row -> (String) row[0],
+                row -> ((Number) row[1]).intValue()
             ));
-        
+
         return produtos.stream().map(produto -> {
             Map<String, Object> produtoMap = new HashMap<>();
             produtoMap.put("id", produto.getId());
             produtoMap.put("codigo", produto.getCodigo());
             produtoMap.put("nome", produto.getNome());
-            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().toString() : "");
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().getNome() : ""); // <-- CORRIGIDO
             produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
             produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
-            produtoMap.put("quantidade", produto.getQuantidade()); 
+            produtoMap.put("quantidade", produto.getQuantidade());
             produtoMap.put("limiteMinimo", produto.getLimiteMinimo());
             produtoMap.put("preco", produto.getPreco());
             produtoMap.put("descricao", produto.getDescricao());
@@ -134,7 +134,7 @@ public class ProdutoResource {
             produtoMap.put("id", produto.getId());
             produtoMap.put("codigo", produto.getCodigo());
             produtoMap.put("nome", produto.getNome());
-            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().toString() : "");
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().getNome() : "");
             produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
             produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
             produtoMap.put("quantidade", produto.getQuantidade());
