@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok+ | Redefinir Senha</title>
+    <link rel="icon" type="image/png" href="../images/logo_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/recuperar-senha.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/recuperar-senha.js" defer></script>
+</head>
+<body>
+    <div class="recovery-main-container">
+        <div class="form-content-container">
+            <div class="recovery-header">
+                <a href="codigo-verificacao.html" title="Voltar"><i class="fa-solid fa-arrow-left"></i></a>
+                <h1>Redefinir Senha</h1>
+            </div>
+            <p>Agora você pode definir sua nova senha abaixo:</p>
+            
+            <form id="redefinir-form">
+                <div>
+                    <label for="nova-senha">Nova senha</label>
+                    <div class="input-group">
+                        <input type="password" id="nova-senha" name="nova-senha" placeholder="Digite sua nova senha" required />
+                        <i class="fa-solid fa-eye-slash" id="fa-eye-toggle-1"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="confirmar-senha">Confirmar senha</label>
+                    <div class="input-group">
+                        <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Confirme sua nova senha" required />
+                        <i class="fa-solid fa-eye-slash" id="fa-eye-toggle-2"></i>
+                    </div>
+                </div>
+
+                <ul class="password-reqs">
+                    <li id="req-length"><i class="fa-solid fa-circle"></i>mínimo 8 caracteres</li>
+                    <li id="req-uppercase"><i class="fa-solid fa-circle"></i>mínimo 1 maiúscula</li>
+                    <li id="req-number"><i class="fa-solid fa-circle"></i>mínimo 1 número</li>
+                    <li id="req-special"><i class="fa-solid fa-circle"></i>mínimo 1 caracter especial</li>
+                </ul>
+
+                <button type="submit" id="redefinir-btn">
+                    <i class="fa-solid fa-check" id="redefinir-icon"></i>
+                    <span id="redefinir-text">Confirmar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script th:if="${sucesso}" th:inline="javascript">
+        window.successMessage = /*[[${sucesso}]]*/ '';
+    </script>
+    <script th:if="${erro}" th:inline="javascript">
+        window.errorMessage = /*[[${erro}]]*/ '';
+    </script>
+</body>
+</html>

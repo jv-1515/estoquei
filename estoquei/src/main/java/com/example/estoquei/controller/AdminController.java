@@ -1,5 +1,7 @@
 package com.example.estoquei.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.UsuarioRepository;
@@ -108,5 +112,68 @@ public class AdminController {
         }
         boolean existe = usuarioRepository.findByCpf(cpf).isPresent();
         return ResponseEntity.ok(existe);
+    }
+
+    @PostMapping("/enviar-codigo-recuperacao")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> enviarCodigoRecuperacao(@RequestParam String email) {
+        try {
+            usuarioService.forgotPassword(email);
+            return ResponseEntity.ok(Map.of(
+                "status", "sucesso",
+                "message", "Código de recuperação enviado para " + email,
+                "redirectUrl", "/recuperar-senha/codigo-verificacao"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/validar-codigo")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> validarCodigo(@RequestParam String otp, HttpSession session) {
+        boolean isOtpValido = usuarioService.validarCodigo(otp);
+        
+        if (isOtpValido) {
+            session.setAttribute("token_otp_validado", otp);
+            return ResponseEntity.ok(Map.of(
+                "status", "sucesso",
+                "message", "Código validado com sucesso!",
+                "redirectUrl", "/recuperar-senha/redefinir-senha"
+            ));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", "Código de verificação inválido ou expirado."));
+        }
+    }
+
+    @PostMapping("/redefinir-senha")
+    @ResponseBody // Adicionar esta anotação
+    public ResponseEntity<Map<String, String>> redefinirSenha(@RequestParam("nova-senha") String novaSenha, 
+                                                                @RequestParam("confirmar-senha") String confirmarSenha, 
+                                                                HttpSession session) {
+        if (!novaSenha.equals(confirmarSenha)) {
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", "As senhas não coincidem."));
+        }
+
+        String tokenOtp = (String) session.getAttribute("token_otp_validado");
+
+        if (tokenOtp == null) {
+            return ResponseEntity.status(401).body(Map.of("status", "erro", "message", "Sessão inválida ou expirada. Por favor, reinicie o processo."));
+        }
+
+        try {
+            usuarioService.redefinirSenha(tokenOtp, novaSenha);
+            
+            session.removeAttribute("token_otp_validado");
+            
+            return ResponseEntity.ok(Map.of(
+                "status", "sucesso", 
+                "message", "Parabéns, sua senha foi alterada com sucesso. Você será redirecionado para o login.",
+                "redirectUrl", "/"
+            ));
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", e.getMessage()));
+        }
     }
 }

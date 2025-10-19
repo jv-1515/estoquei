@@ -210,6 +210,21 @@ public class Router {
         return "gerar_relatorio";
     }
 
+    @GetMapping("/recuperar-senha/esqueci-senha")
+    public String esqueciSenhaPage() {
+        return "recuperar-senha/esqueci-senha";
+    }
+
+    @GetMapping("/recuperar-senha/codigo-verificacao")
+    public String codigoVerificacaoPage() {
+        return "recuperar-senha/codigo-verificacao";
+    }
+
+    @GetMapping("/recuperar-senha/redefinir-senha")
+    public String redefinirSenhaPage() {
+        return "recuperar-senha/redefinir-senha";
+    }
+
     @GetMapping("/permissoes")
     public String permissoes(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("isActive");

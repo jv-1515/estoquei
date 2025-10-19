@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: #277580;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background-image: image-set(
+        url('/images/background.png') type('image/png') 1x
+    );
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.recovery-main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 640px;
+    max-width: 640px;
+    min-height: 300px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.13);
+    margin: 60px auto;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.form-content-container {
+    width: 100%;
+    max-width: 380px;
+    text-align: left;
+}
+
+.recovery-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.recovery-header a {
+    color: #1E94A3;
+    font-size: 32px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.recovery-header a:hover {
+    color: #18737f;
+}
+
+.recovery-header h1 {
+    font-size: 2rem;
+    color: #1E94A3;
+    margin: 0;
+}
+
+.form-content-container p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.form-content-container label {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    height: 45px;
+    width: 100%;
+    padding: 0 15px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-color: #1E94A3;
+    box-shadow: 0 0 0 2px rgba(30, 148, 163, 0.2);
+}
+
+.input-group .fa-eye-slash, .input-group .fa-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+}
+
+.form-content-container button {
+    background-color: #1E94A3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    height: 45px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.form-content-container button:hover {
+    background-color: #277580;
+}
+
+.secondary-link {
+    font-weight: 500;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.secondary-link a {
+    color: #1E94A3;
+    text-decoration: none;
+}
+
+.secondary-link a:hover {
+    text-decoration: underline;
+}
+
+.otp-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+.otp-input {
+    width: 50px;
+    height: 60px;
+    text-align: center;
+    font-size: 24px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.otp-input:focus {
+    border-color: #1E94A3;
+    box-shadow: 0 0 0 2px rgba(30, 148, 163, 0.2);
+}
+
+#resend-btn {
+    background: none;
+    color: #666;
+    border: 1px solid #ccc;
+}
+#resend-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+#resend-btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.password-reqs {
+    list-style: none;
+    padding: 0;
+    margin: -10px 0 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 12px;
+    color: #999;
+}
+.password-reqs li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.password-reqs .fa-circle {
+    font-size: 6px;
+}
+.password-reqs .valid .fa-circle {
+    color: #28a745;
+}
+.password-reqs .valid {
+    color: #333;
+}
+
+.password-reqs .valid .fa-check-circle {
+    color: #28a745;
+}
+
+input[type="password"]::-ms-reveal {
+    display: none;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+.form-content-container button i {
+    font-size: 16px;
+    line-height: 1;
+}

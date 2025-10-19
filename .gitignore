@@ -1,4 +1,5 @@
-src/main/resources/firebase/stokmais-firebase-adminsdk-fbsvc-fec139251f.json
 /estoquei/target/classes/*.json
+
+.vscode/
 
 *.json
