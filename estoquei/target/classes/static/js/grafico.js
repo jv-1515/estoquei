@@ -1,24 +1,13 @@
 window.atualizarDetalhesEstoque = function(produtos) {
 
     // 2. Gráfico de categoria
-    function getCategoriasDoLocalStorage() {
-        try {
-            const arr = JSON.parse(localStorage.getItem('categoriasModal'));
-            if (Array.isArray(arr) && arr.length) return arr;
-        } catch(e) {}
-        // fallback padrão
-        return [
-            { nome: "Camisa", cor: "#1e94a3" },
-            { nome: "Camiseta", cor: "#277580" },
-            { nome: "Bermuda", cor: "#bfa100" },
-            { nome: "Calça", cor: "#c0392b" },
-            { nome: "Vestido", cor: "#e67e22" },
-            { nome: "Sapato", cor: "#8e44ad" },
-            { nome: "Meia", cor: "#16a085" }
-        ];
+    function getCategoriasDoBackend() {
+        return fetch('/categorias')
+            .then(res => res.json())
+            .then(arr => arr.map(cat => ({ nome: cat.nome })));
     }
 
-    const categoriasLS = getCategoriasDoLocalStorage();
+    const categoriasLS = getCategoriasDoBackend();
     const dados = categoriasLS.map(cat =>
         produtos.filter(p => (p.categoria || '').toUpperCase() === cat.nome.toUpperCase()).length
     );

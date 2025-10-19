@@ -19,8 +19,34 @@ fetch('/produtos/tamanhos')
 
 
 function formatarGeneroVisual(gen) {
-  return gen.charAt(0) + gen.slice(1).toLowerCase();
+  if (gen === "M") return "Masculino";
+  if (gen === "F") return "Feminino";
+  if (gen === "U") return "Unissex";
+  if (gen === "T") return "Todos";
+  return gen;
 }
+
+window.abrirGeneroMulti = function(idx) {
+  const menu = document.getElementById('checkboxes-genero-multi-' + idx);
+  const input = document.getElementById('genero_input_' + idx);
+  if (!menu || !input) return;
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
+};
+
+window.abrirTamanhoMulti = function(idx) {
+  const menu = document.getElementById('checkboxes-tamanho-multi-' + idx);
+  const input = document.getElementById('tamanho_input_' + idx);
+  if (!menu || !input) return;
+  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
+    unfloatMenu(menu);
+  } else {
+    floatMenu(menu, input);
+  }
+};
 
 function formatarTamanhoVisual(tam) {
     if (tam === "ÚNICO" || tam === "UNICO") return "Único";
@@ -56,24 +82,36 @@ form.addEventListener('submit', function(e) {
 
 
 
-// Array de categorias cadastrado no modal (com nível de tamanhos)
-let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal'));
-if (!categoriasModal || categoriasModal.length === 0) {
-  categoriasModal = [];
-  localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
+let categorias = [];
+
+function carregarCategorias() {
+    fetch('/categorias')
+        .then(res => res.json())
+        .then(data => {
+            categorias = data.map(cat => ({
+                id: cat.id,
+                nome: cat.nome,
+                tipoTamanho: cat.tipoTamanho,
+                tipoGenero: cat.tipoGenero
+            }));
+            categoriasSnapshot = JSON.stringify(categorias);
+            renderizarCategorias();
+            preencherRadiosCategoria();
+        });
 }
-// Evento de clique do radio da categoria
+
+document.addEventListener('DOMContentLoaded', carregarCategorias);
+
 document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
     radio.addEventListener('click', function(e) {
         const categoriaSelecionada = e.target.value;
         const categoriaObj = categorias.find(cat => cat.nome === categoriaSelecionada);
 
-        // Tamanhos (já está correto, usando tipoTamanho)
         let tamanhosPermitidos = [];
         if (categoriaObj) {
-            if (categoriaObj.tipoTamanho === 2) {
+            if (categoriaObj.tipoTamanho === "N") {
                 tamanhosPermitidos = tamanhosNumero;
-            } else if (categoriaObj.tipoTamanho === 1) {
+            } else if (categoriaObj.tipoTamanho === "L") {
                 tamanhosPermitidos = tamanhosLetra;
             } else {
                 tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
@@ -85,39 +123,27 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
             tamanhoSelect.innerHTML += `<option value="${tam}">${tam}</option>`;
         });
 
-        // ----------- GÊNEROS: use apenas tipoGenero do array fixo -----------
         let generosPermitidos = [];
         if (categoriaObj) {
-            switch (categoriaObj.tipoGenero) {
-                case "T":
-                    generosPermitidos = ["MASCULINO", "FEMININO", "UNISSEX"];
-                    break;
-                case "F":
-                    generosPermitidos = ["FEMININO"];
-                    break;
-                case "M":
-                    generosPermitidos = ["MASCULINO"];
-                    break;
-                case "U":
-                    generosPermitidos = ["UNISSEX"];
-                    break;
-                case "FM":
-                    generosPermitidos = ["MASCULINO", "FEMININO"];
-                    break;
-                default:
-                    generosPermitidos = ["MASCULINO", "FEMININO", "UNISSEX"];
+            if (categoriaObj.tipoGenero === "T") {
+                generosPermitidos = ["F", "M", "U"];
+            } else if (categoriaObj.tipoGenero === "FM") {
+                generosPermitidos = ["F", "M"];
+            } else if (categoriaObj.tipoGenero === "F") {
+                generosPermitidos = ["F"];
+            } else if (categoriaObj.tipoGenero === "M") {
+                generosPermitidos = ["M"];
+            } else if (categoriaObj.tipoGenero === "U") {
+                generosPermitidos = ["U"];
             }
-        } else {
-            generosPermitidos = ["MASCULINO", "FEMININO", "UNISSEX"];
         }
 
         // Atualiza o select de gêneros
         const generoSelect = document.getElementById('genero');
         generoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
         generosPermitidos.forEach(gen => {
-            generoSelect.innerHTML += `<option value="${gen}">${gen.charAt(0) + gen.slice(1).toLowerCase()}</option>`;
-        });
-        // --------------------------------------------------------
+            generoSelect.innerHTML += `<option value="${gen}">${formatarGeneroVisual(gen)}</option>`;        
+      });
     });
 });
 
@@ -142,18 +168,25 @@ document.querySelector('form').addEventListener('submit', function(event) {
     const formData = new FormData(this);
     formData.set('preco', precoLimpo);
 
-    formData.set('categoria', document.getElementById('categoria-multi').dataset.value.toUpperCase() || '');
-
+    const categoriaNome = document.getElementById('categoria-multi').dataset.value;
+    const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
+    formData.set('categoria', categoriaObj ? categoriaObj.id : '');
+    
     const generoInput = document.getElementById('genero-multi');
     const tamanhoInput = document.getElementById('tamanho-multi');
     
-    formData.set('genero', generoInput.dataset.value || '');
+    let generoValue = generoInput.dataset.value || '';
+    if (generoValue === "M") generoValue = "MASCULINO";
+    if (generoValue === "F") generoValue = "FEMININO";
+    if (generoValue === "U") generoValue = "UNISSEX";
+    formData.set('genero', generoValue);
+    
     formData.set('tamanho', tamanhoInput.dataset.value || '');
 
     fetch(this.action, {
         method: this.method,
         body: formData
-    }).then(async data => {  
+    }).then(async data => {
         if (!data.ok) {
             throw new Error('Falha de conexão');
         }
@@ -398,15 +431,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function fecharModalCategorias() {
   // sincroniza inputs para o array
-  for (let i = 1; i <= categoriasModal.length; i++) {
+  for (let i = 1; i <= categorias.length; i++) {
     const el = document.getElementById('categoria_' + i);
-    categoriasModal[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categoriasModal[i - 1].nome || '');
+    categorias[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categorias[i - 1].nome || '');
     atualizarArrayTamanho(i);
     atualizarArrayGenero(i);
   }
 
   // remove entradas TRAILING (últimas) que estiverem completamente vazias
-  let trimmed = categoriasModal.slice();
+  let trimmed = categorias.slice();
   while (trimmed.length > 0) {
     const last = trimmed[trimmed.length - 1];
     const nomeVazio = !last.nome || !last.nome.toString().trim();
@@ -417,16 +450,16 @@ function fecharModalCategorias() {
     }
   }
   // atualiza array em memória (sem salvar localStorage)
-  if (trimmed.length !== categoriasModal.length) {
-    categoriasModal = trimmed;
+  if (trimmed.length !== categorias.length) {
+    categorias = trimmed;
   }
 
   // se nada mudou em relação ao snapshot (após aparar), fecha sem prompt
-  if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+  if (JSON.stringify(categorias) === categoriasSnapshot) {
     document.getElementById('modal-categorias-bg').style.display = 'none';
     document.body.style.overflow = '';
     // re-renderiza para garantir UI sem linhas vazias (opcional)
-    renderizarCategoriasModal();
+    renderizarCategorias();
     return;
   }
 
@@ -446,7 +479,7 @@ function fecharModalCategorias() {
   }).then((result) => {
     if (result.isConfirmed) {
       // descarta alterações e restaura snapshot
-      categoriasModal = JSON.parse(categoriasModalSnapshot);
+      categorias = JSON.parse(categoriasSnapshot);
       preencherCamposCategorias();
       document.getElementById('modal-categorias-bg').style.display = 'none';
       aplicarEstiloInputs();
@@ -456,26 +489,26 @@ function fecharModalCategorias() {
 }
 
 // Array de categorias (carrega do localStorage ou começa vazio)
-// let categoriasModal = JSON.parse(localStorage.getItem('categoriasModal')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
+// let categorias = JSON.parse(localStorage.getItem('categorias')) || Array.from({length:12}, (_,i)=>({id:i+1,nome:"",tamanhos:[],generos:[]}));
 // Snapshot para comparação
-let categoriasModalSnapshot = JSON.stringify(categoriasModal);
+let categoriasSnapshot = JSON.stringify(categorias);
 
 // Evento de clique dos radios de categoria para atualizar tamanhos
 document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').forEach(radio => {
   radio.addEventListener('click', function(e) {
     const categoriaSelecionada = e.target.value;
-    // Busca a categoria no array cadastrado
-    const categoriaObj = categoriasModal.find(cat => cat.nome === categoriaSelecionada);
-    // Decide os tamanhos permitidos conforme cadastrado
+    const categoriaObj = categorias.find(cat => cat.nome === categoriaSelecionada);
+
     let tamanhosPermitidos = [];
-    if (categoriaObj && categoriaObj.tamanhos && categoriaObj.tamanhos.length > 0) {
-      tamanhosPermitidos = categoriaObj.tamanhos;
-    } else if (categoriaSelecionada === "SAPATO" || categoriaSelecionada === "MEIA") {
-      tamanhosPermitidos = tamanhosNumero;
-    } else {
-      tamanhosPermitidos = tamanhosLetra;
+    if (categoriaObj) {
+      if (categoriaObj.tipoTamanho === "N") {
+        tamanhosPermitidos = tamanhosNumero;
+      } else if (categoriaObj.tipoTamanho === "L") {
+        tamanhosPermitidos = tamanhosLetra;
+      } else {
+        tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
+      }
     }
-    // Atualiza o select de tamanhos
     const tamanhoSelect = document.getElementById('tamanho');
     tamanhoSelect.innerHTML = '<option value="" disabled selected hidden>Selecionar</option>';
     tamanhosPermitidos.forEach(tam => {
@@ -483,16 +516,17 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
     });
   });
 });
+// ...existing code...
 
-function renderizarCategoriasModal() {
+function renderizarCategorias() {
   const container = document.querySelector('.categorias-table');
   if (!container) return;
 
   // Remove todas as linhas exceto o header
   Array.from(container.querySelectorAll('.categorias-row')).forEach(row => row.remove());
 
-  categoriasModal.forEach((cat, idx) => {
-    const linhaValida = cat.nome && cat.nome.trim() && cat.tamanhos && cat.tamanhos.length && cat.generos && cat.generos.length;
+  categorias.forEach((cat, idx) => {
+    const linhaValida = cat.nome && cat.nome.trim() && cat.tipoTamanho && cat.tipoGenero;
     const novaLinha = document.createElement('div');
     novaLinha.className = 'categorias-row';
     novaLinha.innerHTML = `
@@ -504,29 +538,35 @@ function renderizarCategoriasModal() {
           <input type="text" class="categorias-input" id="tamanho_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idx+1})" style="color: #757575;">
           <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
           <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idx+1}" style="display:none;">
-            <label><input type="checkbox" class="tamanho-multi-check" value="TODOS" checked> Todos (Numéricos e Letras)</label>
-            <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS" checked> Letras (Único, PP-XXG)</label>
-            <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS" checked> Numéricos (36-56)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="T" checked> Todos (Numéricos e Letras)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="L" checked> Letras (Único, PP-XXG)</label>
+            <label><input type="checkbox" class="tamanho-multi-check" value="N" checked> Numéricos (36-56)</label>
           </div>
         </div>
-      </div>
-      <div class="categorias-col">
-        <div class="multiselect-genero">
-          <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
-          <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
-          <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
-            <label><input type="checkbox" class="genero-multi-check" value="TODOS" checked> Todos</label>
-            <label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>
-            <label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>
-            <label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>
+        </div>
+        <div class="categorias-col">
+          <div class="multiselect-genero">
+            <input type="text" class="categorias-input" id="genero_input_${idx+1}" value="Todos" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idx+1})" style="color: #757575;">
+            <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
+            <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idx+1}" style="display:none;">
+              <label><input type="checkbox" class="genero-multi-check" value="T" checked> Todos</label>
+              <label><input type="checkbox" class="genero-multi-check" value="F" checked> Feminino</label>
+              <label><input type="checkbox" class="genero-multi-check" value="M" checked> Masculino</label>
+              <label><input type="checkbox" class="genero-multi-check" value="U" checked> Unissex</label>
+            </div>
           </div>
         </div>
-      </div>
       <div class="categorias-col" style="display:flex; justify-content:center; align-items:flex-end;">
         ${linhaValida ? `<button type="button" class="remover" data-idx="${idx+1}" title="Remover"><i class="fa-solid fa-delete-left"></i></button>` : ''}
       </div>
     `;
     container.appendChild(novaLinha);
+
+    atualizarCheckboxesTamanho(idx + 1, cat.tipoTamanho);
+    atualizarCheckboxesGenero(idx + 1, cat.tipoGenero);
+    atualizarPlaceholderTamanhoMulti(idx + 1);
+    atualizarPlaceholderGeneroMulti(idx + 1);
+
   });
 
   atualizarEstadoScrollCategorias();
@@ -537,50 +577,89 @@ function renderizarCategoriasModal() {
   });
 
   // Listeners dinâmicos
-  categoriasModal.forEach((cat, idx) => {
-    // Tamanhos
-    document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`).forEach(cb => {
-      cb.addEventListener('change', function() {
-        const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`);
-        const todos = checks[0];
-        const letras = checks[1];
-        const nums = checks[2];
-        if (cb.value === "TODOS") {
-          checks.forEach(c => c.checked = todos.checked);
-        } else {
-          todos.checked = letras.checked && nums.checked;
-        }
-        atualizarPlaceholderTamanhoMulti(idx+1);
-        atualizarArrayTamanho(idx+1);
-      });
-    });
-    atualizarPlaceholderTamanhoMulti(idx+1);
+  // categorias.forEach((cat, idx) => {
+  //   // Tamanhos
+  //   document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`).forEach(cb => {
+  //     cb.addEventListener('change', function() {
+  //       const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx+1} .tamanho-multi-check`);
+  //       const todos = checks[0];
+  //       const letras = checks[1];
+  //       const nums = checks[2];
+  //       if (cb.value === "TODOS") {
+  //         checks.forEach(c => c.checked = todos.checked);
+  //       } else {
+  //         todos.checked = letras.checked && nums.checked;
+  //       }
+  //       atualizarPlaceholderTamanhoMulti(idx+1);
+  //       atualizarArrayTamanho(idx+1);
+  //     });
+  //   });
+  //   atualizarPlaceholderTamanhoMulti(idx+1);
 
-    // Gêneros
-    document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`).forEach(cb => {
-      cb.addEventListener('change', function() {
-        const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`);
-        const todos = checks[0];
-        const masc = checks[1];
-        const fem = checks[2];
-        const uni = checks[3];
-        if (cb.value === "TODOS") {
-          checks.forEach(c => c.checked = todos.checked);
-        } else {
-          todos.checked = masc.checked && fem.checked && uni.checked;
-        }
-        atualizarPlaceholderGeneroMulti(idx+1);
-        atualizarArrayGenero(idx+1);
-      });
-    });
-    atualizarPlaceholderGeneroMulti(idx+1);
-  });
+  //   // Gêneros
+  //   document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`).forEach(cb => {
+  //     cb.addEventListener('change', function() {
+  //       const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx+1} .genero-multi-check`);
+  //       const todos = checks[0];
+  //       const masc = checks[1];
+  //       const fem = checks[2];
+  //       const uni = checks[3];
+  //       if (cb.value === "TODOS") {
+  //         checks.forEach(c => c.checked = todos.checked);
+  //       } else {
+  //         todos.checked = masc.checked && fem.checked && uni.checked;
+  //       }
+  //       atualizarPlaceholderGeneroMulti(idx+1);
+  //       atualizarArrayGenero(idx+1);
+  //     });
+  //   });
+  //   atualizarPlaceholderGeneroMulti(idx+1);
+  // });
 
   atualizarBotaoCriar();
   preencherCamposCategorias();
   adicionarListenersRemoverCategorias();
   aplicarEstiloInputs();
 }
+
+
+document.querySelector('.categorias-table').addEventListener('change', function(e) {
+  // Tamanhos
+  if (e.target.classList.contains('tamanho-multi-check')) {
+    const idx = Number(e.target.closest('.checkboxes-tamanho-multi').id.split('-').pop());
+    const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+    const todos = checks[0];
+    const letras = checks[1];
+    const nums = checks[2];
+    if (e.target.value === "T") {
+      checks.forEach(cb => cb.checked = todos.checked);
+    } else {
+      todos.checked = letras.checked && nums.checked;
+    }
+    atualizarPlaceholderTamanhoMulti(idx);
+    atualizarArrayTamanho(idx);
+  }
+  // Gêneros
+  if (e.target.classList.contains('genero-multi-check')) {
+    const idx = Number(e.target.closest('.checkboxes-genero-multi').id.split('-').pop());
+    const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
+    const todos = checks[0];
+    const fem = checks[1];
+    const masc = checks[2];
+    const uni = checks[3];
+    if (e.target.value === "T") {
+      checks.forEach(cb => cb.checked = todos.checked);
+    } else {
+      // Lógica de combinação igual ao seu código
+      if (fem.checked && masc.checked) uni.checked = false;
+      if (fem.checked && uni.checked) masc.checked = false;
+      if (masc.checked && uni.checked) fem.checked = false;
+      todos.checked = fem.checked && masc.checked && uni.checked;
+    }
+    atualizarPlaceholderGeneroMulti(idx);
+    atualizarArrayGenero(idx);
+  }
+});
 
 // Validação de duplicidade para todos inputs de categoria
 document.querySelector('.categorias-table').addEventListener('blur', function(e) {
@@ -601,10 +680,10 @@ document.querySelector('.categorias-table').addEventListener('blur', function(e)
         didClose: () => input.focus()
       });
       input.value = '';
-      categoriasModal[idx].nome = '';
+      categorias[idx].nome = '';
       return;
     }
-    const nomes = categoriasModal.map((cat, i) => i !== idx ? (cat.nome || '').trim().toLowerCase() : null).filter(n => n);
+    const nomes = categorias.map((cat, i) => i !== idx ? (cat.nome || '').trim().toLowerCase() : null).filter(n => n);
     if (nomes.includes(nomeAtual)) {
       Swal.fire({
         icon: 'error',
@@ -617,7 +696,7 @@ document.querySelector('.categorias-table').addEventListener('blur', function(e)
         didClose: () => input.focus()
       });
       input.value = '';
-      categoriasModal[idx].nome = '';
+      categorias[idx].nome = '';
     }
   }
 }, true);
@@ -628,35 +707,44 @@ document.querySelector('[title="Gerenciar categorias"]').addEventListener('click
   e.preventDefault();
   document.getElementById('modal-categorias-bg').style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  categoriasModalSnapshot = JSON.stringify(categoriasModal);
-  renderizarCategoriasModal();
+  categoriasSnapshot = JSON.stringify(categorias);
+  renderizarCategorias();
 });
 
 
 // Atualiza checkboxes de tamanho
-function atualizarCheckboxesTamanho(idx, arr) {
-  const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
-  if (!checks.length) return;
-  if(arr.includes("TODOS")) {
-    checks.forEach(cb => cb.checked = true);
-  } else {
+function atualizarCheckboxesTamanho(idx, tipoTamanho) {
+    const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
     checks.forEach(cb => cb.checked = false);
-    if(arr.includes("LETRAS") && checks[1]) checks[1].checked = true;
-    if(arr.includes("NUMERICOS") && checks[2]) checks[2].checked = true;
-  }
+    if (tipoTamanho === "T") {
+        checks[0].checked = true;
+        checks[1].checked = true;
+        checks[2].checked = true;
+    } else if (tipoTamanho === "L") {
+        checks[1].checked = true;
+    } else if (tipoTamanho === "N") {
+        checks[2].checked = true;
+    }
 }
 
-// Atualiza checkboxes de genero
-function atualizarCheckboxesGenero(idx, arr) {
-  const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
-  if(arr.includes("TODOS")) {
-    checks.forEach(cb => cb.checked = true); // Marca todos
-  } else {
+function atualizarCheckboxesGenero(idx, tipoGenero) {
+    const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
     checks.forEach(cb => cb.checked = false);
-    if(arr.includes("MASCULINO")) checks[1].checked = true;
-    if(arr.includes("FEMININO")) checks[2].checked = true;
-    if(arr.includes("UNISSEX")) checks[3].checked = true;
-  }
+    if (tipoGenero === "T") {
+        checks[0].checked = true;
+        checks[1].checked = true;
+        checks[2].checked = true;
+        checks[3].checked = true;
+    } else if (tipoGenero === "FM") {
+        checks[1].checked = true;
+        checks[2].checked = true;
+    } else if (tipoGenero === "F") {
+        checks[1].checked = true;
+    } else if (tipoGenero === "M") {
+        checks[2].checked = true;
+    } else if (tipoGenero === "U") {
+        checks[3].checked = true;
+    }
 }
 
 // Multiselect Tamanhos
@@ -720,30 +808,24 @@ function atualizarPlaceholderTamanhoMulti(idx) {
 
 
 function atualizarArrayTamanho(idx) {
-  const div = document.getElementById('checkboxes-tamanho-multi-' + idx);
-  if (!div) return;
-  const checks = div.querySelectorAll('.tamanho-multi-check');
-  const todos = checks[0];
-  const letras = checks[1];
-  const nums = checks[2];
-  categoriasModal[idx-1].tamanhos = [];
-  if (todos && todos.checked) categoriasModal[idx-1].tamanhos = ["TODOS"];
-  else {
-    if (letras && letras.checked) categoriasModal[idx-1].tamanhos.push("LETRAS");
-    if (nums && nums.checked) categoriasModal[idx-1].tamanhos.push("NUMERICOS");
-  }
+  const checks = document.querySelectorAll(`#checkboxes-tamanho-multi-${idx} .tamanho-multi-check`);
+  if (checks[0].checked) categorias[idx-1].tipoTamanho = "T";
+  else if (checks[1].checked && checks[2].checked) categorias[idx-1].tipoTamanho = "T";
+  else if (checks[1].checked) categorias[idx-1].tipoTamanho = "L";
+  else if (checks[2].checked) categorias[idx-1].tipoTamanho = "N";
+  else categorias[idx-1].tipoTamanho = "";
 }
 
+
 // Multiselect Genero
-function abrirGeneroMulti(idx) {
-  const menu = document.getElementById('checkboxes-genero-multi-' + idx);
-  const input = document.getElementById('genero_input_' + idx);
-  if (!menu || !input) return;
-  if (menu.style.display === 'block' && menu.dataset.floating === '1') {
-    unfloatMenu(menu);
-  } else {
-    floatMenu(menu, input);
-  }
+function atualizarArrayGenero(idx) {
+  const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
+  if (checks[0].checked) categorias[idx-1].tipoGenero = "T";
+  else if (checks[1].checked && checks[2].checked) categorias[idx-1].tipoGenero = "FM";
+  else if (checks[1].checked) categorias[idx-1].tipoGenero = "F";
+  else if (checks[2].checked) categorias[idx-1].tipoGenero = "M";
+  else if (checks[3].checked) categorias[idx-1].tipoGenero = "U";
+  else categorias[idx-1].tipoGenero = "";
 }
 
 document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) => {
@@ -751,13 +833,29 @@ document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) =
     if (e.target.classList.contains('genero-multi-check')) {
       const checks = container.querySelectorAll('.genero-multi-check');
       const todos = checks[0];
-      const masc = checks[1];
-      const fem = checks[2];
+      const fem = checks[1];
+      const masc = checks[2];
       const uni = checks[3];
-      if (e.target.value === "TODOS") {
+
+      // Se "Todos" marcado, marca tudo
+      if (e.target.value === "T") {
         checks.forEach(cb => cb.checked = todos.checked);
       } else {
-        todos.checked = masc.checked && fem.checked && uni.checked;
+        // Garante combinações válidas
+        // Se F e M marcados, desmarca U
+        if (fem.checked && masc.checked) {
+          uni.checked = false;
+        }
+        // Se F e U marcados, desmarca M
+        if (fem.checked && uni.checked) {
+          masc.checked = false;
+        }
+        // Se M e U marcados, desmarca F
+        if (masc.checked && uni.checked) {
+          fem.checked = false;
+        }
+        // Se todos marcados, marca "Todos"
+        todos.checked = fem.checked && masc.checked && uni.checked;
       }
       atualizarPlaceholderGeneroMulti(idx + 1);
       atualizarArrayGenero(idx + 1);
@@ -778,8 +876,8 @@ function atualizarPlaceholderGeneroMulti(idx) {
     texto = 'Todos';
     color = '#000';
   } else {
-    if (checks[1] && checks[1].checked) arr.push('Masculino');
-    if (checks[2] && checks[2].checked) arr.push('Feminino');
+    if (checks[1] && checks[1].checked) arr.push('Feminino');
+    if (checks[2] && checks[2].checked) arr.push('Masculino');
     if (checks[3] && checks[3].checked) arr.push('Unissex');
     texto = arr.length ? arr.join(', ') : 'Selecionar';
     color = arr.length ? '#000' : '#757575';
@@ -792,21 +890,15 @@ function atualizarPlaceholderGeneroMulti(idx) {
 
 
 function atualizarArrayGenero(idx) {
-  const div = document.getElementById('checkboxes-genero-multi-' + idx);
-  if (!div) return;
-  const checks = div.querySelectorAll('.genero-multi-check');
-  if (!checks.length) return;
-  categoriasModal[idx-1].generos = [];
-  if (checks[0] && checks[0].checked) categoriasModal[idx-1].generos = ["TODOS"];
-  else {
-    if (checks[1] && checks[1].checked) categoriasModal[idx-1].generos.push("MASCULINO");
-    if (checks[2] && checks[2].checked) categoriasModal[idx-1].generos.push("FEMININO");
-    if (checks[3] && checks[3].checked) categoriasModal[idx-1].generos.push("UNISSEX");
-  }
+  const checks = document.querySelectorAll(`#checkboxes-genero-multi-${idx} .genero-multi-check`);
+  if (checks[0].checked) categorias[idx-1].tipoGenero = "T";
+  else if (checks[1].checked && checks[2].checked) categorias[idx-1].tipoGenero = "FM";
+  else if (checks[1].checked) categorias[idx-1].tipoGenero = "F";
+  else if (checks[2].checked) categorias[idx-1].tipoGenero = "M";
+  else if (checks[3].checked) categorias[idx-1].tipoGenero = "U";
+  else categorias[idx-1].tipoGenero = "";
 }
 
-// Fecha popups ao clicar fora
-/* novo handler: fecha dropdowns "flutuantes" sem apagar estilos residuais */
 document.addEventListener('mousedown', function(e) {
   // checkboxes de tamanho
   document.querySelectorAll('.checkboxes-tamanho-multi').forEach(div => {
@@ -846,11 +938,11 @@ document.addEventListener('mousedown', function(e) {
 //             showConfirmButton: false
 //         });
 //         input.value = '';
-//         categoriasModal[idx].nome = '';
+//         categorias[idx].nome = '';
 //         input.focus();
 //         return;
 //     }
-//     const nomes = categoriasModal.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
+//     const nomes = categorias.map((cat, i) => i !== idx ? cat.nome.trim().toLowerCase() : null).filter(n => n);
 //     if (nomes.includes(nomeAtual)) {
 //       Swal.fire({
 //         icon: 'error',
@@ -863,7 +955,7 @@ document.addEventListener('mousedown', function(e) {
 //         didClose: () => input.focus()
 //       });
 //       input.value = '';
-//       categoriasModal[idx].nome = '';
+//       categorias[idx].nome = '';
 //       input.focus();
 //     }
 //   }
@@ -873,10 +965,10 @@ document.addEventListener('mousedown', function(e) {
 // Validação dos campos obrigatórios
 function validarCategoriasObrigatorias() {
   let ok = true;
-  for(let i=0;i<categoriasModal.length;i++) {
-    const cat = categoriasModal[i];
-    if(cat.nome.trim() && cat.tamanhos.length && cat.generos.length) continue;
-    if(cat.nome.trim() || cat.tamanhos.length || cat.generos.length) {
+  for(let i=0;i<categorias.length;i++) {
+    const cat = categorias[i];
+    if(cat.nome.trim() && cat.tipoTamanho && cat.tipoGenero) continue;
+    if(cat.nome.trim() || cat.tipoTamanho || cat.tipoGenero) {
       ok = false;
       break;
     }
@@ -885,7 +977,7 @@ function validarCategoriasObrigatorias() {
 }
 
 function validarCategoriasDuplicadas() {
-  const nomes = categoriasModal
+  const nomes = categorias
     .map(cat => (cat.nome || '').trim().toUpperCase())
     .filter(nome => nome !== '');
   const nomesSet = new Set();
@@ -900,19 +992,33 @@ function validarCategoriasDuplicadas() {
 document.getElementById('form-categorias').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // 1) sincroniza DOM -> array
-  for (let i = 1; i <= categoriasModal.length; i++) {
-    atualizarArrayTamanho(i);
-    atualizarArrayGenero(i);
-    const el = document.getElementById('categoria_' + i);
-    categoriasModal[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categoriasModal[i - 1].nome || '');
+  for (let i = 1; i <= categorias.length; i++) {
+      const el = document.getElementById('categoria_' + i);
+      categorias[i - 1].nome = el ? (el.value || '').slice(0, 10) : (categorias[i - 1].nome || '');
+  
+      // Tamanho
+      const tamanhoChecks = document.querySelectorAll(`#checkboxes-tamanho-multi-${i} .tamanho-multi-check`);
+      if (tamanhoChecks[0].checked) categorias[i - 1].tipoTamanho = "T";
+      else if (tamanhoChecks[1].checked && tamanhoChecks[2].checked) categorias[i - 1].tipoTamanho = "T";
+      else if (tamanhoChecks[1].checked) categorias[i - 1].tipoTamanho = "L";
+      else if (tamanhoChecks[2].checked) categorias[i - 1].tipoTamanho = "N";
+      else categorias[i - 1].tipoTamanho = "";
+  
+      // Genero
+      const generoChecks = document.querySelectorAll(`#checkboxes-genero-multi-${i} .genero-multi-check`);
+      if (generoChecks[0].checked) categorias[i - 1].tipoGenero = "T";
+      else if (generoChecks[1].checked && generoChecks[2].checked) categorias[i - 1].tipoGenero = "FM";
+      else if (generoChecks[1].checked) categorias[i - 1].tipoGenero = "F";
+      else if (generoChecks[2].checked) categorias[i - 1].tipoGenero = "M";
+      else if (generoChecks[3].checked) categorias[i - 1].tipoGenero = "U";
+      else categorias[i - 1].tipoGenero = "";
   }
 
-  // 2) remove linhas TRAILING sem NOME (garante que linha "criada" e vazia suma)
-  while (categoriasModal.length > 0) {
-    const last = categoriasModal[categoriasModal.length - 1];
+  // 2) remove linhas sem NOME
+  while (categorias.length > 0) {
+    const last = categorias[categorias.length - 1];
     const nomeVazio = !last.nome || !last.nome.toString().trim();
-    if (nomeVazio) categoriasModal.pop();
+    if (nomeVazio) categorias.pop();
     else break;
   }
 
@@ -943,7 +1049,7 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
   }
 
   // 5) sem alterações → fecha
-  if (JSON.stringify(categoriasModal) === categoriasModalSnapshot) {
+  if (JSON.stringify(categorias) === categoriasSnapshot) {
     Swal.fire({
       icon: 'info',
       title: 'Sem alterações',
@@ -969,18 +1075,38 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
     allowOutsideClick: false,
   }).then((result) => {
     if (result.isConfirmed) {
-      localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
-      categoriasModalSnapshot = JSON.stringify(categoriasModal);
-      Swal.fire({
-        icon: 'success',
-        title: 'Categorias salvas!',
-        timer: 1500,
-        timerProgressBar: true,
-        allowOutsideClick: false,
-        showConfirmButton: false
+      fetch('/categorias/salvar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categorias)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Erro ao salvar categorias');
+        return res.json().catch(() => ({}));
+      })
+      .then(() => {
+        // categoriasSnapshot = JSON.stringify(categorias);
+        Swal.fire({
+          icon: 'success',
+          title: 'Categorias salvas!',
+          timer: 1500,
+          timerProgressBar: true,
+          allowOutsideClick: false,
+          showConfirmButton: false
+        });
+        document.getElementById('modal-categorias-bg').style.display = 'none';
+        document.body.style.overflow = '';
+        carregarCategorias();
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao salvar!',
+          text: 'Tente novamente.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       });
-      document.getElementById('modal-categorias-bg').style.display = 'none';
-      document.body.style.overflow = '';
     }
   });
 });
@@ -990,7 +1116,7 @@ function adicionarListenersRemoverCategorias() {
   document.querySelectorAll('.remover').forEach((btn, idx) => {
     btn.onclick = function(e) {
       e.preventDefault();
-      const preenchidas = categoriasModal.filter(cat => cat.nome.trim());
+      const preenchidas = categorias.filter(cat => cat.nome.trim());
       if (preenchidas.length <= 1) {
         Swal.fire({
           icon: 'warning',
@@ -1017,10 +1143,14 @@ function adicionarListenersRemoverCategorias() {
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          categoriasModal.splice(idx, 1);
-          localStorage.setItem('categoriasModal', JSON.stringify(categoriasModal));
-          categoriasModalSnapshot = JSON.stringify(categoriasModal);
-          renderizarCategoriasModal();
+          categorias.splice(idx, 1);
+          fetch('/categorias/salvar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(categorias)
+          })
+          categoriasSnapshot = JSON.stringify(categorias);
+          renderizarCategorias();
         }
       });
     };
@@ -1028,14 +1158,14 @@ function adicionarListenersRemoverCategorias() {
 }
 
 function preencherCamposCategorias() {
-  for (let i = 1; i <= categoriasModal.length; i++) {
+  for (let i = 1; i <= categorias.length; i++) {
     const nomeInput = document.getElementById('categoria_' + i);
     // prepara valores no array se ausentes
-    if (!categoriasModal[i - 1]) categoriasModal[i - 1] = { id: i, nome: '', tamanhos: [], generos: [] };
+    if (!categorias[i - 1]) categorias[i - 1] = { id: i, nome: '', tipoTamanho: '', tipoGenero: '' };
 
     if (nomeInput) {
       // valor e restrições
-      nomeInput.value = categoriasModal[i - 1].nome || "";
+      nomeInput.value = categorias[i - 1].nome || "";
       nomeInput.maxLength = 10;
       nomeInput.placeholder = "Digite o nome";
 
@@ -1043,10 +1173,11 @@ function preencherCamposCategorias() {
       if (nomeInput._handler) nomeInput.removeEventListener('input', nomeInput._handler);
 
       // aplica cor/estilo conforme validade da linha
-      const nomeValido = categoriasModal[i - 1].nome && categoriasModal[i - 1].nome.toString().trim() !== '';
-      const algumTamanho = categoriasModal[i - 1].tamanhos && categoriasModal[i - 1].tamanhos.length > 0;
-      const algumGenero = categoriasModal[i - 1].generos && categoriasModal[i - 1].generos.length > 0;
+      const nomeValido = categorias[i - 1].nome && categorias[i - 1].nome.toString().trim() !== '';
+      const algumTamanho = !!categorias[i - 1].tipoTamanho;
+      const algumGenero = !!categorias[i - 1].tipoGenero;
       const linhaValida = nomeValido && algumTamanho && algumGenero;
+
       const corRgb = (typeof coresCategorias !== 'undefined' && coresCategorias[i - 1]) ? coresCategorias[i - 1] : "204,204,204";
 
       nomeInput.style.backgroundColor = linhaValida ? `rgb(${corRgb})` : `rgba(${corRgb},0.5)`;
@@ -1056,17 +1187,15 @@ function preencherCamposCategorias() {
 
       // handler atualiza array e reaplica estilos
       nomeInput._handler = function () {
-        categoriasModal[i - 1].nome = nomeInput.value.slice(0, 10);
+        categorias[i - 1].nome = nomeInput.value.slice(0, 10);
         preencherCamposCategorias();
       };
       nomeInput.addEventListener('input', nomeInput._handler);
     }
 
     // atualiza checkboxes / placeholders mesmo se inputs não existirem
-    atualizarCheckboxesTamanho(i, categoriasModal[i - 1].tamanhos || []);
-    atualizarCheckboxesGenero(i, categoriasModal[i - 1].generos || []);
-    atualizarPlaceholderTamanhoMulti(i);
-    atualizarPlaceholderGeneroMulti(i);
+    atualizarCheckboxesTamanho(i, categorias[i - 1].tipoTamanho);
+    atualizarCheckboxesGenero(i, categorias[i - 1].tipoGenero);
   }
 
   // reaplica listeners de remover e estilos dinâmicos que dependem do DOM
@@ -1150,54 +1279,52 @@ function aplicarEstiloInputs() {
 
 
 // Função para preencher radios do multiselect categoria
-function preencherRadiosCategoria() {
-  const radiosDiv = document.getElementById('radios-categoria-multi');
-  if (!radiosDiv) return;
-  radiosDiv.innerHTML = '';
-  categorias.forEach((cat, idx) => {
-    const label = document.createElement('label');
-    label.setAttribute('for', `categoria_radio_${cat.id}`);
-    label.textContent = cat.nome;
-    const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = 'categoria_radio';
-    radio.id = `categoria_radio_${cat.id}`;
-    radio.value = cat.nome;
-    label.appendChild(radio);
-    radiosDiv.appendChild(label);
-  });
-}
+// function preencherRadiosCategoria() {
+//   const radiosDiv = document.getElementById('radios-categoria-multi');
+//   if (!radiosDiv) return;
+//   radiosDiv.innerHTML = '';
+//   categorias.forEach((cat, idx) => {
+//     const label = document.createElement('label');
+//     label.setAttribute('for', `categoria_radio_${cat.id}`);
+//     label.textContent = cat.nome;
+//     const radio = document.createElement('input');
+//     radio.type = 'radio';
+//     radio.name = 'categoria_radio';
+//     radio.id = `categoria_radio_${cat.id}`;
+//     radio.value = cat.nome;
+//     label.appendChild(radio);
+//     radiosDiv.appendChild(label);
+//   });
+// }
 
 // função ao carregar
 document.addEventListener('DOMContentLoaded', preencherRadiosCategoria);
 
 // Array de categorias provisório
-const categorias = [
-  { id: 1, nome: "Camisa", tipoTamanho: 1, tipoGenero: "T" },
-  { id: 2, nome: "Camiseta", tipoTamanho: 1, tipoGenero: "T" },
-  { id: 3, nome: "Calça", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 4, nome: "Bermuda", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 5, nome: "Vestido", tipoTamanho: 1, tipoGenero: "F" },
-  { id: 6, nome: "Sapato", tipoTamanho: 2, tipoGenero: "T" },
-  { id: 7, nome: "Meia", tipoTamanho: 2, tipoGenero: "T" }
-];
+// const categorias = [
+//   { id: 1, nome: "Camisa", tipoTamanho: 1, tipoGenero: "T" },
+//   { id: 2, nome: "Camiseta", tipoTamanho: 1, tipoGenero: "T" },
+//   { id: 3, nome: "Calça", tipoTamanho: 2, tipoGenero: "T" },
+//   { id: 4, nome: "Bermuda", tipoTamanho: 2, tipoGenero: "T" },
+//   { id: 5, nome: "Vestido", tipoTamanho: 1, tipoGenero: "F" },
+//   { id: 6, nome: "Sapato", tipoTamanho: 2, tipoGenero: "T" },
+//   { id: 7, nome: "Meia", tipoTamanho: 2, tipoGenero: "T" }
+// ];
 
 const categoriaInput = document.getElementById('categoria-multi');
 const radiosDiv = document.getElementById('radios-categoria-multi');
 const chevron = document.querySelector('.chevron-categoria');
 
 function preencherRadiosCategoria() {
-  const radiosDiv = document.getElementById('radios-categoria-multi');
-  if (!radiosDiv) return;
-  radiosDiv.innerHTML = '';
-  categoriasModal.forEach((cat, idx) => {
-    if (cat.nome && cat.nome.trim()) {
-      const label = document.createElement('label');
-      label.className = 'categoria-multi-label';
-      label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome}" style="display:none;">${cat.nome}`;
-      radiosDiv.appendChild(label);
-    }
-  });
+    const radiosDiv = document.getElementById('radios-categoria-multi');
+    if (!radiosDiv) return;
+    radiosDiv.innerHTML = '';
+    categorias.forEach(cat => {
+        const label = document.createElement('label');
+        label.className = 'categoria-multi-label';
+        label.innerHTML = `<input type="radio" name="categoria-radio" value="${cat.nome}" style="display:none;">${cat.nome}`;
+        radiosDiv.appendChild(label);
+    });
 }
 preencherRadiosCategoria();
 
@@ -1263,86 +1390,100 @@ document.addEventListener('mousedown', function(e) {
 
 // Função para atualizar tamanhos e gêneros customizados
 function atualizarTamanhosEGenerosPorCategoria(categoriaNome) {
-  const categoriaObj = categoriasModal.find(cat => cat.nome === categoriaNome);
+    const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
 
-  // Tamanhos
-  const tamanhoInput = document.getElementById('tamanho-multi');
-  const radiosTamanhoDiv = document.getElementById('radios-tamanho-multi');
-  radiosTamanhoDiv.innerHTML = '';
-  tamanhoInput.value = '';
-  tamanhoInput.style.color = '#757575';
-  tamanhoInput.disabled = !categoriaObj;
+    // Tamanhos
+    const tamanhoInput = document.getElementById('tamanho-multi');
+    const radiosTamanhoDiv = document.getElementById('radios-tamanho-multi');
+    radiosTamanhoDiv.innerHTML = '';
+    tamanhoInput.value = '';
+    tamanhoInput.style.color = '#757575';
+    tamanhoInput.disabled = !categoriaObj;
 
-  let tamanhosPermitidos = [];
-  if (categoriaObj && categoriaObj.tamanhos && categoriaObj.tamanhos.length > 0) {
-    if (categoriaObj.tamanhos.includes("TODOS")) {
-      tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
-    } else {
-      if (categoriaObj.tamanhos.includes("LETRAS")) tamanhosPermitidos = tamanhosPermitidos.concat(tamanhosLetra);
-      if (categoriaObj.tamanhos.includes("NUMERICOS")) tamanhosPermitidos = tamanhosPermitidos.concat(tamanhosNumero);
+    let tamanhosPermitidos = [];
+    if (categoriaObj) {
+        switch (categoriaObj.tipoTamanho) {
+            case "L":
+                tamanhosPermitidos = tamanhosLetra;
+                break;
+            case "N":
+                tamanhosPermitidos = tamanhosNumero;
+                break;
+            case "T":
+                tamanhosPermitidos = [...tamanhosLetra, ...tamanhosNumero];
+                break;
+            default:
+                tamanhosPermitidos = [];
+        }
     }
-  }
-  tamanhosPermitidos.forEach(tam => {
-    const label = document.createElement('label');
-    label.className = 'tamanho-multi-label';
-    label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
-    radiosTamanhoDiv.appendChild(label);
-  });
-  if (tamanhosPermitidos.length === 1) {
-    tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
-    tamanhoInput.style.color = '#000';
-    tamanhoInput.dataset.value = tamanhosPermitidos[0];
-    radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
-  }
-
-  radiosTamanhoDiv.addEventListener('click', function(e) {
-    const radio = e.target.closest('input[type="radio"]');
-    if (radio) {
-      tamanhoInput.value = formatarTamanhoVisual(radio.value);
-      tamanhoInput.style.color = '#000';
-      tamanhoInput.dataset.value = radio.value;
-      radiosTamanhoDiv.style.display = 'none';
+    tamanhosPermitidos.forEach(tam => {
+        const label = document.createElement('label');
+        label.className = 'tamanho-multi-label';
+        label.innerHTML = `<input type="radio" name="tamanho-radio" value="${tam}">${formatarTamanhoVisual(tam)}`;
+        radiosTamanhoDiv.appendChild(label);
+    });
+    if (tamanhosPermitidos.length === 1) {
+        tamanhoInput.value = formatarTamanhoVisual(tamanhosPermitidos[0]);
+        tamanhoInput.style.color = '#000';
+        tamanhoInput.dataset.value = tamanhosPermitidos[0];
+        radiosTamanhoDiv.querySelector('input[type="radio"]').checked = true;
     }
-  });
 
-  // Gêneros
-  const generoInput = document.getElementById('genero-multi');
-  const radiosGeneroDiv = document.getElementById('radios-genero-multi');
-  radiosGeneroDiv.innerHTML = '';
-  generoInput.value = '';
-  generoInput.style.color = '#757575';
-  generoInput.disabled = !categoriaObj;
+    radiosTamanhoDiv.addEventListener('click', function(e) {
+        const radio = e.target.closest('input[type="radio"]');
+        if (radio) {
+            tamanhoInput.value = formatarTamanhoVisual(radio.value);
+            tamanhoInput.style.color = '#000';
+            tamanhoInput.dataset.value = radio.value;
+            radiosTamanhoDiv.style.display = 'none';
+        }
+    });
 
-  let generosPermitidos = [];
-  if (categoriaObj && categoriaObj.generos && categoriaObj.generos.length > 0) {
-    if (categoriaObj.generos.includes("TODOS")) {
-      generosPermitidos = generosEnum.slice();
-    } else {
-      generosPermitidos = generosEnum.filter(g => categoriaObj.generos.includes(g));
+    // Gêneros
+    const generoInput = document.getElementById('genero-multi');
+    const radiosGeneroDiv = document.getElementById('radios-genero-multi');
+    radiosGeneroDiv.innerHTML = '';
+    generoInput.value = '';
+    generoInput.style.color = '#757575';
+    generoInput.disabled = !categoriaObj;
+
+    let generosPermitidos = [];
+    if (categoriaObj) {
+        if (categoriaObj.tipoGenero === "T") {
+            generosPermitidos = ["F", "M", "U"];
+        } else if (categoriaObj.tipoGenero === "FM") {
+            generosPermitidos = ["F", "M"];
+        } else if (categoriaObj.tipoGenero === "F") {
+            generosPermitidos = ["F"];
+        } else if (categoriaObj.tipoGenero === "M") {
+            generosPermitidos = ["M"];
+        } else if (categoriaObj.tipoGenero === "U") {
+            generosPermitidos = ["U"];
+        }
     }
-  }
-  generosPermitidos.forEach(gen => {
-    const label = document.createElement('label');
-    label.className = 'genero-multi-label';
-    label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
-    radiosGeneroDiv.appendChild(label);
-  });
-  if (generosPermitidos.length === 1) {
-    generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
-    generoInput.style.color = '#000';
-    generoInput.dataset.value = generosPermitidos[0];
-    radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
-  }
 
-  radiosGeneroDiv.addEventListener('click', function(e) {
-    const radio = e.target.closest('input[type="radio"]');
-    if (radio) {
-      generoInput.value = formatarGeneroVisual(radio.value);
-      generoInput.style.color = '#000';
-      generoInput.dataset.value = radio.value; 
-      radiosGeneroDiv.style.display = 'none';
+    generosPermitidos.forEach(gen => {
+        const label = document.createElement('label');
+        label.className = 'genero-multi-label';
+        label.innerHTML = `<input type="radio" name="genero-radio" value="${gen}">${formatarGeneroVisual(gen)}`;
+        radiosGeneroDiv.appendChild(label);
+    });
+    if (generosPermitidos.length === 1) {
+        generoInput.value = formatarGeneroVisual(generosPermitidos[0]);
+        generoInput.style.color = '#000';
+        generoInput.dataset.value = generosPermitidos[0];
+        radiosGeneroDiv.querySelector('input[type="radio"]').checked = true;
     }
-  });
+
+    radiosGeneroDiv.addEventListener('click', function(e) {
+        const radio = e.target.closest('input[type="radio"]');
+        if (radio) {
+            generoInput.value = formatarGeneroVisual(radio.value);
+            generoInput.style.color = '#000';
+            generoInput.dataset.value = radio.value; 
+            radiosGeneroDiv.style.display = 'none';
+        }
+    });
 }
 
 // Chame ao selecionar categoria
@@ -1393,9 +1534,7 @@ document.getElementById('btn-criar-categoria').onclick = function() {
     }
   }
 
-  //IDS temporarios
-  const novoId = categoriasModal.length > 0 ? Math.max(...categoriasModal.map(c => c.id || 0)) + 1 : 1;
-  categoriasModal.push({id: novoId, nome:"", tamanhos:[], generos:[]});
+  categorias.push({nome:"", tipoTamanho:"", tipoGenero:""});
 
   const idxNovo = contarCategorias() + 1;
   const novaLinha = document.createElement('div');
@@ -1409,9 +1548,9 @@ document.getElementById('btn-criar-categoria').onclick = function() {
         <input type="text" class="categorias-input" id="tamanho_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirTamanhoMulti(${idxNovo})" style="color: #757575;">
         <span class="chevron-tamanho"><i class="fa fa-chevron-down"></i></span>
         <div class="checkboxes-tamanho-multi" id="checkboxes-tamanho-multi-${idxNovo}" style="display:none;">
-          <label><input type="checkbox" class="tamanho-multi-check" value="TODOS"> Todos (Numéricos e Letras)</label>
-          <label><input type="checkbox" class="tamanho-multi-check" value="LETRAS"> Letras (Único, PP-XXG)</label>
-          <label><input type="checkbox" class="tamanho-multi-check" value="NUMERICOS"> Numéricos (36-56)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="T"> Todos (Numéricos e Letras)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="L"> Letras (Único, PP-XXG)</label>
+          <label><input type="checkbox" class="tamanho-multi-check" value="N"> Numéricos (36-56)</label>
         </div>
       </div>
     </div>
@@ -1420,10 +1559,10 @@ document.getElementById('btn-criar-categoria').onclick = function() {
         <input type="text" class="categorias-input" id="genero_input_${idxNovo}" value="" placeholder="Selecionar" readonly onclick="abrirGeneroMulti(${idxNovo})" style="color: #757575;">
         <span class="chevron-genero"><i class="fa fa-chevron-down"></i></span>
         <div class="checkboxes-genero-multi" id="checkboxes-genero-multi-${idxNovo}" style="display:none;">
-          <label><input type="checkbox" class="genero-multi-check" value="TODOS"> Todos</label>
-          <label><input type="checkbox" class="genero-multi-check" value="MASCULINO"> Masculino</label>
-          <label><input type="checkbox" class="genero-multi-check" value="FEMININO"> Feminino</label>
-          <label><input type="checkbox" class="genero-multi-check" value="UNISSEX"> Unissex</label>
+          <label><input type="checkbox" class="genero-multi-check" value="T"> Todos</label>
+          <label><input type="checkbox" class="genero-multi-check" value="F"> Feminino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="M"> Masculino</label>
+          <label><input type="checkbox" class="genero-multi-check" value="U"> Unissex</label>
         </div>
       </div>
     </div>
@@ -1657,3 +1796,42 @@ function atualizarEstadoScrollCategorias() {
     if (btnSalvar) btnSalvar.style.marginRight = '30px';
   }
 }
+
+// function converterCategoriaFrontend(cat) {
+//   // Se já vier arrays, só retorna
+//   if (Array.isArray(cat.tamanhos) && Array.isArray(cat.generos)) {
+//     return {
+//       id: cat.id,
+//       nome: cat.nome,
+//       tamanhos: cat.tamanhos,
+//       generos: cat.generos
+//     };
+//   }
+
+//   let tamanhos = [];
+//   if (cat.tipoTamanho === 'T') tamanhos = ['T'];
+//   else if (cat.tipoTamanho === 'L') tamanhos = ['L'];
+//   else if (cat.tipoTamanho === 'N') tamanhos = ['N'];
+
+//   let generos = [];
+//   if (cat.tipoGenero === 'T') generos = ['T'];
+//   else if (cat.tipoGenero === 'FM') generos = ['F', 'M'];
+//   else if (cat.tipoGenero) generos = cat.tipoGenero.split('');
+//   else generos = [];
+
+//   return {
+//     id: cat.id,
+//     nome: cat.nome,
+//     tamanhos,
+//     generos
+//   };
+// }
+// categorias = data.map(converterCategoriaFrontend);
+
+// Ao abrir o modal
+document.querySelector('[title="Gerenciar categorias"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('modal-categorias-bg').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    carregarCategorias();
+});
