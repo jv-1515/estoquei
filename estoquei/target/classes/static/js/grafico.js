@@ -1,37 +1,28 @@
-window.atualizarDetalhesEstoque = function(produtos) {
+window.atualizarDetalhesEstoque = async function(produtos) {
+    const categoriasBackend = await fetch('/categorias').then(res => res.json());
 
-    // 2. Gráfico de categoria
-    function getCategoriasDoBackend() {
-        return fetch('/categorias')
-            .then(res => res.json())
-            .then(arr => arr.map(cat => ({ nome: cat.nome })));
-    }
+    const nomesCategorias = categoriasBackend.map(cat => cat.nome);
 
-    const categoriasLS = getCategoriasDoBackend();
-    const dados = categoriasLS.map(cat =>
-        produtos.filter(p => (p.categoria || '').toUpperCase() === cat.nome.toUpperCase()).length
+    const dados = nomesCategorias.map(nome =>
+        produtos.filter(p => (p.categoria || '').toUpperCase() === nome.toUpperCase()).length
     );
+
     const coresCategorias = [
         "#1e94a3", "#277580", "#bfa100", "#c0392b", "#e67e22", "#8e44ad", "#16a085",
         "#3f6ab3", "#3b458a", "#be9454", "#f26d8d", "#ff9856", "#3498db", "#2ecc71",
         "#f1c40f", "#9b59b6", "#34495e", "#46adb4", "#e74c3c", "#2da6c4"
     ];
-    
-    // Ao criar categoria:
-    const cores = categoriasLS.map((cat, i) => coresCategorias[i % coresCategorias.length]);
-    const nomes = categoriasLS.map(cat => cat.nome);
+    const cores = nomesCategorias.map((cat, i) => coresCategorias[i % coresCategorias.length]);
 
-    // Gráfico Rosca
+    // 4. Gráfico Rosca
     if (window.graficoCategoria) window.graficoCategoria.destroy();
     const ctx = document.getElementById('grafico-categoria').getContext('2d');
-
-    // Exemplo para gráfico de categorias:
     const todosZero = dados.every(v => v === 0);
 
     window.graficoCategoria = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: todosZero ? ['Sem dados'] : nomes,
+            labels: todosZero ? ['Sem dados'] : nomesCategorias,
             datasets: [{
                 data: todosZero ? [1] : dados,
                 backgroundColor: todosZero ? ['#cccccc'] : cores,
@@ -47,12 +38,11 @@ window.atualizarDetalhesEstoque = function(produtos) {
         }
     });
 
-    // Lista de categorias ao lado
+    // 5. Lista de categorias ao lado
     const lista = document.getElementById('lista-categorias');
     lista.innerHTML = '';
-    categoriasLS.forEach((cat, i) => {
+    nomesCategorias.forEach((nome, i) => {
         const valor = dados[i];
-        const nome = cat.nome;
         const cor = coresCategorias[i % coresCategorias.length];
         const li = document.createElement('li');
         li.style.display = 'flex';
