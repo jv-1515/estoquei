@@ -28,14 +28,15 @@ public class ProdutoService {
     }
 
     public Produto salvar(Produto produto, MultipartFile foto) throws IOException {
-        if (produto.getCategoria() != null && produto.getCategoria().getNome() != null) {
-            String nomeCategoria = produto.getCategoria().getNome();
-            Categoria categoria = categoriaRepository.findByNome(nomeCategoria);
+        if (produto.getCategoria() != null && produto.getCategoriaObj() == null) {
+            Categoria categoria = categoriaRepository.findByNome(produto.getCategoria());
             if (categoria == null) {
-                throw new RuntimeException("Categoria não encontrada: " + nomeCategoria);
+                throw new RuntimeException("Categoria não encontrada: " + produto.getCategoria());
             }
-            produto.setCategoria(categoria);
-            produto.setCategoriaNome(categoria.getNome());
+            produto.setCategoriaObj(categoria);
+            produto.setCategoria(categoria.getNome());
+        } else if (produto.getCategoriaObj() != null) {
+            produto.setCategoria(produto.getCategoriaObj().getNome());
         } else {
             throw new RuntimeException("Categoria não informada!");
         }
@@ -90,10 +91,11 @@ public class ProdutoService {
             if (novoProduto.getCodigo() != null && !novoProduto.getCodigo().isEmpty())
                 p.setCodigo(novoProduto.getCodigo());
 
-            if (novoProduto.getCategoria() != null && novoProduto.getCategoria().getNome() != null) {
-                Categoria categoria = categoriaRepository.findByNome(novoProduto.getCategoria().getNome());
+            if (novoProduto.getCategoria() != null && !novoProduto.getCategoria().isEmpty()) {
+                Categoria categoria = categoriaRepository.findByNome(novoProduto.getCategoria());
                 if (categoria == null) throw new RuntimeException("Categoria não encontrada!");
-                p.setCategoria(categoria);
+                p.setCategoriaObj(categoria);
+                p.setCategoria(categoria.getNome());
             }
 
             if (novoProduto.getTamanho() != null)
@@ -144,7 +146,7 @@ public class ProdutoService {
         if (produtoParaDeletar != null) {
             produtoParaDeletar.setIc_excluido(true);
             produtoParaDeletar.setDataExclusao(java.time.LocalDate.now());
-            produtoParaDeletar.setResponsavelExclusao(responsavel); // <-- igual movimentação!
+            produtoParaDeletar.setResponsavelExclusao(responsavel);
             produtoRepository.save(produtoParaDeletar);
             return true;
         }

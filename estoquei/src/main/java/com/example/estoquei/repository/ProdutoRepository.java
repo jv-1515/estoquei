@@ -62,7 +62,7 @@ public class ProdutoRepository {
 
         String codigo = produto.getCodigo();
         String nome = produto.getNome();
-        Categoria categoria = produto.getCategoria();
+        String categoria = produto.getCategoria();
         Tamanho tamanho = produto.getTamanho();
         Genero genero = produto.getGenero();
         Integer quantidade = produto.getQuantidade();
@@ -75,8 +75,8 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             whereClause.add("p.nome LIKE :nm");
         }
-        if (categoria != null && categoria.getNome() != null) {
-            whereClause.add("p.categoria.nome = :cat");
+        if (categoria != null && !categoria.isEmpty()) {
+            whereClause.add("p.categoria = :cat");
         }
         if(tamanho != null) {
             whereClause.add("p.tamanho = :tam");
@@ -105,8 +105,8 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             typedQuery.setParameter("nm", "%" + nome + "%");
         }
-        if (categoria != null && categoria.getNome() != null) {
-            typedQuery.setParameter("cat", categoria.getNome());
+        if (categoria != null && !categoria.isEmpty()) {
+            typedQuery.setParameter("cat", categoria);
         }
         if(tamanho != null) {
             typedQuery.setParameter("tam", tamanho);
@@ -149,7 +149,7 @@ public class ProdutoRepository {
     
         String codigo = produto.getCodigo();
         String nome = produto.getNome();
-        Categoria categoria = produto.getCategoria();
+        String categoria = produto.getCategoria();
         Tamanho tamanho = produto.getTamanho();
         Genero genero = produto.getGenero();
         Integer quantidade = produto.getQuantidade();
@@ -162,8 +162,8 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             whereClause.add("p.nome LIKE :nm");
         }
-        if (categoria != null && categoria.getNome() != null) {
-            whereClause.add("p.categoria.nome = :cat");
+        if (categoria != null && !categoria.isEmpty()) {
+            whereClause.add("p.categoria = :cat");
         }
         if(tamanho != null) {
             whereClause.add("p.tamanho = :tam");
@@ -192,8 +192,8 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             typedQuery.setParameter("nm", "%" + nome + "%");
         }
-        if (categoria != null && categoria.getNome() != null) {
-            typedQuery.setParameter("cat", categoria.getNome());
+        if (categoria != null && !categoria.isEmpty()) {
+            typedQuery.setParameter("cat", categoria);
         }
         if(tamanho != null) {
             typedQuery.setParameter("tam", tamanho);

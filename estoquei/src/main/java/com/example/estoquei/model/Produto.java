@@ -25,11 +25,11 @@ public class Produto {
     private String nome;
 
     @Column(name = "categoria")
-    private String categoriaNome; // <-- nome da categoria
+    private String categoria;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private Categoria categoria; // <-- relacionamento
+    private Categoria categoriaObj;
 
     @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
@@ -58,16 +58,17 @@ public class Produto {
     public Produto(){
     }
 
-    public Produto(String nome, String codigo, Categoria categoria,Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo , BigDecimal preco, String descricao, String url_imagem) {
-        this.nome=nome;
-        this.codigo=codigo;
-        this.categoria=categoria;
-        this.tamanho=tamanho;
-        this.genero=genero;
-        this.quantidade=quantidade;
-        this.limiteMinimo=limiteMinimo;
-        this.preco=preco;
-        this.descricao=descricao;
+    public Produto(String nome, String codigo, String categoria, Categoria categoriaObj, Tamanho tamanho, Genero genero, int quantidade, int limiteMinimo, BigDecimal preco, String descricao, String url_imagem) {
+        this.nome = nome;
+        this.codigo = codigo;
+        this.categoria = categoria;
+        this.categoriaObj = categoriaObj;
+        this.tamanho = tamanho;
+        this.genero = genero;
+        this.quantidade = quantidade;
+        this.limiteMinimo = limiteMinimo;
+        this.preco = preco;
+        this.descricao = descricao;
         this.url_imagem = url_imagem;
     }
 
@@ -104,16 +105,16 @@ public class Produto {
     }
 
     
-    public String getCategoriaNome() { return categoriaNome; }
+    public String getCategoria() { return categoria; }
     
-    public void setCategoriaNome(String categoriaNome) { this.categoriaNome = categoriaNome; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public Categoria getCategoriaObj() {
+        return categoriaObj;
     }
     
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setCategoriaObj(Categoria categoriaObj) {
+        this.categoriaObj = categoriaObj;
     }
 
     public Long getId() {

@@ -101,7 +101,8 @@ public class ProdutoResource {
             produtoMap.put("id", produto.getId());
             produtoMap.put("codigo", produto.getCodigo());
             produtoMap.put("nome", produto.getNome());
-            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().getNome() : ""); // <-- CORRIGIDO
+            produtoMap.put("categoria", produto.getCategoria());
+            produtoMap.put("categoriaId", produto.getCategoriaObj() != null ? produto.getCategoriaObj().getId() : null);
             produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
             produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
             produtoMap.put("quantidade", produto.getQuantidade());
@@ -134,7 +135,7 @@ public class ProdutoResource {
             produtoMap.put("id", produto.getId());
             produtoMap.put("codigo", produto.getCodigo());
             produtoMap.put("nome", produto.getNome());
-            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria().getNome() : "");
+            produtoMap.put("categoria", produto.getCategoria() != null ? produto.getCategoria() : "");
             produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
             produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
             produtoMap.put("quantidade", produto.getQuantidade());

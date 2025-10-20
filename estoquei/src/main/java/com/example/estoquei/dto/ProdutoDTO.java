@@ -7,6 +7,7 @@ public class ProdutoDTO {
     public String codigo;
     public String nome;
     public String categoria;
+    public Long categoriaId;
     public String tamanho;
     public String genero;
     public int quantidade;
