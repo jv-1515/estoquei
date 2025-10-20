@@ -2,15 +2,16 @@ package com.example.estoquei.model;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "produtos")
@@ -23,9 +24,12 @@ public class Produto {
 
     private String nome;
 
+    @Column(name = "categoria")
+    private String categoriaNome; // <-- nome da categoria
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+    private Categoria categoria; // <-- relacionamento
 
     @Enumerated(EnumType.STRING)
     private Tamanho tamanho;
@@ -98,6 +102,11 @@ public class Produto {
     public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
+
+    
+    public String getCategoriaNome() { return categoriaNome; }
+    
+    public void setCategoriaNome(String categoriaNome) { this.categoriaNome = categoriaNome; }
 
     public Categoria getCategoria() {
         return categoria;
@@ -175,5 +184,4 @@ public class Produto {
 
     public String getResponsavelExclusao() { return responsavelExclusao; }
     public void setResponsavelExclusao(String responsavelExclusao) { this.responsavelExclusao = responsavelExclusao; }
-
 }

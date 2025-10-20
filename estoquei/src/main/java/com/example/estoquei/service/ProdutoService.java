@@ -35,6 +35,7 @@ public class ProdutoService {
                 throw new RuntimeException("Categoria não encontrada: " + nomeCategoria);
             }
             produto.setCategoria(categoria);
+            produto.setCategoriaNome(categoria.getNome());
         } else {
             throw new RuntimeException("Categoria não informada!");
         }
