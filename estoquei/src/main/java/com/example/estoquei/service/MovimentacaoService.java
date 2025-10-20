@@ -31,7 +31,7 @@ public class MovimentacaoService {
             LocalDate.now(),
             produto.getCodigo(),
             produto.getNome(),
-            produto.getCategoria() != null ? produto.getCategoria().getNome() : null,
+            produto.getCategoriaNome() != null ? produto.getCategoriaNome() : null,
             produto.getTamanho(),
             produto.getGenero(),
             codigoCompra,

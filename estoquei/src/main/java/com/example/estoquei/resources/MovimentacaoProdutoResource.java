@@ -140,7 +140,7 @@ public class MovimentacaoProdutoResource {
             movimentacao.setNome(produto.getNome());
     
             movimentacao.setCategoria(
-                produto.getCategoria() != null ? produto.getCategoria().getNome() : null
+                produto.getCategoriaNome() != null ? produto.getCategoriaNome() : null
             );
             movimentacao.setTamanho(produto.getTamanho());
             movimentacao.setGenero(produto.getGenero());
@@ -206,7 +206,7 @@ public class MovimentacaoProdutoResource {
             movimentacao.setNome(produto.getNome());
             
             movimentacao.setCategoria(
-                produto.getCategoria() != null ? produto.getCategoria().getNome() : null
+                produto.getCategoriaNome() != null ? produto.getCategoriaNome() : null
             );
             
             movimentacao.setTamanho(produto.getTamanho());
