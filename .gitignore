@@ -1,5 +1,10 @@
-/estoquei/target/classes/*.json
+**/target/
+
+*.log
+
+.DS_Store
+Thumbs.db
 
 .vscode/
-
-*.json
+.idea/
+*.iml
