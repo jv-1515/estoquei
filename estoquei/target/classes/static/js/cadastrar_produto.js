@@ -841,24 +841,26 @@ document.querySelectorAll('.checkboxes-genero-multi').forEach((container, idx) =
       if (e.target.value === "T") {
         checks.forEach(cb => cb.checked = todos.checked);
       } else {
-        // Garante combinações válidas
-        // Se F e M marcados, desmarca U
-        if (fem.checked && masc.checked) {
-          uni.checked = false;
-        }
-        // Se F e U marcados, desmarca M
-        if (fem.checked && uni.checked) {
-          masc.checked = false;
-        }
-        // Se M e U marcados, desmarca F
-        if (masc.checked && uni.checked) {
-          fem.checked = false;
-        }
-        // Se todos marcados, marca "Todos"
+        // Marca "Todos" se F, M e U estiverem marcados
         todos.checked = fem.checked && masc.checked && uni.checked;
       }
+
+      // Atualiza o valor salvo conforme padrão do banco
+      if (todos.checked) {
+        categorias[idx].tipoGenero = "T";
+      } else if (fem.checked && masc.checked) {
+        categorias[idx].tipoGenero = "FM";
+      } else if (fem.checked) {
+        categorias[idx].tipoGenero = "F";
+      } else if (masc.checked) {
+        categorias[idx].tipoGenero = "M";
+      } else if (uni.checked) {
+        categorias[idx].tipoGenero = "U";
+      } else {
+        categorias[idx].tipoGenero = "T";
+      }
+
       atualizarPlaceholderGeneroMulti(idx + 1);
-      atualizarArrayGenero(idx + 1);
     }
   });
 });
