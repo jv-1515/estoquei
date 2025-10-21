@@ -11,6 +11,7 @@ import com.example.estoquei.repository.CategoriaRepository;
 
 @Service
 public class CategoriaService {
+
     @Autowired
     private CategoriaRepository categoriaRepository;
 
@@ -27,5 +28,13 @@ public class CategoriaService {
             categoria.setTipoGenero(dto.tipoGenero);
             categoriaRepository.save(categoria);
         }
+    }
+
+    public void removerCategoria(Long id) {
+        long produtosUsando = categoriaRepository.countProdutosByCategoriaId(id);
+        if (produtosUsando > 0) {
+            throw new RuntimeException("Não é possível remover: existem produtos usando esta categoria.");
+        }
+        categoriaRepository.deleteById(id);
     }
 }

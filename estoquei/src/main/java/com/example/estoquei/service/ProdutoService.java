@@ -61,15 +61,15 @@ public class ProdutoService {
     }
 
     public List<Produto> listarBaixoEstoque() {
-    return produtoRepository.filterMinLimit();
+        return produtoRepository.filterMinLimit();
     }
 
     public List<Produto> listarTopBaixoEstoque(int top) {
-    return produtoRepository.findTopBaixoEstoque(top);
-}
+        return produtoRepository.findTopBaixoEstoque(top);
+    }
 
     public List<Produto> filtrarBaixoEstoque(Produto produto) {
-    return produtoRepository.findAndFilterMinLimit(produto);
+        return produtoRepository.findAndFilterMinLimit(produto);
     }
 
     public List<Produto> buscar(Produto filtro) {
@@ -136,7 +136,7 @@ public class ProdutoService {
         return null;
     }
 
-        public List<Produto> listarRemovidos() {
+    public List<Produto> listarRemovidos() {
         return produtoRepository.findAllRemovidos();
     }
 
@@ -153,15 +153,19 @@ public class ProdutoService {
         return false;
     }
 
-        public void excluirDefinitivo(Long id) {
-            Produto produto = produtoRepository.findById(id);
-            if (produto != null && produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()) {
-                try {
-                    firebaseStorageService.deleteFileByFirebaseUrl(produto.getUrl_imagem());
-                } catch (Exception e) {
-                    System.err.println("Falha ao tentar deletar a imagem do Firebase para o produto ID " + id + ": " + e.getMessage());
-                }
+    public void excluirDefinitivo(Long id) {
+        Produto produto = produtoRepository.findById(id);
+        if (produto != null && produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()) {
+            try {
+                firebaseStorageService.deleteFileByFirebaseUrl(produto.getUrl_imagem());
+            } catch (Exception e) {
+                System.err.println("Falha ao tentar deletar a imagem do Firebase para o produto ID " + id + ": " + e.getMessage());
             }
-            produtoRepository.deleteById(id);
+        }
+        produtoRepository.deleteById(id);
+    }
+
+    public List<Produto> listarPorCategoriaId(Long categoriaId) {
+        return produtoRepository.findByCategoriaObj_Id(categoriaId);
     }
 }

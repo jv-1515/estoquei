@@ -1114,7 +1114,7 @@ document.getElementById('form-categorias').addEventListener('submit', function(e
 // Adiciona listeners aos botões remover
 function adicionarListenersRemoverCategorias() {
   document.querySelectorAll('.remover').forEach((btn, idx) => {
-    btn.onclick = function(e) {
+    btn.onclick = async function(e) {
       e.preventDefault();
       const preenchidas = categorias.filter(cat => cat.nome.trim());
       if (preenchidas.length <= 1) {
@@ -1123,11 +1123,27 @@ function adicionarListenersRemoverCategorias() {
           title: 'Não é possível remover!',
           text: 'Deve existir pelo menos 1 categoria',
           timer: 1500,
+          timerProgressBar: true,
           showConfirmButton: false
         });
         return;
       }
 
+      const cat = categorias[idx];
+
+      const produtosResp = await fetch(`/produtos?categoriaId=${cat.id}`);
+      const produtos = await produtosResp.json();
+      if (produtos.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Categoria em uso!',
+          text: 'Não é possível removê-la',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+        return;
+      }
 
       Swal.fire({
         icon: 'warning',
@@ -1141,16 +1157,25 @@ function adicionarListenersRemoverCategorias() {
           confirmButton: 'swal2-remove-custom',
           cancelButton: 'swal2-cancel-custom'
         }
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          categorias.splice(idx, 1);
-          fetch('/categorias/salvar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(categorias)
-          })
-          categoriasSnapshot = JSON.stringify(categorias);
-          renderizarCategorias();
+          try {
+            const resp = await fetch(`/categorias/${cat.id}`, { method: 'DELETE' });
+            if (resp.status === 204) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Categoria removida!',
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false
+              });
+              carregarCategorias();
+            } else {
+              Swal.fire('Erro', 'Falha ao remover categoria.', 'error');
+            }
+          } catch (e) {
+            Swal.fire('Erro', 'Falha ao remover categoria.', 'error');
+          }
         }
       });
     };

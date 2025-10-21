@@ -271,4 +271,46 @@ public class ProdutoResource {
             .collect(Collectors.toList());
         return ResponseEntity.ok(generos);
     }
+
+    @GetMapping(params = "categoriaId")
+    public List<Map<String, Object>> listarPorCategoria(@RequestParam Long categoriaId) {
+        List<Produto> produtos = produtoService.listarPorCategoriaId(categoriaId);
+        LocalDate hoje = LocalDate.now();
+
+        List<Object[]> entradasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("ENTRADA", hoje);
+        List<Object[]> saidasHoje = movimentacaoRepo.somaMovimentacaoPorTipoEData("SAIDA", hoje);
+
+        Map<String, Integer> entradasPorCodigo = entradasHoje.stream()
+            .collect(Collectors.toMap(
+                row -> (String) row[0],
+                row -> ((Number) row[1]).intValue()
+            ));
+
+        Map<String, Integer> saidasPorCodigo = saidasHoje.stream()
+            .collect(Collectors.toMap(
+                row -> (String) row[0],
+                row -> ((Number) row[1]).intValue()
+            ));
+
+        return produtos.stream().map(produto -> {
+            Map<String, Object> produtoMap = new HashMap<>();
+            produtoMap.put("id", produto.getId());
+            produtoMap.put("codigo", produto.getCodigo());
+            produtoMap.put("nome", produto.getNome());
+            produtoMap.put("categoria", produto.getCategoria());
+            produtoMap.put("categoriaId", produto.getCategoriaObj() != null ? produto.getCategoriaObj().getId() : null);
+            produtoMap.put("tamanho", produto.getTamanho() != null ? produto.getTamanho().toString() : "");
+            produtoMap.put("genero", produto.getGenero() != null ? produto.getGenero().toString() : "");
+            produtoMap.put("quantidade", produto.getQuantidade());
+            produtoMap.put("limiteMinimo", produto.getLimiteMinimo());
+            produtoMap.put("preco", produto.getPreco());
+            produtoMap.put("descricao", produto.getDescricao());
+            produtoMap.put("url_imagem", produto.getUrl_imagem());
+            produtoMap.put("dtUltimaEntrada", produto.getDtUltimaEntrada());
+            produtoMap.put("dtUltimaSaida", produto.getDtUltimaSaida());
+            produtoMap.put("entradasHoje", entradasPorCodigo.getOrDefault(produto.getCodigo(), 0));
+            produtoMap.put("saidasHoje", saidasPorCodigo.getOrDefault(produto.getCodigo(), 0));
+            return produtoMap;
+        }).collect(Collectors.toList());
+    }
 }

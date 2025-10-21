@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.estoquei.model.Categoria;
@@ -15,10 +16,8 @@ import com.example.estoquei.model.Tamanho;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 
 @Repository
-@Transactional
 public class ProdutoRepository {
 
     @PersistenceContext
@@ -240,7 +239,7 @@ public class ProdutoRepository {
         }
     }
 
-        public List<Produto> findAllById(List<Long> ids) {
+    public List<Produto> findAllById(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return new ArrayList<>();
         String jpql = "SELECT p FROM Produto p WHERE p.id IN :ids";
         return entityManager.createQuery(jpql, Produto.class)
@@ -248,7 +247,14 @@ public class ProdutoRepository {
             .getResultList();
     }
 
-        public List<Produto> findAllRemovidos() {
+    public List<Produto> findAllRemovidos() {
         return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = true", Produto.class).getResultList();
+    }
+
+    public List<Produto> findByCategoriaObj_Id(Long categoriaId) {
+        String jpql = "SELECT p FROM Produto p WHERE p.categoriaObj.id = :categoriaId";
+        return entityManager.createQuery(jpql, Produto.class)
+            .setParameter("categoriaId", categoriaId)
+            .getResultList();
     }
 }
