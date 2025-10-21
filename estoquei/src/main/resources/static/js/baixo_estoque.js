@@ -120,14 +120,31 @@ function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
     }
 }
 
+//Categorias
+let categoriasBackend = [];
+fetch('/categorias')
+  .then(res => res.json())
+  .then(data => {
+    categoriasBackend = data.map(c => ({
+      nome: c.nome,
+      tipoTamanho: c.tipoTamanho,
+      tipoGenero: c.tipoGenero
+    }));
+  })
+  .catch(() => {
+    categoriasBackend = [];
+  });
+
+
+
+//opcoes de tamanhos   
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    let categorias = [];
+    let categoriasSelecionadas = [];
     if (!checks[0].checked) {
-        categorias = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toUpperCase());
+        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toString().trim().toUpperCase());
     }
-    const tamanho = document.getElementById('filter-tamanho');
-    const valorSelecionado = tamanho.value;
+
     const tamLetra = [
         { value: 'ÚNICO', label: 'Único' },
         { value: 'PP', label: 'PP' },
@@ -142,28 +159,41 @@ function updateOptions() {
     const tamNumero = [];
     for (let i = 36; i <= 56; i++) tamNumero.push(i);
 
-    let tamanhos = new Set();
-    if (categorias.length === 0) {
-        tamLetra.forEach(t => tamanhos.add(t.value));
-        tamNumero.forEach(n => tamanhos.add('_' + n));
-    } else {
-        if (categorias.some(cat => cat === 'SAPATO' || cat === 'MEIA')) {
-            for (let i = 36; i <= 44; i++) tamanhos.add('_' + i);
+    function computeAllowedSizes(selectedCategoryNames) {
+        const tamanhosSet = new Set();
+        if (!selectedCategoryNames || selectedCategoryNames.length === 0) {
+            tamLetra.forEach(t => tamanhosSet.add(t.value));
+            tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            return tamanhosSet;
         }
-        if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'VESTIDO')) {
-            for (let i = 36; i <= 56; i += 2) tamanhos.add('_' + i);
-        }
-        if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {
-            tamLetra.forEach(t => tamanhos.add(t.value));
-        }
+
+        selectedCategoryNames.forEach(catName => {
+            const catObj = categoriasBackend.find(c => c.nome && c.nome.toString().trim().toUpperCase() === catName);
+            if (!catObj) {
+                return;
+            }
+            const tipo = (catObj.tipoTamanho || '').toUpperCase();
+            if (tipo === 'L') {
+                tamLetra.forEach(t => tamanhosSet.add(t.value));
+            } else if (tipo === 'N') {
+                tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            } else if (tipo === 'T') {
+                tamLetra.forEach(t => tamanhosSet.add(t.value));
+                tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            }
+        });
+
+        return tamanhosSet;
     }
 
-    // Atualiza o select de tamanho
+    const tamanhos = computeAllowedSizes(categoriasSelecionadas);
+
+    const tamanhoSelect = document.getElementById('filter-tamanho');
+    const valorSelecionado = tamanhoSelect.value;
     let options = '';
     const temLetra = [...tamanhos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
     const temNum = [...tamanhos].some(v => /^_\d+$/.test(v));
 
-    // "Todos" só aparece se tem letras E números
     if (temLetra && temNum) {
         options += `<option id="tamanho-multi-placeholder" value="">Todos</option>`;
     } else if (temLetra) {
@@ -171,27 +201,24 @@ function updateOptions() {
     } else if (temNum) {
         options += `<option id="tamanho-multi-placeholder" value="">Todos Numéricos</option>`;
     }
+
     tamLetra.forEach(t => {
         if (tamanhos.has(t.value)) options += `<option value="${t.value}">${t.label}</option>`;
     });
     tamNumero.forEach(n => {
         if (tamanhos.has('_' + n)) options += `<option value="_${n}">${n}</option>`;
     });
-    tamanho.innerHTML = options;
+    tamanhoSelect.innerHTML = options;
     if ([...tamanhos].includes(valorSelecionado)) {
-        tamanho.value = valorSelecionado;
+        tamanhoSelect.value = valorSelecionado;
     } else {
-        tamanho.selectedIndex = 0;
+        tamanhoSelect.selectedIndex = 0;
     }
-    tamanho.style.color = tamanho.value ? 'black' : '#757575';
+    tamanhoSelect.style.color = tamanhoSelect.value ? 'black' : '#757575';
 
-    // Atualiza a DIV de tamanhos dinamicamente
-    gerarCheckboxesTamanhoMulti(tamanhos, categorias);
-
-    // Adiciona listeners e lógica dos checkboxes de tamanho
+    // Atualiza DIV de checkboxes e listeners
+    gerarCheckboxesTamanhoMulti(tamanhos);
     aplicarListenersTamanhoMulti();
-
-    // Atualiza placeholder visual e do select
     atualizarPlaceholderTamanhoMulti();
 }
 

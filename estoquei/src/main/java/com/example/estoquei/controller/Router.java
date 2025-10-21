@@ -1,16 +1,24 @@
 package com.example.estoquei.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.estoquei.dto.CategoriaDTO;
 import com.example.estoquei.model.Usuario;
+import com.example.estoquei.repository.CategoriaRepository;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
+import com.example.estoquei.service.CategoriaService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,7 +27,13 @@ import jakarta.servlet.http.HttpSession;
 public class Router {
 
     @Autowired
+    private CategoriaRepository categoriaRepository;
+    
+    @Autowired
     private MovimentacaoProdutoRepository movimentacaoRepo;
+
+    @Autowired
+    private CategoriaService categoriaService;
 
     private Usuario getUsuarioOuRedireciona(HttpSession session) {
         return (Usuario) session.getAttribute("isActive");
@@ -93,26 +107,24 @@ public class Router {
         return "produtos_removidos";
     }
 
-    //funcionario
-    // @GetMapping("/cadastrar-funcionario")
-    // public String cadastrarFuncionario(HttpSession session) {
-    //     Usuario usuario = getUsuarioOuRedireciona(session);
-    //     if (usuario == null) return "redirect:/";
-    //     if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 1) {
-    //         return "cadastrar_funcionario";
-    //     }
-    //     return "redirect:/inicio";
-    // }
+    @GetMapping("/categorias")
+    @ResponseBody
+    public List<CategoriaDTO> listarCategorias() {
+        return categoriaRepository.findAll().stream().map(cat -> {
+            CategoriaDTO dto = new CategoriaDTO();
+            dto.id = cat.getId();
+            dto.nome = cat.getNome();
+            dto.tipoTamanho = cat.getTipoTamanho();
+            dto.tipoGenero = cat.getTipoGenero();
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
-    // @GetMapping("/editar-funcionario")
-    // public String editarFuncionario(HttpSession session) {
-    //     Usuario usuario = getUsuarioOuRedireciona(session);
-    //     if (usuario == null) return "redirect:/";
-    //     if (usuario.getCargo() != null && usuario.getCargo().getFuncionarios() >= 2) {
-    //         return "editar_funcionario";
-    //     }
-    //     return "redirect:/inicio";
-    // }
+    @PostMapping("/categorias/salvar")
+    public ResponseEntity<?> salvarCategorias(@RequestBody List<CategoriaDTO> categorias) {
+        categoriaService.salvarCategorias(categorias);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/gerenciar-funcionarios")
     public String gerenciarFuncionarios(Model model, HttpSession session) {

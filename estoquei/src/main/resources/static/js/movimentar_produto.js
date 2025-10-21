@@ -410,13 +410,10 @@ window.addEventListener('DOMContentLoaded', function() {
         const generoFormatado = produto.genero
             ? produto.genero.charAt(0).toUpperCase() + produto.genero.slice(1).toLowerCase()
             : '';
-        const categoriaFormatada = produto.categoria
-            ? produto.categoria.charAt(0).toUpperCase() + produto.categoria.slice(1).toLowerCase()
-            : '';
 
         document.getElementById('filter-codigo').value = produto.codigo && produto.nome ? `${produto.codigo} - ${produto.nome}` : (produto.codigo || '');
         // document.getElementById('filter-nome').value = produto.nome || '';
-        document.getElementById('filter-categoria').value = categoriaFormatada;
+        document.getElementById('filter-categoria').value = produto.categoria || '';
         document.getElementById('filter-tamanho').value = tamanhoExibido;
         document.getElementById('filter-genero').value = generoFormatado;
         document.getElementById('filter-quantidade').value = (produto.quantidade !== undefined && produto.quantidade !== null) ? produto.quantidade : '';

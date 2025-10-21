@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.estoquei.model.Categoria;
@@ -15,10 +16,8 @@ import com.example.estoquei.model.Tamanho;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 
 @Repository
-@Transactional
 public class ProdutoRepository {
 
     @PersistenceContext
@@ -62,7 +61,7 @@ public class ProdutoRepository {
 
         String codigo = produto.getCodigo();
         String nome = produto.getNome();
-        Categoria categoria = produto.getCategoria();
+        String categoria = produto.getCategoria();
         Tamanho tamanho = produto.getTamanho();
         Genero genero = produto.getGenero();
         Integer quantidade = produto.getQuantidade();
@@ -75,7 +74,7 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             whereClause.add("p.nome LIKE :nm");
         }
-        if(categoria != null) {
+        if (categoria != null && !categoria.isEmpty()) {
             whereClause.add("p.categoria = :cat");
         }
         if(tamanho != null) {
@@ -105,8 +104,8 @@ public class ProdutoRepository {
         if(nome != null && !nome.isEmpty()) {
             typedQuery.setParameter("nm", "%" + nome + "%");
         }
-        if(categoria != null) {
-            typedQuery.setParameter("cat",  categoria);
+        if (categoria != null && !categoria.isEmpty()) {
+            typedQuery.setParameter("cat", categoria);
         }
         if(tamanho != null) {
             typedQuery.setParameter("tam", tamanho);
@@ -143,75 +142,75 @@ public class ProdutoRepository {
 
     //filtro baixo estoque
     public List<Produto> findAndFilterMinLimit(Produto produto) {
-    String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
-    List<String> whereClause = new ArrayList<>();
 
-    String codigo = produto.getCodigo();
-    String nome = produto.getNome();
-    Categoria categoria = produto.getCategoria();
-    Tamanho tamanho = produto.getTamanho();
-    Genero genero = produto.getGenero();
-    Integer quantidade = produto.getQuantidade();
-    Integer limiteMinimo = produto.getLimiteMinimo();
-    BigDecimal preco = produto.getPreco();
-
-    if(codigo != null && !codigo.isEmpty()) {
-        whereClause.add("p.codigo = :cd");
+        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
+        List<String> whereClause = new ArrayList<>();
+    
+        String codigo = produto.getCodigo();
+        String nome = produto.getNome();
+        String categoria = produto.getCategoria();
+        Tamanho tamanho = produto.getTamanho();
+        Genero genero = produto.getGenero();
+        Integer quantidade = produto.getQuantidade();
+        Integer limiteMinimo = produto.getLimiteMinimo();
+        BigDecimal preco = produto.getPreco();
+    
+        if(codigo != null && !codigo.isEmpty()) {
+            whereClause.add("p.codigo = :cd");
+        }
+        if(nome != null && !nome.isEmpty()) {
+            whereClause.add("p.nome LIKE :nm");
+        }
+        if (categoria != null && !categoria.isEmpty()) {
+            whereClause.add("p.categoria = :cat");
+        }
+        if(tamanho != null) {
+            whereClause.add("p.tamanho = :tam");
+        }
+        if(genero != null) {
+            whereClause.add("p.genero = :gen");
+        }
+        if(quantidade != null && quantidade > 0) {
+            whereClause.add("p.quantidade = :qt");
+        }
+        if(limiteMinimo != null && limiteMinimo > 0) {
+            whereClause.add("p.limiteMinimo = :lim");
+        }
+        if(preco != null) {
+            whereClause.add("p.preco = :preco");
+        }
+    
+        if (!whereClause.isEmpty()) {
+            query += " AND " + String.join(" AND ", whereClause);
+        }
+    
+        TypedQuery<Produto> typedQuery = entityManager.createQuery(query, Produto.class);
+        if(codigo != null && !codigo.isEmpty()) {
+            typedQuery.setParameter("cd", codigo);
+        }
+        if(nome != null && !nome.isEmpty()) {
+            typedQuery.setParameter("nm", "%" + nome + "%");
+        }
+        if (categoria != null && !categoria.isEmpty()) {
+            typedQuery.setParameter("cat", categoria);
+        }
+        if(tamanho != null) {
+            typedQuery.setParameter("tam", tamanho);
+        }
+        if(genero != null) {
+            typedQuery.setParameter("gen", genero);
+        }
+        if(quantidade != null && quantidade > 0) {
+            typedQuery.setParameter("qt", quantidade);
+        }
+        if(limiteMinimo != null && limiteMinimo > 0) {
+            typedQuery.setParameter("lim", limiteMinimo);
+        }
+        if(preco != null) {
+            typedQuery.setParameter("preco", preco);
+        }
+        return typedQuery.getResultList();
     }
-    if(nome != null && !nome.isEmpty()) {
-        whereClause.add("p.nome LIKE :nm");
-    }
-    if(categoria != null) {
-        whereClause.add("p.categoria = :cat");
-    }
-    if(tamanho != null) {
-        whereClause.add("p.tamanho = :tam");
-    }
-    if(genero != null) {
-        whereClause.add("p.genero = :gen");
-    }
-    if(quantidade != null && quantidade > 0) {
-        whereClause.add("p.quantidade = :qt");
-    }
-    if(limiteMinimo != null && limiteMinimo > 0) {
-        whereClause.add("p.limiteMinimo = :lim");
-    }
-    if(preco != null) {
-        whereClause.add("p.preco = :preco");
-    }
-
-    if (!whereClause.isEmpty()) {
-        query += " AND " + String.join(" AND ", whereClause);
-    }
-
-    TypedQuery<Produto> typedQuery = entityManager.createQuery(query, Produto.class);
-    if(codigo != null && !codigo.isEmpty()) {
-        typedQuery.setParameter("cd", codigo);
-    }
-    if(nome != null && !nome.isEmpty()) {
-        typedQuery.setParameter("nm", "%" + nome + "%");
-    }
-    if(categoria != null) {
-        typedQuery.setParameter("cat",  categoria);
-    }
-    if(tamanho != null) {
-        typedQuery.setParameter("tam", tamanho);
-    }
-    if(genero != null) {
-        typedQuery.setParameter("gen", genero);
-    }
-    if(quantidade != null && quantidade > 0) {
-        typedQuery.setParameter("qt", quantidade);
-    }
-    if(limiteMinimo != null && limiteMinimo > 0) {
-        typedQuery.setParameter("lim", limiteMinimo);
-    }
-    if(preco != null) {
-        typedQuery.setParameter("preco", preco);
-    }
-    return typedQuery.getResultList();
-}
-
     public Produto findById(Long id) {
         return entityManager.find(Produto.class, id);
     }
@@ -240,7 +239,7 @@ public class ProdutoRepository {
         }
     }
 
-        public List<Produto> findAllById(List<Long> ids) {
+    public List<Produto> findAllById(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return new ArrayList<>();
         String jpql = "SELECT p FROM Produto p WHERE p.id IN :ids";
         return entityManager.createQuery(jpql, Produto.class)
@@ -248,7 +247,14 @@ public class ProdutoRepository {
             .getResultList();
     }
 
-        public List<Produto> findAllRemovidos() {
+    public List<Produto> findAllRemovidos() {
         return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = true", Produto.class).getResultList();
+    }
+
+    public List<Produto> findByCategoriaObj_Id(Long categoriaId) {
+        String jpql = "SELECT p FROM Produto p WHERE p.categoriaObj.id = :categoriaId";
+        return entityManager.createQuery(jpql, Produto.class)
+            .setParameter("categoriaId", categoriaId)
+            .getResultList();
     }
 }

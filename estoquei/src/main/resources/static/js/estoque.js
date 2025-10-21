@@ -251,16 +251,92 @@ function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
     }
 }
 
+//Categorias
+let categoriasBackend = [];
 
-//verifica opcoes disponiveis 
+function renderCategoriaFilter() {
+    const container = document.getElementById('checkboxes-categoria-multi');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // "Todas"
+    container.insertAdjacentHTML('beforeend', `
+      <label>
+        <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked /> Todas
+      </label>
+    `);
+
+    // adiciona checkboxes para cada categoria do backend
+    categoriasBackend.forEach(cat => {
+        const nome = (cat.nome || '').toString().trim();
+        const value = nome.toUpperCase();
+        const labelText = cat.nome || value;
+        container.insertAdjacentHTML('beforeend', `
+          <label>
+            <input type="checkbox" class="categoria-multi-check" value="${value}" checked /> ${labelText}
+          </label>
+        `);
+    });
+
+    // placeholder visual
+    atualizarPlaceholderCategoriaMulti();
+
+    // Delegation: único listener para gerenciar "Todas" e individuais
+    container.removeEventListener('change', categoriaContainerChange);
+    container.addEventListener('change', categoriaContainerChange);
+
+    function categoriaContainerChange(e) {
+        const target = e.target;
+        if (!target || !target.classList.contains('categoria-multi-check')) return;
+
+        const todasEl = container.querySelector('#categoria-multi-todas');
+        const individuais = Array.from(container.querySelectorAll('.categoria-multi-check')).filter(cb => cb.id !== 'categoria-multi-todas');
+
+        // clicou em "Todas"
+        if (target.id === 'categoria-multi-todas') {
+            const checked = !!target.checked;
+            container.querySelectorAll('.categoria-multi-check').forEach(cb => cb.checked = checked);
+        } else {
+            // atualiza "Todas" conforme estado dos individuais
+            if (todasEl) todasEl.checked = individuais.every(cb => cb.checked);
+        }
+
+        // atualiza UI e filtros
+        atualizarPlaceholderCategoriaMulti();
+        updateOptions();
+        filtrar();
+    }
+}
+
+fetch('/categorias')
+  .then(res => res.json())
+  .then(data => {
+    categoriasBackend = data.map(c => ({
+
+      nome: c.nome,
+      tipoTamanho: c.tipoTamanho,
+      tipoGenero: c.tipoGenero
+    }));
+    renderCategoriaFilter();
+    updateOptions();
+    filtrar();
+  })
+  .catch(() => {
+    categoriasBackend = [];
+    renderCategoriaFilter();
+    updateOptions();
+    filtrar();
+  });
+
+
+//opcoes de tamanhos e generos
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-    let categorias = [];
+    let categoriasSelecionadas = [];
     if (!checks[0].checked) {
-        categorias = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toUpperCase());
+        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toString().trim().toUpperCase());
     }
-    const tamanho = document.getElementById('filter-tamanho');
-    const valorSelecionado = tamanho.value;
+
     const tamLetra = [
         { value: 'ÚNICO', label: 'Único' },
         { value: 'PP', label: 'PP' },
@@ -275,22 +351,70 @@ function updateOptions() {
     const tamNumero = [];
     for (let i = 36; i <= 56; i++) tamNumero.push(i);
 
-    let tamanhos = new Set();
-    if (categorias.length === 0) {
-        tamLetra.forEach(t => tamanhos.add(t.value));
-        tamNumero.forEach(n => tamanhos.add('_' + n));
-    } else {
-        if (categorias.some(cat => cat === 'SAPATO' || cat === 'MEIA')) {
-            for (let i = 36; i <= 44; i++) tamanhos.add('_' + i);
+    function computeAllowedSizes(selectedCategoryNames) {
+        const tamanhosSet = new Set();
+        if (!selectedCategoryNames || selectedCategoryNames.length === 0) {
+            tamLetra.forEach(t => tamanhosSet.add(t.value));
+            tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            return tamanhosSet;
         }
-        if (categorias.some(cat => cat === 'BERMUDA' || cat === 'CALÇA' || cat === 'VESTIDO')) {
-            for (let i = 36; i <= 56; i += 2) tamanhos.add('_' + i);
-        }
-        if (categorias.some(cat => cat === 'CAMISA' || cat === 'CAMISETA')) {
-            tamLetra.forEach(t => tamanhos.add(t.value));
-        }
+
+        selectedCategoryNames.forEach(catName => {
+            const catObj = categoriasBackend.find(c => c.nome && c.nome.toString().trim().toUpperCase() === catName);
+            if (!catObj) {
+                return;
+            }
+            const tipo = (catObj.tipoTamanho || '').toUpperCase();
+            if (tipo === 'L') {
+                tamLetra.forEach(t => tamanhosSet.add(t.value));
+            } else if (tipo === 'N') {
+                tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            } else if (tipo === 'T') {
+                tamLetra.forEach(t => tamanhosSet.add(t.value));
+                tamNumero.forEach(n => tamanhosSet.add('_' + n));
+            }
+        });
+
+        return tamanhosSet;
     }
 
+    function computeAllowedGenders(selectedCategoryNames) {
+        const generosSet = new Set();
+        if (!selectedCategoryNames || selectedCategoryNames.length === 0) {
+            generosSet.add('FEMININO');
+            generosSet.add('MASCULINO');
+            generosSet.add('UNISSEX');
+            return generosSet;
+        }
+
+        selectedCategoryNames.forEach(catName => {
+            const catObj = categoriasBackend.find(c => c.nome && c.nome.toString().trim().toUpperCase() === catName);
+            if (!catObj) {
+                return;
+            }
+            const tipo = (catObj.tipoGenero || '').toUpperCase();
+            if (tipo === 'F') {
+                generosSet.add('FEMININO');
+            } else if (tipo === 'M') {
+                generosSet.add('MASCULINO');
+            } else if (tipo === 'U') {
+                generosSet.add('UNISSEX');
+            } else if (tipo === 'T') {
+                generosSet.add('FEMININO');
+                generosSet.add('MASCULINO');
+                generosSet.add('UNISSEX');
+            }
+        });
+
+        return generosSet;
+    }
+
+    const tamanhos = computeAllowedSizes(categoriasSelecionadas);
+    const generos = computeAllowedGenders(categoriasSelecionadas);
+
+    // Atualiza tamanhos
+    const tamanhoSelect = document.getElementById('filter-tamanho');
+    const valorSelecionado = tamanhoSelect.value;
     let options = '';
     const temLetra = [...tamanhos].some(v => ["ÚNICO","PP","P","M","G","GG","XG","XGG","XXG"].includes(v));
     const temNum = [...tamanhos].some(v => /^_\d+$/.test(v));
@@ -302,29 +426,83 @@ function updateOptions() {
     } else if (temNum) {
         options += `<option id="tamanho-multi-placeholder" value="">Todos Numéricos</option>`;
     }
+
     tamLetra.forEach(t => {
         if (tamanhos.has(t.value)) options += `<option value="${t.value}">${t.label}</option>`;
     });
     tamNumero.forEach(n => {
         if (tamanhos.has('_' + n)) options += `<option value="_${n}">${n}</option>`;
     });
-    tamanho.innerHTML = options;
+    tamanhoSelect.innerHTML = options;
     if ([...tamanhos].includes(valorSelecionado)) {
-        tamanho.value = valorSelecionado;
+        tamanhoSelect.value = valorSelecionado;
     } else {
-        tamanho.selectedIndex = 0;
+        tamanhoSelect.selectedIndex = 0;
     }
-    tamanho.style.color = tamanho.value ? 'black' : '#757575';
+    tamanhoSelect.style.color = tamanhoSelect.value ? 'black' : '#757575';
 
-    // Atualiza a DIV de tamanhos dinamicamente
-    gerarCheckboxesTamanhoMulti(tamanhos, categorias);
-
-    // Adiciona listeners e lógica dos checkboxes de tamanho
+    // Atualiza DIV de checkboxes de tamanhos e listeners
+    gerarCheckboxesTamanhoMulti(tamanhos);
     aplicarListenersTamanhoMulti();
-
-    // Atualiza placeholder visual e do select
     atualizarPlaceholderTamanhoMulti();
+
+    // Atualiza checkboxes de gêneros
+    gerarCheckboxesGeneroMulti(generos);
+    aplicarListenersGeneroMulti();
+    atualizarPlaceholderGeneroMulti();
 }
+
+function gerarCheckboxesGeneroMulti(generosValidos) {
+    const checkboxesDiv = document.getElementById('checkboxes-genero-multi');
+    checkboxesDiv.innerHTML = '';
+
+    const temTodos = generosValidos.size === 3;
+    if (temTodos) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked> Todos</label>`;
+    }
+
+    if (generosValidos.has('FEMININO')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>`;
+    }
+    if (generosValidos.has('MASCULINO')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>`;
+    }
+    if (generosValidos.has('UNISSEX')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>`;
+    }
+}
+
+function aplicarListenersGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = document.getElementById('genero-multi-todos');
+
+    if (todos) {
+        todos.addEventListener('change', function() {
+            checks.forEach(cb => cb.checked = todos.checked);
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    }
+
+    checks.forEach(cb => {
+        if (cb.id !== 'genero-multi-todos') {
+            cb.addEventListener('change', function() {
+                if (!cb.checked && todos) {
+                    todos.checked = false;
+                } else {
+                    const individuais = checks.filter(c => c.id !== 'genero-multi-todos');
+                    if (todos && individuais.every(c => c.checked)) {
+                        todos.checked = true;
+                    }
+                }
+                atualizarPlaceholderGeneroMulti();
+                filtrar();
+            });
+        }
+    });
+    atualizarPlaceholderGeneroMulti();
+}
+
 
 function aplicarListenersTamanhoMulti() {
     const checks = Array.from(document.querySelectorAll('.tamanho-multi-check'));
@@ -667,11 +845,21 @@ function filtrar() {
     // Filtros por categorias
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
-    if (!checks[0].checked) {
-        categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+    if (checks.length) {
+        const todasChecked = !!checks[0].checked;
+        if (!todasChecked) {
+            categoriasSelecionadas = checks.slice(1)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value.toString().trim().toUpperCase());
+        }
+    } else {
+        // sem controles de categoria no DOM -> permite todas
+        categoriasSelecionadas = [];
     }
-    let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados() : [];
-    let generosSelecionados = getGenerosSelecionados ? getGenerosSelecionados() : [];
+
+    // tamanhos / generos normalizados
+    let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados().map(t => t.toString().trim().toUpperCase()) : [];
+    let generosSelecionados = getGenerosSelecionados ? getGenerosSelecionados().map(g => g.toString().trim().toUpperCase()) : [];
 
     // Faixas
     let qtdMinVal = document.getElementById("quantidade-min").value;
@@ -706,12 +894,23 @@ function filtrar() {
             const buscaNome = p.nome && p.nome.toLowerCase().includes(termo);
             if (!buscaCodigo && !buscaNome) return false;
         }
-        // Filtra pelas categorias selecionadas nos checkboxes
-        if (categoriasSelecionadas.length) {
-            if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
+        // CATEGORIAS
+        if (categoriasSelecionadas && categoriasSelecionadas.length > 0) {
+            const catProd = (p.categoria || '').toString().trim().toUpperCase();
+            if (!categoriasSelecionadas.includes(catProd)) return false;
         }
-        if (tamanhosSelecionados.length > 0 && !tamanhosSelecionados.includes(p.tamanho.toString().toUpperCase())) return false;
-        if (generosSelecionados.length > 0 && !generosSelecionados.includes(p.genero.toString().toUpperCase())) return false;
+
+        // TAMANHOS (tamanhosSelecionados tem valores tipo 'P' ou '_36')
+        if (tamanhosSelecionados && tamanhosSelecionados.length > 0) {
+            const tamProd = (p.tamanho || '').toString().trim().toUpperCase();
+            if (!tamanhosSelecionados.includes(tamProd)) return false;
+        }
+
+        // GÊNEROS (generosSelecionados)
+        if (generosSelecionados && generosSelecionados.length > 0) {
+            const genProd = (p.genero || '').toString().trim().toUpperCase();
+            if (!generosSelecionados.includes(genProd)) return false;
+        }
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
         if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
         if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
@@ -998,7 +1197,40 @@ function renderizarProdutos(produtos) {
             }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
-                ultimaSaida = formatarData(p.dtUltimaSaida);
+                // Teve saída: verifica se faz mais de 1 mês
+                const dSaida = new Date(p.dtUltimaSaida + 'T00:00:00');
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                if (!isNaN(dSaida)) {
+                    const diffDias = (hoje - dSaida) / (1000 * 60 * 60 * 24);
+                    const dataFormatada = formatarData(p.dtUltimaSaida);
+                    if (diffDias >= 30) {
+                        ultimaSaida = `<span style="color:red;font-weight:bold;" title="Há mais de 30 dias">${dataFormatada}</span>`;
+                    } else {
+                        ultimaSaida = dataFormatada;
+                    }
+                } else {
+                    ultimaSaida = formatarData(p.dtUltimaSaida);
+                }
+            } else {
+                // Não teve saída ainda: mostra relógio
+                if (p.dtUltimaEntrada) {
+                    const dEntrada = new Date(p.dtUltimaEntrada + 'T00:00:00');
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    if (!isNaN(dEntrada)) {
+                        const diffDias = (hoje - dEntrada) / (1000 * 60 * 60 * 24);
+                        if (diffDias >= 30 && p.quantidade === 0) {
+                            ultimaSaida = `<span style="color:red;" title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                        } else {
+                            ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                        }
+                    } else {
+                        ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                    }
+                } else {
+                    ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                }
             }
 
             let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
@@ -1912,32 +2144,32 @@ if (
 });
 
 // Lógica de seleção "Todas" e integração com filtro
-window.addEventListener('DOMContentLoaded', function() {
-  const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-  const todas = checks[0]; // O primeiro é "Todas"
+// window.addEventListener('DOMContentLoaded', function() {
+//   const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+//   const todas = checks[0]; // O primeiro é "Todas"
 
-  // "Todas" marca/desmarca todos
-  todas.addEventListener('change', function() {
-    checks.forEach(cb => cb.checked = todas.checked);
-    atualizarPlaceholderCategoriaMulti();
-    filtrar();
-  });
+//   // "Todas" marca/desmarca todos
+//   todas.addEventListener('change', function() {
+//     checks.forEach(cb => cb.checked = todas.checked);
+//     atualizarPlaceholderCategoriaMulti();
+//     filtrar();
+//   });
 
-  // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
-  checks.slice(1).forEach(cb => {
-    cb.addEventListener('change', function() {
-      todas.checked = checks.slice(1).every(c => c.checked);
-      atualizarPlaceholderCategoriaMulti();
-      filtrar();
-    });
-  });
+//   // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
+//   checks.slice(1).forEach(cb => {
+//     cb.addEventListener('change', function() {
+//       todas.checked = checks.slice(1).every(c => c.checked);
+//       atualizarPlaceholderCategoriaMulti();
+//       filtrar();
+//     });
+//   });
 
-  // Função global para pegar categorias selecionadas do multiselect
-  window.getCategoriasMultiSelecionadas = function() {
-    if (todas.checked) return [];
-    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
-  };
-});
+//   // Função global para pegar categorias selecionadas do multiselect
+//   window.getCategoriasMultiSelecionadas = function() {
+//     if (todas.checked) return [];
+//     return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
+//   };
+// });
 
 function marcarOuDesmarcarTodasCategorias() {
     const todas = document.getElementById('categoria-multi-todas');
@@ -1957,10 +2189,9 @@ function marcarOuDesmarcarTodasCategorias() {
 }
 
 function getCategoriasSelecionadas() {
-    // Pega todos os checkboxes de categoria, exceto o "Todas"
     return Array.from(document.querySelectorAll('.categoria-multi-check'))
         .filter(cb => cb.id !== 'categoria-multi-todas' && cb.checked)
-        .map(cb => cb.value);
+        .map(cb => cb.value.toString().trim().toUpperCase());
 }
 
 function atualizarPlaceholderCategoriaMulti() {
@@ -2395,7 +2626,6 @@ function atualizarCategoriaListaSetas() {
     setTimeout(updateButtons, 50);
 }
 
-// Chame SEMPRE após renderizar a lista:
 document.addEventListener('DOMContentLoaded', function() {
     atualizarCategoriaListaSetas();
 });
