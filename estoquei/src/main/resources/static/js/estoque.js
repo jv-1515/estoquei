@@ -998,7 +998,40 @@ function renderizarProdutos(produtos) {
             }
             let ultimaSaida = '-';
             if (p.dtUltimaSaida) {
-                ultimaSaida = formatarData(p.dtUltimaSaida);
+                // Teve saída: verifica se faz mais de 1 mês
+                const dSaida = new Date(p.dtUltimaSaida + 'T00:00:00');
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                if (!isNaN(dSaida)) {
+                    const diffDias = (hoje - dSaida) / (1000 * 60 * 60 * 24);
+                    const dataFormatada = formatarData(p.dtUltimaSaida);
+                    if (diffDias >= 30) {
+                        ultimaSaida = `<span style="color:red;font-weight:bold;" title="Há mais de 30 dias">${dataFormatada}</span>`;
+                    } else {
+                        ultimaSaida = dataFormatada;
+                    }
+                } else {
+                    ultimaSaida = formatarData(p.dtUltimaSaida);
+                }
+            } else {
+                // Não teve saída ainda: mostra relógio
+                if (p.dtUltimaEntrada) {
+                    const dEntrada = new Date(p.dtUltimaEntrada + 'T00:00:00');
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    if (!isNaN(dEntrada)) {
+                        const diffDias = (hoje - dEntrada) / (1000 * 60 * 60 * 24);
+                        if (diffDias >= 30 && p.quantidade === 0) {
+                            ultimaSaida = `<span style="color:red;" title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                        } else {
+                            ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                        }
+                    } else {
+                        ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                    }
+                } else {
+                    ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                }
             }
 
             let entradasHoje = p.entradasHoje !== undefined ? p.entradasHoje : 0;
