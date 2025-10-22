@@ -137,8 +137,8 @@ public class UsuarioService {
             emailService.sendHtmlMessageWithInlineImage(
                 mailBody, 
                 htmlContent, 
-                "logo_icon",
-                "static/images/logo_icon.png"
+                "logo_email",
+                "static/images/logo_email.png"
             );
         } catch (MessagingException e) {
             e.printStackTrace();
