@@ -1238,15 +1238,15 @@ function renderizarProdutos(produtos) {
                     if (!isNaN(dEntrada)) {
                         const diffDias = (hoje - dEntrada) / (1000 * 60 * 60 * 24);
                         if (diffDias >= 30 && p.quantidade === 0) {
-                            ultimaSaida = `<span style="color:red;" title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                            ultimaSaida = `<span style="color:red;" title="Nenhuma venda">-</span>`;
                         } else {
-                            ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                            ultimaSaida = `<span title="Nenhuma venda">-</span>`;
                         }
                     } else {
-                        ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                        ultimaSaida = `<span title="Nenhuma venda">-</i></span>`;
                     }
                 } else {
-                    ultimaSaida = `<span title="Nenhuma venda"><i class="fa-regular fa-clock"></i></span>`;
+                    ultimaSaida = `<span title="Nenhuma venda">-</span>`;
                 }
             }
 
