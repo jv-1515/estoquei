@@ -308,25 +308,42 @@ function renderCategoriaFilter() {
     }
 }
 
-fetch('/categorias')
-  .then(res => res.json())
-  .then(data => {
-    categoriasBackend = data.map(c => ({
+async function carregarCategoriasEProdutos() {
+    try {
+        const catRes = await fetch('/categorias');
+        const catData = await catRes.json();
+        categoriasBackend = catData.map(c => ({
+            nome: c.nome,
+            tipoTamanho: c.tipoTamanho,
+            tipoGenero: c.tipoGenero
+        }));
+    } catch {
+        categoriasBackend = [];
+    }
+    renderCategoriaFilter();
+    updateOptions();
 
-      nome: c.nome,
-      tipoTamanho: c.tipoTamanho,
-      tipoGenero: c.tipoGenero
-    }));
-    renderCategoriaFilter();
-    updateOptions();
+    let url = '/produtos';
+    try {
+        const prodRes = await fetch(url);
+        const prodData = await prodRes.json();
+        produtos = prodData;
+        produtosOriginais = [...produtos];
+        produtosFiltrados = [...produtos];
+        produtos.sort((a, b) => {
+            const valorA = (a.codigo || '').toString().toLowerCase();
+            const valorB = (b.codigo || '').toString().toLowerCase();
+            return valorA.localeCompare(valorB, undefined, { numeric: true });
+        });
+    } catch {
+        produtos = [];
+        produtosOriginais = [];
+        produtosFiltrados = [];
+    }
+
     filtrar();
-  })
-  .catch(() => {
-    categoriasBackend = [];
-    renderCategoriaFilter();
-    updateOptions();
-    filtrar();
-  });
+}
+document.addEventListener('DOMContentLoaded', carregarCategoriasEProdutos);
 
 
 //opcoes de tamanhos e generos
@@ -1362,6 +1379,7 @@ function carregarProdutos(top) {
                 const valorB = (b.codigo || '').toString().toLowerCase();
                 return valorA.localeCompare(valorB, undefined, { numeric: true });
             });
+
             renderizarProdutos(produtosFiltrados);
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
