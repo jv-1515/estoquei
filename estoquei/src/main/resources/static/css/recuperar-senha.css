@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
 body {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #277580;
     margin: 0;
     padding: 0;
@@ -10,27 +8,34 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     background-image: image-set(
         url('/images/background.png') type('image/png') 1x
     );
     background-size: cover;
     background-attachment: fixed;
+    scrollbar-gutter: stable;
+}
+
+h1 {
+    font-size: 32px;
+    color: #277580;
+    text-align: center;
+    margin: 40px 0 20px 0;
 }
 
 .recovery-main-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 640px;
+    width: 400px;
     max-width: 640px;
-    min-height: 300px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 18px rgba(0,0,0,0.13);
     margin: 60px auto;
     overflow: hidden;
-    padding: 20px;
+    padding: 30px;
     box-sizing: border-box;
 }
 
@@ -43,13 +48,13 @@ body {
 .recovery-header {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 8px;
     margin-bottom: 15px;
 }
 
 .recovery-header a {
     color: #1E94A3;
-    font-size: 32px;
+    font-size: 20px;
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -58,46 +63,40 @@ body {
 }
 
 .recovery-header h1 {
-    font-size: 2rem;
     color: #1E94A3;
     margin: 0;
 }
 
 .form-content-container p {
-    color: #666;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 10px;
 }
 
 .form-content-container label {
     color: #333;
-    font-weight: 500;
+    font-weight: bold;
     margin-bottom: 8px;
     display: block;
-    font-size: 14px;
 }
 
 .input-group {
     position: relative;
-    margin-bottom: 20px;
 }
 
 .input-group input {
-    height: 45px;
+    height: 30px;
     width: 100%;
-    padding: 0 15px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 0.2s;
 }
 
 .input-group input:focus {
-    border-color: #1E94A3;
-    box-shadow: 0 0 0 2px rgba(30, 148, 163, 0.2);
+    border: 2px solid black;
 }
 
 .input-group .fa-eye-slash, .input-group .fa-eye {
@@ -113,19 +112,14 @@ body {
     background-color: #1E94A3;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 14px;
-    font-weight: 500;
-    height: 45px;
+    transition: background 0.2s;
+    font-size: 12px;
+    height: 30px;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    margin-top: 10px;
 }
-
 .form-content-container button:hover {
     background-color: #277580;
 }
@@ -217,7 +211,111 @@ input::-ms-clear {
     display: none;
 }
 
-.form-content-container button i {
+
+
+
+/* sweetAlert */
+.swal2-popup {
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
+    border-radius: 10px;
+}
+
+.swal2-container {
+    backdrop-filter: blur(2px);
+}
+
+.swal2-actions {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny,
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel,
+.swal2-styled.swal2-deny {
+    flex: 1;
+    margin: 0;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    padding: 2px 8px;
+    box-shadow: none;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Botão de cancelar */
+.swal2-cancel,
+.swal2-styled.swal2-cancel {
+    background-color: #fff;
+    color: #1e94a3;
+    border: #1e94a3 solid 1px;
+}
+.swal2-cancel:hover,
+.swal2-styled.swal2-cancel:hover {
+    background-color: #1E94A3;
+    color: #fff;
+}
+
+/* Botão de confirmação/cancelar custom */
+.swal2-confirm,
+.swal2-styled.swal2-confirm,
+.swal2-cancel-custom,
+.swal2-styled.swal2-cancel-custom {
+    background-color: #1E94A3;
+    color: #fff;
+}
+.swal2-confirm:hover,
+.swal2-styled.swal2-confirm:hover,
+.swal2-cancel-custom:hover,
+.swal2-styled.swal2-cancel-custom:hover {
+    background-color: #277580;
+}
+
+/* Botão de deletar (vermelho padrão SweetAlert2) */
+.swal2-remove-custom,
+.swal2-styled.swal2-remove-custom {
+    background-color: #d33;
+    color: #fff;
+}
+.swal2-remove-custom:hover,
+.swal2-styled.swal2-remove-custom:hover {
+    background-color: #a52a2a;
+}
+
+/* Ícone de fechar (X) */
+.swal2-close {
+    color: #333;
+    font-size: 30px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    transition: color 0.2s;
+}
+.swal2-close:hover {
+    color: #f27474;
+}
+
+/* Título */
+.swal2-title {
+    padding-top: 0;
+    font-size: 20px;
+}
+
+/* Conteúdo HTML */
+.swal2-html-container {
+    padding: 10px;
     font-size: 16px;
-    line-height: 1;
+}
+
+.swal2-timer-progress-bar {
+    border-radius: 0px 0 0 10px;
+    margin-left: 3px;
 }
