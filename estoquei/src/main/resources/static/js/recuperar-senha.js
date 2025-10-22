@@ -226,12 +226,12 @@ document.addEventListener("DOMContentLoaded", function() {
             const icon = element.querySelector('i');
             if (isValid) {
                 element.classList.add('valid');
-                icon.classList.remove('fa-circle');
+                icon.classList.remove('fa-circle-xmark');
                 icon.classList.add('fa-check-circle');
             } else {
                 element.classList.remove('valid');
                 icon.classList.remove('fa-check-circle');
-                icon.classList.add('fa-circle');
+                icon.classList.add('fa-circle-xmark');
             }
         };
 

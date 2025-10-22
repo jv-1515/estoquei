@@ -51,7 +51,7 @@ h1 {
 }
 
 .recovery-header a {
-    color: #1E94A3;
+    color: #277580;
     font-size: 20px;
     text-decoration: none;
     transition: color 0.2s;
@@ -70,7 +70,7 @@ h1 {
 .form-content-container label {
     color: #333;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin: 4px 0;
     display: block;
 }
 
@@ -99,7 +99,7 @@ h1 {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #999;
+    color: #757575;
 }
 
 .form-content-container button {
@@ -173,30 +173,28 @@ h1 {
 .password-reqs {
     list-style: none;
     padding: 0;
-    margin: -10px 0 20px 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    margin: 8px 0;
     font-size: 12px;
-    color: #999;
+    color: #757575;
 }
 .password-reqs li {
     display: flex;
     align-items: center;
     gap: 5px;
 }
-.password-reqs .fa-circle {
-    font-size: 6px;
-}
-.password-reqs .valid .fa-circle {
-    color: #28a745;
+
+.password-reqs .valid .fa-circle-xmark {
+    color: #1E94A3;
 }
 .password-reqs .valid {
-    color: #333;
+    color: #1E94A3;
 }
 
-.password-reqs .valid .fa-check-circle {
-    color: #28a745;
+.password-reqs .valid .fa-check-circle-xmark {
+    color: #1E94A3;
 }
 
 input[type="password"]::-ms-reveal {
