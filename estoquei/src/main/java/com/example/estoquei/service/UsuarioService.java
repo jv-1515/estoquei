@@ -66,7 +66,7 @@ public class UsuarioService {
         Context context = new Context();
         context.setVariable("nomeUsuario", usuario.getNome());
         context.setVariable("senhaProvisoria", provisional);
-        context.setVariable("urlLogin", "/admin/login");
+        context.setVariable("urlLogin", "http://localhost:8080");
 
         String htmlContent = templateEngine.process("emails/senha-provisoria", context);
 
