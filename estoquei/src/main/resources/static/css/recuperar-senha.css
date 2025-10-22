@@ -23,6 +23,21 @@ h1 {
     text-align: center;
     margin: 0;
 }
+.logo {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    height: 90px;
+}
+.logo img {
+    height: 90px;
+    width: auto;
+    display: block;
+    pointer-events: none;
+}
 
 .recovery-main-container {
     display: flex;
