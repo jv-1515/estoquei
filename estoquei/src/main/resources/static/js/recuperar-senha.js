@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
             
             btn.disabled = true;
             icon.className = 'fa-solid fa-spinner fa-spin';
-            text.textContent = 'Enviando...';
+            text.textContent = 'Enviando';
 
             const email = document.getElementById('email').value;
             const formData = new FormData();
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         resendBtn.textContent = `Reenviar em ${timer}s`;
                     } else {
                         clearInterval(interval);
-                        resendBtn.textContent = 'Reenviar';
+                        resendBtn.innerHTML = '<i class="fa-solid fa-paper-plane" id="esqueci-icon"></i> Reenviar';
                         resendBtn.disabled = false;
                         timer = 20;
                     }
@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 const email = sessionStorage.getItem('email_recuperacao');
                 if (!email) {
-                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível encontrar o e-mail. Por favor, volte ao início.' });
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível encontrar o e-mail. Por favor, volte ao início' });
                     return;
                 }
                 
@@ -178,13 +178,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'sucesso') {
-                        Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Um novo código foi enviado para o seu e-mail.', timer: 2000, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: 'Código enviado!', text: 'Verifique seu e-mail', timer: 2000, timerProgressBar: true, showConfirmButton: false });
                     } else {
                         Swal.fire({ icon: 'error', title: 'Ocorreu um erro', text: data.message });
                     }
                 }).catch(error => {
                     console.error('Erro ao reenviar:', error);
-                    Swal.fire({ icon: 'error', title: 'Erro de comunicação', text: 'Não foi possível reenviar o código.' });
+                    Swal.fire({ icon: 'error', title: 'Erro de comunicação', text: 'Não foi possível reenviar o código' });
                 });
             });
         }
@@ -226,12 +226,12 @@ document.addEventListener("DOMContentLoaded", function() {
             const icon = element.querySelector('i');
             if (isValid) {
                 element.classList.add('valid');
-                icon.classList.remove('fa-circle');
+                icon.classList.remove('fa-circle-xmark');
                 icon.classList.add('fa-check-circle');
             } else {
                 element.classList.remove('valid');
                 icon.classList.remove('fa-check-circle');
-                icon.classList.add('fa-circle');
+                icon.classList.add('fa-circle-xmark');
             }
         };
 

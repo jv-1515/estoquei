@@ -85,6 +85,14 @@
                         </span>
                     </div>
             
+                    <label for="confirmar-nova-senha">Confirmar senha*</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input style="width: 100%;" type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" maxlength="30" autocomplete="new-password">
+                        <span class="lock-open" onclick="togglePassword('confirmar-nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
+                            <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
+                        </span>
+                    </div>
+
                     <div id="nova-senha-requisitos">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <div id="requisito-nova-senha-8" style="display: flex; align-items: center; gap: 8px;">
@@ -106,14 +114,6 @@
                                 <span>1 caractere especial</span>
                             </div>
                         </div>
-                    </div>
-            
-                    <label for="confirmar-nova-senha">Confirmar senha*</label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <input style="width: 100%;" type="password" id="confirmar-nova-senha" name="confirmar-nova-senha" placeholder="Confirme a nova senha" minlength="8" maxlength="30" autocomplete="new-password">
-                        <span class="lock-open" onclick="togglePassword('confirmar-nova-senha')" style="position: absolute; right: 10px; cursor: pointer;">
-                            <i class="fa-solid fa-eye-slash" id="icon-confirmar-nova-senha"></i>
-                        </span>
                     </div>
             
                     <button type="submit" id="save" class="btn" tabindex="8">Confirmar Alterações</button>

@@ -1,3 +1,5 @@
+let produtosFiltrados = [];
+
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -33,7 +35,8 @@ document.addEventListener('mousedown', function(e) {
         atualizarPlaceholderGeneroMulti();
     }
 });
-// Garante que ao desmarcar qualquer gênero individual, o "Todos" desmarca na hora
+
+// ao desmarcar qualquer gênero individual, o "Todos" desmarca
 document.querySelectorAll('.genero-multi-check').forEach(cb => {
     if (cb.id !== 'genero-multi-todos') {
         cb.addEventListener('change', function() {
@@ -54,7 +57,7 @@ document.querySelectorAll('.genero-multi-check').forEach(cb => {
         });
     }
 });
-// Função para marcar/desmarcar todos os gêneros
+
 function marcarOuDesmarcarTodosGeneros() {
     const todas = document.getElementById('genero-multi-todos');
     const checks = document.querySelectorAll('.genero-multi-check');
@@ -122,18 +125,92 @@ function gerarCheckboxesTamanhoMulti(tamanhosValidos) {
 
 //Categorias
 let categoriasBackend = [];
-fetch('/categorias')
-  .then(res => res.json())
-  .then(data => {
-    categoriasBackend = data.map(c => ({
-      nome: c.nome,
-      tipoTamanho: c.tipoTamanho,
-      tipoGenero: c.tipoGenero
-    }));
-  })
-  .catch(() => {
-    categoriasBackend = [];
-  });
+
+function renderCategoriaFilterBaixoEstoque() {
+    const container = document.getElementById('checkboxes-categoria-multi');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // "Todas"
+    container.insertAdjacentHTML('beforeend', `
+      <label>
+        <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked /> Todas
+      </label>
+    `);
+
+    categoriasBackend.forEach(cat => {
+        const nome = (cat.nome || '').toString().trim();
+        const value = nome.toUpperCase();
+        const labelText = cat.nome || value;
+        container.insertAdjacentHTML('beforeend', `
+          <label>
+            <input type="checkbox" class="categoria-multi-check" value="${value}" checked /> ${labelText}
+          </label>
+        `);
+    });
+
+    atualizarPlaceholderCategoriaMulti();
+
+    // Listener único para todos os checkboxes
+    container.removeEventListener('change', categoriaContainerChangeBaixoEstoque);
+    container.addEventListener('change', categoriaContainerChangeBaixoEstoque);
+
+    function categoriaContainerChangeBaixoEstoque(e) {
+        const target = e.target;
+        if (!target || !target.classList.contains('categoria-multi-check')) return;
+
+        const todasEl = container.querySelector('#categoria-multi-todas');
+        const individuais = Array.from(container.querySelectorAll('.categoria-multi-check')).filter(cb => cb.id !== 'categoria-multi-todas');
+
+        if (target.id === 'categoria-multi-todas') {
+            const checked = !!target.checked;
+            container.querySelectorAll('.categoria-multi-check').forEach(cb => cb.checked = checked);
+        } else {
+            if (todasEl) todasEl.checked = individuais.every(cb => cb.checked);
+        }
+
+        atualizarPlaceholderCategoriaMulti();
+        updateOptions();
+        filtrar();
+    }
+}
+
+
+async function carregarCategoriasEProdutosBaixoEstoque() {
+    try {
+        const catRes = await fetch('/categorias');
+        const catData = await catRes.json();
+        categoriasBackend = catData.map(c => ({
+            nome: c.nome,
+            tipoTamanho: c.tipoTamanho,
+            tipoGenero: c.tipoGenero
+        }));
+    } catch {
+        categoriasBackend = [];
+    }
+    renderCategoriaFilterBaixoEstoque();
+    updateOptions();
+
+    let url = '/produtos/baixo-estoque';
+    try {
+        const prodRes = await fetch(url);
+        const prodData = await prodRes.json();
+        produtos = prodData;
+        produtosOriginais = [...produtos];
+        produtos.sort((a, b) => {
+            const valorA = (a.codigo || '').toString().toLowerCase();
+            const valorB = (b.codigo || '').toString().toLowerCase();
+            return valorA.localeCompare(valorB, undefined, { numeric: true });
+        });
+    } catch {
+        produtos = [];
+        produtosOriginais = [];
+        produtosFiltrados = [];
+    }
+
+    filtrar();
+}
+document.addEventListener('DOMContentLoaded', carregarCategoriasEProdutosBaixoEstoque);
 
 
 
@@ -186,8 +263,41 @@ function updateOptions() {
         return tamanhosSet;
     }
 
-    const tamanhos = computeAllowedSizes(categoriasSelecionadas);
+    function computeAllowedGenders(selectedCategoryNames) {
+        const generosSet = new Set();
+        if (!selectedCategoryNames || selectedCategoryNames.length === 0) {
+            generosSet.add('FEMININO');
+            generosSet.add('MASCULINO');
+            generosSet.add('UNISSEX');
+            return generosSet;
+        }
 
+        selectedCategoryNames.forEach(catName => {
+            const catObj = categoriasBackend.find(c => c.nome && c.nome.toString().trim().toUpperCase() === catName);
+            if (!catObj) {
+                return;
+            }
+            const tipo = (catObj.tipoGenero || '').toUpperCase();
+            if (tipo === 'F') {
+                generosSet.add('FEMININO');
+            } else if (tipo === 'M') {
+                generosSet.add('MASCULINO');
+            } else if (tipo === 'U') {
+                generosSet.add('UNISSEX');
+            } else if (tipo === 'T') {
+                generosSet.add('FEMININO');
+                generosSet.add('MASCULINO');
+                generosSet.add('UNISSEX');
+            }
+        });
+
+        return generosSet;
+    }
+
+    const tamanhos = computeAllowedSizes(categoriasSelecionadas);
+    const generos = computeAllowedGenders(categoriasSelecionadas);
+
+    // Atualiza tamanhos
     const tamanhoSelect = document.getElementById('filter-tamanho');
     const valorSelecionado = tamanhoSelect.value;
     let options = '';
@@ -216,10 +326,66 @@ function updateOptions() {
     }
     tamanhoSelect.style.color = tamanhoSelect.value ? 'black' : '#757575';
 
-    // Atualiza DIV de checkboxes e listeners
+    // Atualiza DIV de checkboxes de tamanhos e listeners
     gerarCheckboxesTamanhoMulti(tamanhos);
     aplicarListenersTamanhoMulti();
     atualizarPlaceholderTamanhoMulti();
+
+    // Atualiza checkboxes de gêneros
+    gerarCheckboxesGeneroMulti(generos);
+    aplicarListenersGeneroMulti();
+    atualizarPlaceholderGeneroMulti();
+}
+
+function gerarCheckboxesGeneroMulti(generosValidos) {
+    const checkboxesDiv = document.getElementById('checkboxes-genero-multi');
+    checkboxesDiv.innerHTML = '';
+
+    const temTodos = generosValidos.size === 3;
+    if (temTodos) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" id="genero-multi-todos" class="genero-multi-check" value="" checked> Todos</label>`;
+    }
+
+    if (generosValidos.has('FEMININO')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="FEMININO" checked> Feminino</label>`;
+    }
+    if (generosValidos.has('MASCULINO')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="MASCULINO" checked> Masculino</label>`;
+    }
+    if (generosValidos.has('UNISSEX')) {
+        checkboxesDiv.innerHTML += `<label><input type="checkbox" class="genero-multi-check" value="UNISSEX" checked> Unissex</label>`;
+    }
+}
+
+function aplicarListenersGeneroMulti() {
+    const checks = Array.from(document.querySelectorAll('.genero-multi-check'));
+    const todos = document.getElementById('genero-multi-todos');
+
+    if (todos) {
+        todos.addEventListener('change', function() {
+            checks.forEach(cb => cb.checked = todos.checked);
+            atualizarPlaceholderGeneroMulti();
+            filtrar();
+        });
+    }
+
+    checks.forEach(cb => {
+        if (cb.id !== 'genero-multi-todos') {
+            cb.addEventListener('change', function() {
+                if (!cb.checked && todos) {
+                    todos.checked = false;
+                } else {
+                    const individuais = checks.filter(c => c.id !== 'genero-multi-todos');
+                    if (todos && individuais.every(c => c.checked)) {
+                        todos.checked = true;
+                    }
+                }
+                atualizarPlaceholderGeneroMulti();
+                filtrar();
+            });
+        }
+    });
+    atualizarPlaceholderGeneroMulti();
 }
 
 function aplicarListenersTamanhoMulti() {

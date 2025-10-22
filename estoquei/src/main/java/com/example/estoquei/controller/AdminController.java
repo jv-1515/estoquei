@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.UsuarioRepository;
@@ -142,7 +141,7 @@ public class AdminController {
                 "redirectUrl", "/recuperar-senha/redefinir-senha"
             ));
         } else {
-            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", "Código de verificação inválido ou expirado."));
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", "Código de verificação inválido ou expirado"));
         }
     }
 
