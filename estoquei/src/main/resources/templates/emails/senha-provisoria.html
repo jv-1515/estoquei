@@ -3,60 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu Código de Verificação</title>
-    </head>
+    <title>Sua Conta Stok+ Foi Criada</title>
+</head>
 <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f1f5f9;">
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td style="padding: 20px 0;">
                 <table align="center" border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 600px; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    
                     <tr>
                         <td align="center" bgcolor="#277580" style="padding: 20px; height: 90px; vertical-align: middle;">
                             <img src="cid:logo_email" alt="Logo Stok+" width="150" height="50" style="display: block; border: 0;" />
                         </td>
                     </tr>
+                    
                     <tr>
                         <td bgcolor="#ffffff" style="padding: 40px 30px;">
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td>
-                                        <h1 style="color: #1e293b; font-size: 24px; text-align: center; margin: 0;">Seu Código de Verificação</h1>
+                                        <h1 style="color: #1e293b; font-size: 24px; text-align: center; margin: 0;">Bem-vindo(a) ao Stok+!</h1>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 20px 0;">
                                         <p style="margin: 0; color: #475569; font-size: 16px; line-height: 1.5;">
-                                            Olá, <strong th:text="${nomeUsuario}">[Nome do Usuário]</strong>,
+                                            Olá, <strong th:text="${nomeUsuario}">[Nome do Funcionário]</strong>,
                                         </p>
                                         <p style="margin: 20px 0 0 0; color: #475569; font-size: 16px; line-height: 1.5;">
-                                            Use o código abaixo para redefinir sua senha.
+                                            Sua conta no sistema Stok+ foi criada com sucesso. Abaixo está sua senha provisória para o primeiro acesso:
                                         </p>
                                     </td>
                                 </tr>
+                                
                                 <tr>
                                     <td style="padding: 10px 0;">
                                         <div style="background-color: #f1f5f9; border-radius: 8px; padding: 15px 20px; text-align: center;">
-                                            <p style="font-size: 36px; font-weight: bold; color: #1e293b; letter-spacing: 10px; margin: 0; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;" th:text="${otp}">591972</p>
+                                            <p style="font-size: 32px; font-weight: bold; color: #1e293b; letter-spacing: 5px; margin: 0; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;" th:text="${senhaProvisoria}">SuaSenha@123</p>
                                         </div>
                                     </td>
                                 </tr>
+                                
                                 <tr>
-                                    <td style="padding: 10px 0 20px 0;">
-                                        <p style="text-align: center; color: #64748b; font-size: 14px; margin: 0;">
-                                            Este código é válido por <strong>10 minutos</strong>.
+                                    <td style="padding: 20px 0 0 0;">
+                                        <p style="margin: 0; text-align: center; color: #475569; font-size: 16px; line-height: 1.5;">
+                                            Acesse o sistema clicando no botão abaixo:
                                         </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 20px 0;" align="center">
+                                        <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td align="center" bgcolor="#277580" style="border-radius: 8px;">
+                                                    <a th:href="${urlLogin}" href="#" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 8px; display: inline-block;">Acessar Stok+</a>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <p style="margin: 10px 0 0 0; color: #475569; font-size: 16px; line-height: 1.5;">
-                                            Se você não solicitou esta alteração, pode ignorar este e-mail com segurança.
+                                        <p style="text-align: center; color: #64748b; font-size: 14px; margin: 0;">
+                                            Por motivos de segurança, recomendamos que você crie uma nova senha pessoal após seu primeiro login.
                                         </p>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
+                    
                     <tr>
                         <td bgcolor="#f8fafc" style="padding: 30px 30px; text-align: center;">
                             <p style="color: #64748b; font-size: 12px; margin: 0;">
@@ -65,7 +81,7 @@
                         </td>
                     </tr>
                 </table>
-                </td>
+            </td>
         </tr>
     </table>
 </body>

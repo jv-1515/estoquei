@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.UsuarioRepository;
@@ -172,6 +171,30 @@ public class AdminController {
                 "redirectUrl", "/"
             ));
 
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/recuperar-senha/enviar-senha-provisoria")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> enviarSenhaProvisoria(@RequestParam(name = "id") Long userId) {
+        try {
+            Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com id: " + userId));
+
+            String senha = usuario.getSenha();
+            if (senha == null || senha.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", "Usuário não possui senha definida."));
+            }
+
+            String provisional = usuarioService.sendProvisionalPassword(usuario.getEmail(), senha);
+            return ResponseEntity.ok(Map.of(
+                "status", "sucesso",
+                "message", "Senha provisória enviada com sucesso para " + usuario.getEmail(),
+                "senhaProvisoria", provisional,
+                "redirectUrl", "/admin/login"
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("status", "erro", "message", e.getMessage()));
         }

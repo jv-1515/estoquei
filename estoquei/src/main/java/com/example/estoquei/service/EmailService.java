@@ -26,6 +26,18 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
     }
 
+    public void sendHtmlMessage(MailBody mailBody, String htmlContent) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8"); 
+
+        helper.setFrom(fromEmail);
+        helper.setTo(mailBody.to());
+        helper.setSubject(mailBody.subject());
+        helper.setText(htmlContent, true);
+
+        javaMailSender.send(mimeMessage);
+    }
+
     public void sendHtmlMessageWithInlineImage(MailBody mailBody, String htmlContent, String imageCid, String imagePath) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
