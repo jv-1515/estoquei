@@ -50,6 +50,47 @@ public class UsuarioService {
         return null;
     }
 
+    @Transactional
+    public String sendProvisionalPassword(String email, String provisionalPassword) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o e-mail: " + email));
+
+        if (provisionalPassword == null || provisionalPassword.isEmpty()) {
+            throw new RuntimeException("Senha provisória não pode ser vazia.");
+        }
+        String provisional = provisionalPassword;
+
+        usuario.setSenha(provisional);
+        usuarioRepository.save(usuario);
+
+        Context context = new Context();
+        context.setVariable("nomeUsuario", usuario.getNome());
+        context.setVariable("senhaProvisoria", provisional);
+        context.setVariable("urlLogin", "/admin/login");
+
+        String htmlContent = templateEngine.process("emails/senha-provisoria", context);
+
+        MailBody mailBody = new MailBody(
+            usuario.getEmail(),
+            "Sua senha provisória - Stok+",
+            ""
+        );
+
+        try {
+            emailService.sendHtmlMessageWithInlineImage(
+                mailBody,
+                htmlContent,
+                "logo_email",
+                "static/images/logo_email.png"
+            );
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Não foi possível enviar o e-mail com senha provisória.", e);
+        }
+
+        return provisional;
+    }
+
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
@@ -138,12 +179,13 @@ public class UsuarioService {
                 mailBody, 
                 htmlContent, 
                 "logo_email",
-                "static/images/logo_email.png"
+                "static/images/logo_email.png" 
             );
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new RuntimeException("Não foi possível enviar o e-mail de recuperação.", e);
         }
+    
     }
 
     @Transactional(readOnly = true)
