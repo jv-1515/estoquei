@@ -21,15 +21,13 @@ h1 {
     font-size: 32px;
     color: #277580;
     text-align: center;
-    margin: 40px 0 20px 0;
+    margin: 0;
 }
 
 .recovery-main-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 400px;
-    max-width: 640px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 18px rgba(0,0,0,0.13);
@@ -59,16 +57,12 @@ h1 {
     transition: color 0.2s;
 }
 .recovery-header a:hover {
-    color: #18737f;
-}
-
-.recovery-header h1 {
     color: #1E94A3;
-    margin: 0;
 }
 
 .form-content-container p {
-    font-size: 16px;
+    font-size: 16px !important;
+    text-align: left;
     color: #888;
     margin-bottom: 10px;
 }
@@ -142,32 +136,34 @@ h1 {
 .otp-container {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 8px;
 }
 .otp-input {
-    width: 50px;
+    max-width: 50px;
     height: 60px;
     text-align: center;
-    font-size: 24px;
+    font-size: 32px;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 4px;
     outline: none;
     transition: border-color 0.2s;
+    color: #333;
 }
-.otp-input:focus {
+.otp-input:valid {
     border-color: #1E94A3;
-    box-shadow: 0 0 0 2px rgba(30, 148, 163, 0.2);
 }
 
+#validar-icon {
+    padding-right: 2px;
+}
 #resend-btn {
     background: none;
-    color: #666;
-    border: 1px solid #ccc;
+    color: #1E94A3;
+    border: 1px solid #1E94A3;
 }
 #resend-btn:hover {
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #1E94A3;
+    color: #fff;
 }
 #resend-btn.disabled {
     cursor: not-allowed;
