@@ -1707,8 +1707,8 @@ window.onload = function() {
 
     // Inicializa visual
     if (registrosInput && radiosDiv) {
-        registrosInput.value = 'Todos';
-        const radioTodos = radiosDiv.querySelector('input[type="radio"][value=""]');
+        registrosInput.value = '10';
+        const radioTodos = radiosDiv.querySelector('input[type="radio"][value="10"]');
         if (radioTodos) radioTodos.checked = true;
     }
 

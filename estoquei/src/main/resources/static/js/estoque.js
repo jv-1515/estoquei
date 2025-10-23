@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', carregarCategoriasEProdutos);
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
-    if (!checks[0].checked) {
+    if (checks.length > 0 && !checks[0].checked) {
         categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toString().trim().toUpperCase());
     }
 
@@ -859,6 +859,11 @@ let itensPorPagina = 10;
 
 
 function filtrar() {
+    // Mostra skeleton antes de processar filtros
+    const tbody = document.getElementById('product-table-body');
+    const skeletonRow = () => `<tr class='skeleton-table-row'>${Array(14).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+    tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
+
     // Filtros por categorias
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
@@ -1096,7 +1101,7 @@ function renderizarProdutos(produtos) {
     const registrosPagina = document.getElementById('registros-pagina');
     const registrosInput = document.getElementById('registros-multi');
     // Usa o valor do radio personalizado
-    let valorRadio = '';
+    let valorRadio = '10';
     const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
     if (radioSelecionado) {
         valorRadio = radioSelecionado.value;
@@ -1455,8 +1460,8 @@ window.onload = function() {
     const chevron = document.querySelector('.chevron-registros');
 
     // Inicializa visual
-    registrosInput.value = 'Todos';
-    radiosDiv.querySelector('input[type="radio"][value=""]').checked = true;
+    registrosInput.value = '10';
+    radiosDiv.querySelector('input[type="radio"][value="10"]').checked = true;
 
     // Abre/fecha lista ao clicar no input ou chevron
     function abrirLista() {
@@ -1495,12 +1500,12 @@ window.onload = function() {
     });
 
     // Inicializa carregamento com valor do radio
-    let valorRadio = '';
+    let valorRadio = '10';
     const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
     if (radioSelecionado) {
         valorRadio = radioSelecionado.value;
     }
-    carregarProdutos(valorRadio === '' ? '' : valorRadio);
+    carregarProdutos(valorRadio === '10' ? '10' : valorRadio);
 
     const campos = [
         null,
@@ -1512,11 +1517,11 @@ window.onload = function() {
         'preco',
         'quantidade',
         'limiteMinimo',
-        'entradasHoje',    
-        'saidasHoje',      
-        'dtUltimaEntrada', 
-        'dtUltimaSaida',   
-        null               
+        'entradasHoje',
+        'saidasHoje',
+        'dtUltimaEntrada',
+        'dtUltimaSaida',
+        null
     ];
     
     //inicia com true (decrescente)

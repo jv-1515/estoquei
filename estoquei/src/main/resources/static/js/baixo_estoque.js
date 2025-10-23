@@ -686,6 +686,11 @@ let paginaAtual = 1;
 let itensPorPagina = 10;
 
 function filtrar() {
+    // Mostra skeleton antes de processar filtros
+    const tbody = document.getElementById('product-table-body');
+    const skeletonRow = () => `<tr class='skeleton-table-row'>${Array(14).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+    tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
+    
     // Filtros de categoria, tamanho, gênero, etc
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
@@ -786,12 +791,12 @@ function renderizarProdutos(produtos) {
     };
     tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
 
-    const registrosInput = document.getElementById('registros-multi');
-    let value = '';
-    if (registrosInput) {
-        value = registrosInput.value === 'Todos' ? '' : registrosInput.value;
+    let valorRadio = '10';
+    const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
+    if (radioSelecionado) {
+        valorRadio = radioSelecionado.value;
     }
-    itensPorPagina = value === '' ? produtos.length : parseInt(value);
+    itensPorPagina = valorRadio === '' ? produtos.length : parseInt(valorRadio);
 
     const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -1044,8 +1049,8 @@ window.onload = function() {
     const chevron = document.querySelector('.chevron-registros');
 
     // Inicializa visual
-    registrosInput.value = 'Todos';
-    radiosDiv.querySelector('input[type="radio"][value=""]').checked = true;
+    registrosInput.value = '10';
+    radiosDiv.querySelector('input[type="radio"][value="10"]').checked = true;
 
     // Abre/fecha lista ao clicar no input ou chevron
     function abrirLista() {
