@@ -255,21 +255,9 @@ th.ordenar.sorted .sort-icon {
     color: #fff;
 }
 
-#registros-pagina {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    position: relative;
-}
-
 #registros-pagina label {
     font-weight: normal;
     color: #000;
-}
-
-#registros-multi {
-    color: #1E94A3 !important;
-    border: #1e94a3 2px solid;
 }
 
 .chevron-registros {
@@ -284,6 +272,19 @@ th.ordenar.sorted .sort-icon {
     min-width: 70px;
     width: 70px;
 }
+
+#registros-pagina {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+}
+
+#registros-multi {
+    color: #1E94A3 !important;
+    border: #1e94a3 2px solid;
+}
+
 
 #radios-registros-multi {
     display: none;
@@ -552,12 +553,6 @@ input:focus[readonly] {
 }
 .faixa-popup input {
     height: 25px;
-}
-
-#registros-pagina {
-    display: flex !important;
-    align-items: center !important;
-    gap: 5px !important;
 }
 
 .fa-xmark:hover {
