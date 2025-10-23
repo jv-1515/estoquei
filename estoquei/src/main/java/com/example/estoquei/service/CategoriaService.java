@@ -7,13 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.estoquei.dto.CategoriaDTO;
 import com.example.estoquei.model.Categoria;
+import com.example.estoquei.model.Fornecedor;
 import com.example.estoquei.repository.CategoriaRepository;
+import com.example.estoquei.repository.FornecedorRepository;
 
 @Service
 public class CategoriaService {
-
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private FornecedorRepository fornecedorRepository;
 
     public void salvarCategorias(List<CategoriaDTO> categorias) {
         for (CategoriaDTO dto : categorias) {
@@ -34,6 +38,14 @@ public class CategoriaService {
         long produtosUsando = categoriaRepository.countProdutosByCategoriaId(id);
         if (produtosUsando > 0) {
             throw new RuntimeException("Não é possível remover: existem produtos usando esta categoria.");
+        }
+        // Remove dos fornecedores
+        List<Fornecedor> fornecedores = fornecedorRepository.findAll();
+        for (Fornecedor f : fornecedores) {
+            if (f.getCategorias() != null && f.getCategorias().contains(id)) {
+                f.getCategorias().remove(id);
+                fornecedorRepository.save(f);
+            }
         }
         categoriaRepository.deleteById(id);
     }

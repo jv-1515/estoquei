@@ -36,13 +36,7 @@ public class FornecedorService {
             fornecedor.setNome_empresa(fornecedorAtualizado.getNome_empresa());
             fornecedor.setCnpj(fornecedorAtualizado.getCnpj());
             fornecedor.setEmail(fornecedorAtualizado.getEmail());
-            fornecedor.setCamisa(fornecedorAtualizado.isCamisa());
-            fornecedor.setCamiseta(fornecedorAtualizado.isCamiseta());
-            fornecedor.setCalça(fornecedorAtualizado.isCalça());
-            fornecedor.setBermuda(fornecedorAtualizado.isBermuda());
-            fornecedor.setVestido(fornecedorAtualizado.isVestido());
-            fornecedor.setSapato(fornecedorAtualizado.isSapato());
-            fornecedor.setMeia(fornecedorAtualizado.isMeia());
+            fornecedor.setCategorias(fornecedorAtualizado.getCategorias());
             fornecedor.setNome_responsavel(fornecedorAtualizado.getNome_responsavel());
             fornecedor.setEmail_responsavel(fornecedorAtualizado.getEmail_responsavel());
             fornecedor.setTelefone(fornecedorAtualizado.getTelefone());
@@ -82,24 +76,13 @@ public class FornecedorService {
     public List<Fornecedor> filtrar(Fornecedor filtro) {
         return fornecedorRepository.findAll().stream()
             .filter(f -> (filtro.getNome_empresa() == null || f.getNome_empresa().toLowerCase().contains(filtro.getNome_empresa().toLowerCase()))
-                      && (filtro.getCnpj() == null || f.getCnpj().equals(filtro.getCnpj())))
+                && (filtro.getCnpj() == null || f.getCnpj().equals(filtro.getCnpj())))
             .toList();
     }
 
-    public List<Fornecedor> listarPorCategoria(String categoria) {
+    public List<Fornecedor> listarPorCategoriaId(Long categoriaId) {
         return fornecedorRepository.findAll().stream()
-            .filter(f -> {
-                switch (categoria.toLowerCase()) {
-                    case "camisa": return f.isCamisa();
-                    case "camiseta": return f.isCamiseta();
-                    case "calça": return f.isCalça();
-                    case "bermuda": return f.isBermuda();
-                    case "vestido": return f.isVestido();
-                    case "sapato": return f.isSapato();
-                    case "meia": return f.isMeia();
-                    default: return false;
-                }
-            })
+            .filter(f -> f.getCategorias() != null && f.getCategorias().contains(categoriaId))
             .toList();
     }
 }

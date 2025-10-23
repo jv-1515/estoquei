@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -103,9 +104,10 @@ public class MovimentacaoProdutoResource {
     }
 
     @PostMapping("/entrada")
+    @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada, HttpSession session) {
         try {
-            System.out.println("🔍 Dados recebidos: " + dadosEntrada);
+            System.out.println("Dados recebidos: " + dadosEntrada);
             
             String codigo = (String) dadosEntrada.get("codigo");
             String codigoCompra = (String) dadosEntrada.get("codigoCompra");

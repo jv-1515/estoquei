@@ -79,8 +79,8 @@ public class FornecedorResource {
     }
 
     @GetMapping("/categoria-existe")
-    public ResponseEntity<List<Fornecedor>> listarPorCategoria(@RequestParam String categoria) {
-        List<Fornecedor> fornecedores = fornecedorService.listarPorCategoria(categoria);
+    public ResponseEntity<List<Fornecedor>> listarPorCategoria(@RequestParam Long categoriaId) {
+        List<Fornecedor> fornecedores = fornecedorService.listarPorCategoriaId(categoriaId);
         return ResponseEntity.ok(fornecedores);
     }
 }

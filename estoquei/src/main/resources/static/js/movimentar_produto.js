@@ -154,6 +154,22 @@ window.addEventListener('DOMContentLoaded', function() {
             </form>
         `;
 
+    const radiosDiv = document.getElementById('radios-fornecedor-multi');
+    if (radiosDiv) {
+        radiosDiv.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDiv.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            const fornecedorInput = document.getElementById('fornecedor-multi');
+            fornecedorInput.value = label.textContent.trim();
+            fornecedorInput.dataset.id = radio.value;
+            radiosDiv.style.display = 'none';
+        });
+    }
+
         // Máscara de preço
         const valorCompraInput = document.getElementById('valor-compra');
         const valorVendaInput = document.getElementById('valor-venda');
@@ -363,8 +379,14 @@ window.addEventListener('DOMContentLoaded', function() {
         }
         setTimeout(atualizarQuantidadeFinal, 0);
         
-        if (tipo === 'ENTRADA' && produto && produto.categoria) {
-        preencherRadiosFornecedorMulti(produto.categoria);
+        if (
+            tipo === 'ENTRADA' &&
+            produto &&
+            produto.categoriaObj &&
+            produto.categoriaObj.id !== undefined &&
+            !isNaN(Number(produto.categoriaObj.id))
+        ) {
+            preencherRadiosFornecedorMulti(produto.categoriaObj.id);
         }
 
         setTimeout(() => {
@@ -808,37 +830,45 @@ function validarDatasMovimentacao() {
 }
 
 
-function preencherRadiosFornecedorMulti(categoria) {
-  fetch(`/fornecedores/categoria-existe?categoria=${encodeURIComponent(categoria)}`)
-    .then(res => res.json())
-    .then(fornecedores => {
-      const radiosDiv = document.getElementById('radios-fornecedor-multi');
-      radiosDiv.innerHTML = fornecedores.map(f =>
-        `<label class="fornecedor-radio-label">
-          <input type="radio" name="fornecedor-radio" value="${f.id}">
-          ${f.codigo} - ${f.nome_empresa}
-        </label>`
-      ).join('');
-    });
+function preencherRadiosFornecedorMulti(categoriaId) {
+    categoriaId = Number(categoriaId);
+    if (isNaN(categoriaId)) {
+        Swal.fire('Erro', 'Categoria inválida!', 'error');
+        return;
+    }
+    fetch(`/fornecedores/categoria-existe?categoriaId=${categoriaId}`)
+        .then(res => res.json())
+        .then(fornecedores => {
+            const radiosDiv = document.getElementById('radios-fornecedor-multi');
+            radiosDiv.innerHTML = '';
+            fornecedores.forEach(f => {
+                radiosDiv.innerHTML += `
+                    <label>
+                        <input type="radio" name="fornecedor_radio" value="${f.id}" />
+                        ${f.nome_empresa}
+                    </label>
+                `;
+            });
+        });
 }
 
 // Seleção visual
-document.getElementById('radios-fornecedor-multi').addEventListener('click', function(e) {
-  const label = e.target.closest('label');
-  if (!label) return;
-  // Remove seleção de todos
-  this.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
-  // Marca o clicado
-  label.classList.add('selecionado');
-  // Marca o radio (mesmo oculto)
-  const radio = label.querySelector('input[type="radio"]');
-  if (radio) radio.checked = true;
-  // Atualiza input
-  const fornecedorInput = document.getElementById('fornecedor-multi');
-  fornecedorInput.value = label.textContent.trim();
-  fornecedorInput.dataset.id = radio.value;
-  this.style.display = 'none';
-});
+// document.getElementById('radios-fornecedor-multi').addEventListener('click', function(e) {
+//   const label = e.target.closest('label');
+//   if (!label) return;
+//   // Remove seleção de todos
+//   this.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+//   // Marca o clicado
+//   label.classList.add('selecionado');
+//   // Marca o radio (mesmo oculto)
+//   const radio = label.querySelector('input[type="radio"]');
+//   if (radio) radio.checked = true;
+//   // Atualiza input
+//   const fornecedorInput = document.getElementById('fornecedor-multi');
+//   fornecedorInput.value = label.textContent.trim();
+//   fornecedorInput.dataset.id = radio.value;
+//   this.style.display = 'none';
+// });
 
 function aplicarEstiloInputs() {
         const inputs = document.querySelectorAll('.filters-group input');
