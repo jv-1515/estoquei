@@ -565,14 +565,31 @@ function getProdutosSelecionados() {
 
 
 
+let categoriasBackend = [];
+
+function carregarCategoriasBackend() {
+    fetch('/categorias')
+        .then(res => res.json())
+        .then(data => {
+            categoriasBackend = data;
+            montarCheckboxesCategoria(categoriasBackend);
+        });
+}
 
 
 function montarCheckboxesCategoria(categorias) {
     const divCat = document.getElementById('checkboxes-categoria-multi');
-    divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
+    divCat.innerHTML = `
+        <label>
+            <input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas
+        </label>
+    `;
     categorias.forEach(cat => {
-        const catCap = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
-        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${catCap}</label>`;
+        divCat.innerHTML += `
+            <label>
+                <input type="checkbox" class="categoria-multi-check" value="${cat.nome}" checked> ${cat.nome}
+            </label>
+        `;
     });
 
     const checks = Array.from(divCat.querySelectorAll('.categoria-multi-check'));
@@ -1174,7 +1191,7 @@ function renderizarMovimentacoes(movimentacoes) {
             
             const tipoTexto = m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída';
             
-            const valorFormatado = m.valorMovimentacao ? 
+            const valorFormatado = m.valorMovimentacao ?
                 new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(m.valorMovimentacao) : 
                 '0,00';
             
@@ -1528,8 +1545,12 @@ function carregarMovimentacoes(top) {
             montarCheckboxesProduto(produtosUnicos);
 
 
-            const categoriasUnicas = [...new Set(movimentacoes.map(m => m.categoria).filter(Boolean))];
-            montarCheckboxesCategoria(categoriasUnicas);
+            fetch('/categorias')
+                .then(res => res.json())
+                .then(categorias => {
+                    categoriasBackend = categorias;
+                    montarCheckboxesCategoria(categoriasBackend);
+                });
 
             const tamanhosUnicos = [...new Set(movimentacoes.map(m => m.tamanho).filter(Boolean))];
             montarCheckboxesTamanho(tamanhosUnicos);
