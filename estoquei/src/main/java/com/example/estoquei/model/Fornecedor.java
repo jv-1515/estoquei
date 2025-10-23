@@ -1,9 +1,12 @@
 package com.example.estoquei.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,14 +31,9 @@ public class Fornecedor implements Serializable {
     @Column(nullable = false)
     private String email;
 
-    // Categorias (booleans)
-    private boolean camisa = true;
-    private boolean camiseta = true;
-    private boolean calça = true;
-    private boolean bermuda = true;
-    private boolean vestido = true;
-    private boolean sapato = true;
-    private boolean meia = true;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "categoria_id")
+    private List<Long> categorias;
 
     // Contato extra (não obrigatórios)
     private String nome_responsavel;
@@ -63,20 +61,8 @@ public class Fornecedor implements Serializable {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public boolean isCamisa() { return camisa; }
-    public void setCamisa(boolean camisa) { this.camisa = camisa; }
-    public boolean isCamiseta() { return camiseta; }
-    public void setCamiseta(boolean camiseta) { this.camiseta = camiseta; }
-    public boolean isCalça() { return calça; }
-    public void setCalça(boolean calça) { this.calça = calça; }
-    public boolean isBermuda() { return bermuda; }
-    public void setBermuda(boolean bermuda) { this.bermuda = bermuda; }
-    public boolean isVestido() { return vestido; }
-    public void setVestido(boolean vestido) { this.vestido = vestido; }
-    public boolean isSapato() { return sapato; }
-    public void setSapato(boolean sapato) { this.sapato = sapato; }
-    public boolean isMeia() { return meia; }
-    public void setMeia(boolean meia) { this.meia = meia; }
+    public List<Long> getCategorias() { return categorias; }
+    public void setCategorias(List<Long> categorias) { this.categorias = categorias; }
 
     public String getNome_responsavel() { return nome_responsavel; }
     public void setNome_responsavel(String nome_responsavel) { this.nome_responsavel = nome_responsavel; }
