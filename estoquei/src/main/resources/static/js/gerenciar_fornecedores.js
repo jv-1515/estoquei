@@ -289,6 +289,14 @@ function getCategoriasArrayTexto(f) {
 function normalizarCategoria(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 }
+
+function getCategoriasSelecionadasFiltro() {
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => Number(cb.value));
+}
+
 // Busca e filtro
 const buscaInput = document.getElementById('busca-fornecedor');
 buscaInput.addEventListener('input', filtrarFornecedores);
@@ -296,27 +304,39 @@ buscaInput.addEventListener('input', filtrarFornecedores);
 function filtrarFornecedores() {
     const termo = document.getElementById('busca-fornecedor').value.trim().toLowerCase();
     const cnpj = document.getElementById('filter-cnpj').value.trim().replace(/\D/g, '');
-const categoriasSelecionadas = Array.from(document.querySelectorAll('.categoria-multi-check-filtro'))
-    .slice(1)
-    .filter(cb => cb.checked)
-    .map(cb => Number(cb.value));
+    const categoriasSelecionadas = getCategoriasSelecionadasFiltro();
+    const todasMarcada = document.getElementById('categoria-multi-todas-filtro').checked;
 
-    let filtrados = fornecedoresOriginais.filter(f => {
-        if (categoriasSelecionadas.length && (!f.categorias || !categoriasSelecionadas.some(id => f.categorias.includes(id)))) return false;
-        const categoriasFornecedor = getCategoriasArrayTexto(f).map(normalizarCategoria);
+let filtrados = fornecedoresOriginais.filter(f => {
+        // Se nenhuma categoria marcada, mostra todos
+        if (categoriasSelecionadas.length === 0 && !todasMarcada) {
+            return (
+                (!termo ||
+                    (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
+                    (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)) ||
+                    (f.email && f.email.toLowerCase().includes(termo))
+                ) &&
+                (!cnpj || (f.cnpj && f.cnpj.replace(/\D/g, '').includes(cnpj)))
+            );
+        }
+        // Se "Todas" marcada, fornecedor precisa ter TODAS as categorias do sistema
+        if (todasMarcada) {
+            if (!f.categorias) return false;
+            const todasIds = categoriasBackend.map(cat => cat.id);
+            if (!todasIds.every(id => f.categorias.includes(id))) return false;
+        } else {
+            // Se não, fornecedor precisa ter TODAS as categorias selecionadas (match all)
+            if (!f.categorias || !categoriasSelecionadas.every(id => f.categorias.includes(id))) return false;
+        }
+        
+        // Aplica os outros filtros normalmente
         return (
             (!termo ||
                 (f.codigo && f.codigo.toLowerCase().includes(termo)) ||
                 (f.nome_empresa && f.nome_empresa.toLowerCase().includes(termo)) ||
                 (f.email && f.email.toLowerCase().includes(termo))
             ) &&
-            (!cnpj || (f.cnpj && f.cnpj.replace(/\D/g, '').includes(cnpj))) &&
-            (
-                categoriasSelecionadas.length === 0 ||
-                categoriasSelecionadas
-                    .map(normalizarCategoria)
-                    .every(cat => categoriasFornecedor.includes(cat))
-            )
+            (!cnpj || (f.cnpj && f.cnpj.replace(/\D/g, '').includes(cnpj)))
         );
     });
 
@@ -491,8 +511,10 @@ function renderDetalhesFornecedor(f) {
     }
     
     // Categorias como input readonly
-    document.getElementById('detalhes-forn-categorias-input').value = getCategoriasTexto(f) || '-';
-    
+    getCategoriasTexto(f).then(categorias => {
+        document.getElementById('detalhes-forn-categorias-input').value = categorias || '-';
+    });
+
     // Observações
     document.getElementById('detalhes-forn-observacoes').value = f.observacoes || '';
     
@@ -2193,8 +2215,16 @@ function atualizarPlaceholderCategoriaMulti() {
     const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
     let ativo = selecionados.length > 0;
 
-    input.value = selecionados.length === 0 ? 'Selecionar' : selecionados.join(', ');
-
+    if (selecionados.length === 0) {
+        input.value = 'Selecionar';
+    } else if (todas.checked) {
+        input.value = 'Todas';
+    } else if (selecionados.length === 1) {
+        input.value = selecionados[0];
+    } else {
+        input.value = selecionados.join(', ');
+    }
+    
     if (ativo) {
         input.style.border = '2px solid #1e94a3';
         input.style.color = '#1e94a3';
@@ -2281,24 +2311,34 @@ async function carregarCategoriasFiltro() {
         `).join('')}
     `;
 
-    // Adicione os listeners aqui!
+    // Nenhum marcado por padrão!
     const checks = Array.from(container.querySelectorAll('.categoria-multi-check-filtro'));
+    checks.forEach(cb => cb.checked = false);
+
     const todas = container.querySelector('#categoria-multi-todas-filtro');
     const input = document.getElementById('filter-categoria');
 
     function atualizarPlaceholder() {
-        const selecionados = checks.slice(1).filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
-        todas.checked = checks.slice(1).every(cb => cb.checked);
-        input.value = selecionados.length === 0 ? 'Selecionar' : selecionados.join(', ');
+        const individuais = checks.slice(1);
+        const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
+        todas.checked = individuais.length > 0 && individuais.every(cb => cb.checked);
+
+        if (selecionados.length === 0) {
+            input.value = 'Selecionar';
+        } else if (todas.checked) {
+            input.value = 'Todas';
+        } else if (selecionados.length === 1) {
+            input.value = selecionados[0];
+        } else {
+            input.value = selecionados.join(', ');
+        }
     }
 
-    if (todas) {
-        todas.addEventListener('change', function() {
-            checks.forEach(cb => cb.checked = todas.checked);
-            atualizarPlaceholder();
-            filtrarFornecedores();
-        });
-    }
+    todas.addEventListener('change', function() {
+        checks.slice(1).forEach(cb => cb.checked = todas.checked);
+        atualizarPlaceholder();
+        filtrarFornecedores();
+    });
     checks.slice(1).forEach(cb => {
         cb.addEventListener('change', function() {
             todas.checked = checks.slice(1).every(c => c.checked);
