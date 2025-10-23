@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.estoquei.model.Genero;
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.model.Tamanho;
-import com.example.estoquei.model.Genero;
 import com.example.estoquei.model.Usuario;
 import com.example.estoquei.repository.MovimentacaoProdutoRepository;
 import com.example.estoquei.service.ProdutoService;
@@ -155,7 +155,7 @@ public class ProdutoResource {
     public ResponseEntity<List<Produto>> listarBaixoEstoque(@RequestParam(required = false) Integer top) {
         List<Produto> produtos;
         if (top != null) {
-            produtos = produtoService.listarTopBaixoEstoque(top);
+        produtos = produtoService.listarTopBaixoEstoque(top);
         } else {
             produtos = produtoService.listarBaixoEstoque();
         }
