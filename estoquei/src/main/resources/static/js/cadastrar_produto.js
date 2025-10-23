@@ -170,7 +170,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
 
     const categoriaNome = document.getElementById('categoria-multi').dataset.value;
     const categoriaObj = categorias.find(cat => cat.nome === categoriaNome);
-    formData.set('categoria', categoriaObj ? categoriaObj.id : '');
+    formData.set('categoria', categoriaObj ? categoriaObj.nome : '');
+    formData.set('categoriaId', categoriaObj ? categoriaObj.id : '');
     
     const generoInput = document.getElementById('genero-multi');
     const tamanhoInput = document.getElementById('tamanho-multi');

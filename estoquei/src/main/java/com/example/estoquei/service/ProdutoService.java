@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.estoquei.model.Produto;
 import com.example.estoquei.model.Categoria;
-import com.example.estoquei.repository.ProdutoRepository;
+import com.example.estoquei.model.Produto;
 import com.example.estoquei.repository.CategoriaRepository;
+import com.example.estoquei.repository.ProdutoRepository;
 
 
 @Service
@@ -27,6 +28,7 @@ public class ProdutoService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    @Transactional
     public Produto salvar(Produto produto, MultipartFile foto) throws IOException {
         if (produto.getCategoria() != null && produto.getCategoriaObj() == null) {
             Categoria categoria = categoriaRepository.findByNome(produto.getCategoria());
@@ -80,6 +82,7 @@ public class ProdutoService {
         return produtoRepository.findById(id);
     }
 
+    @Transactional
     public Produto atualizar(Long id, Produto novoProduto, MultipartFile foto) throws IOException {
         Produto p = produtoRepository.findById(id);
 
@@ -140,6 +143,7 @@ public class ProdutoService {
         return produtoRepository.findAllRemovidos();
     }
 
+    @Transactional
     public boolean deletar(Long id, String responsavel) {
         Produto produtoParaDeletar = produtoRepository.findById(id);
     
@@ -153,6 +157,7 @@ public class ProdutoService {
         return false;
     }
 
+    @Transactional
     public void excluirDefinitivo(Long id) {
         Produto produto = produtoRepository.findById(id);
         if (produto != null && produto.getUrl_imagem() != null && !produto.getUrl_imagem().isEmpty()) {
