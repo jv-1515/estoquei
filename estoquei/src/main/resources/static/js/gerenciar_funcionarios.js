@@ -953,20 +953,6 @@ function gerarSenhaProvisoria() {
     document.getElementById('cad-senha').value = senha;
 }
 
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const icon = document.getElementById('icon-' + inputId);
-    if (!input || !icon) return;
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    } else {
-        input.type = "password";
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    }
-}
 
 function limparFormularioCadastroFuncionario() {
     document.getElementById('cad-codigo').value = '';
@@ -1268,7 +1254,6 @@ function abrirEdicaoFuncionario(id) {
         document.getElementById('edit-codigo').value = funcionario.codigo;
         document.getElementById('edit-nome').value = funcionario.nome;
         document.getElementById('edit-email').value = funcionario.email;
-        document.getElementById('edit-senha').value = funcionario.senha;
         document.getElementById('edit-cpf').value = funcionario.cpf;
         document.getElementById('edit-ctps').value = funcionario.ctps || '';
         document.getElementById('edit-rg').value = funcionario.rg || '';
@@ -1325,7 +1310,6 @@ function abrirEdicaoFuncionario(id) {
         nome: funcionario.nome || '',
         cargoId: funcionario.cargo && funcionario.cargo.id ? funcionario.cargo.id : '',
         email: funcionario.email || '',
-        senha: funcionario.senha || '',
         cpf: funcionario.cpf || '',
         dataNascimento: funcionario.dataNascimento ? funcionario.dataNascimento.substring(0, 10) : '',
         telefone: funcionario.telefone || '',
@@ -1430,7 +1414,6 @@ function fecharEdicaoFuncionario() {
     const nome = document.getElementById('edit-nome').value.trim();
     const cargoIdAtual = Number(document.getElementById('edit-cargo-multi').dataset.value || '');
     const email = document.getElementById('edit-email').value.trim();
-    const senha = document.getElementById('edit-senha').value;
     const cpf = document.getElementById('edit-cpf').value.replace(/\D/g, '');
     const dataNascimento = document.getElementById('edit-nascimento').value;
     const telefone = document.getElementById('edit-contato').value.replace(/\D/g, '');
@@ -1441,7 +1424,6 @@ function fecharEdicaoFuncionario() {
         nome !== (orig.nome || '') ||
         cargoIdAtual !== Number(orig.cargoId || '') ||
         email !== (orig.email || '') ||
-        senha !== (orig.senha || '') ||
         cpf !== (orig.cpf || '') ||
         dataNascimento !== (orig.dataNascimento || '') ||
         telefone !== (orig.telefone || '') ||
@@ -1481,7 +1463,6 @@ async function salvarEdicaoFuncionario() {
         nome: document.getElementById('edit-nome').value.trim(),
         cargo: { id: Number(cargoId) },
         email: document.getElementById('edit-email').value.trim(),
-        senha: document.getElementById('edit-senha').value,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
@@ -2790,7 +2771,6 @@ document.getElementById('btn-proximo-2').onclick = function() {
     document.getElementById('cad-cargo-3').value = cargoInput ? cargoInput.value : '';
     document.getElementById('cad-nome-3').value = document.getElementById('cad-nome').value;
     document.getElementById('cad-email-3').value = document.getElementById('cad-email').value;
-    document.getElementById('cad-senha-3').value = document.getElementById('cad-senha').value;
     document.getElementById('cad-ctps-3').value = document.getElementById('cad-ctps').value;
     document.getElementById('cad-rg-3').value = document.getElementById('cad-rg').value;
     document.getElementById('cad-cpf-3').value = cpf;
