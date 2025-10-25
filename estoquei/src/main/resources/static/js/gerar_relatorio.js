@@ -557,15 +557,14 @@ function montarCheckboxesProduto(produtos) {
 }
 
 function montarCheckboxesCategoria(produtos) {
-    const categorias = [...new Set(produtos.map(p => p.categoria))];
+    const categorias = [...new Set(produtos.map(p => p.categoria).filter(Boolean))];
     const divCat = document.getElementById('checkboxes-categoria-multi');
     divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
     categorias.forEach(cat => {
-        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${capitalizar(cat)}</label>`;
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}"> ${cat}</label>`;
     });
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
         cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
-        cb.addEventListener('change', atualizarLista);
     });
     atualizarPlaceholderCategoriaMulti.call(document.querySelector('.categoria-multi-check'));
 }

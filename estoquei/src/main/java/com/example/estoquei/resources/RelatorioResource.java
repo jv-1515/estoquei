@@ -1,26 +1,26 @@
 package com.example.estoquei.resources;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.mock.web.MockMultipartFile;
-
-import com.example.estoquei.dto.FiltroRelatorioDTO;
-import com.example.estoquei.dto.GerarRelatorioRequest;
-import com.example.estoquei.model.Produto;
-import com.example.estoquei.service.RelatorioService;
-import com.example.estoquei.service.FirebaseStorageService;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.estoquei.dto.FiltroRelatorioDTO;
+import com.example.estoquei.dto.GerarRelatorioRequest;
+import com.example.estoquei.model.Produto;
+import com.example.estoquei.service.FirebaseStorageService;
+import com.example.estoquei.service.RelatorioService;
 
 @RestController
 @RequestMapping("/relatorio")
@@ -40,6 +40,11 @@ public class RelatorioResource {
         
         if (payload.getProdutos() != null) {
             filtro.setIds(payload.getProdutos().stream().map(Produto::getId).collect(Collectors.toList()));
+            filtro.setCategorias(payload.getProdutos().stream()
+                .map(Produto::getCategoria)
+                .filter(cat -> cat != null && !cat.isEmpty())
+                .distinct()
+                .collect(Collectors.toList()));
         }
         filtro.setDataInicio(payload.getDataInicio());
         filtro.setDataFim(payload.getDataFim());

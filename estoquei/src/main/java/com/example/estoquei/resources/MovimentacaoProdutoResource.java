@@ -169,10 +169,11 @@ public class MovimentacaoProdutoResource {
         }
     }
 
-    @PostMapping("/saida") 
+    @PostMapping("/saida")
+    @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida, HttpSession session) {
         try {
-            System.out.println("🔍 Dados recebidos: " + dadosSaida);
+            System.out.println("Dados recebidos: " + dadosSaida);
             
             String codigo = (String) dadosSaida.get("codigo");
             String codigoVenda = (String) dadosSaida.get("codigoVenda");

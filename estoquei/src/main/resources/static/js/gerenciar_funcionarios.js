@@ -4,6 +4,9 @@ let funcionariosOriginais = [];
 window.expandedCargoMulti = false;
 window.expandedStatusMulti = false;
 
+window.isAdmin = function() {
+    return window.usuarioLogadoCargoId === 0;
+};
 
 function getIniciais(nome) {
     if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
@@ -332,9 +335,11 @@ function preencherRadiosCadCargoMulti() {
         .then(cargos => {
             const radiosDiv = document.getElementById('radios-cad-cargo-multi');
             radiosDiv.innerHTML = '';
-            cargos
-            .filter(cargo => cargo.nome.toLowerCase() !== 'admin' && cargo.nome.toLowerCase() !== 'gerente')
-            .forEach((cargo, idx) => {
+            let cargosFiltrados;
+
+            cargosFiltrados = cargos.filter(cargo => cargo.id > 0 && cargo.nome.toLowerCase() !== 'admin');
+
+            cargosFiltrados.forEach((cargo, idx) => {
                 const label = document.createElement('label');
                 label.className = 'cargo-multi-label';
                 label.innerHTML = `<input type="radio" name="cad-cargo-radio" value="${cargo.id}" style="display:none;">${cargo.nome}`;
@@ -510,12 +515,32 @@ function renderizarFuncionarios(lista) {
                 </td>
                 <td class="actions">
                     <a href="#" onclick="abrirDetalhesFuncionario('${f.id}')" title="Detalhes">
-                        <i class="fa-solid fa-eye""></i>
+                        <i class="fa-solid fa-eye"></i>
                     </a>
-                    <a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                    ${
+                        (f.cargo && f.cargo.nome.toLowerCase() === "gerente")
+                            ? (
+                                window.isAdmin && window.isAdmin()
+                                    ? `<a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>`
+                                    : `<a href="#" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button type="button" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>`
+                            )
+                            : `<a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>`
+                    }
                 </td>
             </tr>
             `
@@ -953,20 +978,6 @@ function gerarSenhaProvisoria() {
     document.getElementById('cad-senha').value = senha;
 }
 
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const icon = document.getElementById('icon-' + inputId);
-    if (!input || !icon) return;
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    } else {
-        input.type = "password";
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    }
-}
 
 function limparFormularioCadastroFuncionario() {
     document.getElementById('cad-codigo').value = '';
@@ -1223,19 +1234,6 @@ function abrirEdicaoFuncionario(id) {
                     allowOutsideClick: false
                 });
             };
-        } else if (funcionario.cargo && Number(funcionario.cargo.id) === 1) {
-            sliderSpan.onclick = function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Você não pode inativar um Gerente',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-            };
         } else {
             sliderSpan.onclick = null;
         }
@@ -1268,7 +1266,6 @@ function abrirEdicaoFuncionario(id) {
         document.getElementById('edit-codigo').value = funcionario.codigo;
         document.getElementById('edit-nome').value = funcionario.nome;
         document.getElementById('edit-email').value = funcionario.email;
-        document.getElementById('edit-senha').value = funcionario.senha;
         document.getElementById('edit-cpf').value = funcionario.cpf;
         document.getElementById('edit-ctps').value = funcionario.ctps || '';
         document.getElementById('edit-rg').value = funcionario.rg || '';
@@ -1299,33 +1296,12 @@ function abrirEdicaoFuncionario(id) {
     });
 
 
-    if (funcionario.cargo && funcionario.cargo.nome && funcionario.cargo.nome.toLowerCase() === 'gerente') {
-        const cargoInput = document.getElementById('edit-cargo-multi');
-        if (cargoInput) {
-            cargoInput.disabled = true;
-            cargoInput.style.backgroundColor = '#f1f1f1';
-            cargoInput.style.color = '#757575';
-            cargoInput.style.cursor = 'pointer';
-        }
-        const radiosDiv = document.getElementById('radios-edit-cargo-multi');
-        if (radiosDiv) radiosDiv.style.display = 'none';
-    }
-    else {
-        const cargoInput = document.getElementById('edit-cargo-multi');
-        if (cargoInput) {
-            cargoInput.disabled = false;
-            cargoInput.style.backgroundColor = '';
-            cargoInput.style.color = '';
-            cargoInput.style.cursor = '';
-        }
-    }
 
     window.dadosOriginaisEdicaoFuncionario = {
         codigo: funcionario.codigo || '',
         nome: funcionario.nome || '',
         cargoId: funcionario.cargo && funcionario.cargo.id ? funcionario.cargo.id : '',
         email: funcionario.email || '',
-        senha: funcionario.senha || '',
         cpf: funcionario.cpf || '',
         dataNascimento: funcionario.dataNascimento ? funcionario.dataNascimento.substring(0, 10) : '',
         telefone: funcionario.telefone || '',
@@ -1430,7 +1406,6 @@ function fecharEdicaoFuncionario() {
     const nome = document.getElementById('edit-nome').value.trim();
     const cargoIdAtual = Number(document.getElementById('edit-cargo-multi').dataset.value || '');
     const email = document.getElementById('edit-email').value.trim();
-    const senha = document.getElementById('edit-senha').value;
     const cpf = document.getElementById('edit-cpf').value.replace(/\D/g, '');
     const dataNascimento = document.getElementById('edit-nascimento').value;
     const telefone = document.getElementById('edit-contato').value.replace(/\D/g, '');
@@ -1441,7 +1416,6 @@ function fecharEdicaoFuncionario() {
         nome !== (orig.nome || '') ||
         cargoIdAtual !== Number(orig.cargoId || '') ||
         email !== (orig.email || '') ||
-        senha !== (orig.senha || '') ||
         cpf !== (orig.cpf || '') ||
         dataNascimento !== (orig.dataNascimento || '') ||
         telefone !== (orig.telefone || '') ||
@@ -1481,7 +1455,6 @@ async function salvarEdicaoFuncionario() {
         nome: document.getElementById('edit-nome').value.trim(),
         cargo: { id: Number(cargoId) },
         email: document.getElementById('edit-email').value.trim(),
-        senha: document.getElementById('edit-senha').value,
         cpf: document.getElementById('edit-cpf').value.replace(/\D/g, ''),
         dataNascimento: document.getElementById('edit-nascimento').value,
         telefone: document.getElementById('edit-contato').value.replace(/\D/g, ''),
@@ -2790,7 +2763,6 @@ document.getElementById('btn-proximo-2').onclick = function() {
     document.getElementById('cad-cargo-3').value = cargoInput ? cargoInput.value : '';
     document.getElementById('cad-nome-3').value = document.getElementById('cad-nome').value;
     document.getElementById('cad-email-3').value = document.getElementById('cad-email').value;
-    document.getElementById('cad-senha-3').value = document.getElementById('cad-senha').value;
     document.getElementById('cad-ctps-3').value = document.getElementById('cad-ctps').value;
     document.getElementById('cad-rg-3').value = document.getElementById('cad-rg').value;
     document.getElementById('cad-cpf-3').value = cpf;

@@ -52,7 +52,7 @@ public class RelatorioService {
         // Filtrar por categoria
         if (filtro.getCategorias() != null && !filtro.getCategorias().isEmpty()) {
             produtos = produtos.stream()
-                .filter(p -> filtro.getCategorias().contains(p.getCategoria()))
+                .filter(p -> p.getCategoria() != null && filtro.getCategorias().contains(p.getCategoria()))
                 .collect(Collectors.toList());
         }
         // Filtrar por tamanho
@@ -211,7 +211,7 @@ public class RelatorioService {
 
                 table.addCell(celula(p.getCodigo(), bg, true));
                 table.addCell(celula(capitalize(p.getNome()), bg, true));
-                table.addCell(celula(capitalize(p.getCategoria() != null ? p.getCategoria().toString() : ""), bg, true));
+                table.addCell(celula(capitalize(p.getCategoria() != null ? p.getCategoria() : ""), bg, true));
                 table.addCell(celula(p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "", bg, true));
                 table.addCell(celula(capitalize(p.getGenero() != null ? p.getGenero().toString() : ""), bg, true));
                 table.addCell(celula(formatarPreco(p.getPreco()), bg, true));
@@ -246,7 +246,7 @@ public class RelatorioService {
                 Font fontLabel = new Font(Font.FontFamily.HELVETICA, 11, Font.NORMAL, new BaseColor(51,51,51));
                 Paragraph detalhes = new Paragraph();
                 detalhes.add(new Chunk("Categoria: ", fontNegrito));
-                detalhes.add(new Chunk(capitalize(p.getCategoria() != null ? p.getCategoria().toString() : "-"), fontLabel));
+                detalhes.add(new Chunk(capitalize(p.getCategoria() != null ? p.getCategoria() : "-"), fontLabel));
                 detalhes.add(new Chunk(" | Tamanho: ", fontNegrito));
                 detalhes.add(new Chunk(p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "-", fontLabel));
                 detalhes.add(new Chunk(" | Gênero: ", fontNegrito));

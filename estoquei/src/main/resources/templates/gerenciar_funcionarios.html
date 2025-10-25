@@ -273,9 +273,6 @@
               <label for="cad-email-3">Email*</label>
               <input type="email" id="cad-email-3" name="email-3" readonly />
               
-              <label for="cad-senha-3">Senha Provisória*</label>
-              <input type="text" id="cad-senha-3" name="senha-3" readonly />
-              
               <label for="cad-ctps-3">Carteira de Trabalho</label>
               <input type="text" id="cad-ctps-3" name="ctps-3" readonly />
               
@@ -361,14 +358,6 @@
             <label for="edit-email">Email*</label>
             <input type="email" id="edit-email" name="email" maxlength="50" required placeholder="Email" />
 
-            <label for="edit-senha">Senha*</label>
-            <div style="position: relative; display: flex; align-items: center;">
-                <input type="password" id="edit-senha" name="senha" style="padding-right: 36px; flex: 1;" autocomplete="current-password" minlength="8" placeholder="Nova senha" />
-                <span class="lock-open" onclick="togglePassword('edit-senha')" style="position: absolute; right: 10px; cursor: pointer;">
-                    <i class="fa-solid fa-eye-slash" id="icon-edit-senha"></i>
-                </span>
-            </div>
-
             <label for="edit-ctps">Carteira de Trabalho*</label>
             <input type="text" id="edit-ctps" name="ctps" placeholder="Não informada" required maxlength="12" />
 
@@ -441,6 +430,7 @@
       
     <script th:inline="javascript">
     window.usuarioLogadoId = "[[${usuarioLogado.id}]]";
+    window.usuarioLogadoCargoId = [[${usuarioLogado.cargo.id}]];
     </script>
 </body>
 </html>
