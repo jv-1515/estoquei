@@ -4,6 +4,9 @@ let funcionariosOriginais = [];
 window.expandedCargoMulti = false;
 window.expandedStatusMulti = false;
 
+window.isAdmin = function() {
+    return window.usuarioLogadoCargoId === 0;
+};
 
 function getIniciais(nome) {
     if (!nome || typeof nome !== 'string' || !nome.trim()) return '';
@@ -332,9 +335,11 @@ function preencherRadiosCadCargoMulti() {
         .then(cargos => {
             const radiosDiv = document.getElementById('radios-cad-cargo-multi');
             radiosDiv.innerHTML = '';
-            cargos
-            .filter(cargo => cargo.nome.toLowerCase() !== 'admin' && cargo.nome.toLowerCase() !== 'gerente')
-            .forEach((cargo, idx) => {
+            let cargosFiltrados;
+
+            cargosFiltrados = cargos.filter(cargo => cargo.id > 0 && cargo.nome.toLowerCase() !== 'admin');
+
+            cargosFiltrados.forEach((cargo, idx) => {
                 const label = document.createElement('label');
                 label.className = 'cargo-multi-label';
                 label.innerHTML = `<input type="radio" name="cad-cargo-radio" value="${cargo.id}" style="display:none;">${cargo.nome}`;
@@ -510,12 +515,32 @@ function renderizarFuncionarios(lista) {
                 </td>
                 <td class="actions">
                     <a href="#" onclick="abrirDetalhesFuncionario('${f.id}')" title="Detalhes">
-                        <i class="fa-solid fa-eye""></i>
+                        <i class="fa-solid fa-eye"></i>
                     </a>
-                    <a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar" tabindex="${pagina.length + idx + 1}">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                    <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir" tabindex="${2 * pagina.length + idx + 1}"><i class="fa-solid fa-trash"></i></button>
+                    ${
+                        (f.cargo && f.cargo.nome.toLowerCase() === "gerente")
+                            ? (
+                                window.isAdmin && window.isAdmin()
+                                    ? `<a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>`
+                                    : `<a href="#" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button type="button" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>`
+                            )
+                            : `<a href="#" onclick="abrirEdicaoFuncionario('${f.id}')" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>`
+                    }
                 </td>
             </tr>
             `
@@ -1209,19 +1234,6 @@ function abrirEdicaoFuncionario(id) {
                     allowOutsideClick: false
                 });
             };
-        } else if (funcionario.cargo && Number(funcionario.cargo.id) === 1) {
-            sliderSpan.onclick = function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Ação não permitida!',
-                    text: 'Você não pode inativar um Gerente',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    allowOutsideClick: false
-                });
-            };
         } else {
             sliderSpan.onclick = null;
         }
@@ -1284,26 +1296,6 @@ function abrirEdicaoFuncionario(id) {
     });
 
 
-    if (funcionario.cargo && funcionario.cargo.nome && funcionario.cargo.nome.toLowerCase() === 'gerente') {
-        const cargoInput = document.getElementById('edit-cargo-multi');
-        if (cargoInput) {
-            cargoInput.disabled = true;
-            cargoInput.style.backgroundColor = '#f1f1f1';
-            cargoInput.style.color = '#757575';
-            cargoInput.style.cursor = 'pointer';
-        }
-        const radiosDiv = document.getElementById('radios-edit-cargo-multi');
-        if (radiosDiv) radiosDiv.style.display = 'none';
-    }
-    else {
-        const cargoInput = document.getElementById('edit-cargo-multi');
-        if (cargoInput) {
-            cargoInput.disabled = false;
-            cargoInput.style.backgroundColor = '';
-            cargoInput.style.color = '';
-            cargoInput.style.cursor = '';
-        }
-    }
 
     window.dadosOriginaisEdicaoFuncionario = {
         codigo: funcionario.codigo || '',
