@@ -2133,15 +2133,6 @@ const CORES_CATEGORIAS = [
   "210,105,30"    // #d2691e
 ];
 
-function getCategoriasDoLocalStorage(){
-  try{
-    const raw = localStorage.getItem('categoriasModal');
-    if(!raw) return null;
-    const arr = JSON.parse(raw);
-    if(!Array.isArray(arr)) return null;
-    return arr.filter(c=>c && (c.nome||c.name)).map((c,idx)=>({ id:c.id||(idx+1), nome:c.nome||c.name }));
-  }catch(e){ return null; }
-}
 
 function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
@@ -2252,38 +2243,52 @@ function animateCategoriaScroll(direction, wrapperEl){
     setTimeout(()=> { el.style.opacity = '1'; el.style.transition = ''; }, 160);
   } catch(e){  }
 }
-function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
-  const catsLS = getCategoriasDoLocalStorage();
-  const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];
-  const cats = (catsLS && catsLS.length) ? catsLS : defaultCats.map((n,idx)=>({ id: idx+1, nome: n }));
 
-  const summary = cats.map((c,idx)=>{
-    const key = (c.nome||'').toString().toUpperCase();
-    const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
-    const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
-    const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
-    return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
-  });
 
-  renderCategoriaCards(summary);
+async function carregarCategoriasBackend() {
+    try {
+        const res = await fetch('/categorias');
+        categoriasBackend = await res.json();
+    } catch {
+        categoriasBackend = [];
+    }
 }
+
+function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
+    // Use categoriasBackend
+    const cats = categoriasBackend.length ? categoriasBackend : [];
+    const summary = cats.map((c,idx)=>{
+        const key = (c.nome||'').toString().toUpperCase();
+        const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
+        const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
+        const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
+        return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
+    });
+
+    renderCategoriaCards(summary);
+}
+
+// Chame carregarCategoriasBackend no início
+document.addEventListener('DOMContentLoaded', async function() {
+    await carregarCategoriasBackend();
+});
 
 
 
 (function ensureCategoriaScroll() {
-  function setup() {
-    const cards = document.getElementById('categoria-cards');
-    if (!cards) return;
+    function setup() {
+        const cards = document.getElementById('categoria-cards');
+        if (!cards) return;
 
-    // se não existir a viewport, cria e envolve #categoria-cards
-    let viewport = document.querySelector('.categoria-cards-viewport');
-    if (!viewport) {
-      viewport = document.createElement('div');
-      viewport.className = 'categoria-cards-viewport';
-      // insere viewport onde #categoria-cards estava
-      const parent = cards.parentNode;
-      parent.insertBefore(viewport, cards);
-      viewport.appendChild(cards);
+        // se não existir a viewport, cria e envolve #categoria-cards
+        let viewport = document.querySelector('.categoria-cards-viewport');
+        if (!viewport) {
+        viewport = document.createElement('div');
+        viewport.className = 'categoria-cards-viewport';
+        // insere viewport onde #categoria-cards estava
+        const parent = cards.parentNode;
+        parent.insertBefore(viewport, cards);
+        viewport.appendChild(cards);
     }
 
     // força CSS inline mínimo para garantir o comportamento que você quer
@@ -2309,18 +2314,18 @@ function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
     const getStep = () => Math.max(120, Math.floor(viewport.clientWidth || 900));
 
     function updateButtons() {
-      const max = Math.max(0, cards.scrollWidth - cards.clientWidth);
-      btnPrev.style.display = cards.scrollLeft > 2 ? '' : 'none';
-      btnNext.style.display = cards.scrollLeft < max - 2 ? '' : 'none';
+        const max = Math.max(0, cards.scrollWidth - cards.clientWidth);
+        btnPrev.style.display = cards.scrollLeft > 2 ? '' : 'none';
+        btnNext.style.display = cards.scrollLeft < max - 2 ? '' : 'none';
     }
 
     btnPrev.onclick = () => {
-      cards.scrollBy({ left: -getStep(), behavior: 'smooth' });
-      setTimeout(updateButtons, 360);
+        cards.scrollBy({ left: -getStep(), behavior: 'smooth' });
+        setTimeout(updateButtons, 360);
     };
     btnNext.onclick = () => {
-      cards.scrollBy({ left: getStep(), behavior: 'smooth' });
-      setTimeout(updateButtons, 360);
+        cards.scrollBy({ left: getStep(), behavior: 'smooth' });
+        setTimeout(updateButtons, 360);
     };
 
     // manter sincronizado com scroll manual
@@ -2330,11 +2335,12 @@ function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
 
     // initial
     setTimeout(updateButtons, 20);
-  }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setup);
-  } else {
-    setup();
-  }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup);
+    } else {
+        setup();
+    }
 })();

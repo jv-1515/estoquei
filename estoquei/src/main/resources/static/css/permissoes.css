@@ -243,7 +243,9 @@ input, select {
 }
 
 .cargo-btn:hover {
-    opacity: 0.85;
+    cursor: pointer;
+    filter: brightness(0.8);
+    transition: 0.2s;
 }
 
 .cargo-btn i {

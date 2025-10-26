@@ -74,8 +74,21 @@ h2 {
     padding: 0 7px;
 }
 
+#filter-periodo {
+    cursor:pointer;
+    width: 160px;
+    border: 2px solid #1E94A3;
+}
 #filter-periodo::placeholder {
     color: #1E94A3;
+}
+.chevron-periodo {
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    color: #1E94A3;
+    pointer-events:none;
 }
 
 

@@ -1303,16 +1303,6 @@ function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
 
-function getCategoriasDoLocalStorage(){
-  try{
-    const raw = localStorage.getItem('categoriasModal');
-    if(!raw) return null;
-    const arr = JSON.parse(raw);
-    if(!Array.isArray(arr)) return null;
-    return arr.filter(c=>c && (c.nome||c.name)).map((c,idx)=>({ id:c.id||(idx+1), nome:c.nome||c.name }));
-  }catch(e){ return null; }
-}
-
 let categoriaResumoArray = [];
 const coresCategorias = [
     "30,148,163",   // #1e94a3
@@ -1342,21 +1332,35 @@ function animateCategoriaScroll(direction, wrapperEl){
     wrapperEl.scrollBy({ left: direction * step * 3, behavior: 'smooth' });
 }
 
-function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
-  const catsLS = getCategoriasDoLocalStorage();
-  const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];
-  const cats = (catsLS && catsLS.length) ? catsLS : defaultCats.map((n,idx)=>({ id: idx+1, nome: n }));
+let categoriasBackend = [];
 
-  const summary = cats.map((c,idx)=>{
-    const key = (c.nome||'').toString().toUpperCase();
-    const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
-    const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
-    const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
-    return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
-  });
-
-  renderCategoriaCards(summary);
+async function carregarCategoriasBackend() {
+    try {
+        const res = await fetch('/categorias');
+        categoriasBackend = await res.json();
+    } catch {
+        categoriasBackend = [];
+    }
 }
+
+function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
+    // Use categoriasBackend
+    const cats = categoriasBackend.length ? categoriasBackend : [];
+    const summary = cats.map((c,idx)=>{
+        const key = (c.nome||'').toString().toUpperCase();
+        const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
+        const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
+        const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
+        return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
+    });
+
+    renderCategoriaCards(summary);
+}
+
+// Chame carregarCategoriasBackend no início
+document.addEventListener('DOMContentLoaded', async function() {
+    await carregarCategoriasBackend();
+});
 
 function renderCategoriaCards(summaryArray){
     const wrapper = document.getElementById('categoria-cards');
