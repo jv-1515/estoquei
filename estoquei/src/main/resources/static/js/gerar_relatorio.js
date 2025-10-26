@@ -247,10 +247,13 @@ function montarCheckboxesCategoria(produtos) {
     const divCat = document.getElementById('checkboxes-categoria-multi');
     divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
     categorias.forEach(cat => {
-        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}"> ${cat}</label>`;
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${cat}</label>`;
     });
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+        cb.addEventListener('change', function() {
+            atualizarPlaceholderCategoriaMulti.call(cb);
+            atualizarLista();
+        });
     });
     atualizarPlaceholderCategoriaMulti.call(document.querySelector('.categoria-multi-check'));
 }
@@ -476,9 +479,10 @@ function getProdutosSelecionados() {
         .map(cb => Number(cb.value));
 }
 function getCategoriasSelecionadas() {
-    return Array.from(document.querySelectorAll('.categoria-multi-check'))
-        .filter(cb => cb.checked && cb.value)
-        .map(cb => cb.value);
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
 function getTamanhosSelecionados() {
     return Array.from(document.querySelectorAll('.tamanho-multi-check'))
