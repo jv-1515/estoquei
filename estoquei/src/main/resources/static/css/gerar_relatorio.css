@@ -74,6 +74,24 @@ h2 {
     padding: 0 7px;
 }
 
+#filter-periodo {
+    cursor:pointer;
+    width: 160px;
+    border: 2px solid #1E94A3;
+}
+#filter-periodo::placeholder {
+    color: #1E94A3;
+}
+.chevron-periodo {
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    color: #1E94A3;
+    pointer-events:none;
+}
+
+
 #filter-data-criacao-busca,
 #filter-data-inicio-busca,
 #filter-data-fim-busca {
@@ -279,20 +297,6 @@ button:hover,
     transition: background-color 0.2s, color 0.2s;
 }
 
-.input-group input,
-.input-group select {
-    width: 100%;
-    height: 30px;
-    box-sizing: border-box;
-    margin-top: 0;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 7px;
-    color: #757575;
-    background: #fff;
-    transition: border-color 0.2s;
-}
 
 .faixa-popup {
     display: none;

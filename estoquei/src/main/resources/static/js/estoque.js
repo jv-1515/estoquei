@@ -2543,27 +2543,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.aplicarPermissoesEstoque) window.aplicarPermissoesEstoque();
 });
 
-function getCategoriasDoLocalStorage() {
-    try {
-        const arr = JSON.parse(localStorage.getItem('categoriasModal'));
-        if (Array.isArray(arr) && arr.length) return arr;
-    } catch(e) {}
-    // fallback padrão
-    return [
-        { id: 1, nome: "Camisa", cor: "#1e94a3", qtd: 0 },
-        { id: 2, nome: "Camiseta", cor: "#277580", qtd: 0 },
-        { id: 3, nome: "Bermuda", cor: "#bfa100", qtd: 0 },
-        { id: 4, nome: "Calça", cor: "#c0392b", qtd: 0 },
-        { id: 5, nome: "Vestido", cor: "#e67e22", qtd: 0 },
-        { id: 6, nome: "Sapato", cor: "#8e44ad", qtd: 0 },
-        { id: 7, nome: "Meia", cor: "#16a085", qtd: 0 }
-    ];
-}
-
 function renderizarCategoriasDinamicas(produtos) {
     const ul = document.getElementById('lista-categorias');
     ul.innerHTML = '';
-    const categorias = getCategoriasDoLocalStorage();
+    const categorias = categoriasBackend;
     categorias.forEach((cat, i) => {
         // Conta produtos da categoria
         const qtd = produtos.filter(p => (p.categoria || '').toUpperCase() === cat.nome.toUpperCase()).length;

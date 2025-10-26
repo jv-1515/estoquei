@@ -106,9 +106,7 @@ public class MovimentacaoProdutoResource {
     @PostMapping("/entrada")
     @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada, HttpSession session) {
-        try {
-            System.out.println("Dados recebidos: " + dadosEntrada);
-            
+        try {            
             String codigo = (String) dadosEntrada.get("codigo");
             String codigoCompra = (String) dadosEntrada.get("codigoCompra");
             String dataEntrada = (String) dadosEntrada.get("dataEntrada");
@@ -172,9 +170,7 @@ public class MovimentacaoProdutoResource {
     @PostMapping("/saida")
     @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida, HttpSession session) {
-        try {
-            System.out.println("Dados recebidos: " + dadosSaida);
-            
+        try {            
             String codigo = (String) dadosSaida.get("codigo");
             String codigoVenda = (String) dadosSaida.get("codigoVenda");
             String dataSaida = (String) dadosSaida.get("dataSaida");
@@ -259,5 +255,42 @@ public class MovimentacaoProdutoResource {
             return List.of();
         }
         return movimentacaoRepo.findByDataBetweenOrderByDataDesc(inicio, fim);
+    }
+
+    @GetMapping("/total-movimentacoes")
+    public int totalMovimentacoes() {
+        return movimentacaoRepo.findAll().size();
+    }
+
+    @GetMapping("/nenhuma-movimentacao")
+    public int nenhumaMovimentacao() {
+        List<Produto> produtos = produtoRepo.findAll();
+        List<String> codigosMovimentados = movimentacaoRepo.findAll().stream()
+            .map(MovimentacaoProduto::getCodigoProduto)
+            .distinct()
+            .toList();
+        long count = produtos.stream()
+            .filter(p -> !codigosMovimentados.contains(p.getCodigo()))
+            .count();
+        return (int) count;
+    }
+
+    @GetMapping("/nenhuma-venda")
+    public int nenhumaVenda() {
+        List<MovimentacaoProduto> movs = movimentacaoRepo.findAll();
+        List<String> codigosEntrada = movs.stream()
+            .filter(m -> "ENTRADA".equals(m.getTipoMovimentacao()))
+            .map(MovimentacaoProduto::getCodigoProduto)
+            .distinct()
+            .toList();
+        List<String> codigosSaida = movs.stream()
+            .filter(m -> "SAIDA".equals(m.getTipoMovimentacao()))
+            .map(MovimentacaoProduto::getCodigoProduto)
+            .distinct()
+            .toList();
+        long count = codigosEntrada.stream()
+            .filter(cod -> !codigosSaida.contains(cod))
+            .count();
+        return (int) count;
     }
 }

@@ -1,285 +1,3 @@
-// function getFiltros() {
-//     return {
-//         categoria: document.getElementById('filter-categoria') ? document.getElementById('filter-categoria').value : '',
-//         tamanho: document.getElementById('filter-tamanho') ? document.getElementById('filter-tamanho').value : '',
-//         genero: document.getElementById('filter-genero') ? document.getElementById('filter-genero').value : '',
-//         preco: document.getElementById('filter-preco') ? document.getElementById('filter-preco').value : '',
-//         dataInicio: document.getElementById('periodo-data-inicio') ? document.getElementById('periodo-data-inicio').value : '',
-//         dataFim: document.getElementById('periodo-data-fim') ? document.getElementById('periodo-data-fim').value : ''
-//     };
-// }
-
-// function gerar() {
-//     const areaGerar = document.querySelector('.filters-container + .filters-container');
-//     areaGerar.style.display = 'none';
-
-
-//     const filtros = getFiltros();
-//     const hoje = new Date();
-//     const hojeStr = hoje.toISOString().slice(0, 10);
-
-//     if (filtros.dataInicio && filtros.dataInicio > hojeStr) {
-//         Swal.fire({
-//             icon: 'warning',
-//             title: 'Data inválida',
-//             text: 'A Data Início não pode ser posterior à frente de hoje.',
-//             timer: 1500,
-//             showConfirmButton: false
-//         });
-//         areaGerar.style.display = 'flex';
-//         return;
-//     }
-//     if (filtros.dataFim && filtros.dataFim > hojeStr) {
-//         Swal.fire({
-//             icon: 'warning',
-//             title: 'Data inválida',
-//             text: 'A Data Fim não pode ser posterior à data de hoje.',
-//             timer: 1500,
-//             showConfirmButton: false
-//         });
-//         areaGerar.style.display = 'flex';
-//         return;
-//     }
-
-
-//     // Impede gerar se qualquer um dos campos de período estiver vazio
-//     if (!filtros.dataInicio) {
-//         const popup = document.getElementById('periodo-popup');
-//         if (popup) {
-//             popup.style.display = 'block';
-//             const input = popup.querySelector('#periodo-data-inicio');
-//             if (input) input.focus();
-//         }
-//         areaGerar.style.display = 'flex';
-//         Swal.fire({
-//             icon: 'warning',
-//             title: 'Atenção',
-//             text: 'Selecione a Data Início.',
-//             timer: 1200,
-//             showConfirmButton: false,
-//             timerProgressBar: true
-
-//         });
-//         return;
-//     }
-//     if (!filtros.dataFim) {
-//         const popup = document.getElementById('periodo-popup');
-//         if (popup) {
-//             popup.style.display = 'block';
-//             const input = popup.querySelector('#periodo-data-fim');
-//             if (input) input.focus();
-//         }
-//
-//         Swal.fire({
-//             icon: 'warning',
-//             title: 'Atenção',
-//             text: 'Selecione a Data Fim.',
-//             timer: 1200,
-//             showConfirmButton: false,
-//             timerProgressBar: true
-
-//         });
-//         return;
-//     }
-
-//     limparFiltros();
-
-//     Object.keys(filtros).forEach(key => {
-//         if (filtros[key] === "") filtros[key] = null;
-//     });
-//     const todosVazios = Object.values(filtros).every(v => !v || v === '');
-
-//     // Função para ordenar e agrupar produtos por categoria e tamanho
-//     function agruparOrdenar(produtos) {
-//         return produtos
-//             .slice()
-//             .sort((a, b) => {
-//                 // Ordena por categoria, depois por tamanho (alfanumérico)
-//                 if (a.categoria.toLowerCase() < b.categoria.toLowerCase()) return -1;
-//                 if (a.categoria.toLowerCase() > b.categoria.toLowerCase()) return 1;
-//                 // Tamanho pode ser número ou string, então compara como string
-//                 return a.tamanho.toString().localeCompare(b.tamanho.toString(), undefined, { numeric: true });
-//             });
-//     }
-
-//     // Função para gerar o PDF (recebe a lista de produtos)
-//     function gerarPDF(produtos, filtros) {
-//         if (!produtos || produtos.length === 0) {
-//             Swal.fire('Atenção', 'Nenhum produto encontrado para os filtros selecionados.', 'info');
-//             return;
-//         }
-
-//         // ORDENA E AGRUPA
-//         produtos = agruparOrdenar(produtos);
-
-//         const { jsPDF } = window.jspdf;
-//         const doc = new jsPDF();
-
-//         // CORES DO PROJETO (ajuste conforme seu padrão)
-//         const corCabecalho = "#1E94A3";
-//         const corLinha = "#F5F5F5";
-
-//         // LOGO (ajuste o caminho se necessário)
-//         const logoImg = new Image();
-//         logoImg.src = './images/logo_icon.png'; // ajuste o caminho conforme seu projeto
-
-//         // Cabeçalho com logo (carrega o logo antes de gerar o resto)
-//         logoImg.onload = function () {
-//             doc.addImage(logoImg, 'PNG', 14, 8, 10, 10);
-//             doc.setFontSize(12);
-//             doc.setTextColor(corCabecalho);
-//             doc.text('Relatório de Produtos', 26, 15);
-//             doc.setFontSize(8);
-//             doc.setTextColor('#333');
-//             doc.text('Data de emissão: ' + new Date().toLocaleDateString('pt-BR'), 14, 22);
-
-//             // Tabela principal
-//             const columns = [
-//                 { header: 'Código', dataKey: 'codigo' },
-//                 { header: 'Nome', dataKey: 'nome' },
-//                 { header: 'Categoria', dataKey: 'categoria' },
-//                 { header: 'Tamanho', dataKey: 'tamanho' },
-//                 { header: 'Gênero', dataKey: 'genero' },
-//                 { header: 'Entradas', dataKey: 'entradas' },
-//                 { header: 'Saídas', dataKey: 'saidas' },
-//                 { header: 'Estoque Atual', dataKey: 'quantidade' },
-//                 { header: 'Limite Mínimo', dataKey: 'limiteMinimo' },
-//                 { header: 'Preço Unitário', dataKey: 'preco' },
-//                 { header: 'Preço Total', dataKey: 'precoTotal' }
-//             ];
-
-//             const rows = produtos.map(p => ({
-//                 codigo: p.codigo,
-//                 nome: p.nome,
-//                 categoria: p.categoria,
-//                 tamanho: p.tamanho,
-//                 genero: p.genero,
-//                 entradas: p.quantidade,
-//                 saidas: p.quantidade,
-//                 quantidade: p.quantidade,
-//                 limiteMinimo: p.limiteMinimo,
-//                 preco: p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '',
-//                 precoTotal: p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''
-//             }));
-
-//             doc.autoTable({
-//                 columns: columns,
-//                 body: rows,
-//                 startY: 26,
-//                 styles: { fontSize: 8, cellPadding: 2 },
-//                 headStyles: { fillColor: corCabecalho, textColor: '#fff', fontStyle: 'bold' },
-//                 alternateRowStyles: { fillColor: corLinha }
-//             });
-
-//             // Detalhamento por produto (opcional)
-//             let y = doc.lastAutoTable.finalY + 8;
-//             produtos.forEach((p, idx) => {
-//                 doc.setFontSize(10);
-//                 doc.setTextColor(corCabecalho);
-//                 doc.text(`Detalhes do produto: ${p.nome}`, 14, y);
-
-//                 doc.setFontSize(8);
-//                 doc.setTextColor('#333');
-//                 y += 5;
-//                 doc.text(`Código: ${p.codigo}`, 14, y);
-//                 doc.text(`Categoria: ${p.categoria}`, 50, y);
-//                 doc.text(`Tamanho: ${p.tamanho}`, 100, y);
-//                 doc.text(`Gênero: ${p.genero}`, 140, y);
-
-//                 y += 5;
-//                 doc.text(`Estoque Atual: ${p.quantidade}`, 14, y);
-//                 doc.text(`Limite Mínimo: ${p.limiteMinimo}`, 50, y);
-//                 doc.text(`Preço Unitário: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : ''}`, 100, y);
-//                 doc.text(`Preço Total: ${p.preco ? 'R$ ' + (Number(p.preco) * Number(p.quantidade)).toFixed(2).replace('.', ',') : ''}`, 140, y);
-
-//                 y += 5;
-//                 doc.text(`Entradas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 14, y);
-//                 doc.text(`Saídas: ${p.quantidade} (TEMPORÁRIO: igual quantidade)`, 60, y);
-
-//                 y += 5;
-//                 doc.text(`Data de criação: ${p.dataCriacao ? formatarDataBR(p.dataCriacao) : new Date().toLocaleDateString('pt-BR')} (TEMPORÁRIO: usar data real depois)`, 14, y);
-
-//                 y += 10;
-//                 // Quebra de página se necessário
-//                 if (y > 270 && idx < produtos.length - 1) {
-//                     doc.addPage();
-//                     y = 20;
-//                 }
-//             });
-
-//             // Nome do arquivo: RelatorioDeDesempenho_DDMMAAAA.pdf
-//             const hoje = new Date();
-//             const baseNomeArquivo = `RelatorioDeDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
-//             let nomeArquivo = `${baseNomeArquivo}.pdf`;
-
-//             // Garante nome único adicionando _1, _2, etc.
-//             let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
-//             let contador = 1;
-//             let nomeUnico = `${baseNomeArquivo}.pdf`;
-//             while (relatorios.some(r => r.nome === nomeUnico)) {
-//                 nomeUnico = `${baseNomeArquivo}_${contador}.pdf`;
-//                 contador++;
-//             }
-//             nomeArquivo = nomeUnico;
-
-//             doc.save(nomeArquivo); // (mantém para baixar na hora)
-
-//             var blob = doc.output('blob');
-//             var blobUrl = URL.createObjectURL(blob);
-//             if (window.adicionarRelatorio) {
-//                 window.adicionarRelatorio({
-//                     id: Date.now(),
-//                     nome: nomeArquivo,
-//                     dataCriacao: new Date(),
-//                     periodo: (filtros.dataInicio && filtros.dataFim)
-//                         ? (filtros.dataInicio === filtros.dataFim
-//                             ? formatarDataBR(filtros.dataInicio)
-//                             : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
-//                         : formatarDataBR(new Date().toISOString().slice(0, 10)),
-//                     blobUrl
-//                 });
-//             }
-//         };
-//     }
-
-//     if (todosVazios) {
-//         fetch('/produtos')
-//             .then(res => res.json())
-//             .then(produtos => gerarPDF(produtos, filtros))
-//             .catch(() => {
-//                 Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
-//             });
-//     } else {
-//         fetch('/produtos/filtrar', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify(filtros)
-//         })
-//         .then(res => res.json())
-//         .then(produtos => gerarPDF(produtos, filtros))
-//         .catch(() => {
-//             Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
-//         });
-//     }
-// }
-
-// function limparFiltros() {
-//     document.querySelectorAll(
-//         '#filter-categoria, #filter-tamanho, #filter-genero, #filter-preco, #filter-data-inicio, #filter-data-fim'
-//     ).forEach(el => el.value = '');
-// }
-
-// document.getElementById('filter-data-fim').addEventListener('input', function() {
-//     const dataInicio = document.getElementById('filter-data-inicio');
-//     if (this.value) {
-//         dataInicio.required = true;
-//     } else {
-//         dataInicio.required = false;
-//     }
-// });
-
-
-
 //botão de voltar ao topo
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('btn-topo');
@@ -291,7 +9,6 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    atualizarBadgeBaixoEstoque();
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
@@ -301,8 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
-//novo
 
 let todosProdutos = [];
 let totalProdutosCadastrados = 0;
@@ -329,36 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// function getFiltrosSelecionados() {
-//     const idsSelecionados = Array.from(document.getElementById('produtos-select').selectedOptions).map(opt => Number(opt.value));
-//     const categorias = Array.from(document.getElementById('categorias-select').selectedOptions).map(opt => opt.value);
-//     const tamanhos = Array.from(document.getElementById('tamanhos-select').selectedOptions).map(opt => opt.value);
-//     const generos = Array.from(document.getElementById('generos-select').selectedOptions).map(opt => opt.value);
-//     const quantidadeTodos = document.getElementById('quantidade-todas-popup').checked;
-//     const quantidadeBaixo = document.getElementById('quantidade-baixo-estoque-popup').checked;
-//     const quantidadeZerados = document.getElementById('quantidade-zerados-popup').checked;
-//     const quantidadeMin = document.getElementById('quantidade-min').value ? Number(document.getElementById('quantidade-min').value) : null;
-//     const quantidadeMax = document.getElementById('quantidade-max').value ? Number(document.getElementById('quantidade-max').value) : null;
-//     const dataInicio = document.getElementById('periodo-data-inicio').value || null;
-//     const dataFim = document.getElementById('periodo-data-fim').value || null;
-//     const precoMin = document.getElementById('preco-min').value ? Number(document.getElementById('preco-min').value.replace(',', '.')) : null;
-//     const precoMax = document.getElementById('preco-max').value ? Number(document.getElementById('preco-max').value.replace(',', '.')) : null;
-//     return {
-//         idsSelecionados,
-//         categorias,
-//         tamanhos,
-//         generos,
-//         quantidadeTodos,
-//         quantidadeBaixo,
-//         quantidadeZerados,
-//         quantidadeMin,
-//         quantidadeMax,
-//         dataInicio,
-//         dataFim,
-//         precoMin: precoMin,
-//         precoMax: precoMax
-//     };
-// }
 
 async function atualizarLista() {
     const filtros = getFiltrosSelecionados();
@@ -532,7 +217,7 @@ async function gerarRelatorio() {
         Swal.close();
         // preview na tela
         document.getElementById('preview-relatorio').innerHTML =
-          `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}"></iframe>`;
+            `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}"></iframe>`;
         setTimeout(() => {
             document.getElementById('preview-relatorio').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 400);
@@ -561,10 +246,13 @@ function montarCheckboxesCategoria(produtos) {
     const divCat = document.getElementById('checkboxes-categoria-multi');
     divCat.innerHTML = `<label><input type="checkbox" id="categoria-multi-todas" class="categoria-multi-check" value="" checked> Todas</label>`;
     categorias.forEach(cat => {
-        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}"> ${cat}</label>`;
+        divCat.innerHTML += `<label><input type="checkbox" class="categoria-multi-check" value="${cat}" checked> ${cat}</label>`;
     });
     document.querySelectorAll('.categoria-multi-check').forEach(cb => {
-        cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
+        cb.addEventListener('change', function() {
+            atualizarPlaceholderCategoriaMulti.call(cb);
+            atualizarLista();
+        });
     });
     atualizarPlaceholderCategoriaMulti.call(document.querySelector('.categoria-multi-check'));
 }
@@ -790,9 +478,11 @@ function getProdutosSelecionados() {
         .map(cb => Number(cb.value));
 }
 function getCategoriasSelecionadas() {
-    return Array.from(document.querySelectorAll('.categoria-multi-check'))
-        .filter(cb => cb.checked && cb.value)
-        .map(cb => cb.value);
+    const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
+    const todas = checks[0];
+    if (!todas) return [];
+    if (todas.checked) return [];
+    return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
 function getTamanhosSelecionados() {
     return Array.from(document.querySelectorAll('.tamanho-multi-check'))
@@ -1199,79 +889,79 @@ async function gerarPDFHistoricoProdutos(produtos) {
     doc.save("HistoricoProdutos.pdf");
 
 
-    async function adicionarHistoricoProdutosAoPDF(doc, produtos, filtros) {
-        // Busca todos os históricos em paralelo
-        const historicos = await Promise.all(produtos.map(p =>
-            fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`)
-                .then(res => res.json())
-                .catch(() => [])
-        ));
+    // async function adicionarHistoricoProdutosAoPDF(doc, produtos, filtros) {
+    //     // Busca todos os históricos em paralelo
+    //     const historicos = await Promise.all(produtos.map(p =>
+    //         fetch(`/api/movimentacoes/produto?codigo=${encodeURIComponent(p.codigo)}`)
+    //             .then(res => res.json())
+    //             .catch(() => [])
+    //     ));
 
-        let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 16 : 30;
+    //     let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 16 : 30;
 
-        for (let i = 0; i < produtos.length; i++) {
-            const p = produtos[i];
-            let historico = (historicos[i] || []);
-            // Filtra histórico pelo período, se marcado
-            if (filtros && filtros.dataInicio && filtros.dataFim) {
-                const dtIni = new Date(filtros.dataInicio);
-                const dtFim = new Date(filtros.dataFim);
-                historico = historico.filter(mov => {
-                    const dt = new Date(mov.data);
-                    return dt >= dtIni && dt <= dtFim;
-                });
-            }
-            // Ordena do mais recente para o mais antigo
-            historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+    //     for (let i = 0; i < produtos.length; i++) {
+    //         const p = produtos[i];
+    //         let historico = (historicos[i] || []);
+    //         // Filtra histórico pelo período, se marcado
+    //         if (filtros && filtros.dataInicio && filtros.dataFim) {
+    //             const dtIni = new Date(filtros.dataInicio);
+    //             const dtFim = new Date(filtros.dataFim);
+    //             historico = historico.filter(mov => {
+    //                 const dt = new Date(mov.data);
+    //                 return dt >= dtIni && dt <= dtFim;
+    //             });
+    //         }
+    //         // Ordena do mais recente para o mais antigo
+    //         historico.sort((a, b) => new Date(b.data) - new Date(a.data));
 
-            // Título do produto
-            doc.addPage("landscape");
-            y = 20;
-            doc.setFontSize(13);
-            doc.setTextColor("#1E94A3");
-            doc.text(`${p.codigo} - ${p.nome}`, 14, y);
-            doc.setFontSize(10);
-            doc.setTextColor("#333");
-            y += 7;
-            doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}   Preço: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '-'}   Estoque Atual: ${p.quantidade}`, 14, y);
+    //         // Título do produto
+    //         doc.addPage("landscape");
+    //         y = 20;
+    //         doc.setFontSize(13);
+    //         doc.setTextColor("#1E94A3");
+    //         doc.text(`${p.codigo} - ${p.nome}`, 14, y);
+    //         doc.setFontSize(10);
+    //         doc.setTextColor("#333");
+    //         y += 7;
+    //         doc.text(`Categoria: ${p.categoria || '-'}   Tamanho: ${p.tamanho || '-'}   Gênero: ${p.genero || '-'}   Preço: ${p.preco ? 'R$ ' + Number(p.preco).toFixed(2).replace('.', ',') : '-'}   Estoque Atual: ${p.quantidade}`, 14, y);
 
-            // Cabeçalho da tabela
-            const columns = [
-                "Data", "Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
-            ];
+    //         // Cabeçalho da tabela
+    //         const columns = [
+    //             "Data", "Movimentação", "Código", "Quantidade", "Estoque Final", "Valor (R$)", "Parte Envolvida", "Responsável"
+    //         ];
 
-            // Monta linhas da tabela
-            const rows = historico.map(m => {
-                // Extrai primeiro e último nome do responsável
-                let resp = m.responsavel || '';
-                if (resp.includes('-')) {
-                    let [codigo, nome] = resp.split('-').map(s => s.trim());
-                    let nomes = nome.split(/\s+/);
-                    nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
-                    resp = `${codigo} - ${nome}`;
-                }
-                return [
-                    m.data ? m.data.split('-').reverse().join('/') : '',
-                    m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída',
-                    m.codigoMovimentacao || '-',
-                    m.quantidadeMovimentada,
-                    m.estoqueFinal,
-                    m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
-                    m.parteEnvolvida || '',
-                    resp
-                ];
-            });
+    //         // Monta linhas da tabela
+    //         const rows = historico.map(m => {
+    //             // Extrai primeiro e último nome do responsável
+    //             let resp = m.responsavel || '';
+    //             if (resp.includes('-')) {
+    //                 let [codigo, nome] = resp.split('-').map(s => s.trim());
+    //                 let nomes = nome.split(/\s+/);
+    //                 nome = nomes.length === 1 ? nomes[0] : nomes[0] + ' ' + nomes[nomes.length - 1];
+    //                 resp = `${codigo} - ${nome}`;
+    //             }
+    //             return [
+    //                 m.data ? m.data.split('-').reverse().join('/') : '',
+    //                 m.tipoMovimentacao === 'ENTRADA' ? 'Entrada' : 'Saída',
+    //                 m.codigoMovimentacao || '-',
+    //                 m.quantidadeMovimentada,
+    //                 m.estoqueFinal,
+    //                 m.valorMovimentacao ? 'R$ ' + Number(m.valorMovimentacao).toFixed(2).replace('.', ',') : '',
+    //                 m.parteEnvolvida || '',
+    //                 resp
+    //             ];
+    //         });
 
-            doc.autoTable({
-                head: [columns],
-                body: rows,
-                startY: y + 10,
-                styles: { fontSize: 9, cellPadding: 2 },
-                headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
-                alternateRowStyles: { fillColor: "#F5F5F5" }
-            });
-        }
-    }
+    //         doc.autoTable({
+    //             head: [columns],
+    //             body: rows,
+    //             startY: y + 10,
+    //             styles: { fontSize: 9, cellPadding: 2 },
+    //             headStyles: { fillColor: "#1E94A3", textColor: "#fff", fontStyle: 'bold' },
+    //             alternateRowStyles: { fillColor: "#F5F5F5" }
+    //         });
+    //     }
+    // }
 
     
 }
@@ -1340,11 +1030,6 @@ function aplicarFiltroPrecoFaixa() {
 
     precoInput.value = `R$ ${min} - R$ ${max}`;
     if (precoInput.value === "R$ 0,00 - R$ 999,99") precoInput.value = '';
-
-    // const precoMinStr = precoMin.value.replace(/[^\d,]/g, '').replace(',', '.');
-    // const precoMaxStr = precoMax.value.replace(/[^\d,]/g, '').replace(',', '.');
-    // const precoMinVal = precoMinStr ? Number(precoMinStr) : null;
-    // const precoMaxVal = precoMaxStr ? Number(precoMaxStr) : null;
 
     atualizarLista();
 }
@@ -1580,15 +1265,19 @@ function formatarDataBR(data) {
 }
 
 function atualizarDetalhesPrevia(produtos, filtros) {
-    // Selecionados
-    document.getElementById('detalhe-selecionados').textContent = produtos.length;
+
+    if (!filtros.dataInicio || !filtros.dataFim || produtos.length === 0) {
+        document.getElementById('detalhe-selecionados').textContent = '0';
+    } else {
+        document.getElementById('detalhe-selecionados').textContent = produtos.length;
+    }
 
     // Período
-    let periodo = 'de:  __/__/____ até: __/__/____';
+    let periodo = 'de:' + '  ‎    ' + '  __/__/____ até: __/__/____';
     if (filtros.dataInicio && filtros.dataFim) {
         const inicio = formatarDataBR(filtros.dataInicio);
         const fim = formatarDataBR(filtros.dataFim);
-        periodo = `de : ${inicio} até: ${fim}`;
+        periodo = `de: ` + ` ‎    ` + `  ${inicio} até: ${fim}`;
     }
     document.getElementById('detalhe-periodo').textContent = periodo;
 
@@ -1613,16 +1302,6 @@ function atualizarDetalhesPrevia(produtos, filtros) {
 function numberFormatInt(n){ return n==null ? '0' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'); }
-
-function getCategoriasDoLocalStorage(){
-  try{
-    const raw = localStorage.getItem('categoriasModal');
-    if(!raw) return null;
-    const arr = JSON.parse(raw);
-    if(!Array.isArray(arr)) return null;
-    return arr.filter(c=>c && (c.nome||c.name)).map((c,idx)=>({ id:c.id||(idx+1), nome:c.nome||c.name }));
-  }catch(e){ return null; }
-}
 
 let categoriaResumoArray = [];
 const coresCategorias = [
@@ -1653,21 +1332,35 @@ function animateCategoriaScroll(direction, wrapperEl){
     wrapperEl.scrollBy({ left: direction * step * 3, behavior: 'smooth' });
 }
 
-function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
-  const catsLS = getCategoriasDoLocalStorage();
-  const defaultCats = ['Camisa','Camiseta','Calça','Bermuda','Vestido','Sapato','Meia'];
-  const cats = (catsLS && catsLS.length) ? catsLS : defaultCats.map((n,idx)=>({ id: idx+1, nome: n }));
+let categoriasBackend = [];
 
-  const summary = cats.map((c,idx)=>{
-    const key = (c.nome||'').toString().toUpperCase();
-    const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
-    const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
-    const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
-    return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
-  });
-
-  renderCategoriaCards(summary);
+async function carregarCategoriasBackend() {
+    try {
+        const res = await fetch('/categorias');
+        categoriasBackend = await res.json();
+    } catch {
+        categoriasBackend = [];
+    }
 }
+
+function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
+    // Use categoriasBackend
+    const cats = categoriasBackend.length ? categoriasBackend : [];
+    const summary = cats.map((c,idx)=>{
+        const key = (c.nome||'').toString().toUpperCase();
+        const estoque = produtos.reduce((s,p)=>{ const pcat = (p.categoria||'').toString().toUpperCase(); return s + ((pcat===key)?(Number(p.quantidade)||0):0); },0);
+        const entradas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='ENTRADA')?qtd:0); },0);
+        const saidas = movimentacoes.reduce((s,m)=>{ const mcat=(m.categoria||'').toString().toUpperCase(); const qtd=Number(m.quantidadeMovimentada||m.quantidade||0)||0; return s + ((mcat===key && String((m.tipoMovimentacao||'').toUpperCase())==='SAIDA')?qtd:0); },0);
+        return { id: c.id||idx+1, nome: c.nome, keyUpper: key, estoque, entradas, saidas };
+    });
+
+    renderCategoriaCards(summary);
+}
+
+// Chame carregarCategoriasBackend no início
+document.addEventListener('DOMContentLoaded', async function() {
+    await carregarCategoriasBackend();
+});
 
 function renderCategoriaCards(summaryArray){
     const wrapper = document.getElementById('categoria-cards');
@@ -1805,7 +1498,26 @@ function renderCategoriaCards(summaryArray){
 
 async function atualizarMovimentacoesResumo() {
     const filtros = getFiltrosSelecionados();
-    const { dataInicio, dataFim, idsSelecionados, categorias, tamanhos, generos } = filtros;
+    const { dataInicio, dataFim, categorias, tamanhos, generos } = filtros;
+
+    // Atualize os cards fixos
+    const [totalMovimentacoes, nenhumaMovimentacao, nenhumaVenda] = await Promise.all([
+        fetch('/api/movimentacoes/total-movimentacoes').then(r => r.json()),
+        fetch('/api/movimentacoes/nenhuma-movimentacao').then(r => r.json()),
+        fetch('/api/movimentacoes/nenhuma-venda').then(r => r.json())
+    ]);
+    document.getElementById('detalhe-movimentacoes-totais').textContent = totalMovimentacoes;
+    document.getElementById('detalhe-nenhuma-movimentacao').textContent = nenhumaMovimentacao;
+    document.getElementById('detalhe-nenhuma-venda').textContent = nenhumaVenda;
+
+    if (!dataInicio || !dataFim) {
+        // Zera os cards
+        document.getElementById('detalhe-entradas-hoje').textContent = '0';
+        document.getElementById('detalhe-saidas-hoje').textContent = '0';
+        document.getElementById('detalhe-total-movimentacoes').textContent = '0';
+        montarResumoCategoriasEgerarCards(todosProdutos, []);
+        return;
+    }
 
     let movimentacoes = [];
     let url = '/api/movimentacoes';
@@ -1822,18 +1534,26 @@ async function atualizarMovimentacoesResumo() {
         movimentacoes = [];
     }
 
-    // Filtra conforme os filtros selecionados
+
+    // --- ATUALIZA OS CARDS DE MOVIMENTAÇÕES FILTRADAS ---
     let movFiltradas = movimentacoes.filter(m => {
         let ok = true;
-        if (idsSelecionados.length > 0) ok = ok && idsSelecionados.includes(Number(m.codigoProduto));
         if (categorias.length > 0) ok = ok && categorias.includes(m.categoria);
         if (tamanhos.length > 0) ok = ok && tamanhos.includes(m.tamanho);
         if (generos.length > 0) ok = ok && generos.includes(m.genero);
         return ok;
     });
 
-    const resumo = montarResumoCategoriasEgerarCards(todosProdutos, movFiltradas);
-    renderCategoriaCards(resumo);
+    const entradas = movFiltradas.filter(m => m.tipoMovimentacao === 'ENTRADA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    const saidas = movFiltradas.filter(m => m.tipoMovimentacao === 'SAIDA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    const totalMovimentacoesFiltradas = movFiltradas.length;
+
+    document.getElementById('detalhe-entradas-hoje').textContent = entradas;
+    document.getElementById('detalhe-saidas-hoje').textContent = saidas;
+    document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoesFiltradas;
+
+    // Cards de categoria
+    montarResumoCategoriasEgerarCards(todosProdutos, movFiltradas);
 }
 
 ['periodo-data-inicio','periodo-data-fim','filter-produto','filter-categoria','filter-tamanho','filter-genero'].forEach(id => {
