@@ -237,7 +237,6 @@ select#genero {
     max-height: 390px;
     overflow-y: auto;
     overflow-x: hidden;
-    scrollbar-width: thin;
     border-radius: 4px;
     transition: max-height 0.2s;
     box-sizing: border-box;
@@ -252,18 +251,22 @@ select#genero {
 }
 
 .categorias-table-scroll::-webkit-scrollbar-thumb {
-  background: #1e94a3;
-  border-radius: 8px;
+    background: #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer !important;
+}
+.categorias-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
 }
 
 .categorias-table-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
+    background: #fff;
 }
+
 
 /* Evita scroll lateral */
 .categorias-table {
-  overflow-x: hidden !important;
+    overflow-x: hidden !important;
 }
 
 .categorias-input {
@@ -352,37 +355,37 @@ input[type="checkbox"] {
 }
 .checkboxes-tamanho-multi label:hover,
 .checkboxes-genero-multi label:hover {
-  background: #f3f3f3;
-  color: black;
-  border-radius: 0;
+    background: #f3f3f3;
+    color: black;
+    border-radius: 0;
 }
 .remover {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #555;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  transition: color 0.2s;
-  margin-bottom: 8px;
-  padding-left: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: color 0.2s;
+    margin-bottom: 8px;
+    padding-left: 0;
 }
 .remover:hover {
-  color: red;
+    color: red;
 }
 
 .close-icon {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #333;
-  transition: color 0.2s;
-  padding-right: 0;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.2s;
+    padding-right: 0;
 }
 .close-icon:hover {
-  color: #f27474;
+    color: #f27474;
 }
 
 .detalhes-modal-bg {
@@ -457,9 +460,9 @@ input[type="checkbox"] {
 
 .checkboxes-tamanho-multi.floating,
 .checkboxes-genero-multi.floating {
-  position: fixed !important;
-  z-index: 9999 !important;
-  pointer-events: auto !important;
+    position: fixed !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
 }
 
 

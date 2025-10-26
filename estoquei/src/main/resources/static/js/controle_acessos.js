@@ -427,6 +427,7 @@ async function aplicarPermissoesFuncionarios() {
     const btnPermissoes = document.querySelector('.btn-permissoes');
     if (btnPermissoes && !temPermissao(cargo, 'funcionarios', 4)) {
         btnPermissoes.disabled = true;
+        btnPermissoes.removeAttribute('href');
         btnPermissoes.title = 'Sem permissão';
         btnPermissoes.style.cursor = 'not-allowed';
         btnPermissoes.style.backgroundColor = '#757575';

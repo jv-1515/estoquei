@@ -527,10 +527,10 @@ function renderizarFuncionarios(lista) {
                                         <button type="button" onclick="removerFuncionario('${f.id}')" title="Excluir">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>`
-                                    : `<a href="#" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                    : `<a href="#" title="Sem permissão" style="opacity:0.6;cursor:not-allowed;">
                                             <i class="fa-solid fa-pen"></i>
                                         </a>
-                                        <button type="button" title="Sem permissão" style="opacity:0.5;cursor:not-allowed;">
+                                        <button type="button" title="Sem permissão" style="opacity:0.6;cursor:not-allowed;">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>`
                             )
@@ -2881,7 +2881,7 @@ function renderizarCargosFuncionarios() {
             const btn = document.createElement('button');
             btn.className = `cargo-btn cargo-${idx + 1}`;
             btn.innerHTML = `
-                ${cargo.nome} <span id="cargo-count-${cargo.id}">0</span>
+                <i class="fa-solid fa-briefcase"></i> ${cargo.nome} <span id="cargo-count-${cargo.id}">0</span>
             `;
             container.appendChild(btn);
 
