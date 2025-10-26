@@ -9,7 +9,6 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    atualizarBadgeBaixoEstoque();
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
@@ -481,6 +480,7 @@ function getProdutosSelecionados() {
 function getCategoriasSelecionadas() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     const todas = checks[0];
+    if (!todas) return [];
     if (todas.checked) return [];
     return checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
 }
@@ -1496,11 +1496,18 @@ async function atualizarMovimentacoesResumo() {
     const filtros = getFiltrosSelecionados();
     const { dataInicio, dataFim, categorias, tamanhos, generos } = filtros;
 
+    // Atualize os cards fixos
+    const [totalMovimentacoes, nenhumaMovimentacao, nenhumaVenda] = await Promise.all([
+        fetch('/api/movimentacoes/total-movimentacoes').then(r => r.json()),
+        fetch('/api/movimentacoes/nenhuma-movimentacao').then(r => r.json()),
+        fetch('/api/movimentacoes/nenhuma-venda').then(r => r.json())
+    ]);
+    document.getElementById('detalhe-movimentacoes-totais').textContent = totalMovimentacoes;
+    document.getElementById('detalhe-nenhuma-movimentacao').textContent = nenhumaMovimentacao;
+    document.getElementById('detalhe-nenhuma-venda').textContent = nenhumaVenda;
+
     if (!dataInicio || !dataFim) {
         // Zera os cards
-        document.getElementById('detalhe-abastecimento').textContent = '0';
-        document.getElementById('detalhe-movimentacoes-totais').textContent = '0';
-        document.getElementById('detalhe-nenhuma-movimentacao').textContent = '0';
         document.getElementById('detalhe-entradas-hoje').textContent = '0';
         document.getElementById('detalhe-saidas-hoje').textContent = '0';
         document.getElementById('detalhe-total-movimentacoes').textContent = '0';
@@ -1523,18 +1530,6 @@ async function atualizarMovimentacoesResumo() {
         movimentacoes = [];
     }
 
-    // --- ATUALIZA OS CARDS DE MOVIMENTAÇÕES TOTAIS ---
-    // Entradas totais
-    const totalEntradas = movimentacoes.filter(m => m.tipoMovimentacao === 'ENTRADA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
-    // Saídas totais
-    const totalSaidas = movimentacoes.filter(m => m.tipoMovimentacao === 'SAIDA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
-    // Total de movimentações (entradas + saídas)
-    const totalMovimentacoes = movimentacoes.length;
-
-    // Atualize os cards fixos
-    document.getElementById('detalhe-abastecimento').textContent = totalMovimentacoes;
-    document.getElementById('detalhe-movimentacoes-totais').textContent = totalEntradas;
-    document.getElementById('detalhe-nenhuma-movimentacao').textContent = totalSaidas;
 
     // --- ATUALIZA OS CARDS DE MOVIMENTAÇÕES FILTRADAS ---
     let movFiltradas = movimentacoes.filter(m => {
