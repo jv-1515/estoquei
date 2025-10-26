@@ -1265,8 +1265,12 @@ function formatarDataBR(data) {
 }
 
 function atualizarDetalhesPrevia(produtos, filtros) {
-    // Selecionados
-    document.getElementById('detalhe-selecionados').textContent = produtos.length;
+
+    if (!filtros.dataInicio || !filtros.dataFim || produtos.length === 0) {
+        document.getElementById('detalhe-selecionados').textContent = '0';
+    } else {
+        document.getElementById('detalhe-selecionados').textContent = produtos.length;
+    }
 
     // Período
     let periodo = 'de:' + '  ‎    ' + '  __/__/____ até: __/__/____';
@@ -1490,7 +1494,19 @@ function renderCategoriaCards(summaryArray){
 
 async function atualizarMovimentacoesResumo() {
     const filtros = getFiltrosSelecionados();
-    const { dataInicio, dataFim, idsSelecionados, categorias, tamanhos, generos } = filtros;
+    const { dataInicio, dataFim, categorias, tamanhos, generos } = filtros;
+
+    if (!dataInicio || !dataFim) {
+        // Zera os cards
+        document.getElementById('detalhe-abastecimento').textContent = '0';
+        document.getElementById('detalhe-movimentacoes-totais').textContent = '0';
+        document.getElementById('detalhe-nenhuma-movimentacao').textContent = '0';
+        document.getElementById('detalhe-entradas-hoje').textContent = '0';
+        document.getElementById('detalhe-saidas-hoje').textContent = '0';
+        document.getElementById('detalhe-total-movimentacoes').textContent = '0';
+        montarResumoCategoriasEgerarCards(todosProdutos, []);
+        return;
+    }
 
     let movimentacoes = [];
     let url = '/api/movimentacoes';
@@ -1507,18 +1523,38 @@ async function atualizarMovimentacoesResumo() {
         movimentacoes = [];
     }
 
-    // Filtra conforme os filtros selecionados
+    // --- ATUALIZA OS CARDS DE MOVIMENTAÇÕES TOTAIS ---
+    // Entradas totais
+    const totalEntradas = movimentacoes.filter(m => m.tipoMovimentacao === 'ENTRADA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    // Saídas totais
+    const totalSaidas = movimentacoes.filter(m => m.tipoMovimentacao === 'SAIDA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    // Total de movimentações (entradas + saídas)
+    const totalMovimentacoes = movimentacoes.length;
+
+    // Atualize os cards fixos
+    document.getElementById('detalhe-abastecimento').textContent = totalMovimentacoes;
+    document.getElementById('detalhe-movimentacoes-totais').textContent = totalEntradas;
+    document.getElementById('detalhe-nenhuma-movimentacao').textContent = totalSaidas;
+
+    // --- ATUALIZA OS CARDS DE MOVIMENTAÇÕES FILTRADAS ---
     let movFiltradas = movimentacoes.filter(m => {
         let ok = true;
-        if (idsSelecionados.length > 0) ok = ok && idsSelecionados.includes(Number(m.codigoProduto));
         if (categorias.length > 0) ok = ok && categorias.includes(m.categoria);
         if (tamanhos.length > 0) ok = ok && tamanhos.includes(m.tamanho);
         if (generos.length > 0) ok = ok && generos.includes(m.genero);
         return ok;
     });
 
-    const resumo = montarResumoCategoriasEgerarCards(todosProdutos, movFiltradas);
-    renderCategoriaCards(resumo);
+    const entradas = movFiltradas.filter(m => m.tipoMovimentacao === 'ENTRADA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    const saidas = movFiltradas.filter(m => m.tipoMovimentacao === 'SAIDA').reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+    const totalMovimentacoesFiltradas = movFiltradas.length;
+
+    document.getElementById('detalhe-entradas-hoje').textContent = entradas;
+    document.getElementById('detalhe-saidas-hoje').textContent = saidas;
+    document.getElementById('detalhe-total-movimentacoes').textContent = totalMovimentacoesFiltradas;
+
+    // Cards de categoria
+    montarResumoCategoriasEgerarCards(todosProdutos, movFiltradas);
 }
 
 ['periodo-data-inicio','periodo-data-fim','filter-produto','filter-categoria','filter-tamanho','filter-genero'].forEach(id => {
