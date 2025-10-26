@@ -7,13 +7,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnVoltarBtn) {
         btnVoltarBtn.addEventListener('click', function(e) {
             e.preventDefault();
-
+        
+            // Verifica se existe edição aberta
+            const btnEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
+                .find(btn => btn.offsetParent !== null && btn.style.display !== 'none');
+            if (btnEditando) {
+                const divEditando = btnEditando.closest('.main-container');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Edição em andamento!',
+                    text: 'Salve ou cancele a edição atual',
+                    showConfirmButton: false,
+                    timer: 1800,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    didClose: () => {
+                        if (divEditando) divEditando.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+                return;
+            }
+        
             // Verifica se existe cargo sem nenhuma permissão
-            const cargosSemPermissao = Array.from(document.querySelectorAll('.main-container')).some(div => {
+            const divSemPermissao = Array.from(document.querySelectorAll('.main-container')).find(div => {
                 return Array.from(div.querySelectorAll('input[type="checkbox"]')).every(cb => !cb.checked);
             });
-
-            if (cargosSemPermissao) {
+            if (divSemPermissao) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Permissão obrigatória!',
@@ -21,34 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false,
                     timer: 2000,
                     timerProgressBar: true,
-                    allowOutsideClick: false
+                    allowOutsideClick: false,
+                    didClose: () => {
+                        divSemPermissao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 });
                 return;
             }
-
-            // Verifica se existe edição aberta
-            const algumEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
-                .some(btn => btn.offsetParent !== null);
-            if (algumEditando) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Descartar alterações?',
-                    text: 'As alterações não serão salvas',
-                    showCancelButton: true,
-                    confirmButtonText: 'Descartar',
-                    cancelButtonText: 'Voltar',
-                    allowOutsideClick: false,
-                    customClass: {
-                        confirmButton: 'swal2-deny'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        history.back();
-                    }
-                });
-            } else {
-                history.back();
-            }
+        
+            // Voltar normalmente
+            history.back();
         });
     }
 });
@@ -132,24 +133,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnNovoCargo = document.getElementById('btn-novo-cargo');
     if (btnNovoCargo) {
         btnNovoCargo.onclick = function() {
-            // Validação: existe algum cargo sem permissão?
-            const cargosSemPermissao = Array.from(document.querySelectorAll('.main-container')).some(div => {
-                return Array.from(div.querySelectorAll('input[type="checkbox"]')).every(cb => !cb.checked);
-            });
-
-            if (cargosSemPermissao) {
+            // 1. Verifica se existe edição aberta
+            const btnEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
+                .find(btn => btn.offsetParent !== null && btn.style.display !== 'none');
+            if (btnEditando) {
+                const divEditando = btnEditando.closest('.main-container');
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Cargo sem permissão!',
-                    text: 'Atribua permissões antes de criar outro cargo',
+                    title: 'Edição em andamento!',
+                    text: 'Salve ou cancele a edição atual',
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 1800,
                     timerProgressBar: true,
-                    allowOutsideClick: false
+                    allowOutsideClick: false,
+                    didClose: () => {
+                        if (divEditando) divEditando.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 });
                 return;
             }
-
+        
+            // 2. Verifica se existe cargo sem nenhuma permissão
+            const divSemPermissao = Array.from(document.querySelectorAll('.main-container')).find(div => {
+                return Array.from(div.querySelectorAll('input[type="checkbox"]')).every(cb => !cb.checked);
+            });
+            if (divSemPermissao) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Permissão obrigatória!',
+                    text: 'Todos cargos devem ter ao menos uma permissão!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    didClose: () => {
+                        divSemPermissao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+                return;
+            }
+        
+            // 3. Limite de cargos
             const cargos = cargosBackend.filter(c => c.nome.toLowerCase() !== 'admin');
             if (cargos.length >= MAX_CARGOS) {
                 Swal.fire({
@@ -379,6 +403,26 @@ function renderizarPermissoes() {
 
             // EDITAR
             btnEditar.onclick = function() {
+                // Verifica se já existe edição aberta
+                const btnEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
+                    .find(btn => btn.offsetParent !== null && btn.style.display !== 'none');
+                if (btnEditando) {
+                    const divEditando = btnEditando.closest('.main-container');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Edição em andamento!',
+                        text: 'Salve ou cancele a edição atual',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        didClose: () => {
+                            if (divEditando) divEditando.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
+                    return;
+                }
+                // Libera edição normalmente
                 div.dataset.permissoesOriginais = JSON.stringify(MODULOS.map(mod => cargo[mod]));
                 div.querySelectorAll('input[type="checkbox"], .perm-col-btn, .perm-check-all').forEach(el => {
                     el.disabled = false;
@@ -855,15 +899,15 @@ window.abrirCriarCargo = function(id) {
     });
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    const btnNovoCargo = document.getElementById('btn-novo-cargo');
-    if (btnNovoCargo) {
-        btnNovoCargo.addEventListener('click', function() {
-            const id = proximoIdCargo();
-            if (id) abrirCriarCargo(id);
-        });
-    }
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     const btnNovoCargo = document.getElementById('btn-novo-cargo');
+//     if (btnNovoCargo) {
+//         btnNovoCargo.addEventListener('click', function() {
+//             const id = proximoIdCargo();
+//             if (id) abrirCriarCargo(id);
+//         });
+//     }
+// });
 
 document.addEventListener('DOMContentLoaded', function() {
     const gerente = document.getElementById('permissoes-cargo-gerente');
