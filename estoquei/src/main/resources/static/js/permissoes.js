@@ -7,6 +7,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnVoltarBtn) {
         btnVoltarBtn.addEventListener('click', function(e) {
             e.preventDefault();
+
+            // Verifica se existe cargo sem nenhuma permissão
+            const cargosSemPermissao = Array.from(document.querySelectorAll('.main-container')).some(div => {
+                return Array.from(div.querySelectorAll('input[type="checkbox"]')).every(cb => !cb.checked);
+            });
+
+            if (cargosSemPermissao) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Permissão obrigatória!',
+                    text: 'Todos cargos devem ter ao menos uma permissão!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+
             // Verifica se existe edição aberta
             const algumEditando = Array.from(document.querySelectorAll('.btn-salvar-cargo, .btn-cancelar-cargo'))
                 .some(btn => btn.offsetParent !== null);
@@ -45,7 +64,6 @@ window.addEventListener('scroll', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    atualizarBadgeBaixoEstoque();
     const btn = document.getElementById('btn-topo');
     if (btn) {
         btn.addEventListener('click', function(e) {
@@ -68,41 +86,88 @@ function carregarCargosBackend() {
 }
 document.addEventListener('DOMContentLoaded', carregarCargosBackend);
 
+
+const MAX_CARGOS = 10;
+
+
 function renderizarCargos() {
-  const container = document.getElementById('cargo-list');
-  container.innerHTML = '';
-  const maxCargos = 7;
+    const container = document.getElementById('cargo-list');
+    container.innerHTML = '';
 
-  // Filtra cargos reais (exceto admin) e ordena por id crescente
-  const cargos = cargosBackend
-    .filter(c => c.nome.toLowerCase() !== 'admin')
-    .sort((a, b) => a.id - b.id);
+    // Filtra cargos reais (exceto admin) e ordena por id crescente
+    const cargos = cargosBackend
+        .filter(c => c.nome.toLowerCase() !== 'admin')
+        .sort((a, b) => a.id - b.id);
 
-  const idsOcupados = cargos.map(c => c.id);
+    // Atualiza contador
+    const contadorNum = document.getElementById('contador-cargos-num');
+    if (contadorNum) {
+        contadorNum.textContent = String(cargos.length).padStart(2, '0');
+    }
 
-  for (let i = 1; i <= maxCargos; i++) {
-
-    const cargo = cargos.find((c, idx) => idx === i - 1);
-    const btn = document.createElement('button');
-    btn.className = `cargo-btn cargo-${i}`;
-
-    if (cargo) {
-    btn.innerHTML = `${cargo.nome}`;
+    // Renderiza botões de cargos
+    cargos.forEach((cargo, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `cargo-btn cargo-${idx + 1}`;
+        btn.innerHTML = `<i class="fa-solid fa-briefcase"></i> ${cargo.nome} <span id="cargo-count-${cargo.id}">0</span>`;
+        btn.title = 'Ver permissões';
         btn.onclick = () => {
             const bloco = document.getElementById(`permissoes-cargo-${cargo.id}`);
             if (bloco) bloco.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
-      btn.classList.remove('novo-cargo');
-    } else {
-      btn.innerHTML = `<i class="fa-solid fa-plus"></i> Novo Cargo`;
-      btn.onclick = () => {
-        abrirCriarCargo();
-      };
-      btn.classList.add('novo-cargo');
-    }
-    container.appendChild(btn);
-  }
+        container.appendChild(btn);
+
+        // Atualiza quantidade de funcionários
+        fetch(`/usuarios/cargo/${cargo.id}`)
+            .then(res => res.json())
+            .then(funcionarios => {
+                const span = btn.querySelector(`#cargo-count-${cargo.id}`);
+                if (span) span.textContent = funcionarios.length;
+            });
+    });
 }
+
+// Novo Cargo
+document.addEventListener('DOMContentLoaded', function() {
+    const btnNovoCargo = document.getElementById('btn-novo-cargo');
+    if (btnNovoCargo) {
+        btnNovoCargo.onclick = function() {
+            // Validação: existe algum cargo sem permissão?
+            const cargosSemPermissao = Array.from(document.querySelectorAll('.main-container')).some(div => {
+                return Array.from(div.querySelectorAll('input[type="checkbox"]')).every(cb => !cb.checked);
+            });
+
+            if (cargosSemPermissao) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cargo sem permissão!',
+                    text: 'Atribua permissões antes de criar outro cargo',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+
+            const cargos = cargosBackend.filter(c => c.nome.toLowerCase() !== 'admin');
+            if (cargos.length >= MAX_CARGOS) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limite atingido!',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                return;
+            }
+            abrirCriarCargo();
+        };
+    }
+});
+
+
 
 document.addEventListener('DOMContentLoaded', renderizarCargos);
 
@@ -657,6 +722,8 @@ function abrirRenomearCargo(id) {
                     const div = document.getElementById(`permissoes-cargo-${cargo.id}`);
                     if (div) {
                         div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const btnEditar = div.querySelector('.btn-editar-cargo');
+                        if (btnEditar) btnEditar.click();
                     }
                 }, 300);
             });
@@ -684,6 +751,7 @@ function removerCargo(id) {
                 carregarCargosBackend();
                 renderizarCargos();
                 renderizarPermissoes();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 Swal.fire({
                     icon: 'success',
                     title: `"${cargo ? cargo.nome : 'Cargo'}" removido com sucesso!`,

@@ -78,8 +78,9 @@ h2 {
 .filters-row {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
-    align-items: flex-end;
+    flex-wrap: nowrap;
+    align-items: center;
+    position: relative;
 }
 .form-column {
     flex: 1;
@@ -189,6 +190,20 @@ input, select {
     color: red;
 } */
 
+
+.filters-container {
+    width: 900px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .cargo-list {
     display: flex;
     gap: 10px;
@@ -200,71 +215,90 @@ input, select {
     box-sizing: border-box;
 }
 
-.cargo-btn {
-    border: 2px solid transparent;
-    border-radius: 8px;
-    padding: 2px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    background: #f3f3f3;
-    color: #277580;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-    margin-top: 5px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    height: 30px;
-    width: auto;
-    max-width: 220px;
-    white-space: nowrap;
-}
-
-.cargo-btn i {
-    font-size: 10px;
-}
-
-.cargo-btn:hover {
-    transition: background 0.2s, color 0.2s, border 0.2s;
-}
-
-.cargo-btn.cargo-1,
-.cargo-btn.novo-cargo.cargo-1:hover { background: #1e94a3; color: #fff; border-color: #1e94a3; }
-.cargo-btn.cargo-2,
-.cargo-btn.novo-cargo.cargo-2:hover { background: #277580; color: #fff; border-color: #277580; }
-.cargo-btn.cargo-3,
-.cargo-btn.novo-cargo.cargo-3:hover { background: #bfa100; color: #fff; border-color: #bfa100; }
-.cargo-btn.cargo-4,
-.cargo-btn.novo-cargo.cargo-4:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
-.cargo-btn.cargo-5,
-.cargo-btn.novo-cargo.cargo-5:hover { background: #e67e22; color: #fff; border-color: #e67e22; }
-.cargo-btn.cargo-6,
-.cargo-btn.novo-cargo.cargo-6:hover { background: #8e44ad; color: #fff; border-color: #8e44ad; }
-.cargo-btn.cargo-7,
-.cargo-btn.novo-cargo.cargo-7:hover { background: #16a085; color: #fff; border-color: #16a085; }
-
-.cargo-btn.novo-cargo {
-    background: #fff;
-    font-weight: bold;
-}
-
-.cargo-btn.novo-cargo.cargo-1 { color: #1e94a3; border-color: #1e94a3; }
-.cargo-btn.novo-cargo.cargo-2 { color: #277580; border-color: #277580; }
-.cargo-btn.novo-cargo.cargo-3 { color: #bfa100; border-color: #bfa100; }
-.cargo-btn.novo-cargo.cargo-4 { color: #c0392b; border-color: #c0392b; }
-.cargo-btn.novo-cargo.cargo-5 { color: #e67e22; border-color: #e67e22; }
-.cargo-btn.novo-cargo.cargo-6 { color: #8e44ad; border-color: #8e44ad; }
-.cargo-btn.novo-cargo.cargo-7 { color: #16a085; border-color: #16a085; }
-
 .cargo-gradient {
     position: absolute;
     right: 0;
     top: 0;
-    width: 20px;
+    width: 120px;
     height: 100%;
     pointer-events: none;
     z-index: 2;
-    background: linear-gradient(to left, rgb(255 255 255) 10%, rgba(255, 255, 255, 0.0) 50%);
+    background: linear-gradient(to left, rgb(255 255 255) 92%, rgba(255, 255, 255, 0.0) 100%);
 }
+
+.cargo-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 2px 15px;
+    font-size: 14px;
+    color: #fff;
+    transition: background 0.2s;
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 30px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.cargo-btn:hover {
+    opacity: 0.85;
+}
+
+.cargo-btn i {
+    font-size: 12px;
+}
+
+.cargo-btn.cargo-1  { background: #1e94a3; }
+.cargo-btn.cargo-2  { background: #277580; }
+.cargo-btn.cargo-3  { background: #bfa100; }
+.cargo-btn.cargo-4  { background: #c0392b; }
+.cargo-btn.cargo-5  { background: #e67e22; }
+.cargo-btn.cargo-6  { background: #8e44ad; }
+.cargo-btn.cargo-7  { background: #16a085; }
+.cargo-btn.cargo-8  { background: #3f6ab3; }
+.cargo-btn.cargo-9  { background: #3b458a; }
+.cargo-btn.cargo-10 { background: #be9454; }
+
+.btn-novo-cargo {
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    transition: background 0.2s;
+    margin-top: 5px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    height: 30px;
+    white-space: nowrap;
+    position: absolute;
+    right: 0;
+    z-index: 3;
+}
+.btn-novo-cargo:hover {
+    background: #277580;
+}
+
+#contador-cargos {
+    font-size: 12px;
+    margin-left: 10px;
+    border: solid 2px #1e94a3;
+    border-radius: 20px;
+    padding: 2px 5px 0 5px;
+    color: #1e94a3;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    gap: 3px;
+}
+#contador-cargos-num {
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: -2px;
+}
+
 
 .permissoes-table {
     width: 100%;

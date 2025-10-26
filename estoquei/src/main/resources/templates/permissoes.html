@@ -24,14 +24,22 @@
     </a>
 
     <h1>Gerenciar Permissões</h1>
-    <div class="filters-container" style="display: flex; flex-direction: column; width: 900px;">
-        <h2>Cargos</h2>
-        <div class="filters-row">
-            <div style="flex: 1; overflow: hidden; position: relative;">
-                <div class="cargo-list" id="cargo-list"></div>
-                            <div class="cargo-gradient"></div>
-
-            </div>
+    <div class="filters-container" style="width: 900px; margin: 0 auto 20px auto; box-sizing: border-box; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 style="margin: 0; display: flex; align-items: center;">
+                Cargos
+                <div id="contador-cargos">
+                    <span id="contador-cargos-num" style="font-size: 14px; font-weight: bold; margin-right: -2px;">00</span>
+                    <span>/10</span>
+                </div>
+            </h2>
+        </div>
+        <div class="filters-row" style="position: relative;">
+            <div class="cargo-list" id="cargo-list"></div>
+            <button class="btn btn-novo-cargo" id="btn-novo-cargo">
+                <i class="fa-solid fa-plus"></i> Novo Cargo
+            </button>
+            <div class="cargo-gradient"></div>
         </div>
     </div>
 
