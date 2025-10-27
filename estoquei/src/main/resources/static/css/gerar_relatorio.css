@@ -516,12 +516,12 @@ select#filter-genero {
     height: 100%;
 }
 .row.entradas {
-    background: #e8f5e8;
-    color: #2e7d32;
-}
-.row.saidas {
     background: #fff3e0;
     color: #e65100;
+}
+.row.saidas {
+    background: #e8f5e8;
+    color: #2e7d32;
 }
 .cat-arrow {
     background: #fff;

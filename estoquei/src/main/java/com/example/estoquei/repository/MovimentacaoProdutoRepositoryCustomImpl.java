@@ -3,9 +3,10 @@ package com.example.estoquei.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class MovimentacaoProdutoRepositoryCustomImpl {
@@ -45,5 +46,21 @@ public class MovimentacaoProdutoRepositoryCustomImpl {
             .setParameter("codigo", codigoProduto)
             .getSingleResult();
         return total != null ? total.intValue() : 0;
+    }
+
+    public double totalValorEntradas(String codigoProduto) {
+        String jpql = "SELECT SUM(m.valorMovimentacao) FROM MovimentacaoProduto m WHERE m.codigoProduto = :codigo AND m.tipoMovimentacao = 'ENTRADA'";
+        java.math.BigDecimal total = entityManager.createQuery(jpql, java.math.BigDecimal.class)
+            .setParameter("codigo", codigoProduto)
+            .getSingleResult();
+        return total != null ? total.doubleValue() : 0.0;
+    }
+    
+    public double totalValorSaidas(String codigoProduto) {
+        String jpql = "SELECT SUM(m.valorMovimentacao) FROM MovimentacaoProduto m WHERE m.codigoProduto = :codigo AND m.tipoMovimentacao = 'SAIDA'";
+        java.math.BigDecimal total = entityManager.createQuery(jpql, java.math.BigDecimal.class)
+            .setParameter("codigo", codigoProduto)
+            .getSingleResult();
+        return total != null ? total.doubleValue() : 0.0;
     }
 }

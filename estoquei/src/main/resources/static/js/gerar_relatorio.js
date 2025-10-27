@@ -1362,49 +1362,49 @@ document.addEventListener('DOMContentLoaded', async function() {
     await carregarCategoriasBackend();
 });
 
-function renderCategoriaCards(summaryArray){
-    const wrapper = document.getElementById('categoria-cards');
-    const btnPrev = document.getElementById('cat-prev');
-    const btnNext = document.getElementById('cat-next');
-    if(!wrapper) return;
+// function renderCategoriaCards(summaryArray){
+//     const wrapper = document.getElementById('categoria-cards');
+//     const btnPrev = document.getElementById('cat-prev');
+//     const btnNext = document.getElementById('cat-next');
+//     if(!wrapper) return;
 
-    wrapper.innerHTML = '';
-    summaryArray.forEach((c, idx) => {
-        const color = coresCategorias[idx % coresCategorias.length];
-        const borderColor = `rgb(${color})`;
-        const textColor = `rgb(${color})`;
-        const card = document.createElement('div');
-        card.className = 'categoria-card';
-        card.style.flex = '0 0 120px';
-        card.style.minWidth = '120px';
-        card.innerHTML = `
-          <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
-          <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
-            <div class="label">Estoque</div>
-            <div class="value">${numberFormatInt(c.estoque || 0)}</div>
-          </div>
-          <div class="categoria-rows">
-            <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
-            <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
-          </div>
-        `;
-        wrapper.appendChild(card);
-    });
+//     wrapper.innerHTML = '';
+//     summaryArray.forEach((c, idx) => {
+//         const color = coresCategorias[idx % coresCategorias.length];
+//         const borderColor = `rgb(${color})`;
+//         const textColor = `rgb(${color})`;
+//         const card = document.createElement('div');
+//         card.className = 'categoria-card';
+//         card.style.flex = '0 0 120px';
+//         card.style.minWidth = '120px';
+//         card.innerHTML = `
+//           <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
+//           <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
+//             <div class="label">Estoque</div>
+//             <div class="value">${numberFormatInt(c.estoque || 0)}</div>
+//           </div>
+//           <div class="categoria-rows">
+//             <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
+//             <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+//         </div>
+//         `;
+//         wrapper.appendChild(card);
+//     });
 
-    btnPrev.onclick = () => animateCategoriaScroll(-1, wrapper);
-    btnNext.onclick = () => animateCategoriaScroll(1, wrapper);
+//     btnPrev.onclick = () => animateCategoriaScroll(-1, wrapper);
+//     btnNext.onclick = () => animateCategoriaScroll(1, wrapper);
 
-    function updateButtons(){
-        const maxScrollLeft = Math.max(0, wrapper.scrollWidth - wrapper.clientWidth);
-        const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 2;
-        btnPrev.style.display = hasOverflow && wrapper.scrollLeft > 2 ? '' : 'none';
-        btnNext.style.display = hasOverflow && wrapper.scrollLeft < (maxScrollLeft - 2) ? '' : 'none';
-    }
-    wrapper.removeEventListener('scroll', wrapper._catScrollHandler || (()=>{}));
-    wrapper._catScrollHandler = updateButtons;
-    wrapper.addEventListener('scroll', wrapper._catScrollHandler);
-    setTimeout(updateButtons, 20);
-}
+//     function updateButtons(){
+//         const maxScrollLeft = Math.max(0, wrapper.scrollWidth - wrapper.clientWidth);
+//         const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 2;
+//         btnPrev.style.display = hasOverflow && wrapper.scrollLeft > 2 ? '' : 'none';
+//         btnNext.style.display = hasOverflow && wrapper.scrollLeft < (maxScrollLeft - 2) ? '' : 'none';
+//     }
+//     wrapper.removeEventListener('scroll', wrapper._catScrollHandler || (()=>{}));
+//     wrapper._catScrollHandler = updateButtons;
+//     wrapper.addEventListener('scroll', wrapper._catScrollHandler);
+//     setTimeout(updateButtons, 20);
+// }
 
 const CAT_PAGE_SIZE = 7;
 
@@ -1449,8 +1449,8 @@ function renderCategoriaCards(summaryArray){
         <div class="value">${numberFormatInt(c.estoque || 0)}</div>
       </div>
       <div class="categoria-rows">
-        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
         <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
+        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
       </div>
     `;
     wrapper.appendChild(card);

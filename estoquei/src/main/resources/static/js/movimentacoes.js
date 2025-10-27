@@ -2184,15 +2184,15 @@ function renderCategoriaCards(summaryArray){
     card.style.flex = '0 0 120px';
     card.style.minWidth = '120px';
     card.innerHTML = `
-      <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
-      <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
+    <div class="categoria-title">${escapeHtml(c.nome || ('Cat ' + (c.id || (idx+1))))}</div>
+    <div class="categoria-estoque" style="border:2px solid ${borderColor}; color:${textColor};">
         <div class="label">Estoque</div>
         <div class="value">${numberFormatInt(c.estoque || 0)}</div>
-      </div>
-      <div class="categoria-rows">
-        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+    </div>
+    <div class="categoria-rows">
         <div class="row saidas"><span>Saídas</span><span>${c.saidas ? '-' + numberFormatInt(c.saidas) : '0'}</span></div>
-      </div>
+        <div class="row entradas"><span>Entradas</span><span>${c.entradas ? '+' + numberFormatInt(c.entradas) : '0'}</span></div>
+    </div>
     `;
     wrapper.appendChild(card);
   });
