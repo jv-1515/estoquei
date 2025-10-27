@@ -226,6 +226,9 @@ public class RelatorioService {
                 table.addCell(cell);
             }
 
+            Font fontEntradas = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, new BaseColor(255,87,34));
+            Font fontSaidas   = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, new BaseColor(67,176,74));
+            
             // Linhas alternadas
             boolean zebra = false;
             for (Produto p : produtos) {
@@ -254,13 +257,23 @@ public class RelatorioService {
                 LocalDate ultimaEntrada = movimentacaoProdutoRepositoryCustom.buscarUltimaEntrada(p.getCodigo());
                 table.addCell(celula(formatarData(ultimaEntrada), bg, true));
                 int entradas = movimentacaoProdutoRepositoryCustom.totalEntradas(p.getCodigo());
-                table.addCell(celula(String.valueOf(entradas), bg, true));
+                PdfPCell cellEntradas = new PdfPCell(new Paragraph(String.valueOf(entradas), fontEntradas));
+                cellEntradas.setBackgroundColor(bg);
+                cellEntradas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                cellEntradas.setBorderColor(new BaseColor(220,220,220));
+                cellEntradas.setBorderWidth(0f);
+                table.addCell(cellEntradas);
 
                 LocalDate ultimaSaida = movimentacaoProdutoRepositoryCustom.buscarUltimaSaida(p.getCodigo());
                 String ultimaSaidaStr = ultimaSaida != null ? formatarData(ultimaSaida) : "-";
                 table.addCell(celula(ultimaSaidaStr, bg, true));
                 int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
-                table.addCell(celula(String.valueOf(saidas), bg, true));
+                PdfPCell cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
+                cellSaidas.setBackgroundColor(bg);
+                cellSaidas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                cellSaidas.setBorderColor(new BaseColor(220,220,220));
+                cellSaidas.setBorderWidth(0f);
+                table.addCell(cellSaidas);
 
                 // Balanço: entradas - saídas
                 int balanco = entradas - saidas;
@@ -287,6 +300,7 @@ public class RelatorioService {
 
             doc.add(table);
 
+            
             // 2. Para cada produto, nova página com detalhamento
             for (Produto p : produtos) {
                 doc.newPage();
