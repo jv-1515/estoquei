@@ -371,13 +371,13 @@ th.ordenar.sorted .sort-icon {
 .tipo-saida {
     font-size: 12px;
     color: #fff;
-    background: #43b04a;
+    background: #ff5722;
     padding: 4px 8px;
     border-radius: 12px;
 }
 
 .tipo-saida {
-    background-color: #ff5722;;
+    background-color: #43b04a;
     padding: 4px 13px;
 }
 
@@ -691,12 +691,12 @@ input:focus[readonly] {
     height: 100%;
 }
 .row.entradas {
-    background: #e8f5e8;
-    color: #2e7d32;
-}
-.row.saidas {
     background: #fff3e0;
     color: #e65100;
+}
+.row.saidas {
+    background: #e8f5e8;
+    color: #2e7d32;
 }
 .cat-arrow {
     background: #fff;
