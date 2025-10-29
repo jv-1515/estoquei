@@ -2032,7 +2032,7 @@ function abrirDetalhesProduto(produto) {
     } else {
         img.src = '';
         img.style.display = 'none';
-        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 32px; color:#777"><i class="fa-regular fa-image"></i></span>`;
+        img.outerHTML = `<span style="display: flex; justify-content: center; align-items: center; font-size: 32px; color:#ccc"><i class="fa-regular fa-image"></i></span>`;
     }
 
     document.getElementById('detalhes-produto-popup').style.display = 'flex';
