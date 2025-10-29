@@ -91,7 +91,14 @@ async function atualizarLista() {
     atualizarMovimentacoesResumo();
 }
 
+
 async function gerarRelatorio() {
+
+    const filtros = getFiltrosSelecionados();
+
+    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
+    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
+
         Swal.fire({
             icon: 'info',
             title: 'Gerando Relatório de Desempenho',
@@ -102,7 +109,6 @@ async function gerarRelatorio() {
                 Swal.showLoading();
             }
         });
-    const filtros = getFiltrosSelecionados();
 
 
     // captura os placeholders dos inputs de filtro
@@ -115,9 +121,6 @@ async function gerarRelatorio() {
         preco: document.getElementById('filter-preco')?.value || '',
         periodo: document.getElementById('filter-periodo')?.value || ''
     };
-
-    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
-    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
 
     // Filtra os produtos igual à prévia (categoria, tamanho, etc)
     let produtosFiltrados = todosProdutos.filter(p => {
@@ -1215,7 +1218,7 @@ function validarObrigatoriedadePeriodo(dataInicio, dataFim) {
         }
         Swal.fire({
             icon: 'warning',
-            title: 'Atenção',
+            title: 'Período obrigatório!',
             text: 'Selecione a Data Início',
             timer: 1200,
             showConfirmButton: false,

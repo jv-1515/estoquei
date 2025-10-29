@@ -924,7 +924,7 @@ function filtrarMovimentacoes() {
         if (responsaveisSelecionados.length && !responsaveisSelecionados.includes(m.responsavel)) ok = false;
 
         // Produtos
-        if (produtosSelecionados.length && !produtosSelecionados.includes(m.produto)) ok = false;
+        if (produtosSelecionados.length && !produtosSelecionados.includes(m.codigoProduto)) ok = false;
 
         if (categoriasSelecionadas.length && !categoriasSelecionadas.includes(m.categoria)) ok = false;
 
@@ -1446,6 +1446,7 @@ function removerMovimentacao(id) {
                 input.style.borderRadius = '4px';
                 input.style.background = '#fff';
                 input.style.textAlign = 'center';
+                input.style.color = 'red';
             }
             const btn = Swal.getConfirmButton();
             if (btn) {

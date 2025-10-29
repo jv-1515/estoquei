@@ -213,6 +213,7 @@ input, select {
     position: relative;
     padding-right: 120px;
     box-sizing: border-box;
+    margin-top: 8px;
 }
 
 .cargo-gradient {
@@ -233,7 +234,6 @@ input, select {
     font-size: 14px;
     color: #fff;
     transition: background 0.2s;
-    margin-top: 5px;
     display: flex;
     gap: 10px;
     align-items: center;

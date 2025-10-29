@@ -425,10 +425,6 @@ label {
     padding: 5px 0;
 }
 
-.filters-row label {
-    padding: 2px 0;
-}
-
 
 input:focus[readonly] {
     outline: none !important;

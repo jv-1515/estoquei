@@ -256,9 +256,9 @@ window.atualizarDetalhesEstoque = async function(produtos) {
     listaTamanhos.appendChild(gridLetras);
 
     // 5. Gráfico de Gênero
-    const generos = ["MASCULINO", "FEMININO", "UNISSEX"];
-    const nomesGeneros = ["Masculino", "Feminino", "Unissex"];
-    const coresGenero = ["#1e94a3", "#c0392b", "#bfa100"];
+    const generos = ["FEMININO", "MASCULINO", "UNISSEX"];
+    const nomesGeneros = ["Feminino", "Masculino", "Unissex"];
+    const coresGenero = ["#c0392b", "#1e94a3", "#bfa100"];
     const dadosGenero = generos.map(g =>
         produtos.filter(p => (p.genero || "").toUpperCase() === g).length
     );
