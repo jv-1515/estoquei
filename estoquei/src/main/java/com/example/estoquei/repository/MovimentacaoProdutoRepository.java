@@ -39,4 +39,6 @@ public interface MovimentacaoProdutoRepository extends JpaRepository<Movimentaca
 
     @Query("SELECT m FROM MovimentacaoProduto m WHERE m.data >= :inicio AND m.data <= :fim ORDER BY m.data DESC, m.id DESC")
     List<MovimentacaoProduto> findByDataBetweenOrderByDataDesc(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    boolean existsByCodigoMovimentacao(String codigoMovimentacao);
 }

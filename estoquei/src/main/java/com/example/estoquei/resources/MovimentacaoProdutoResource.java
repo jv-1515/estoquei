@@ -89,6 +89,11 @@ public class MovimentacaoProdutoResource {
         }
     }
 
+    @GetMapping("/existe-codigo")
+    public boolean existeCodigoMovimentacao(@RequestParam("codigoMovimentacao") String codigoMovimentacao) {
+        return movimentacaoRepo.existsByCodigoMovimentacao(codigoMovimentacao);
+    }
+
     @GetMapping("/entradas/total-hoje")
     @ResponseBody
     public long totalEntradasHoje() {
@@ -106,7 +111,7 @@ public class MovimentacaoProdutoResource {
     @PostMapping("/entrada")
     @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarEntrada(@RequestBody Map<String, Object> dadosEntrada, HttpSession session) {
-        try {            
+        try {
             String codigo = (String) dadosEntrada.get("codigo");
             String codigoCompra = (String) dadosEntrada.get("codigoCompra");
             String dataEntrada = (String) dadosEntrada.get("dataEntrada");
@@ -170,7 +175,7 @@ public class MovimentacaoProdutoResource {
     @PostMapping("/saida")
     @Transactional
     public ResponseEntity<MovimentacaoProduto> registrarSaida(@RequestBody Map<String, Object> dadosSaida, HttpSession session) {
-        try {            
+        try {
             String codigo = (String) dadosSaida.get("codigo");
             String codigoVenda = (String) dadosSaida.get("codigoVenda");
             String dataSaida = (String) dadosSaida.get("dataSaida");
@@ -293,4 +298,6 @@ public class MovimentacaoProdutoResource {
             .count();
         return (int) count;
     }
+
+
 }

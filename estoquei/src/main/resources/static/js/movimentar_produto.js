@@ -94,6 +94,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
+        const hoje = new Date(Date.now() - (3 * 60 * 60 * 1000)).toISOString().slice(0, 10);
         // Determina o max do input de quantidade
         let maxQuantidade = 999;
         let qtdAtual = 0;
@@ -141,7 +142,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <label for="data-compra">${tipo === 'ENTRADA' ? 'Data da Compra*' : 'Data da Venda*'}</label>
-                <input type="date" id="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" name="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}" required>
+                <input type="date" id="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}"
+                name="${tipo === 'ENTRADA' ? 'data-compra' : 'data-venda'}"
+                required value="${hoje}">
                 <button type="submit">Confirmar ${tipo === 'ENTRADA' ? 'Abastecimento' : 'Venda'}</button>
                 </div>
                 <div class="right-column">
@@ -183,30 +186,17 @@ window.addEventListener('DOMContentLoaded', function() {
             const fornecedorMultiGroup = fornecedorInput?.closest('.multiselect.input-group');
         
         // Validação ao digitar código da compra/venda
+        
         const codigoCompraInput = document.getElementById('codigo-compra');
         if (codigoCompraInput) {
+            // Mantém validações já existentes
             codigoCompraInput.addEventListener('input', function() {
                 if (fornecedorMultiGroup) {
-                    fornecedorMultiGroup.style.pointerEvents = 'none';
-                    fornecedorMultiGroup.style.opacity = '0.6';
+                    fornecedorMultiGroup.style.pointerEvents = produtoValido ? 'auto' : 'none';
+                    fornecedorMultiGroup.style.opacity = produtoValido ? '1' : '0.6';
                 }
                 this.value = this.value.replace(/\D/g, '');
-            });
-        }
-        const codigoVendaInput = document.getElementById('codigo-venda');
-        if (codigoVendaInput) {
-            codigoVendaInput.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '');
-            });
-        }
-        
-        if (codigoCompraInput) {
-            codigoCompraInput.addEventListener('input', function() {
-                    if (fornecedorMultiGroup) {
-                        fornecedorMultiGroup.style.pointerEvents = produtoValido ? 'auto' : 'none';
-                        fornecedorMultiGroup.style.opacity = produtoValido ? '1' : '0.6';
-                    }
-                // Se produto já está no limite, não pode abastecer
+                // Limite de estoque
                 if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) >= 999) {
                     Swal.fire({
                         icon: 'warning',
@@ -217,14 +207,39 @@ window.addEventListener('DOMContentLoaded', function() {
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });
-                    // Limpa o campo para evitar envio
-                    codigoCompraInput.value = '';
+                    this.value = '';
+                }
+            });
+        
+            // NOVO: validação de código duplicado ao perder o foco
+            codigoCompraInput.addEventListener('blur', function() {
+                const valor = this.value.trim();
+                if (valor.length === 9) {
+                    fetch(`/api/movimentacoes/existe-codigo?codigoMovimentacao=${valor}`)
+                        .then(res => res.json())
+                        .then(existe => {
+                            if (existe) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Código já utilizado!',
+                                    text: 'Já existe uma movimentação com esse código.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                this.value = '';
+                                this.focus();
+                            }
+                        });
                 }
             });
         }
+        
+        const codigoVendaInput = document.getElementById('codigo-venda');
         if (codigoVendaInput) {
+            // Mantém validações já existentes
             codigoVendaInput.addEventListener('input', function() {
-                // Se produto está zerado, não pode registrar saída
+                this.value = this.value.replace(/\D/g, '');
+                // Estoque zerado
                 if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) === 0) {
                     Swal.fire({
                         icon: 'warning',
@@ -234,11 +249,33 @@ window.addEventListener('DOMContentLoaded', function() {
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });
-                    // Limpa o campo para evitar envio
-                    codigoVendaInput.value = '';
+                    this.value = '';
+                }
+            });
+        
+            // NOVO: validação de código duplicado ao perder o foco
+            codigoVendaInput.addEventListener('blur', function() {
+                const valor = this.value.trim();
+                if (valor.length === 9) {
+                    fetch(`/api/movimentacoes/existe-codigo?codigoMovimentacao=${valor}`)
+                        .then(res => res.json())
+                        .then(existe => {
+                            if (existe) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Código já utilizado!',
+                                    text: 'Já existe uma movimentação com esse código',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                this.value = '';
+                                this.focus();
+                            }
+                        });
                 }
             });
         }
+        
 
         // Cria aviso limite acima do campo quantidade-final
         const quantidadeFinalInput = document.getElementById('quantidade-final');
@@ -284,6 +321,20 @@ window.addEventListener('DOMContentLoaded', function() {
                 const tipoMovimentacao = tipoRadio ? tipoRadio.value : "ENTRADA";
 
                 if (tipoMovimentacao === "ENTRADA") {
+                    const codigoCompra = document.getElementById('codigo-compra').value.trim();
+                    const valorCompra = document.getElementById('valor-compra').value.trim();
+                    const fornecedorId = document.getElementById('fornecedor-multi').dataset.id;
+                    if (!codigoCompra || !valorCompra || !fornecedorId) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Preencha todos os campos obrigatórios!',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+
                     const entrada = {
                         codigo: produtoSelecionado.codigo,
                         nome: produtoSelecionado.nome,
@@ -327,11 +378,23 @@ window.addEventListener('DOMContentLoaded', function() {
                         Swal.fire('Erro!', error.message, 'error');
                     });
                 } else if (tipoMovimentacao === "SAIDA") {
+                        const codigoVenda = document.getElementById('codigo-venda').value.trim();
+                        const valorVenda = document.getElementById('valor-venda').value.trim();
+                        const comprador = document.getElementById('comprador').value.trim();
+                        if (!codigoVenda || !valorVenda || !comprador) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Preencha todos os campos obrigatórios!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            return;
+                        }
                     const saida = {
                         codigo: produtoSelecionado.codigo,
                         nome: produtoSelecionado.nome,
-                        codigoVenda: document.getElementById('codigo-venda').value,    
-                        dataSaida: document.getElementById('data-venda').value,          
+                        codigoVenda: document.getElementById('codigo-venda').value,
+                        dataSaida: document.getElementById('data-venda').value,
                         comprador: document.getElementById('comprador').value,
                         quantidade: parseInt(document.getElementById('quantidade').value, 10),
                         valorVenda: parseFloat(document.getElementById('valor-venda').value.replace(/[^\d,]/g, '').replace(',', '.'))  // ✅ CORRIGIDO
@@ -446,27 +509,43 @@ window.addEventListener('DOMContentLoaded', function() {
         // Imagem
         const preview = document.getElementById('image-preview');
         if (preview) {
+            // Limpa imagens antigas e ícones
             Array.from(preview.childNodes).forEach(node => {
-                if (node.tagName !== 'INPUT' && node.nodeType === Node.ELEMENT_NODE) {
+                if (node.tagName === 'IMG' || node.tagName === 'I') {
                     preview.removeChild(node);
                 }
             });
+        
             if (produto.url_imagem) {
+                // Mostra skeleton/spinner enquanto carrega
+                preview.innerHTML = `
+                    <div class="skeleton-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:skeleton-loading 1.2s infinite;">
+                        <i class="fa fa-spinner fa-spin" style="font-size:32px;color:#aaa;" id="img-skeleton"></i>
+                    </div>
+                `;
                 const img = document.createElement('img');
                 img.src = produto.url_imagem;
                 img.alt = 'Imagem do produto';
                 img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-                preview.appendChild(img);
+                img.style.height = '100%';
+                img.loading = 'lazy';
+                img.onload = function() {
+                    preview.innerHTML = '';
+                    preview.appendChild(img);
+                };
+                img.onerror = function() {
+                    const skeleton = document.getElementById('img-skeleton');
+                    if (skeleton) skeleton.outerHTML = '<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>';
+                };
             } else {
-                const icon = document.createElement('i');
-                icon.className = 'fa-regular fa-image';
-                icon.style.fontSize = '32px';
-                preview.appendChild(icon);
+                // Mostra ícone padrão imediatamente
+                preview.innerHTML = `
+                    <i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>
+                `;
             }
         }
+        
         atualizarQuantidadeFinal();
-
         aplicarEstiloInputs();
     }
 
@@ -644,7 +723,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 radiosDivProduto.style.display = 'none';
             }
         });
-    }    // Troca tipo de movimentação (sempre adiciona listeners)
+    }
+    // Troca tipo de movimentação (sempre adiciona listeners)
     document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
         radio.addEventListener('change', function() {
             if (!produtoSelecionado) produtoSelecionado = {};
@@ -801,7 +881,26 @@ function validarDatasMovimentacao() {
     const hoje = new Date().toISOString().slice(0, 10);
     const dataEntrada = document.getElementById('data-compra')?.value;
     const dataSaida = document.getElementById('data-venda')?.value;
+    const tipoRadio = document.querySelector('input[name="tipo-movimentacao"]:checked');
+    const tipo = tipoRadio ? tipoRadio.value : 'ENTRADA';
+    const dataInput = document.getElementById(tipo === 'ENTRADA' ? 'data-compra' : 'data-venda');
 
+    if (dataInput) {
+        dataInput.addEventListener('change', function() {
+            const hoje = new Date().toISOString().slice(0, 10);
+            if (this.value > hoje) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data inválida',
+                    text: 'A data não pode ser posterior a hoje',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                this.value = hoje;
+                this.focus();
+            }
+        });
+    }
     if (dataEntrada && dataEntrada > hoje) {
         Swal.fire({
             icon: 'warning',

@@ -81,9 +81,9 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #777;
+    color: #ccc;
     border: dashed 2px #aaa;
-    cursor:pointer; 
+    cursor:pointer;
     overflow: hidden;
 }
 

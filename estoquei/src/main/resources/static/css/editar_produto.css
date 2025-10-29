@@ -65,7 +65,7 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #777;
+    color: #ccc;
     border: dashed 2px #aaa;
     cursor:pointer; 
     overflow: hidden;
