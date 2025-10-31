@@ -17,6 +17,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
@@ -301,6 +302,46 @@ public class RelatorioService {
             doc.add(table);
 
             
+            // Gráfico - nova seção após a tabela
+            Font fontH2Grafico = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
+            Paragraph h2Grafico = new Paragraph("Movimentações por período", fontH2Grafico);
+            h2Grafico.setSpacingBefore(10);
+            h2Grafico.setSpacingAfter(2);
+            
+            if (filtro.getGraficoBase64() != null && !filtro.getGraficoBase64().isEmpty()) {
+                byte[] imgBytes = java.util.Base64.getDecoder().decode(
+                    filtro.getGraficoBase64().replace("data:image/png;base64,", "")
+                );
+                try {
+                    Image graficoImg = Image.getInstance(imgBytes);
+                    graficoImg.scaleToFit(800, 350);
+                    graficoImg.setAlignment(Image.ALIGN_CENTER);
+            
+                    // AGRUPA EM UMA TABELA PARA NÃO QUEBRAR ENTRE PÁGINAS
+                    PdfPTable blocoGrafico = new PdfPTable(1);
+                    blocoGrafico.setWidthPercentage(100);
+            
+                    PdfPCell cellTitulo = new PdfPCell(h2Grafico);
+                    cellTitulo.setBorder(Rectangle.NO_BORDER);
+                    cellTitulo.setHorizontalAlignment(Element.ALIGN_LEFT);
+            
+                    PdfPCell cellGrafico = new PdfPCell(graficoImg, true);
+                    cellGrafico.setBorder(Rectangle.NO_BORDER);
+                    cellGrafico.setHorizontalAlignment(Element.ALIGN_CENTER);
+            
+                    blocoGrafico.addCell(cellTitulo);
+                    blocoGrafico.addCell(cellGrafico);
+            
+                    blocoGrafico.setKeepTogether(true);
+            
+                    doc.add(blocoGrafico);
+                } catch (java.io.IOException | com.itextpdf.text.BadElementException e) {
+                    e.printStackTrace();
+                    doc.add(new Paragraph("Erro ao inserir gráfico no relatório."));
+                }
+            }
+
+            
             // 2. Para cada produto, nova página com detalhamento
             for (Produto p : produtos) {
                 doc.newPage();
@@ -401,6 +442,7 @@ public class RelatorioService {
 
                 doc.add(histTable);
             }
+
 
             doc.close();
             return baos.toByteArray();

@@ -694,7 +694,7 @@ function filtrar() {
     // Filtros de categoria, tamanho, gênero, etc
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
-    if (!checks[0].checked) {
+    if (checks.length > 0 && !checks[0].checked) {
         categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value);
     }
     let tamanhosSelecionados = getTamanhosSelecionados ? getTamanhosSelecionados() : [];

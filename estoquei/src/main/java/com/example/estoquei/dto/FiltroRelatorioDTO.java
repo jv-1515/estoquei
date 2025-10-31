@@ -15,6 +15,7 @@ public class FiltroRelatorioDTO {
     private String dataInicio;
     private String dataFim;
     private java.util.Map<String, String> filtrosAplicados;
+    private String graficoBase64;
 
     public List<Long> getIds() { return ids; }
     public void setIds(List<Long> ids) { this.ids = ids; }
@@ -51,4 +52,7 @@ public class FiltroRelatorioDTO {
 
     public java.util.Map<String, String> getFiltrosAplicados() { return filtrosAplicados; }
     public void setFiltrosAplicados(java.util.Map<String, String> filtrosAplicados) { this.filtrosAplicados = filtrosAplicados; }
+
+    public String getGraficoBase64() { return graficoBase64; }
+    public void setGraficoBase64(String graficoBase64) { this.graficoBase64 = graficoBase64; }
 }
