@@ -1308,10 +1308,10 @@ function renderizarProdutos(produtos) {
                     </td>
                     <td>${p.limiteMinimo}</td>
                     <td>
-                        <span style="${entradasHoje > 0 ? 'font-weight:bold;color:#43b04a;' : ''}">${entradasHoje}</span>
+                        <span style="${entradasHoje > 0 ? 'font-weight:bold;color:#ff5722;' : ''}">${entradasHoje}</span>
                     </td>
                     <td>
-                        <span style="${saidasHoje > 0 ? 'font-weight:bold;color:#ff5722;' : ''}">${saidasHoje}</span>
+                        <span style="${saidasHoje > 0 ? 'font-weight:bold;color:#43b04a;' : ''}">${saidasHoje}</span>
                     </td>
                     <td>${ultimaEntrada}</td>
                     <td>${ultimaSaida}</td>

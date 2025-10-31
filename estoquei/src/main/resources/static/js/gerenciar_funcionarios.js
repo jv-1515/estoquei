@@ -5,7 +5,7 @@ window.expandedCargoMulti = false;
 window.expandedStatusMulti = false;
 
 window.isAdmin = function() {
-    return window.usuarioLogadoCargoId === 0;
+    return window.usuarioLogadoCargoId == 0;
 };
 
 function getIniciais(nome) {
@@ -915,6 +915,7 @@ function removerFuncionario(id) {
                 input.style.borderRadius = '4px';
                 input.style.background = '#fff';
                 input.style.textAlign = 'center';
+                input.style.color = 'red';
             }
 
             const btn = Swal.getConfirmButton();

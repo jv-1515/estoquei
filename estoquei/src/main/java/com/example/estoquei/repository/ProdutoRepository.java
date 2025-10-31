@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.estoquei.model.Categoria;
 import com.example.estoquei.model.Genero;
 import com.example.estoquei.model.Produto;
 import com.example.estoquei.model.Tamanho;
@@ -44,7 +42,7 @@ public class ProdutoRepository {
 
     //estoque
     public List<Produto> findAll() {
-        return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = false", Produto.class).getResultList();
+        return entityManager.createQuery("SELECT p FROM Produto p WHERE p.ic_excluido = false ORDER BY p.codigo ASC", Produto.class).getResultList();
     }
 
     //mostrando top

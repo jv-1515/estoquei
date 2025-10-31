@@ -53,6 +53,10 @@ public class RelatorioResource {
             filtro.setFiltrosAplicados(payload.getFiltrosAplicados());
         }
 
+        if (payload.getGraficoBase64() != null && !payload.getGraficoBase64().isEmpty()) {
+            filtro.setGraficoBase64(payload.getGraficoBase64());
+        }
+
         // 2. Gera o PDF em um array de bytes
         byte[] pdf = relatorioService.gerarPDFProdutos(filtro);
         

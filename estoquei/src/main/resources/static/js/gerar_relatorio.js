@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
+let categoriasBackend = [];
 let todosProdutos = [];
 let totalProdutosCadastrados = 0;
 
@@ -91,7 +91,51 @@ async function atualizarLista() {
     atualizarMovimentacoesResumo();
 }
 
+// E na função:
+// function desenharTagsLegenda(ctx, entradas, saidas, saldoFormatado) {
+//     const tags = [
+//         { texto: `Entradas ${numberFormatInt(entradas)}`, cor: "#FF5722" },
+//         { texto: `Saídas ${numberFormatInt(saidas)}`, cor: "#43B04A" },
+//         { texto: `Saldo (R$) ${saldoFormatado}`, cor: "#1e94a3" }
+//     ];
+
+//     const larguraTag = 180;
+//     const alturaTag = 38;
+//     const espacamento = 20;
+//     ctx.font = 'bold 18px Helvetica';
+//     ctx.textBaseline = 'middle';
+
+//     // Centralizar as tags no topo do canvas
+//     const totalLargura = tags.length * larguraTag + (tags.length - 1) * espacamento;
+//     let xStart = (ctx.canvas.width - totalLargura) / 2;
+//     for (let i = 0; i < tags.length; i++) {
+//         const x = xStart + i * (larguraTag + espacamento);
+//         const y = 22;
+//         ctx.beginPath();
+//         ctx.moveTo(x + 10, y);
+//         ctx.lineTo(x + larguraTag - 10, y);
+//         ctx.quadraticCurveTo(x + larguraTag, y, x + larguraTag, y + 10);
+//         ctx.lineTo(x + larguraTag, y + alturaTag - 10);
+//         ctx.quadraticCurveTo(x + larguraTag, y + alturaTag, x + larguraTag - 10, y + alturaTag);
+//         ctx.lineTo(x + 10, y + alturaTag);
+//         ctx.quadraticCurveTo(x, y + alturaTag, x, y + alturaTag - 10);
+//         ctx.lineTo(x, y + 10);
+//         ctx.quadraticCurveTo(x, y, x + 10, y);
+//         ctx.closePath();
+//         ctx.fillStyle = tags[i].cor;
+//         ctx.fill();
+//         ctx.fillStyle = "#fff";
+//         ctx.textAlign = "center";
+//         ctx.fillText(tags[i].texto, x + larguraTag / 2, y + alturaTag / 2);
+//     }
+// }
+
 async function gerarRelatorio() {
+    const filtros = getFiltrosSelecionados();
+
+    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
+    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
+
         Swal.fire({
             icon: 'info',
             title: 'Gerando Relatório de Desempenho',
@@ -102,7 +146,6 @@ async function gerarRelatorio() {
                 Swal.showLoading();
             }
         });
-    const filtros = getFiltrosSelecionados();
 
 
     // captura os placeholders dos inputs de filtro
@@ -115,9 +158,6 @@ async function gerarRelatorio() {
         preco: document.getElementById('filter-preco')?.value || '',
         periodo: document.getElementById('filter-periodo')?.value || ''
     };
-
-    if (!validarObrigatoriedadePeriodo(filtros.dataInicio, filtros.dataFim)) return;
-    if (!validarDatasPeriodo(filtros.dataInicio, filtros.dataFim)) return;
 
     // Filtra os produtos igual à prévia (categoria, tamanho, etc)
     let produtosFiltrados = todosProdutos.filter(p => {
@@ -156,6 +196,114 @@ async function gerarRelatorio() {
         return;
     }
 
+    // --- GERAÇÃO DO GRÁFICO ---
+    const dadosGrafico = montarDadosGraficoStacked(produtosFiltrados, filtros.dataInicio, filtros.dataFim);
+
+
+    const maxEmpilhado = Math.max(
+        ...dadosGrafico.entradas.map((v, i) => v + (dadosGrafico.saidas[i] || 0)),
+        0
+    );
+    const limiteBarra = calcularLimiteBarra([maxEmpilhado]);
+
+
+    let canvas = document.createElement('canvas');
+    canvas.width = 900;
+    canvas.height = 350;
+    canvas.style.display = 'none';
+    document.body.appendChild(canvas);
+
+
+    let chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: dadosGrafico.labels,
+            datasets: [
+                {
+                    label: `Entradas ${numberFormatInt(dadosGrafico.totalEntradas)}`,
+                    data: dadosGrafico.entradas,
+                    backgroundColor: '#FF5722',
+                    borderColor: '#FF5722',
+                    borderWidth: 1,
+                    stack: 'quantidade',
+                    datalabels: {
+                        color: '#fff',
+                        anchor: 'end',
+                        align: 'start',
+                        font: { weight: 'bold', size: 14 },
+                        formatter: v => v > 0 ? numberFormatInt(v) : ''
+                    }
+                },
+                {
+                    label: `Saídas ${numberFormatInt(dadosGrafico.totalSaidas)}`,
+                    data: dadosGrafico.saidas,
+                    backgroundColor: '#43B04A',
+                    borderColor: '#43B04A',
+                    borderWidth: 1,
+                    stack: 'quantidade',
+                    datalabels: {
+                        color: '#fff',
+                        anchor: 'end',
+                        align: 'start',
+                        font: { weight: 'bold', size: 14 },
+                        formatter: v => v > 0 ? numberFormatInt(v) : ''
+                    }
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: { size: 20, weight: 'bold' },
+                        color: '#277580',
+                        boxWidth: 24,
+                        padding: 18
+                    }
+                },
+                title: { display: false },
+                datalabels: { display: true }
+            },
+            scales: {
+                x: { stacked: true, ticks: { color: '#000' } },
+                y: {
+                    stacked: true,
+                    min: 0,
+                    max: limiteBarra,
+                    ticks: { stepSize: limiteBarra/5, color: '#000' }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    // Aguarde o Chart.js renderizar
+    await new Promise(resolve => setTimeout(resolve, 400));
+    const ctx = canvas.getContext('2d');
+
+    const saldo = dadosGrafico.totalEntradas - dadosGrafico.totalSaidas;
+    const sinalSaldo = saldo >= 0 ? "+" : "-";
+    const saldoFormatado = `${sinalSaldo}${Math.abs(saldo).toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+
+    
+    // Legenda no topo
+    // desenharTagsLegenda(ctx, dadosGrafico.totalEntradas, dadosGrafico.totalSaidas, dadosGrafico.saldoTotal);
+    
+    // Labels customizadas abaixo das barras
+    // ctx.font = 'bold 13px Helvetica';
+    // for (let i = 0; i < dadosGrafico.labels.length; i++) {
+    //     let x = 70 + i * 70; // ajuste conforme largura
+    //     let y = canvas.height - 10;
+    //     ctx.fillStyle = '#277580';
+    //     ctx.fillText(dadosGrafico.labelDetalhes[i], x, y);
+    // }
+    
+    let graficoBase64 = canvas.toDataURL('image/png');
+    canvas.remove();
+
+    // --- FETCH ---
     fetch('/relatorio/gerar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -163,7 +311,8 @@ async function gerarRelatorio() {
             produtos: produtosFiltrados,
             dataInicio: filtros.dataInicio,
             dataFim: filtros.dataFim,
-            filtrosAplicados
+            filtrosAplicados,
+            graficoBase64 // <-- AGORA ESTÁ DEFINIDO!
         })
     })
     .then(res => {
@@ -1215,7 +1364,7 @@ function validarObrigatoriedadePeriodo(dataInicio, dataFim) {
         }
         Swal.fire({
             icon: 'warning',
-            title: 'Atenção',
+            title: 'Período obrigatório!',
             text: 'Selecione a Data Início',
             timer: 1200,
             showConfirmButton: false,
@@ -1332,7 +1481,6 @@ function animateCategoriaScroll(direction, wrapperEl){
     wrapperEl.scrollBy({ left: direction * step * 3, behavior: 'smooth' });
 }
 
-let categoriasBackend = [];
 
 async function carregarCategoriasBackend() {
     try {
@@ -1344,7 +1492,7 @@ async function carregarCategoriasBackend() {
 }
 
 function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
-    // Use categoriasBackend
+    if (!Array.isArray(categoriasBackend)) return;
     const cats = categoriasBackend.length ? categoriasBackend : [];
     const summary = cats.map((c,idx)=>{
         const key = (c.nome||'').toString().toUpperCase();
@@ -1360,6 +1508,7 @@ function montarResumoCategoriasEgerarCards(produtos, movimentacoes){
 // Chame carregarCategoriasBackend no início
 document.addEventListener('DOMContentLoaded', async function() {
     await carregarCategoriasBackend();
+    atualizarMovimentacoesResumo();
 });
 
 // function renderCategoriaCards(summaryArray){
@@ -1558,6 +1707,180 @@ async function atualizarMovimentacoesResumo() {
 
 ['periodo-data-inicio','periodo-data-fim','filter-produto','filter-categoria','filter-tamanho','filter-genero'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('change', atualizarMovimentacoesResumo);
+    if (el) el.addEventListener('change', function() {
+        if (categoriasBackend && Array.isArray(categoriasBackend)) {
+            atualizarMovimentacoesResumo();
+        }
+    });
 });
-document.addEventListener('DOMContentLoaded', atualizarMovimentacoesResumo);
+
+
+function montarDadosGraficoStacked(produtos, dataInicio, dataFim) {
+    let movimentacoes = [];
+    produtos.forEach(p => {
+        if (Array.isArray(p.historico)) {
+            movimentacoes = movimentacoes.concat(p.historico);
+        }
+    });
+
+    const dtIni = new Date(dataInicio);
+    const dtFim = new Date(dataFim);
+    const diasNoPeriodo = Math.floor((dtFim - dtIni) / (1000 * 60 * 60 * 24)) + 1;
+
+    let labels = [];
+    let entradas = [];
+    let saidas = [];
+    let saldoPorGrupo = [];
+    let labelDetalhes = [];
+
+    // --- 1 dia até 7 dias: por dia ---
+    if (diasNoPeriodo <= 7) {
+        for (let i = 0; i < diasNoPeriodo; i++) {
+            let d = new Date(dtIni);
+            d.setDate(d.getDate() + i);
+            const diaStr = d.toISOString().slice(0,10);
+            labels.push(d.toLocaleDateString('pt-BR').slice(0,5)); // "dd/mm"
+            labelDetalhes.push(d.toLocaleDateString('pt-BR')); // "dd/mm/yyyy"
+            entradas.push(
+                movimentacoes.filter(m => m.tipoMovimentacao === 'ENTRADA' && m.data === diaStr)
+                    .reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0)
+            );
+            saidas.push(
+                movimentacoes.filter(m => m.tipoMovimentacao === 'SAIDA' && m.data === diaStr)
+                    .reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0)
+            );
+            saldoPorGrupo.push(entradas[entradas.length-1] - saidas[saidas.length-1]);
+        }
+    }
+    // --- 8 a 31 dias: por semana ---
+    else if (diasNoPeriodo <= 31) {
+        let semanas = [];
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            let semanaIni = new Date(d);
+            let semanaFim = new Date(d);
+            semanaFim.setDate(semanaFim.getDate() + 6);
+            if (semanaFim > dtFim) semanaFim = dtFim;
+            semanas.push([new Date(semanaIni), new Date(semanaFim)]);
+            d.setDate(d.getDate() + 7);
+        }
+        semanas.forEach(([ini, fim]) => {
+            labels.push(`${ini.toLocaleDateString('pt-BR').slice(0,5)}-${fim.toLocaleDateString('pt-BR').slice(0,5)}`);
+            labelDetalhes.push(`${ini.toLocaleDateString('pt-BR')} - ${fim.toLocaleDateString('pt-BR')}`);
+            const entradasSemana = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'ENTRADA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+            const saidasSemana = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'SAIDA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.quantidadeMovimentada || m.quantidade || 0), 0);
+            entradas.push(entradasSemana);
+            saidas.push(saidasSemana);
+            saldoPorGrupo.push(entradasSemana - saidasSemana);
+        });
+    }
+    // --- 2 a 6 meses: por mês, detalhando período ---
+    else if (diasNoPeriodo <= 180) {
+        let mesesSet = new Set();
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            mesesSet.add(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'));
+            d.setMonth(d.getMonth() + 1);
+            d.setDate(1);
+        }
+        let mesesArray = Array.from(mesesSet).sort();
+        mesesArray.forEach(m => {
+            const [ano, mes] = m.split('-');
+            // Busca o primeiro e último dia do mês no período
+            const ini = new Date(`${ano}-${mes}-01`);
+            let fim = new Date(ini);
+            fim.setMonth(fim.getMonth() + 1);
+            fim.setDate(0);
+            if (ini < dtIni) ini.setTime(dtIni.getTime());
+            if (fim > dtFim) fim.setTime(dtFim.getTime());
+            labels.push(mesAbreviado(Number(mes))); // "Jan", "Fev", ...
+            labelDetalhes.push(`${mesAbreviado(Number(mes))}\n${ini.toLocaleDateString('pt-BR')} - ${fim.toLocaleDateString('pt-BR')}`);
+            const entradasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                const movAnoMes = movDate.getFullYear() + '-' + String(movDate.getMonth()+1).padStart(2,'0');
+                return mov.tipoMovimentacao === 'ENTRADA' && movAnoMes === m && movDate >= dtIni && movDate <= dtFim;
+            }).reduce((acc, mov) => acc + Number(mov.quantidadeMovimentada || mov.quantidade || 0), 0);
+            const saidasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                const movAnoMes = movDate.getFullYear() + '-' + String(movDate.getMonth()+1).padStart(2,'0');
+                return mov.tipoMovimentacao === 'SAIDA' && movAnoMes === m && movDate >= dtIni && movDate <= dtFim;
+            }).reduce((acc, mov) => acc + Number(mov.quantidadeMovimentada || mov.quantidade || 0), 0);
+            entradas.push(entradasMes);
+            saidas.push(saidasMes);
+            saldoPorGrupo.push(entradasMes - saidasMes);
+        });
+    }
+    // --- 7 a 12 meses: por mês, só nome do mês ---
+    else {
+        let mesesArray = [];
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            const mes = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+            if (!mesesArray.includes(mes)) mesesArray.push(mes);
+            d.setMonth(d.getMonth() + 1);
+            d.setDate(1);
+        }
+        if (mesesArray.length > 12) mesesArray = mesesArray.slice(0, 12);
+        mesesArray.forEach(m => {
+            const [ano, mes] = m.split('-');
+            labels.push(mesAbreviado(Number(mes)));
+            labelDetalhes.push(mesAbreviado(Number(mes)));
+            const entradasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                const movAnoMes = movDate.getFullYear() + '-' + String(movDate.getMonth()+1).padStart(2,'0');
+                return mov.tipoMovimentacao === 'ENTRADA' && movAnoMes === m && movDate >= dtIni && movDate <= dtFim;
+            }).reduce((acc, mov) => acc + Number(mov.quantidadeMovimentada || mov.quantidade || 0), 0);
+            const saidasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                const movAnoMes = movDate.getFullYear() + '-' + String(movDate.getMonth()+1).padStart(2,'0');
+                return mov.tipoMovimentacao === 'SAIDA' && movAnoMes === m && movDate >= dtIni && movDate <= dtFim;
+            }).reduce((acc, mov) => acc + Number(mov.quantidadeMovimentada || mov.quantidade || 0), 0);
+            entradas.push(entradasMes);
+            saidas.push(saidasMes);
+            saldoPorGrupo.push(entradasMes - saidasMes);
+        });
+    }
+
+    // Limite máximo para altura das barras
+    const maxQtd = Math.max(...entradas, ...saidas, 0);
+    let limiteBarra = calcularLimiteBarra([maxQtd]);
+
+    // Soma total para legendas
+    const totalEntradas = entradas.reduce((a,b)=>a+b,0);
+    const totalSaidas = saidas.reduce((a,b)=>a+b,0);
+    const saldoTotal = totalEntradas - totalSaidas;
+
+    return {
+        labels,
+        entradas,
+        saidas,
+        saldoPorGrupo,
+        labelDetalhes,
+        limiteBarra,
+        totalEntradas,
+        totalSaidas,
+        saldoTotal
+    };
+}
+
+function mesAbreviado(mes) {
+    return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mes-1];
+}
+
+function calcularLimiteBarra(valores) {
+    const max = Math.max(...valores, 0);
+    if (max <= 0) return 1000;
+    const base = Math.pow(10, String(Math.floor(max)).length - 1);
+    let limite = Math.ceil(max / base) * base;
+    if (limite <= max) limite = max + base;
+    return limite;
+}
+
+
+

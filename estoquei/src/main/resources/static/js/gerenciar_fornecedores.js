@@ -800,6 +800,7 @@ function removerFornecedor(id, nomeFornecedor) {
                 input.style.borderRadius = '4px';
                 input.style.background = '#fff';
                 input.style.textAlign = 'center';
+                input.style.color = 'red';
             }
             const btn = Swal.getConfirmButton();
             if (btn) {

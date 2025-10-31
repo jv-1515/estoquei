@@ -444,6 +444,9 @@ function excluirProdutoDefinitivo(id, nome, quantidade) {
                     input.style.margin = '10px 20px';
                     input.style.border = 'solid 1px #aaa';
                     input.style.borderRadius = '4px';
+                    input.style.background = '#fff';
+                    input.style.textAlign = 'center';
+                    input.style.color = 'red';
                 }
             }
         }).then((res) => {
