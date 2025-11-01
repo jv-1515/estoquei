@@ -257,8 +257,8 @@ async function gerarRelatorio() {
                     display: true,
                     position: 'top',
                     labels: {
-                        font: { size: 20, weight: 'bold' },
-                        color: '#277580',
+                        font: { size: 18, weight: 'bold' },
+                        color: '#000',
                         boxWidth: 24,
                         padding: 18
                     }
@@ -288,18 +288,6 @@ async function gerarRelatorio() {
     const saldoFormatado = `${sinalSaldo}${Math.abs(saldo).toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
 
     
-    // Legenda no topo
-    // desenharTagsLegenda(ctx, dadosGrafico.totalEntradas, dadosGrafico.totalSaidas, dadosGrafico.saldoTotal);
-    
-    // Labels customizadas abaixo das barras
-    // ctx.font = 'bold 13px Helvetica';
-    // for (let i = 0; i < dadosGrafico.labels.length; i++) {
-    //     let x = 70 + i * 70; // ajuste conforme largura
-    //     let y = canvas.height - 10;
-    //     ctx.fillStyle = '#277580';
-    //     ctx.fillText(dadosGrafico.labelDetalhes[i], x, y);
-    // }
-    
     let graficoBase64 = canvas.toDataURL('image/png');
     canvas.remove();
 
@@ -312,7 +300,7 @@ async function gerarRelatorio() {
             dataInicio: filtros.dataInicio,
             dataFim: filtros.dataFim,
             filtrosAplicados,
-            graficoBase64 // <-- AGORA ESTÁ DEFINIDO!
+            graficoBase64
         })
     })
     .then(res => {
