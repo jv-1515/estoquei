@@ -237,11 +237,11 @@ public class RelatorioService {
                 zebra = !zebra;
 
                 table.addCell(celula(p.getCodigo(), bg, true));
-                table.addCell(celula(capitalize(p.getNome()), bg, true));
-                table.addCell(celula(capitalize(p.getCategoria() != null ? p.getCategoria() : ""), bg, true));
+                table.addCell(celula(capitalize(p.getNome()), bg, false));
+                table.addCell(celula(capitalize(p.getCategoria() != null ? p.getCategoria() : ""), bg, false));
                 table.addCell(celula(p.getTamanho() != null ? formatarTamanho(p.getTamanho().toString()) : "", bg, true));
-                table.addCell(celula(capitalize(p.getGenero() != null ? p.getGenero().toString() : ""), bg, true));
-                table.addCell(celula(formatarPreco(p.getPreco()), bg, true));
+                table.addCell(celula(capitalize(p.getGenero() != null ? p.getGenero().toString() : ""), bg, false));
+                table.addCell(celula(formatarPreco(p.getPreco()), bg, false, PdfPCell.ALIGN_RIGHT));
                 String qtdStr = String.valueOf(p.getQuantidade());
                 Font fontQtd = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, BaseColor.BLACK);
                 if (p.getQuantidade() == 0 || p.getQuantidade() < p.getLimiteMinimo()) {
@@ -258,28 +258,40 @@ public class RelatorioService {
                 LocalDate ultimaEntrada = movimentacaoProdutoRepositoryCustom.buscarUltimaEntrada(p.getCodigo());
                 table.addCell(celula(formatarData(ultimaEntrada), bg, true));
                 int entradas = movimentacaoProdutoRepositoryCustom.totalEntradas(p.getCodigo());
+                // PdfPCell cellEntradas = new PdfPCell(new Paragraph(String.valueOf(entradas), fontEntradas));
+                // cellEntradas.setBackgroundColor(bg);
+                // cellEntradas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                // cellEntradas.setBorderWidth(0f);
+                // table.addCell(cellEntradas);
                 PdfPCell cellEntradas = new PdfPCell(new Paragraph(String.valueOf(entradas), fontEntradas));
                 cellEntradas.setBackgroundColor(bg);
                 cellEntradas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
                 cellEntradas.setBorderColor(new BaseColor(220,220,220));
-                cellEntradas.setBorderWidth(0f);
                 table.addCell(cellEntradas);
 
                 LocalDate ultimaSaida = movimentacaoProdutoRepositoryCustom.buscarUltimaSaida(p.getCodigo());
                 String ultimaSaidaStr = ultimaSaida != null ? formatarData(ultimaSaida) : "-";
                 table.addCell(celula(ultimaSaidaStr, bg, true));
                 int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
+                // PdfPCell cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
+                // cellSaidas.setBackgroundColor(bg);
+                // cellSaidas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                // cellSaidas.setBorderColor(new BaseColor(220,220,220));
+                // cellSaidas.setBorderWidth(0f);
+                // table.addCell(cellSaidas);
                 PdfPCell cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
                 cellSaidas.setBackgroundColor(bg);
                 cellSaidas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                // cellSaidas.setBorderWidthTop(0f);
+                // cellSaidas.setBorderWidthBottom(0f);
+                // cellSaidas.setBorderWidthLeft(0f);
+                // cellSaidas.setBorderWidthRight(0f);
                 cellSaidas.setBorderColor(new BaseColor(220,220,220));
-                cellSaidas.setBorderWidth(0f);
                 table.addCell(cellSaidas);
 
                 // Balanço: entradas - saídas
                 int balanco = entradas - saidas;
-                BaseColor corBalanco = balanco > 0 ? new BaseColor(255,87,34 ) : balanco < 0 ? new BaseColor(67,176,74) : new BaseColor(180,180,180);
-                Font fontBalanco = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, corBalanco);
+                Font fontBalanco = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL);
                 PdfPCell cellBalanco = new PdfPCell(new Paragraph(String.valueOf(Math.abs(balanco)), fontBalanco));
                 cellBalanco.setBackgroundColor(bg);
                 cellBalanco.setBorderColor(new BaseColor(220,220,220));
@@ -290,18 +302,92 @@ public class RelatorioService {
                 double valorEntradas = movimentacaoProdutoRepositoryCustom.totalValorEntradas(p.getCodigo());
                 double valorSaidas = movimentacaoProdutoRepositoryCustom.totalValorSaidas(p.getCodigo());
                 double saldo = valorSaidas - valorEntradas;
+                // BaseColor corSaldo = saldo > 0 ? new BaseColor(67,176,74) : saldo < 0 ? new BaseColor(255,87,34) : new BaseColor(180,180,180);
+                // Font fontSaldo = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, corSaldo);
+                // PdfPCell cellSaldo = new PdfPCell(new Paragraph(formatarValorMonetario(saldo), fontSaldo));
+                // cellSaldo.setBackgroundColor(bg);
+                // cellSaldo.setBorderColor(new BaseColor(220,220,220));
+                // cellSaldo.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                // table.addCell(cellSaldo);
                 BaseColor corSaldo = saldo > 0 ? new BaseColor(67,176,74) : saldo < 0 ? new BaseColor(255,87,34) : new BaseColor(180,180,180);
-                Font fontSaldo = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, corSaldo);
+                Font fontSaldo = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, corSaldo);
                 PdfPCell cellSaldo = new PdfPCell(new Paragraph(formatarValorMonetario(saldo), fontSaldo));
                 cellSaldo.setBackgroundColor(bg);
                 cellSaldo.setBorderColor(new BaseColor(220,220,220));
-                cellSaldo.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                cellSaldo.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
                 table.addCell(cellSaldo);
             }
 
+            Font fontResumo = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
+            Paragraph tituloResumo = new Paragraph("Resumo por produto", fontResumo);
+            tituloResumo.setSpacingBefore(10);
+            tituloResumo.setSpacingAfter(8);
+            doc.add(tituloResumo);
+
             doc.add(table);
+            // Totais
+            int totalEntradas = produtos.stream()
+                .mapToInt(p -> movimentacaoProdutoRepositoryCustom.totalEntradas(p.getCodigo()))
+                .sum();
+            int totalSaidas = produtos.stream()
+                .mapToInt(p -> movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo()))
+                .sum();
+            double totalSaldo = produtos.stream()
+                .mapToDouble(p -> movimentacaoProdutoRepositoryCustom.totalValorSaidas(p.getCodigo())
+                               - movimentacaoProdutoRepositoryCustom.totalValorEntradas(p.getCodigo()))
+                .sum();
+
+            // Cores
+            BaseColor corLaranja = new BaseColor(255,87,34);
+            BaseColor corVerde   = new BaseColor(67,176,74);
+            BaseColor corAzul    = new BaseColor(0x27, 0x75, 0x80); // neutra (para saldo = 0)
+
+            // Apenas os NÚMEROS coloridos
+            Font fontLabelNeutra     = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, new BaseColor(51,51,51));
+            Font fontNumeroLaranja   = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, corLaranja);
+            Font fontNumeroVerde     = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, corVerde);
+            Font fontNumeroSaldo     = totalSaldo > 0
+                ? new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, corVerde)
+                : totalSaldo < 0
+                    ? new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, corLaranja)
+                    : new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, corAzul);
+
+            // Legenda (labels neutros, SOMENTE números coloridos)
+            Paragraph legenda = new Paragraph();
+            legenda.add(new Chunk("Entradas: ", fontLabelNeutra));
+            legenda.add(new Chunk(String.format("%,d", totalEntradas), fontNumeroLaranja));
+            legenda.add(new Chunk("   Saídas: ", fontLabelNeutra));
+            legenda.add(new Chunk(String.format("%,d", totalSaidas), fontNumeroVerde));
+            legenda.add(new Chunk("   Saldo (R$): ", fontLabelNeutra));
+            String saldoStr = (totalSaldo < 0 ? "-" : "") + formatarValorMonetario(totalSaldo);
+            legenda.add(new Chunk(saldoStr, fontNumeroSaldo));
+            legenda.setSpacingBefore(8);
+            legenda.setSpacingAfter(12);
+            doc.add(legenda);
+
+            // Mantém referências usadas abaixo (acima do gráfico)
+            // Aqui reutilizamos as fontes dos números para manter a cor coerente
+            Font fontLegendaLaranja = fontNumeroLaranja;
+            Font fontLegendaVerde   = fontNumeroVerde;
+            Font fontLegendaAzul    = fontNumeroSaldo;
+
 
             
+        // ...antes de adicionar o gráfico...
+        if (filtro.getGraficoBase64() != null && !filtro.getGraficoBase64().isEmpty()) {
+            // Adiciona os totais acima do gráfico, se poucos dados
+            if (produtos.size() <= 5) { // ou outro critério de "poucos dados"
+                Paragraph totaisGrafico = new Paragraph();
+                totaisGrafico.add(new Chunk("Entradas: " + String.format("%,d", totalEntradas), fontLegendaLaranja));
+                totaisGrafico.add(new Chunk("   Saídas: " + String.format("%,d", totalSaidas), fontLegendaVerde));
+                totaisGrafico.add(new Chunk("   Saldo: R$ " + String.format("%,.2f", totalSaldo).replace('.',','), fontLegendaAzul));
+                totaisGrafico.setSpacingBefore(4);
+                totaisGrafico.setSpacingAfter(2);
+                doc.add(totaisGrafico);
+            }
+            // ...segue para adicionar o gráfico...
+        }
+
             // Gráfico - nova seção após a tabela
             Font fontH2Grafico = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
             Paragraph h2Grafico = new Paragraph("Movimentações por período", fontH2Grafico);
@@ -424,7 +510,7 @@ public class RelatorioService {
                     histTable.addCell(celula(m.getCodigoMovimentacao() != null ? m.getCodigoMovimentacao() : "-", bg, true));
                     histTable.addCell(celula(String.valueOf(m.getQuantidadeMovimentada()), bg, true));
                     histTable.addCell(celula(String.valueOf(m.getEstoqueFinal()), bg, true));
-                    histTable.addCell(celula(m.getValorMovimentacao() != null ? formatarValorMonetario(m.getValorMovimentacao().doubleValue(), 0) : "", bg, true));
+                    histTable.addCell(celula(m.getValorMovimentacao() != null ? formatarValorMonetario(m.getValorMovimentacao().doubleValue(), 0) : "", bg, true, PdfPCell.ALIGN_CENTER));
                     histTable.addCell(celula(m.getParteEnvolvida() != null ? m.getParteEnvolvida() : "-", bg, false));
 
                     // Só o responsável fica alinhado à esquerda:
@@ -490,16 +576,20 @@ public class RelatorioService {
     // Função para formatar data
     private String formatarData(java.time.LocalDate data) {
         if (data == null) return "";
-        return String.format("%02d/%02d/%04d", data.getDayOfMonth(), data.getMonthValue(), data.getYear());
+        return data.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yy"));
     }
 
     // Função utilitária para célula colorida
     private PdfPCell celula(String texto, BaseColor bg, boolean alinhadoCentro) {
+        return celula(texto, bg, alinhadoCentro, alinhadoCentro ? PdfPCell.ALIGN_CENTER : PdfPCell.ALIGN_LEFT);
+    }
+    
+    private PdfPCell celula(String texto, BaseColor bg, boolean alinhadoCentro, int alinhamento) {
         PdfPCell cell = new PdfPCell(new Paragraph(texto, new Font(Font.FontFamily.HELVETICA, 9)));
         cell.setBackgroundColor(bg);
         cell.setPadding(4);
         cell.setBorderColor(new BaseColor(220,220,220));
-        cell.setHorizontalAlignment(alinhadoCentro ? PdfPCell.ALIGN_CENTER : PdfPCell.ALIGN_LEFT);
+        cell.setHorizontalAlignment(alinhamento);
         return cell;
     }
 }
