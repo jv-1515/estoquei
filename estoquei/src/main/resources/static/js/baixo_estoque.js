@@ -208,7 +208,11 @@ async function carregarCategoriasEProdutosBaixoEstoque() {
         produtosFiltrados = [];
     }
 
-    filtrar();
+    if (produtos && produtos.length > 0) {
+        filtrar();
+    } else {
+        renderizarProdutos([]);
+    }
 }
 document.addEventListener('DOMContentLoaded', carregarCategoriasEProdutosBaixoEstoque);
 
@@ -218,7 +222,7 @@ document.addEventListener('DOMContentLoaded', carregarCategoriasEProdutosBaixoEs
 function updateOptions() {
     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
     let categoriasSelecionadas = [];
-    if (!checks[0].checked) {
+    if (checks.length > 0 && !checks[0].checked) {
         categoriasSelecionadas = checks.slice(1).filter(cb => cb.checked).map(cb => cb.value.toString().trim().toUpperCase());
     }
 

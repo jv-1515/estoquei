@@ -283,6 +283,7 @@ th.ordenar.sorted .sort-icon {
 #registros-multi {
     color: #1E94A3 !important;
     border: #1e94a3 2px solid;
+    cursor: pointer;
 }
 
 

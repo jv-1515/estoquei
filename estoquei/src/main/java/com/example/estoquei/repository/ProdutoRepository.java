@@ -126,22 +126,22 @@ public class ProdutoRepository {
     
     //baixo estoque
     public List<Produto> filterMinLimit() {
-        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
+        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2) ORDER BY p.codigo ASC";
         return entityManager.createQuery(query, Produto.class).getResultList();
     }
 
     //mostrando top baixo estoque
     public List<Produto> findTopBaixoEstoque(int top) {
-    return entityManager.createQuery(
-        "SELECT p FROM Produto p WHERE p.quantidade <= p.limiteMinimo", Produto.class)
-        .setMaxResults(top)
-        .getResultList();
+        return entityManager.createQuery(
+            "SELECT p FROM Produto p WHERE p.quantidade <= p.limiteMinimo ORDER BY p.codigo ASC", Produto.class)
+            .setMaxResults(top)
+            .getResultList();
     }
 
     //filtro baixo estoque
     public List<Produto> findAndFilterMinLimit(Produto produto) {
 
-        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2)";
+        String query = "SELECT p FROM Produto p WHERE p.quantidade <= (p.limiteMinimo * 2) ORDER BY p.codigo ASC";
         List<String> whereClause = new ArrayList<>();
     
         String codigo = produto.getCodigo();
