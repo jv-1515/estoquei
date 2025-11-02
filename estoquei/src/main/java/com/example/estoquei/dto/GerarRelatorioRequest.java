@@ -10,6 +10,7 @@ public class GerarRelatorioRequest {
     private String dataFim;
     private java.util.Map<String, String> filtrosAplicados;
     private String graficoBase64;
+    private String graficoSaldoBase64;
 
     public List<Produto> getProdutos() { return produtos; }
     public void setProdutos(List<Produto> produtos) { this.produtos = produtos; }
@@ -30,4 +31,7 @@ public class GerarRelatorioRequest {
     public void setGraficoBase64(String graficoBase64) {
         this.graficoBase64 = graficoBase64;
     }
+
+    public String getGraficoSaldoBase64() { return graficoSaldoBase64; }
+    public void setGraficoSaldoBase64(String graficoSaldoBase64) { this.graficoSaldoBase64 = graficoSaldoBase64; }
 }

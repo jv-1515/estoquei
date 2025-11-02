@@ -211,7 +211,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
             });
         
-            // NOVO: validação de código duplicado ao perder o foco
+            // validação de código duplicado ao perder o foco
             codigoCompraInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
                 if (valor.length === 9) {
@@ -253,7 +253,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
             });
         
-            // NOVO: validação de código duplicado ao perder o foco
+            // validação de código duplicado ao perder o foco
             codigoVendaInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
                 if (valor.length === 9) {
@@ -472,6 +472,8 @@ window.addEventListener('DOMContentLoaded', function() {
                 });
             }
         }, 0);
+        
+        atualizarValorVenda(produto);
     }
 
     
@@ -968,6 +970,37 @@ function preencherRadiosFornecedorMulti(categoriaId) {
 //   fornecedorInput.dataset.id = radio.value;
 //   this.style.display = 'none';
 // });
+
+
+function atualizarValorVenda(produto) {
+    const quantidadeInput = document.getElementById('quantidade');
+    const valorVendaInput = document.getElementById('valor-venda');
+
+    if (!quantidadeInput || !valorVendaInput || !produto || !produto.preco) return;
+
+    let manual = false;
+
+    valorVendaInput.addEventListener('input', () => {
+        manual = true;
+    });
+
+    quantidadeInput.addEventListener('input', function() {
+        if (manual) return;
+        let qtd = parseInt(this.value, 10) || 0;
+        let valor = qtd * parseFloat(produto.preco);
+        if (!isNaN(valor) && valor > 0) {
+            valorVendaInput.value = 'R$ ' + valor.toFixed(2).replace('.', ',');
+        } else {
+            valorVendaInput.value = '';
+        }
+    });
+
+    quantidadeInput.addEventListener('blur', function() {
+        manual = false;
+    });
+}
+
+
 
 function aplicarEstiloInputs() {
         const inputs = document.querySelectorAll('.filters-group input');

@@ -220,7 +220,7 @@ async function gerarRelatorio() {
             labels: dadosGrafico.labels,
             datasets: [
                 {
-                    label: `Entradas ${numberFormatInt(dadosGrafico.totalEntradas)}`,
+                    label: `Entradas: ${numberFormatInt(dadosGrafico.totalEntradas)}`,
                     data: dadosGrafico.entradas,
                     backgroundColor: '#FF5722',
                     borderColor: '#FF5722',
@@ -235,7 +235,7 @@ async function gerarRelatorio() {
                     }
                 },
                 {
-                    label: `Saídas ${numberFormatInt(dadosGrafico.totalSaidas)}`,
+                    label: `Saídas: ${numberFormatInt(dadosGrafico.totalSaidas)}`,
                     data: dadosGrafico.saidas,
                     backgroundColor: '#43B04A',
                     borderColor: '#43B04A',
@@ -257,7 +257,7 @@ async function gerarRelatorio() {
                     display: true,
                     position: 'top',
                     labels: {
-                        font: { size: 18, weight: 'bold' },
+                        font: { size: 18 },
                         color: '#000',
                         boxWidth: 24,
                         padding: 18
@@ -279,7 +279,6 @@ async function gerarRelatorio() {
         plugins: [ChartDataLabels]
     });
 
-    // Aguarde o Chart.js renderizar
     await new Promise(resolve => setTimeout(resolve, 400));
     const ctx = canvas.getContext('2d');
 
@@ -292,17 +291,171 @@ async function gerarRelatorio() {
     canvas.remove();
 
     // --- FETCH ---
-    fetch('/relatorio/gerar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            produtos: produtosFiltrados,
-            dataInicio: filtros.dataInicio,
-            dataFim: filtros.dataFim,
-            filtrosAplicados,
-            graficoBase64
-        })
+    // fetch('/relatorio/gerar', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //         produtos: produtosFiltrados,
+    //         dataInicio: filtros.dataInicio,
+    //         dataFim: filtros.dataFim,
+    //         filtrosAplicados,
+    //         graficoBase64
+    //     })
+    // })
+    // .then(res => {
+    //     if (!res.ok) throw new Error('Erro ao gerar PDF');
+    //     return res.blob();
+    // })
+    // .then(blob => {
+    //     const url = URL.createObjectURL(blob);
+    //     const hoje = new Date();
+    //     const baseNomeArquivo = `RelatorioDesempenho_${String(hoje.getDate()).padStart(2, '0')}${String(hoje.getMonth() + 1).padStart(2, '0')}${hoje.getFullYear()}`;
+    //     let nomeArquivo = `${baseNomeArquivo}.pdf`;
+
+    //     let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+    //     let contador = 1;
+    //     let nomeUnico = `${baseNomeArquivo}.pdf`;
+    //     while (relatorios.some(r => r.nome === nomeUnico)) {
+    //         nomeUnico = `${baseNomeArquivo}_${contador}.pdf`;
+    //         contador++;
+    //     }
+    //     nomeArquivo = nomeUnico;
+
+    //     // download
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = nomeArquivo;
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     document.body.removeChild(a);
+
+    //     // salva no localStorage
+    //     const reader = new FileReader();
+    //     reader.onloadend = function() {
+    //         const base64 = reader.result;
+    //         const novoRelatorio = {
+    //             id: Date.now(),
+    //             nome: nomeArquivo,
+    //             dataCriacao: hoje.toISOString(),
+    //             periodo: filtros.dataInicio && filtros.dataFim
+    //                 ? (filtros.dataInicio === filtros.dataFim
+    //                     ? formatarDataBR(filtros.dataInicio)
+    //                     : `${formatarDataBR(filtros.dataInicio)} - ${formatarDataBR(filtros.dataFim)}`)
+    //                 : formatarDataBR(hoje.toISOString().slice(0, 10)),
+    //             base64
+    //         };
+    //         let relatorios = JSON.parse(localStorage.getItem('relatoriosGerados') || '[]');
+    //         relatorios.push(novoRelatorio);
+    //         window.relatoriosGerados = relatorios;
+    //         localStorage.setItem('relatoriosGerados', JSON.stringify(relatorios));
+    //     };
+    //     reader.readAsDataURL(blob);
+    //     Swal.close();
+    //     // preview na tela
+    //     document.getElementById('preview-relatorio').innerHTML =
+    //         `<iframe src="${url}" name="${nomeArquivo}" id="${nomeArquivo}"></iframe>`;
+    //     setTimeout(() => {
+    //         document.getElementById('preview-relatorio').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //     }, 400);
+    //     })
+    //     .catch(() => {
+    //     Swal.close();
+    //     Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
+    // });
+
+// --- GERAÇÃO DO GRÁFICO DE SALDO ---
+const dadosGraficoSaldo = montarDadosGraficoSaldo(produtosFiltrados, filtros.dataInicio, filtros.dataFim);
+
+let canvasSaldo = document.createElement('canvas');
+canvasSaldo.width = 900;
+canvasSaldo.height = 350;
+canvasSaldo.style.display = 'none';
+document.body.appendChild(canvasSaldo);
+
+let chartSaldo = new Chart(canvasSaldo, {
+    type: 'bar',
+    data: {
+        labels: dadosGraficoSaldo.labels,
+        datasets: [
+            {
+                label: `Entradas (R$): ${dadosGraficoSaldo.totalEntradasValor.toLocaleString('pt-BR', {minimumFractionDigits:2})}`,
+                data: dadosGraficoSaldo.entradasValor,
+                backgroundColor: '#FF5722',
+                borderColor: '#FF5722',
+                borderWidth: 1,
+                stack: 'valor',
+                datalabels: {
+                    color: '#fff',
+                    anchor: 'end',
+                    align: 'start',
+                    font: { weight: 'bold', size: 14 },
+                    formatter: v => v > 0 ? `${v.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''                
+                }
+            },
+            {
+                label: `Saídas (R$): ${dadosGraficoSaldo.totalSaidasValor.toLocaleString('pt-BR', {minimumFractionDigits:2})}`,
+                data: dadosGraficoSaldo.saidasValor,
+                backgroundColor: '#43B04A',
+                borderColor: '#43B04A',
+                borderWidth: 1,
+                stack: 'valor',
+                datalabels: {
+                    color: '#fff',
+                    anchor: 'end',
+                    align: 'start',
+                    font: { weight: 'bold', size: 14 },
+                    formatter: v => v > 0 ? `${v.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''
+                }
+            }
+        ]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    font: { size: 18 },
+                    color: '#000',
+                    boxWidth: 24,
+                    padding: 18
+                }
+            },
+            title: { display: false },
+            datalabels: { display: true }
+        },
+        scales: {
+            x: { stacked: true, ticks: { color: '#000' } },
+            y: {
+                stacked: true,
+                min: 0,
+                max: dadosGraficoSaldo.limiteBarra,
+                ticks: { stepSize: dadosGraficoSaldo.limiteBarra/5, color: '#000' }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// Aguarde o Chart.js renderizar
+await new Promise(resolve => setTimeout(resolve, 400));
+let graficoSaldoBase64 = canvasSaldo.toDataURL('image/png');
+canvasSaldo.remove();
+
+// --- FETCH ---
+// Adicione graficoSaldoBase64 ao payload
+fetch('/relatorio/gerar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        produtos: produtosFiltrados,
+        dataInicio: filtros.dataInicio,
+        dataFim: filtros.dataFim,
+        filtrosAplicados,
+        graficoBase64,
+        graficoSaldoBase64
     })
+})
     .then(res => {
         if (!res.ok) throw new Error('Erro ao gerar PDF');
         return res.blob();
@@ -358,12 +511,14 @@ async function gerarRelatorio() {
         setTimeout(() => {
             document.getElementById('preview-relatorio').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 400);
-        })
-        .catch(() => {
+    })
+    .catch(() => {
         Swal.close();
         Swal.fire('Erro', 'Falha ao gerar relatório.', 'error');
     });
+
 }
+
 
 function montarCheckboxesProduto(produtos) {
     const divProd = document.getElementById('checkboxes-produto-multi');
@@ -1338,6 +1493,23 @@ function validarDatasPeriodo(dataInicio, dataFim) {
         });
         return false;
     }
+    if (dataInicio && dataFim) {
+        const dtIni = new Date(dataInicio);
+        const dtFim = new Date(dataFim);
+        const meses = (dtFim.getFullYear() - dtIni.getFullYear()) * 12 + (dtFim.getMonth() - dtIni.getMonth());
+        if (meses > 11 || (meses === 11 && dtFim.getDate() > dtIni.getDate())) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Período máximo excedido!',
+                text: 'Selecione um intervalo de até 12 meses',
+                timer: 1800,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return false;
+        }
+    }
     return true;
 }
 
@@ -1854,6 +2026,150 @@ function montarDadosGraficoStacked(produtos, dataInicio, dataFim) {
         totalEntradas,
         totalSaidas,
         saldoTotal
+    };
+}
+
+function montarDadosGraficoSaldo(produtos, dataInicio, dataFim) {
+    let movimentacoes = [];
+    produtos.forEach(p => {
+        if (Array.isArray(p.historico)) {
+            movimentacoes = movimentacoes.concat(p.historico);
+        }
+    });
+
+    const dtIni = new Date(dataInicio);
+    const dtFim = new Date(dataFim);
+    const diasNoPeriodo = Math.floor((dtFim - dtIni) / (1000 * 60 * 60 * 24)) + 1;
+
+    let labels = [];
+    let entradasValor = [];
+    let saidasValor = [];
+    let saldoPorGrupo = [];
+
+    // --- 1 dia até 7 dias: por dia ---
+    if (diasNoPeriodo <= 7) {
+        for (let i = 0; i < diasNoPeriodo; i++) {
+            let d = new Date(dtIni);
+            d.setDate(d.getDate() + i);
+            const diaStr = d.toISOString().slice(0,10);
+            labels.push(d.toLocaleDateString('pt-BR').slice(0,5)); // "dd/mm"
+            entradasValor.push(
+                movimentacoes.filter(m => m.tipoMovimentacao === 'ENTRADA' && m.data === diaStr)
+                    .reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0)
+            );
+            saidasValor.push(
+                movimentacoes.filter(m => m.tipoMovimentacao === 'SAIDA' && m.data === diaStr)
+                    .reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0)
+            );
+            saldoPorGrupo.push(entradasValor[entradasValor.length-1] - saidasValor[saidasValor.length-1]);
+        }
+    }
+    // --- 8 a 31 dias: por semana ---
+    else if (diasNoPeriodo <= 31) {
+        let semanas = [];
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            let semanaIni = new Date(d);
+            let semanaFim = new Date(d);
+            semanaFim.setDate(semanaFim.getDate() + 6);
+            if (semanaFim > dtFim) semanaFim = dtFim;
+            semanas.push([new Date(semanaIni), new Date(semanaFim)]);
+            d.setDate(d.getDate() + 7);
+        }
+        semanas.forEach(([ini, fim]) => {
+            labels.push(`${ini.toLocaleDateString('pt-BR').slice(0,5)}-${fim.toLocaleDateString('pt-BR').slice(0,5)}`);
+            const entradasSemana = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'ENTRADA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            const saidasSemana = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'SAIDA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            entradasValor.push(entradasSemana);
+            saidasValor.push(saidasSemana);
+            saldoPorGrupo.push(entradasSemana - saidasSemana);
+        });
+    }
+    // --- 2 a 6 meses: por mês ---
+    else if (diasNoPeriodo <= 180) {
+        let mesesSet = new Set();
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            mesesSet.add(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'));
+            d.setMonth(d.getMonth() + 1);
+            d.setDate(1);
+        }
+        let mesesArray = Array.from(mesesSet).sort();
+        mesesArray.forEach(m => {
+            const [ano, mes] = m.split('-');
+            const ini = new Date(`${ano}-${mes}-01`);
+            let fim = new Date(ini);
+            fim.setMonth(fim.getMonth() + 1);
+            fim.setDate(0);
+            labels.push(mesAbreviado(Number(mes)));
+            const entradasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'ENTRADA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            const saidasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'SAIDA' && movDate >= ini && movDate <= fim;
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            entradasValor.push(entradasMes);
+            saidasValor.push(saidasMes);
+            saldoPorGrupo.push(entradasMes - saidasMes);
+        });
+    }
+    // --- 7 a 12 meses: por mês ---
+    else {
+        let mesesArray = [];
+        let d = new Date(dtIni);
+        while (d <= dtFim) {
+            const mes = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+            if (!mesesArray.includes(mes)) mesesArray.push(mes);
+            d.setMonth(d.getMonth() + 1);
+            d.setDate(1);
+        }
+        if (mesesArray.length > 12) mesesArray = mesesArray.slice(0, 12);
+        mesesArray.forEach(m => {
+            const [ano, mes] = m.split('-');
+            labels.push(mesAbreviado(Number(mes)));
+            const entradasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'ENTRADA' && movDate.getMonth()+1 === Number(mes);
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            const saidasMes = movimentacoes.filter(mov => {
+                const movDate = new Date(mov.data);
+                return mov.tipoMovimentacao === 'SAIDA' && movDate.getMonth()+1 === Number(mes);
+            }).reduce((acc, m) => acc + Number(m.valorMovimentacao || 0), 0);
+            entradasValor.push(entradasMes);
+            saidasValor.push(saidasMes);
+            saldoPorGrupo.push(entradasMes - saidasMes);
+        });
+    }
+
+    // Limite máximo para altura das barras
+    const maxEmpilhadoValor = Math.max(
+        ...entradasValor.map((v, i) => v + (saidasValor[i] || 0)),
+        0
+    );
+    let limiteBarra = calcularLimiteBarra([maxEmpilhadoValor]);
+
+    // Soma total para legendas
+    const totalEntradasValor = entradasValor.reduce((a,b)=>a+b,0);
+    const totalSaidasValor = saidasValor.reduce((a,b)=>a+b,0);
+    const saldoTotalValor = totalEntradasValor - totalSaidasValor;
+
+    return {
+        labels,
+        entradasValor,
+        saidasValor,
+        saldoPorGrupo,
+        limiteBarra,
+        totalEntradasValor,
+        totalSaidasValor,
+        saldoTotalValor
     };
 }
 

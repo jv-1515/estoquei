@@ -273,19 +273,14 @@ public class RelatorioService {
                 String ultimaSaidaStr = ultimaSaida != null ? formatarData(ultimaSaida) : "-";
                 table.addCell(celula(ultimaSaidaStr, bg, true));
                 int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
-                // PdfPCell cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
-                // cellSaidas.setBackgroundColor(bg);
-                // cellSaidas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
-                // cellSaidas.setBorderColor(new BaseColor(220,220,220));
-                // cellSaidas.setBorderWidth(0f);
-                // table.addCell(cellSaidas);
-                PdfPCell cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
+                PdfPCell cellSaidas;
+                if (saidas == 0) {
+                    cellSaidas = new PdfPCell(new Paragraph("-"));
+                } else {
+                    cellSaidas = new PdfPCell(new Paragraph(String.valueOf(saidas), fontSaidas));
+                }
                 cellSaidas.setBackgroundColor(bg);
                 cellSaidas.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
-                // cellSaidas.setBorderWidthTop(0f);
-                // cellSaidas.setBorderWidthBottom(0f);
-                // cellSaidas.setBorderWidthLeft(0f);
-                // cellSaidas.setBorderWidthRight(0f);
                 cellSaidas.setBorderColor(new BaseColor(220,220,220));
                 table.addCell(cellSaidas);
 
@@ -302,13 +297,6 @@ public class RelatorioService {
                 double valorEntradas = movimentacaoProdutoRepositoryCustom.totalValorEntradas(p.getCodigo());
                 double valorSaidas = movimentacaoProdutoRepositoryCustom.totalValorSaidas(p.getCodigo());
                 double saldo = valorSaidas - valorEntradas;
-                // BaseColor corSaldo = saldo > 0 ? new BaseColor(67,176,74) : saldo < 0 ? new BaseColor(255,87,34) : new BaseColor(180,180,180);
-                // Font fontSaldo = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, corSaldo);
-                // PdfPCell cellSaldo = new PdfPCell(new Paragraph(formatarValorMonetario(saldo), fontSaldo));
-                // cellSaldo.setBackgroundColor(bg);
-                // cellSaldo.setBorderColor(new BaseColor(220,220,220));
-                // cellSaldo.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
-                // table.addCell(cellSaldo);
                 BaseColor corSaldo = saldo > 0 ? new BaseColor(67,176,74) : saldo < 0 ? new BaseColor(255,87,34) : new BaseColor(180,180,180);
                 Font fontSaldo = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, corSaldo);
                 PdfPCell cellSaldo = new PdfPCell(new Paragraph(formatarValorMonetario(saldo), fontSaldo));
@@ -390,7 +378,7 @@ public class RelatorioService {
 
             // Gráfico - nova seção após a tabela
             Font fontH2Grafico = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
-            Paragraph h2Grafico = new Paragraph("Movimentações por período", fontH2Grafico);
+            Paragraph h2Grafico = new Paragraph("Movimentações do período", fontH2Grafico);
             h2Grafico.setSpacingBefore(10);
             h2Grafico.setSpacingAfter(2);
             
@@ -424,6 +412,43 @@ public class RelatorioService {
                 } catch (java.io.IOException | com.itextpdf.text.BadElementException e) {
                     e.printStackTrace();
                     doc.add(new Paragraph("Erro ao inserir gráfico no relatório."));
+                }
+            }
+
+            if (filtro.getGraficoSaldoBase64() != null && !filtro.getGraficoSaldoBase64().isEmpty()) {
+                Font fontH2GraficoSaldo = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, new BaseColor(0x27, 0x75, 0x80));
+                Paragraph h2GraficoSaldo = new Paragraph("Transações do período", fontH2GraficoSaldo);
+                h2GraficoSaldo.setSpacingBefore(10);
+                h2GraficoSaldo.setSpacingAfter(2);
+
+                byte[] imgBytesSaldo = java.util.Base64.getDecoder().decode(
+                    filtro.getGraficoSaldoBase64().replace("data:image/png;base64,", "")
+                );
+                try {
+                    Image graficoSaldoImg = Image.getInstance(imgBytesSaldo);
+                    graficoSaldoImg.scaleToFit(800, 350);
+                    graficoSaldoImg.setAlignment(Image.ALIGN_CENTER);
+
+                    PdfPTable blocoGraficoSaldo = new PdfPTable(1);
+                    blocoGraficoSaldo.setWidthPercentage(100);
+
+                    PdfPCell cellTituloSaldo = new PdfPCell(h2GraficoSaldo);
+                    cellTituloSaldo.setBorder(Rectangle.NO_BORDER);
+                    cellTituloSaldo.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                    PdfPCell cellGraficoSaldo = new PdfPCell(graficoSaldoImg, true);
+                    cellGraficoSaldo.setBorder(Rectangle.NO_BORDER);
+                    cellGraficoSaldo.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                    blocoGraficoSaldo.addCell(cellTituloSaldo);
+                    blocoGraficoSaldo.addCell(cellGraficoSaldo);
+
+                    blocoGraficoSaldo.setKeepTogether(true);
+
+                    doc.add(blocoGraficoSaldo);
+                } catch (java.io.IOException | com.itextpdf.text.BadElementException e) {
+                    e.printStackTrace();
+                    doc.add(new Paragraph("Erro ao inserir gráfico de saldo no relatório."));
                 }
             }
 
@@ -508,8 +533,29 @@ public class RelatorioService {
                     histTable.addCell(tagCell);
 
                     histTable.addCell(celula(m.getCodigoMovimentacao() != null ? m.getCodigoMovimentacao() : "-", bg, true));
-                    histTable.addCell(celula(String.valueOf(m.getQuantidadeMovimentada()), bg, true));
-                    histTable.addCell(celula(String.valueOf(m.getEstoqueFinal()), bg, true));
+                    
+                    // Quantidade
+                    Font fontQtdHist = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, BaseColor.BLACK);
+                    if (m.getQuantidadeMovimentada() == 0) {
+                        fontQtdHist = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, BaseColor.RED);
+                    }
+                    PdfPCell cellQtdHist = new PdfPCell(new Paragraph(String.valueOf(m.getQuantidadeMovimentada()), fontQtdHist));
+                    cellQtdHist.setBackgroundColor(bg);
+                    cellQtdHist.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                    cellQtdHist.setBorderColor(new BaseColor(220,220,220));
+                    histTable.addCell(cellQtdHist);
+
+                    // Estoque Final
+                    Font fontEstoqueFinal = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, BaseColor.BLACK);
+                    if (m.getEstoqueFinal() == 0) {
+                        fontEstoqueFinal = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, BaseColor.RED);
+                    }
+                    PdfPCell cellEstoqueFinal = new PdfPCell(new Paragraph(String.valueOf(m.getEstoqueFinal()), fontEstoqueFinal));
+                    cellEstoqueFinal.setBackgroundColor(bg);
+                    cellEstoqueFinal.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                    cellEstoqueFinal.setBorderColor(new BaseColor(220,220,220));
+                    histTable.addCell(cellEstoqueFinal);
+
                     histTable.addCell(celula(m.getValorMovimentacao() != null ? formatarValorMonetario(m.getValorMovimentacao().doubleValue(), 0) : "", bg, true, PdfPCell.ALIGN_CENTER));
                     histTable.addCell(celula(m.getParteEnvolvida() != null ? m.getParteEnvolvida() : "-", bg, false));
 
@@ -526,7 +572,23 @@ public class RelatorioService {
                     histTable.addCell(celula(resp != null ? resp : "-", bg, false));
                 }
 
+                int entradas = movimentacaoProdutoRepositoryCustom.totalEntradas(p.getCodigo());
+                int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
+                double saldo = movimentacaoProdutoRepositoryCustom.totalValorSaidas(p.getCodigo()) - movimentacaoProdutoRepositoryCustom.totalValorEntradas(p.getCodigo());
+                
+                Font fontNumeroSaidasProduto = saidas == 0 ? fontNumeroLaranja : fontNumeroVerde;
+                Paragraph legendaProduto = new Paragraph();
+                legendaProduto.add(new Chunk("Entradas: ", fontLabelNeutra));
+                legendaProduto.add(new Chunk(String.format("%,d", entradas), fontNumeroLaranja));
+                legendaProduto.add(new Chunk("   Saídas: ", fontLabelNeutra));
+                legendaProduto.add(new Chunk(String.format("%,d", saidas), fontNumeroSaidasProduto));
+                legendaProduto.add(new Chunk("   Saldo (R$): ", fontLabelNeutra));
+                legendaProduto.add(new Chunk(formatarValorMonetario(saldo), fontNumeroSaldo));
+                legendaProduto.setSpacingBefore(8);
+                legendaProduto.setSpacingAfter(12);
+
                 doc.add(histTable);
+                doc.add(legendaProduto);
             }
 
 
