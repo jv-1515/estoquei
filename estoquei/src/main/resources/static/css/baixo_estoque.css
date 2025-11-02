@@ -384,6 +384,7 @@ select#filter-genero {
 #registros-multi {
     color: #1E94A3 !important;
     border: #1e94a3 2px solid;
+    cursor: pointer;
 }
 
 .chevron-registros {
