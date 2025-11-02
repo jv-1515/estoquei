@@ -40,12 +40,12 @@
         <div class="filters" style="flex-direction: column; align-items: stretch;">
             <h2 style="margin-bottom: -20px;">Detalhes do Produto</h2>
             <div class="filters-group">
-                <div style="display:flex;flex-direction:column;justify-content: flex-end;">
-                    <input type="text" id="filter-codigo" placeholder="-" maxlength="9" minlength="9" pattern="\d{9}" class="filter-input" />
-                </div>
-                <div style="display:flex;flex-direction:column;display: none;">
-                    <label for="filter-nome">Nome</label>
-                    <input type="text" id="filter-nome" placeholder="-" class="filter-input" readonly style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" />
+                <div style="position:relative;">
+                    <input type="text" id="filter-codigo" placeholder="Digite o código ou nome" class="filter-input" autocomplete="off" />
+                    <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
                 </div>
                 <div style="display:flex;flex-direction:column;">
                     <label for="filter-categoria">Categoria</label>
