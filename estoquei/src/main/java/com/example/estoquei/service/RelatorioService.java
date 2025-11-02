@@ -576,11 +576,12 @@ public class RelatorioService {
                 int saidas = movimentacaoProdutoRepositoryCustom.totalSaidas(p.getCodigo());
                 double saldo = movimentacaoProdutoRepositoryCustom.totalValorSaidas(p.getCodigo()) - movimentacaoProdutoRepositoryCustom.totalValorEntradas(p.getCodigo());
                 
+                Font fontNumeroSaidasProduto = saidas == 0 ? fontNumeroLaranja : fontNumeroVerde;
                 Paragraph legendaProduto = new Paragraph();
                 legendaProduto.add(new Chunk("Entradas: ", fontLabelNeutra));
                 legendaProduto.add(new Chunk(String.format("%,d", entradas), fontNumeroLaranja));
                 legendaProduto.add(new Chunk("   Saídas: ", fontLabelNeutra));
-                legendaProduto.add(new Chunk(String.format("%,d", saidas), fontNumeroVerde));
+                legendaProduto.add(new Chunk(String.format("%,d", saidas), fontNumeroSaidasProduto));
                 legendaProduto.add(new Chunk("   Saldo (R$): ", fontLabelNeutra));
                 legendaProduto.add(new Chunk(formatarValorMonetario(saldo), fontNumeroSaldo));
                 legendaProduto.setSpacingBefore(8);

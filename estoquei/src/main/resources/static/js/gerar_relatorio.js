@@ -389,7 +389,7 @@ let chartSaldo = new Chart(canvasSaldo, {
                     anchor: 'end',
                     align: 'start',
                     font: { weight: 'bold', size: 14 },
-                    formatter: v => v > 0 ? v.toLocaleString('pt-BR', {minimumFractionDigits:2}) : ''
+                    formatter: v => v > 0 ? `${v.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''                
                 }
             },
             {
@@ -404,7 +404,7 @@ let chartSaldo = new Chart(canvasSaldo, {
                     anchor: 'end',
                     align: 'start',
                     font: { weight: 'bold', size: 14 },
-                    formatter: v => v > 0 ? v.toLocaleString('pt-BR', {minimumFractionDigits:2}) : ''
+                    formatter: v => v > 0 ? `${v.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''
                 }
             }
         ]
@@ -1493,6 +1493,23 @@ function validarDatasPeriodo(dataInicio, dataFim) {
         });
         return false;
     }
+    if (dataInicio && dataFim) {
+        const dtIni = new Date(dataInicio);
+        const dtFim = new Date(dataFim);
+        const meses = (dtFim.getFullYear() - dtIni.getFullYear()) * 12 + (dtFim.getMonth() - dtIni.getMonth());
+        if (meses > 11 || (meses === 11 && dtFim.getDate() > dtIni.getDate())) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Período máximo excedido!',
+                text: 'Selecione um intervalo de até 12 meses',
+                timer: 1800,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            return false;
+        }
+    }
     return true;
 }
 
@@ -2133,8 +2150,11 @@ function montarDadosGraficoSaldo(produtos, dataInicio, dataFim) {
     }
 
     // Limite máximo para altura das barras
-    const maxValor = Math.max(...entradasValor, ...saidasValor, 0);
-    let limiteBarra = calcularLimiteBarra([maxValor]);
+    const maxEmpilhadoValor = Math.max(
+        ...entradasValor.map((v, i) => v + (saidasValor[i] || 0)),
+        0
+    );
+    let limiteBarra = calcularLimiteBarra([maxEmpilhadoValor]);
 
     // Soma total para legendas
     const totalEntradasValor = entradasValor.reduce((a,b)=>a+b,0);
