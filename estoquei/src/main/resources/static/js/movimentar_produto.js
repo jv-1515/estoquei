@@ -192,24 +192,53 @@ if (codigoInput) {
             if (filtrados.length === 0) {
                 radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
             } else {
-                radiosDivProduto.innerHTML = filtrados.map(prod => `
-                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                        <input type="radio" name="produto-radio" value="${prod.id}">
-                        ${prod.codigo} - ${prod.nome}
-                    </label>
-                `).join('');
+                radiosDivProduto.innerHTML = filtrados.map(prod => {
+                    // Define cor do ícone
+                    let icone = '';
+                    if (prod.quantidade <= prod.limiteMinimo) {
+                        icone = `<i class="fa-solid fa-triangle-exclamation" style="color:red;" title="Abaixo do limite"></i>`;
+                    } else if (prod.quantidade <= 2 * prod.limiteMinimo) {
+                        icone = `
+                            <span style="background:#000;width:3px;height:7px;position:absolute;left:42%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d; position:relative; z-index:1;" title="Baixo estoque"></i>
+                        `;
+                    }
+                    return `
+                        <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;position:relative;">
+                            <input type="radio" name="produto-radio" value="${prod.id}">
+                            <span style="display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:250px;">
+                                ${prod.codigo} - ${prod.nome}
+                            </span>
+                            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);">${icone}</span>
+                        </label>
+                    `;
+                }).join('');
             }
             radiosDivProduto.style.display = 'block';
         });
     
         produtoInput.addEventListener('focus', function() {
             if (!produtoInput.value.trim()) {
-                radiosDivProduto.innerHTML = todosProdutos.map(prod => `
-                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                        <input type="radio" name="produto-radio" value="${prod.id}">
-                        ${prod.codigo} - ${prod.nome}
-                    </label>
-                `).join('');
+                radiosDivProduto.innerHTML = todosProdutos.map(prod => {
+                    let icone = '';
+                    if (prod.quantidade <= prod.limiteMinimo) {
+                        icone = `<i class="fa-solid fa-triangle-exclamation" style="color:red;" title="Abaixo do limite"></i>`;
+                    } else if (prod.quantidade <= 2 * prod.limiteMinimo) {
+                        icone = `
+                            <span style="background:#000;width:3px;height:7px;position:absolute;left:42%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d; position:relative; z-index:1;" title="Baixo estoque"></i>
+                        `;
+                    }
+                    return `
+                        <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;position:relative;">
+                            <input type="radio" name="produto-radio" value="${prod.id}">
+                            <span style="display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:250px;">
+                                ${prod.codigo} - ${prod.nome}
+                            </span>
+                            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);">${icone}</span>
+                        </label>
+                    `;
+                }).join('');
                 radiosDivProduto.style.display = 'block';
             }
         });
