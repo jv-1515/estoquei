@@ -223,18 +223,9 @@ if (codigoInput) {
             if (radio) radio.checked = true;
             produtoInput.value = label.textContent.trim();
             radiosDivProduto.style.display = 'none';
-    
-            // Busca o produto pelo id e preenche os campos
-            fetch(`/produtos/${radio.value}`)
-                .then(res => res.ok ? res.json() : null)
-                .then(produto => {
-                    if (produto) {
-                        produtoSelecionado = produto;
-                        preencherCampos(produto);
-                        const tipoSelecionado = document.querySelector('input[name="tipo-movimentacao"]:checked')?.value || "ENTRADA";
-                        criarMainContainer(tipoSelecionado, produto);
-                    }
-                });
+        
+            // Redireciona para a rota do produto selecionado
+            window.location.search = '?id=' + radio.value;
         });
     
         document.addEventListener('mousedown', function(e) {
@@ -365,6 +356,20 @@ if (codigoInput) {
             // validação de código duplicado ao perder o foco
             codigoCompraInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) < 999) {
+                    if (valor.length > 0 && valor.length < 9) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código inválido!',
+                            text: 'O código deve ter 9 dígitos',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => this.focus(), 10);
+                        return;
+                    }
+                }
                 if (valor.length === 9) {
                     fetch(`/api/movimentacoes/existe-codigo?codigoMovimentacao=${valor}`)
                         .then(res => res.json())
@@ -396,26 +401,28 @@ if (codigoInput) {
                         title: 'Estoque insuficiente!',
                         text: 'O produto precisa ser reabastecido antes de vender',
                         timer: 1800,
+                        timerProgressBar: true,
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });
                     this.value = '';
+                    return;
                 }
             });
         
             // validação de código duplicado ao perder o foco
             codigoVendaInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
-                if (valor.length > 0 && valor.length < 9) {
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) > 0 && valor.length > 0 && valor.length < 9) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Código inválido!',
                         text: 'O código deve ter 9 dígitos',
                         timer: 1500,
+                        timerProgressBar: true,
                         showConfirmButton: false
                     });
-                    this.value = '';
-                    this.focus();
+                    setTimeout(() => this.focus(), 10);
                     return;
                 }
                 if (valor.length === 9) {
