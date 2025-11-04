@@ -5,7 +5,7 @@ window.expandedCargoMulti = false;
 window.expandedStatusMulti = false;
 
 window.isAdmin = function() {
-    return window.usuarioLogadoCargoId == 1;
+    return window.usuarioLogadoCargoId == 0;
 };
 
 function getIniciais(nome) {
