@@ -212,6 +212,7 @@ tbody tr:nth-child(even) {
     display: inline-block;
     vertical-align: middle;
     outline: none;
+    object-fit: cover;
 }
 
 tbody tr:nth-child(odd) .produto-img {

@@ -415,12 +415,24 @@ function fillFields(product) {
     });
 
     if (product.url_imagem) {
+        // skeleton
+        imagePreview.innerHTML = `
+            <div class="skeleton-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:skeleton-loading 1.2s infinite;">
+                <i class="fa fa-spinner fa-spin" style="font-size:32px;color:#aaa;" id="img-skeleton"></i>
+            </div>
+        `;
         const img = document.createElement('img');
         img.src = product.url_imagem;
         img.style.width = '100%';
         img.style.height = '100%';
         img.style.objectFit = 'cover';
-        imagePreview.insertBefore(img, document.getElementById('foto'));
+        img.onload = function() {
+            imagePreview.innerHTML = '';
+            imagePreview.appendChild(img);
+        };
+        img.onerror = function() {
+            imagePreview.innerHTML = `<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>`;
+        };
     } else {
         const icon = document.createElement('i');
         icon.className = 'fa-regular fa-image';

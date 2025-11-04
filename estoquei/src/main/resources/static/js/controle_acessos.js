@@ -43,7 +43,6 @@ async function aplicarPermissoesEstoque() {
     // Editar produto (editar = 3)
     const editLink = document.getElementById('detalhes-edit-link');
     if (editLink) {
-        editLink.href = `/editar-produto?id=${editLink.dataset.produtoId}`;
         if (!temPermissao(cargo, 'produtos', 2)) {
             editLink.removeAttribute('href');
             editLink.title = 'Sem permissão';
