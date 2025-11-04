@@ -51,6 +51,7 @@ function atualizarBadgeBaixoEstoque() {
 }
 document.addEventListener('DOMContentLoaded', atualizarBadgeBaixoEstoque);
 
+
 // Crie o aviso acima do campo quantidade-final
 function criarAvisoLimite() {
     let avisoLimite = document.createElement('div');
@@ -90,7 +91,178 @@ window.addEventListener('DOMContentLoaded', function() {
     const id = urlParams.get('id');
     const mainContainerPlaceholder = document.getElementById('main-container-placeholder');
     const codigoInput = document.getElementById('filter-codigo');
+
+
+if (codigoInput) {
+    // Bloqueia Ctrl+J, Ctrl+Shift+J, Ctrl+W só no input (extra segurança)
+    codigoInput.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === 'j' || e.key === 'J')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && (e.key === 'j' || e.key === 'J')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && (e.key === 'w' || e.key === 'W')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Detecta código válido automaticamente ao digitar
+    codigoInput.addEventListener('input', function() {
+        let match = codigoInput.value.match(/^(\d{9})/);
+        let codigo = match ? match[1] : '';
+        if (codigo.length === 9) {
+            fetch('/produtos')
+                .then(res => res.json())
+                .then(produtos => {
+                    const produto = produtos.find(p => p.codigo === codigo);
+                    if (produto && produto.id) {
+                        window.location.href = window.location.pathname + '?id=' + produto.id;
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produto não encontrado!',
+                            text: 'Verifique o código digitado',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+        }
+    });
+
+    // Mantém busca ao pressionar Enter (opcional)
+    codigoInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            let codigo = codigoInput.value.replace(/\D/g, '');
+            if (codigo.length === 9) {
+                fetch(`/produtos/codigo/${encodeURIComponent(codigo)}`)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(produto => {
+                        if (produto && produto.id) {
+                            window.location.href = window.location.pathname + '?id=' + produto.id;
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Produto não encontrado!',
+                                text: 'Verifique o código digitado',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro ao buscar produto!',
+                            text: 'Tente novamente',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    });
+            }
+            return false;
+        }
+    });
+}
+
     let produtoSelecionado = {};
+
+    const produtoInput = document.getElementById('filter-codigo');
+    const radiosDivProduto = document.getElementById('radios-produto-multi');
+    let todosProdutos = [];
+    
+    if (produtoInput && radiosDivProduto) {
+        fetch('/produtos')
+            .then(response => response.json())
+            .then(produtos => {
+                todosProdutos = produtos;
+            });
+    
+        produtoInput.addEventListener('input', function() {
+            const termo = produtoInput.value.trim().toLowerCase();
+            let filtrados = todosProdutos.filter(p =>
+                p.codigo.includes(termo) ||
+                p.nome.toLowerCase().includes(termo)
+            );
+            if (filtrados.length === 0) {
+                radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
+            } else {
+                radiosDivProduto.innerHTML = filtrados.map(prod => {
+                    // Define cor do ícone
+                    let icone = '';
+                    if (prod.quantidade <= prod.limiteMinimo) {
+                        icone = `<i class="fa-solid fa-triangle-exclamation" style="color:red;" title="Abaixo do limite"></i>`;
+                    } else if (prod.quantidade <= 2 * prod.limiteMinimo) {
+                        icone = `
+                            <span style="background:#000;width:3px;height:7px;position:absolute;left:42%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d; position:relative; z-index:1;" title="Baixo estoque"></i>
+                        `;
+                    }
+                    return `
+                        <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;position:relative;">
+                            <input type="radio" name="produto-radio" value="${prod.id}">
+                            <span style="display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:250px;">
+                                ${prod.codigo} - ${prod.nome}
+                            </span>
+                            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);">${icone}</span>
+                        </label>
+                    `;
+                }).join('');
+            }
+            radiosDivProduto.style.display = 'block';
+        });
+    
+        produtoInput.addEventListener('focus', function() {
+            if (!produtoInput.value.trim()) {
+                radiosDivProduto.innerHTML = todosProdutos.map(prod => {
+                    let icone = '';
+                    if (prod.quantidade <= prod.limiteMinimo) {
+                        icone = `<i class="fa-solid fa-triangle-exclamation" style="color:red;" title="Abaixo do limite"></i>`;
+                    } else if (prod.quantidade <= 2 * prod.limiteMinimo) {
+                        icone = `
+                            <span style="background:#000;width:3px;height:7px;position:absolute;left:42%;top:54%;transform:translate(-50%,-50%);border-radius:5px;z-index:0;"></span>
+                            <i class="fa-solid fa-triangle-exclamation" style="color:#fbc02d; position:relative; z-index:1;" title="Baixo estoque"></i>
+                        `;
+                    }
+                    return `
+                        <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;position:relative;">
+                            <input type="radio" name="produto-radio" value="${prod.id}">
+                            <span style="display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:250px;">
+                                ${prod.codigo} - ${prod.nome}
+                            </span>
+                            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);">${icone}</span>
+                        </label>
+                    `;
+                }).join('');
+                radiosDivProduto.style.display = 'block';
+            }
+        });
+    
+        radiosDivProduto.addEventListener('click', function(e) {
+            const label = e.target.closest('label');
+            if (!label) return;
+            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
+            label.classList.add('selecionado');
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            produtoInput.value = label.textContent.trim();
+            radiosDivProduto.style.display = 'none';
+        
+            // Redireciona para a rota do produto selecionado
+            window.location.search = '?id=' + radio.value;
+        });
+    
+        document.addEventListener('mousedown', function(e) {
+            if (!produtoInput.contains(e.target) && !radiosDivProduto.contains(e.target)) {
+                radiosDivProduto.style.display = 'none';
+            }
+        });
+    }
 
     // Função para criar o main-container
     function criarMainContainer(tipo, produto) {
@@ -189,7 +361,6 @@ window.addEventListener('DOMContentLoaded', function() {
         
         const codigoCompraInput = document.getElementById('codigo-compra');
         if (codigoCompraInput) {
-            // Mantém validações já existentes
             codigoCompraInput.addEventListener('input', function() {
                 if (fornecedorMultiGroup) {
                     fornecedorMultiGroup.style.pointerEvents = produtoValido ? 'auto' : 'none';
@@ -214,6 +385,20 @@ window.addEventListener('DOMContentLoaded', function() {
             // validação de código duplicado ao perder o foco
             codigoCompraInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) < 999) {
+                    if (valor.length > 0 && valor.length < 9) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Código inválido!',
+                            text: 'O código deve ter 9 dígitos',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => this.focus(), 10);
+                        return;
+                    }
+                }
                 if (valor.length === 9) {
                     fetch(`/api/movimentacoes/existe-codigo?codigoMovimentacao=${valor}`)
                         .then(res => res.json())
@@ -221,8 +406,8 @@ window.addEventListener('DOMContentLoaded', function() {
                             if (existe) {
                                 Swal.fire({
                                     icon: 'warning',
-                                    title: 'Código já utilizado!',
-                                    text: 'Já existe uma movimentação com esse código.',
+                                    title: 'Código já registrado!',
+                                    text: 'Já existe uma movimentação com esse código',
                                     timer: 2000,
                                     showConfirmButton: false
                                 });
@@ -236,7 +421,6 @@ window.addEventListener('DOMContentLoaded', function() {
         
         const codigoVendaInput = document.getElementById('codigo-venda');
         if (codigoVendaInput) {
-            // Mantém validações já existentes
             codigoVendaInput.addEventListener('input', function() {
                 this.value = this.value.replace(/\D/g, '');
                 // Estoque zerado
@@ -244,18 +428,32 @@ window.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Estoque insuficiente!',
-                        text: 'O produto precisa ser reabastecido antes de registrar saída',
+                        text: 'O produto precisa ser reabastecido antes de vender',
                         timer: 1800,
+                        timerProgressBar: true,
                         showConfirmButton: false,
                         allowOutsideClick: false
                     });
                     this.value = '';
+                    return;
                 }
             });
         
             // validação de código duplicado ao perder o foco
             codigoVendaInput.addEventListener('blur', function() {
                 const valor = this.value.trim();
+                if (produto && produto.quantidade !== undefined && parseInt(produto.quantidade) > 0 && valor.length > 0 && valor.length < 9) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Código inválido!',
+                        text: 'O código deve ter 9 dígitos',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                    setTimeout(() => this.focus(), 10);
+                    return;
+                }
                 if (valor.length === 9) {
                     fetch(`/api/movimentacoes/existe-codigo?codigoMovimentacao=${valor}`)
                         .then(res => res.json())
@@ -263,7 +461,7 @@ window.addEventListener('DOMContentLoaded', function() {
                             if (existe) {
                                 Swal.fire({
                                     icon: 'warning',
-                                    title: 'Código já utilizado!',
+                                    title: 'Código já registrado!',
                                     text: 'Já existe uma movimentação com esse código',
                                     timer: 2000,
                                     showConfirmButton: false
@@ -477,15 +675,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     
-    document.addEventListener('mousedown', function(e) {
-        const radiosDivProduto = document.getElementById('radios-produto-multi');
-        const produtoMultiDiv = document.getElementById('produto-multi-group');
-        if (radiosDivProduto && produtoMultiDiv && radiosDivProduto.style.display === 'block') {
-            if (!produtoMultiDiv.contains(e.target)) {
-                radiosDivProduto.style.display = 'none';
-            }
-        }
-    });
 
 
     // Função para preencher os campos do produto
@@ -635,97 +824,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     // Função para mostrar o select de produtos como padrão
-    function mostrarSelectProdutosDefault() {
-        // Remove antigo se existir
-        const antigo = document.getElementById('produto-multi-group');
-        if (antigo) antigo.remove();
-    
-        // Cria o campo de busca + radios
-        const produtoMultiDiv = document.createElement('div');
-        produtoMultiDiv.className = 'multiselect input-group';
-        produtoMultiDiv.id = 'produto-multi-group';
-        produtoMultiDiv.innerHTML = `
-            <div style="position:relative;">
-                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
-                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-                    <i class="fa fa-search"></i>
-                </span>
-                <div class="overSelect"></div>
-            </div>
-            <div id="radios-produto-multi" style="display:none;"></div>
-        `;
-        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
-        codigoInput.style.display = 'none';
-    
-        const produtoInput = document.getElementById('produto-multi');
-        const radiosDivProduto = document.getElementById('radios-produto-multi');
 
-        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
-            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
-        }  
-
-        let todosProdutos = [];
-    
-        // Busca todos os produtos uma vez
-        fetch('/produtos')
-            .then(response => response.json())
-            .then(produtos => {
-                todosProdutos = produtos;
-            });
-    
-        // Mostra radios ao digitar
-        produtoInput.addEventListener('input', function() {
-            const termo = produtoInput.value.trim().toLowerCase();
-            let filtrados = todosProdutos.filter(p =>
-                p.codigo.includes(termo) ||
-                p.nome.toLowerCase().includes(termo)
-            );
-            if (filtrados.length === 0) {
-                radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
-            } else {
-                radiosDivProduto.innerHTML = filtrados.map(prod => `
-                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                        <input type="radio" name="produto-radio" value="${prod.id}">
-                        ${prod.codigo} - ${prod.nome}
-                    </label>
-                `).join('');
-            }
-            radiosDivProduto.style.display = 'block';
-        });
-    
-        // Mostra todos ao focar se vazio
-        produtoInput.addEventListener('focus', function() {
-            if (!produtoInput.value.trim()) {
-                radiosDivProduto.innerHTML = todosProdutos.map(prod => `
-                    <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                        <input type="radio" name="produto-radio" value="${prod.id}">
-                        ${prod.codigo} - ${prod.nome}
-                    </label>
-                `).join('');
-                radiosDivProduto.style.display = 'block';
-            }
-        });
-    
-        // Seleciona produto e redireciona
-        radiosDivProduto.addEventListener('click', function(e) {
-            const label = e.target.closest('label');
-            if (!label) return;
-            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
-            label.classList.add('selecionado');
-            const radio = label.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-            produtoInput.value = label.textContent.trim();
-            radiosDivProduto.style.display = 'none';
-            window.location.search = '?id=' + radio.value;
-        });
-    
-        // Fecha radios ao clicar fora
-        document.addEventListener('mousedown', function(e) {
-            if (!produtoMultiDiv.contains(e.target)) {
-                radiosDivProduto.style.display = 'none';
-            }
-        });
-    }
     // Troca tipo de movimentação (sempre adiciona listeners)
     document.querySelectorAll('input[name="tipo-movimentacao"]').forEach(radio => {
         radio.addEventListener('change', function() {
@@ -737,7 +836,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Sempre mostrar o select como padrão se não tem id na URL
     if (!id) {
-        mostrarSelectProdutosDefault();
         criarMainContainer("ENTRADA", {});
 
         formatarPrecoInput(document.getElementById('filter-preco'));
@@ -745,94 +843,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     // Se tem id, input de código aparece normalmente e select só aparece ao mouseover
-    codigoInput.addEventListener('mouseover', function() {
-        // Remove antigo se existir
-        const antigo = document.getElementById('produto-multi-group');
-        if (antigo) antigo.remove();
-    
-        // Cria o campo de busca + radios
-        const produtoMultiDiv = document.createElement('div');
-        produtoMultiDiv.className = 'multiselect input-group';
-        produtoMultiDiv.id = 'produto-multi-group';
-        produtoMultiDiv.innerHTML = `
-            <div style="position:relative;">
-                <input type="text" id="produto-multi" placeholder="Digite o código ou nome" autocomplete="off" style="cursor:pointer; padding-right: 28px; background: #fff;" />
-                <span class="chevron-produto" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); color:#888; pointer-events:none;">
-                    <i class="fa fa-search"></i>
-                </span>
-                <div class="overSelect"></div>
-            </div>
-            <div id="radios-produto-multi" style="display:none; position:absolute; top:100%; left:0; width:100%; background:#fff; border:1px solid #aaa; border-radius:4px; z-index:1000; max-height:120px; overflow-y:auto;"></div>
-        `;
-        codigoInput.parentNode.insertBefore(produtoMultiDiv, codigoInput.nextSibling);
-        codigoInput.style.display = 'none';
-    
-        const produtoInput = document.getElementById('produto-multi');
-        const radiosDivProduto = document.getElementById('radios-produto-multi');
-        
-        
-        if (produtoSelecionado && produtoSelecionado.codigo && produtoSelecionado.nome) {
-            produtoInput.value = `${produtoSelecionado.codigo} - ${produtoSelecionado.nome}`;
-        }  
-        let todosProdutos = [];
-    
-        fetch('/produtos')
-            .then(response => response.json())
-            .then(produtos => {
-                todosProdutos = produtos;
-                // Mostra todos ao focar se vazio
-                produtoInput.addEventListener('focus', function() {
-                    if (!produtoInput.value.trim()) {
-                        radiosDivProduto.innerHTML = todosProdutos.map(prod => `
-                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                                <input type="radio" name="produto-radio" value="${prod.id}">
-                                ${prod.codigo} - ${prod.nome}
-                            </label>
-                        `).join('');
-                        radiosDivProduto.style.display = 'block';
-                    }
-                });
-                // Mostra radios ao digitar
-                produtoInput.addEventListener('input', function() {
-                    const termo = produtoInput.value.trim().toLowerCase();
-                    let filtrados = todosProdutos.filter(p =>
-                        p.codigo.includes(termo) ||
-                        p.nome.toLowerCase().includes(termo)
-                    );
-                    if (filtrados.length === 0) {
-                        radiosDivProduto.innerHTML = `<div style="padding:8px;color:#888;">Nenhum produto encontrado</div>`;
-                    } else {
-                        radiosDivProduto.innerHTML = filtrados.map(prod => `
-                            <label class="produto-radio-label" style="display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;">
-                                <input type="radio" name="produto-radio" value="${prod.id}">
-                                ${prod.codigo} - ${prod.nome}
-                            </label>
-                        `).join('');
-                    }
-                    radiosDivProduto.style.display = 'block';
-                });
-            });
-    
-        // Seleciona produto e redireciona
-        radiosDivProduto.addEventListener('click', function(e) {
-            const label = e.target.closest('label');
-            if (!label) return;
-            radiosDivProduto.querySelectorAll('label').forEach(l => l.classList.remove('selecionado'));
-            label.classList.add('selecionado');
-            const radio = label.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-            produtoInput.value = label.textContent.trim();
-            radiosDivProduto.style.display = 'none';
-            window.location.search = '?id=' + radio.value;
-        });
-    
-        // Fecha radios ao clicar fora
-        document.addEventListener('mousedown', function(e) {
-            if (!produtoMultiDiv.contains(e.target)) {
-                radiosDivProduto.style.display = 'none';
-            }
-        });
-    });
+
     // Busca o produto
     if (id) {
         fetch(`/produtos/${id}`)

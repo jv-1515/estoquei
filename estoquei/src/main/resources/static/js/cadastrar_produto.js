@@ -329,9 +329,19 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const codigoInput = document.getElementById('codigo');
     if (codigoInput) {
+          codigoInput.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                return false;
+            }
+        });
         codigoInput.addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '');
-        });        
+        });
         codigoInput.addEventListener('blur', function() {
             const codigo = this.value.trim();
             if (!codigo) return;
@@ -354,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 window.addEventListener('DOMContentLoaded', function() {
     const limiteInput = document.getElementById('limiteMinimo');
     if (limiteInput) {
