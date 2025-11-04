@@ -1,6 +1,6 @@
-# Estoquei
+# Stok+
 
-**Estoquei** é um sistema de gerenciamento de estoque desenvolvido em **Java** com o framework **Spring Boot**.
+**Stok+** é um sistema de gerenciamento de estoque desenvolvido em **Java** com o framework **Spring Boot**.
 
 O objetivo do projeto é fornecer uma aplicação robusta e eficiente para controlar produtos, entradas, saídas e níveis de estoque de forma organizada.
 
@@ -15,8 +15,8 @@ O objetivo do projeto é fornecer uma aplicação robusta e eficiente para contr
 
 ## Desenvolvedores
 
-- João Vitor Vieira  
-- João Victor Alves  
+- João Vitor Vieira
+- João Victor Alves
 - Adriano Fraga
 
 ---
