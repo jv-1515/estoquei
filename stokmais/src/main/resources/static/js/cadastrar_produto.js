@@ -19,8 +19,8 @@ fetch('/produtos/tamanhos')
 
 
 function formatarGeneroVisual(gen) {
-  if (gen === "M") return "Masculino";
   if (gen === "F") return "Feminino";
+  if (gen === "M") return "Masculino";
   if (gen === "U") return "Unissex";
   if (gen === "T") return "Todos";
   return gen;
@@ -149,6 +149,42 @@ document.querySelectorAll('.checkboxes-categoria-multi input[type="radio"]').for
 
 
 document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+    // Validação dos campos obrigatórios
+    const codigo = document.getElementById('codigo').value.trim();
+    const nome = document.getElementById('nome').value.trim();
+    const categoria = document.getElementById('categoria-multi').dataset.value || '';
+    const tamanho = document.getElementById('tamanho-multi').dataset.value || '';
+    const genero = document.getElementById('genero-multi').dataset.value || '';
+    // const quantidade = document.getElementById('quantidade').value.trim();
+    const limiteMinimo = document.getElementById('limiteMinimo').value.trim();
+    const preco = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+
+    if (!codigo || !nome || !categoria || !tamanho || !genero || !limiteMinimo || !preco) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cadastro inválido!',
+            text: 'Preencha todos os campos obrigatórios',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return;
+    }
+
+    // Validação de combinação categoria/tamanho
+    const catObj = categorias.find(cat => cat.nome === categoria);
+    if (catObj) {
+        if (catObj.tipoTamanho === "L" && tamanhosNumero.includes(tamanho)) {
+            Swal.fire('Erro', 'Categoria não aceita tamanho numérico!', 'error');
+            return;
+        }
+        if (catObj.tipoTamanho === "N" && tamanhosLetra.includes(tamanho)) {
+            Swal.fire('Erro', 'Categoria não aceita tamanho por letra!', 'error');
+            return;
+        }
+    }
+    
     const saveBtn = document.getElementById('save');
     saveBtn.disabled = true;
     Swal.fire({
@@ -161,7 +197,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
             Swal.showLoading();
         }
     });
-    event.preventDefault();
+
+
 
     const precoInput = document.getElementById('preco');
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
