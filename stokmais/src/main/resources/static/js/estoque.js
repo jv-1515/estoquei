@@ -2076,7 +2076,7 @@ document.addEventListener('mousedown', function(e) {
     const modal = modalBg && modalBg.querySelector('.detalhes-modal');
     if (modalBg && modalBg.style.display !== 'none') {
         if (e.target === modalBg) {
-            fecharDetalhesProdutoPopup();
+            fecharDetalhesProduto();
         }
     }
 });
