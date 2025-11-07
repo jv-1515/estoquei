@@ -660,6 +660,7 @@ document.addEventListener('DOMContentLoaded', atualizarPlaceholderQuantidade);
 // Atualiza tamanhos ao mudar qualquer checkbox de categoria
 document.querySelectorAll('.categoria-multi-check').forEach(cb => {
     cb.addEventListener('change', updateOptions);
+    cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
 });
 
 // Atualiza ao carregar a página
@@ -694,7 +695,7 @@ let itensPorPagina = 10;
 function filtrar() {
     // Mostra skeleton antes de processar filtros
     const tbody = document.getElementById('product-table-body');
-    const skeletonRow = () => `<tr class='skeleton-table-row'>${Array(14).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+    const skeletonRow = () => `<tr class='skeleton-table-row'>${Array(10).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
     tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
     
     // Filtros de categoria, tamanho, gênero, etc
@@ -740,11 +741,18 @@ function filtrar() {
             if (!buscaCodigo && !buscaNome) return false;
         }
         // Filtra pelas categorias selecionadas nos checkboxes
-        if (categoriasSelecionadas.length) {
-            if (!categoriasSelecionadas.includes((p.categoria || '').toString().trim().toUpperCase())) return false;
+        if (categoriasSelecionadas && categoriasSelecionadas.length > 0) {
+            const catProd = (p.categoria || '').toString().trim().toUpperCase();
+            if (!categoriasSelecionadas.includes(catProd)) return false;
         }
-        if (tamanhosSelecionados.length > 0 && !tamanhosSelecionados.includes(p.tamanho.toString().toUpperCase())) return false;
-        if (generosSelecionados.length > 0 && !generosSelecionados.includes(p.genero.toString().toUpperCase())) return false;
+        if (tamanhosSelecionados && tamanhosSelecionados.length > 0) {
+            const tamProd = (p.tamanho || '').toString().trim().toUpperCase();
+            if (!tamanhosSelecionados.includes(tamProd)) return false;
+        }
+        if (generosSelecionados && generosSelecionados.length > 0) {
+            const genProd = (p.genero || '').toString().trim().toUpperCase();
+            if (!generosSelecionados.includes(genProd)) return false;
+        }
         if (qtdMinVal !== null && p.quantidade < qtdMinVal) return false;
         if (qtdMaxVal !== null && p.quantidade > qtdMaxVal) return false;
         if (limiteMinVal !== null && p.limiteMinimo < limiteMinVal) return false;
@@ -792,11 +800,11 @@ function renderizarProdutos(produtos) {
     const registrosPagina = document.getElementById('registros-pagina');
 
     // Skeleton loading: 3 linhas, 14 colunas
-    const skeletonRow = () => {
-        return `<tr class='skeleton-table-row'>${Array(10).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
-    };
-    tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
-
+    if (!produtos || produtos.length === 0) {
+        const skeletonRow = () => `<tr class='skeleton-table-row'>${Array(10).fill('').map(() => `<td class='skeleton-cell'><div class='skeleton-bar'></div></td>`).join('')}</tr>`;
+        tbody.innerHTML = Array(10).fill('').map(skeletonRow).join('');
+        return;
+    }
     let valorRadio = '10';
     const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
     if (radioSelecionado) {
