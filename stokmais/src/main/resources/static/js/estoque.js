@@ -1100,7 +1100,6 @@ function renderizarProdutos(produtos) {
     const thead = tbody.parentNode.querySelector('thead');
     const registrosPagina = document.getElementById('registros-pagina');
     const registrosInput = document.getElementById('registros-multi');
-    // Usa o valor do radio personalizado
     let valorRadio = '10';
     const radioSelecionado = document.querySelector('input[name="registros-radio"]:checked');
     if (radioSelecionado) {
@@ -1389,38 +1388,38 @@ function carregarProdutos(top) {
             atualizarDetalhesInfo(produtos);
             window.atualizarDetalhesEstoque(produtos);
 
-            const buscaInput = document.getElementById('busca-produto');
-            const buscaSugestoes = document.getElementById('busca-sugestoes');
-            buscaInput.addEventListener('input', function() {
-                const termo = this.value.trim();
-                buscaSugestoes.innerHTML = '';
-                if (!termo) {
-                    buscaSugestoes.style.display = 'none';
-                    return;
-                }
-                let encontrados;
-                let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
-                if (mostrarCodigoPrimeiro) {
-                    encontrados = produtos.filter(p => p.codigo.includes(termo));
-                } else {
-                    encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
-                }
-                encontrados.forEach(p => {
-                    const div = document.createElement('div');
-                    div.textContent = mostrarCodigoPrimeiro
-                        ? `${p.codigo} - ${p.nome}`
-                        : `${p.nome} - ${p.codigo}`;
-                    div.style.padding = '6px 12px';
-                    div.style.cursor = 'pointer';
-                    div.addEventListener('mousedown', function(e) {
-                        e.preventDefault();
-                        buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
-                        buscaSugestoes.style.display = 'none';
-                    });
-                    buscaSugestoes.appendChild(div);
-                });
-                buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
-            });
+            // const buscaInput = document.getElementById('busca-produto');
+            // const buscaSugestoes = document.getElementById('busca-sugestoes');
+            // buscaInput.addEventListener('input', function() {
+            //     const termo = this.value.trim();
+            //     buscaSugestoes.innerHTML = '';
+            //     if (!termo) {
+            //         buscaSugestoes.style.display = 'none';
+            //         return;
+            //     }
+            //     let encontrados;
+            //     let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+            //     if (mostrarCodigoPrimeiro) {
+            //         encontrados = produtos.filter(p => p.codigo.includes(termo));
+            //     } else {
+            //         encontrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+            //     }
+            //     encontrados.forEach(p => {
+            //         const div = document.createElement('div');
+            //         div.textContent = mostrarCodigoPrimeiro
+            //             ? `${p.codigo} - ${p.nome}`
+            //             : `${p.nome} - ${p.codigo}`;
+            //         div.style.padding = '6px 12px';
+            //         div.style.cursor = 'pointer';
+            //         div.addEventListener('mousedown', function(e) {
+            //             e.preventDefault();
+            //             buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+            //             buscaSugestoes.style.display = 'none';
+            //         });
+            //         buscaSugestoes.appendChild(div);
+            //     });
+            //     buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+            // });
             document.addEventListener('mousedown', function(e) {
                 if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
                     buscaSugestoes.style.display = 'none';
@@ -1884,6 +1883,21 @@ document.addEventListener('mousedown', function(e) {
 const buscaInput = document.getElementById('busca-produto');
 const buscaSugestoes = document.getElementById('busca-sugestoes');
 
+buscaInput.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && (e.key === 'j' || e.key === 'J')) {
+        e.preventDefault();
+        return false;
+    }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'j' || e.key === 'J')) {
+        e.preventDefault();
+        return false;
+    }
+    if (e.ctrlKey && (e.key === 'w' || e.key === 'W')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
 buscaInput.addEventListener('input', function() {
     const termo = this.value.trim();
     buscaSugestoes.innerHTML = '';
@@ -1908,7 +1922,7 @@ buscaInput.addEventListener('input', function() {
         div.style.cursor = 'pointer';
         div.addEventListener('mousedown', function(e) {
             e.preventDefault();
-            buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+            buscaInput.value = p.codigo;
             buscaSugestoes.style.display = 'none';
             filtrar(); // Filtra ao selecionar sugestão
         });
@@ -2062,7 +2076,7 @@ document.addEventListener('mousedown', function(e) {
     const modal = modalBg && modalBg.querySelector('.detalhes-modal');
     if (modalBg && modalBg.style.display !== 'none') {
         if (e.target === modalBg) {
-            fecharDetalhesProdutoPopup();
+            fecharDetalhesProduto();
         }
     }
 });

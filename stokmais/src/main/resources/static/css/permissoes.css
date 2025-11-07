@@ -79,7 +79,7 @@ h2 {
     display: flex;
     gap: 10px;
     flex-wrap: nowrap;
-    align-items: center;
+    align-items: flex-end;
     position: relative;
 }
 .form-column {
@@ -263,9 +263,28 @@ input, select {
 .cargo-btn.cargo-9  { background: #3b458a; }
 .cargo-btn.cargo-10 { background: #be9454; }
 
+[id^="permissoes-cargo-"] h2,
+#permissoes-cargo-gerente h2 {
+    border-left: solid 4px var(--cargo-color);
+    border-radius: 3px;
+    padding-left: 2px;
+    color: var(--cargo-color);
+}
+
+/* cargo color variables */
+#permissoes-cargo-gerente { --cargo-color: #1e94a3; }
+#permissoes-cargo-2     { --cargo-color: #277580; }
+#permissoes-cargo-3     { --cargo-color: #bfa100; }
+#permissoes-cargo-4     { --cargo-color: #c0392b; }
+#permissoes-cargo-5     { --cargo-color: #e67e22; }
+#permissoes-cargo-6     { --cargo-color: #8e44ad; }
+#permissoes-cargo-7     { --cargo-color: #16a085; }
+#permissoes-cargo-8     { --cargo-color: #3f6ab3; }
+#permissoes-cargo-9     { --cargo-color: #3b458a; }
+#permissoes-cargo-10    { --cargo-color: #be9454; }
 .btn-novo-cargo {
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     color: #fff;
     transition: background 0.2s;
     margin-top: 5px;
