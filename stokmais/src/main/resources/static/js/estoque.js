@@ -1922,7 +1922,7 @@ buscaInput.addEventListener('input', function() {
         div.style.cursor = 'pointer';
         div.addEventListener('mousedown', function(e) {
             e.preventDefault();
-            buscaInput.value = mostrarCodigoPrimeiro ? p.codigo : p.nome;
+            buscaInput.value = p.codigo;
             buscaSugestoes.style.display = 'none';
             filtrar(); // Filtra ao selecionar sugestão
         });
