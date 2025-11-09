@@ -1,4 +1,6 @@
 let filtradas = [];
+let buscaInput = null;
+let buscaSugestoes = null;
 
 function atualizarBadgeBaixoEstoque() {
     const badge = document.querySelector('.badge');
@@ -871,7 +873,7 @@ document.addEventListener('mousedown', function(e) {
 
 // Função filtro
 function filtrarMovimentacoes() {
-    const termo = document.getElementById('filter-parte-envolvida').value.trim().toLowerCase();
+    const termoBusca = buscaInput && buscaInput.value ? buscaInput.value.trim() : '';
     const dataInicio = document.getElementById('periodo-data-inicio').value;
     const dataFim = document.getElementById('periodo-data-fim').value;
     const tiposSelecionados = getTiposSelecionados();
@@ -898,10 +900,23 @@ function filtrarMovimentacoes() {
         let ok = true;
 
         // Busca por parte envolvida OU código da movimentação
-        if (termo) {
+        // if (termo) {
+        //     const parte = m.parteEnvolvida ? m.parteEnvolvida.toLowerCase() : '';
+        //     const codigoMov = m.codigoMovimentacao ? m.codigoMovimentacao.toString() : '';
+        //     if (!parte.includes(termo) && !codigoMov.includes(termo)) ok = false;
+        // }
+
+        if (/^\d{9}$/.test(termoBusca)) {
+            let codigoMov = (m.codigoMovimentacao || '').toString().trim();
+            if (codigoMov.length < 9) {
+                codigoMov = codigoMov.padStart(9, '0');
+            }
+            if (codigoMov !== termoBusca) ok = false;
+        } else if (termoBusca) {
+            // Busca genérica por parte envolvida OU código
             const parte = m.parteEnvolvida ? m.parteEnvolvida.toLowerCase() : '';
             const codigoMov = m.codigoMovimentacao ? m.codigoMovimentacao.toString() : '';
-            if (!parte.includes(termo) && !codigoMov.includes(termo)) ok = false;
+            if (!parte.includes(termoBusca.toLowerCase()) && !codigoMov.includes(termoBusca)) ok = false;
         }
 
         // Período
@@ -1014,6 +1029,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     atualizarPlaceholderTipoMov();
+
+    buscaInput = document.getElementById('filter-parte-envolvida');
+    buscaSugestoes = document.getElementById('busca-sugestoes');
+
+    if (buscaInput && buscaSugestoes) {
+        buscaInput.addEventListener('input', function() {
+            const termo = this.value.trim();
+            buscaSugestoes.innerHTML = '';
+            if (!termo) {
+                buscaSugestoes.style.display = 'none';
+                filtrarMovimentacoes();
+                return;
+            }
+            let encontrados;
+            let mostrarCodigoPrimeiro = /^\d+$/.test(termo);
+            if (mostrarCodigoPrimeiro) {
+                encontrados = movimentacoes.filter(m => m.codigoMovimentacao && m.codigoMovimentacao.includes(termo));
+            } else {
+                encontrados = movimentacoes.filter(m => m.parteEnvolvida && m.parteEnvolvida.toLowerCase().includes(termo.toLowerCase()));
+            }
+            encontrados.forEach(m => {
+                const div = document.createElement('div');
+                // Formata quantidade: máximo 3 dígitos, sem zeros à esquerda
+                let qtd = Math.abs(Number(m.quantidadeMovimentada)).toString().slice(0, 3);
+                let sinal = m.tipoMovimentacao === 'ENTRADA' ? '+' : '-';
+                let classe = m.tipoMovimentacao === 'ENTRADA' ? 'entrada' : 'saida';
+            
+                // Monta texto principal
+                let textoPrincipal = mostrarCodigoPrimeiro
+                    ? `${m.codigoMovimentacao} - ${m.parteEnvolvida || ''}`
+                    : `${m.parteEnvolvida || ''} - ${m.codigoMovimentacao}`;
+            
+                // Monta a sugestão: texto principal + quantidade colorida ao final (sem span)
+                div.className = 'sugestao';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'space-between';
+                div.style.padding = '8px 12px';
+                div.style.cursor = 'pointer';
+            
+                // O número vai ao final, alinhado à esquerda, cor via classe
+                div.innerHTML = `
+                    <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 30px);">
+                        ${textoPrincipal}
+                    </div>
+                    <div class="${classe}" style="min-width:30px; text-align:left; font-weight:bold;">
+                        ${sinal}${qtd.padEnd(3, ' ')}
+                    </div>
+                `;
+            
+                div.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    buscaInput.value = m.codigoMovimentacao;
+                    buscaSugestoes.style.display = 'none';
+                    filtrarMovimentacoes();
+                });
+                buscaSugestoes.appendChild(div);
+            });
+            buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+            filtrarMovimentacoes();
+        });
+
+        buscaInput.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && (e.key === 'w' || e.key === 'W')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+                buscaSugestoes.style.display = 'none';
+            }
+        });
+    }
 });
 
 // Atualiza placeholder do input
