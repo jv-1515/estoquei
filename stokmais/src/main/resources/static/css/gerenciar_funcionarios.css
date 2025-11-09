@@ -884,6 +884,36 @@ th.ordenar.sorted .sort-icon {
     width: 100%;
 }
 
+
+#busca-sugestoes .sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #333;
+}
+
+#busca-sugestoes div:hover {
+    background-color: #e0e0e0;
+}
+
+#busca-sugestoes {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: auto;
+    background: #fff;
+    border-radius: 4px 0 0 4px;
+    width: 100%;
+    z-index: 1000;
+    border: 1px solid #aaa;
+    display: none;
+    max-height: 52px;
+    overflow-y: auto;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #fff;
+}
+
 /* Skeleton */
 .skeleton-table-row {
     height: 40px;

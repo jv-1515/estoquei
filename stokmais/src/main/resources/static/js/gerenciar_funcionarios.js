@@ -762,7 +762,62 @@ document.getElementById('edit-ativo').addEventListener('change', function() {
 });
 
 const buscaInput = document.getElementById('busca-funcionario');
-buscaInput.addEventListener('input', filtrarFuncionarios);
+const buscaSugestoes = document.getElementById('busca-sugestoes');
+let funcionariosTodos = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Carrega todos os funcionários para sugestão
+    fetch('/usuarios')
+        .then(res => res.json())
+        .then(data => { funcionariosTodos = data; });
+
+    buscaInput.addEventListener('input', function() {
+        const termo = this.value.trim().toLowerCase();
+        buscaSugestoes.innerHTML = '';
+        if (!termo) {
+            buscaSugestoes.style.display = 'none';
+            filtrarFuncionarios();
+            return;
+        }
+        let encontrados = funcionariosTodos.filter(f =>
+            f.codigo.includes(termo) ||
+            (f.nome && f.nome.toLowerCase().includes(termo)) ||
+            (f.email && f.email.toLowerCase().includes(termo))
+        );
+        encontrados.forEach(f => {
+            let texto;
+            if (/^\d+$/.test(termo)) {
+                texto = `${f.codigo} - ${f.nome}`;
+            } else if (termo.includes('@')) {
+                texto = `${f.nome} - ${f.codigo}`;
+            } else {
+                texto = `${f.nome} - ${f.codigo}`;
+            }
+            const div = document.createElement('div');
+            div.className = 'sugestao';
+            div.textContent = texto;
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.alignItems = 'center';
+            div.style.padding = '8px 12px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                buscaInput.value = f.codigo;
+                buscaSugestoes.style.display = 'none';
+                filtrarFuncionarios();
+            });
+            buscaSugestoes.appendChild(div);
+        });
+        buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+    });
+
+    document.addEventListener('mousedown', function(e) {
+        if (!buscaSugestoes.contains(e.target) && e.target !== buscaInput) {
+            buscaSugestoes.style.display = 'none';
+        }
+    });
+});
 
 function filtrarFuncionarios() {
     const termo = buscaInput.value.trim();
