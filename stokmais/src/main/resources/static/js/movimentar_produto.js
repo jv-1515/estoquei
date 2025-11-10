@@ -275,6 +275,13 @@ if (codigoInput) {
         }
         if (tipo === 'SAIDA') {
             maxQuantidade = qtdAtual;
+
+        const compradorInput = document.getElementById('comprador');
+            if (compradorInput) {
+                compradorInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[0-9]/g, '');
+                });
+            }
         }
         mainContainerPlaceholder.innerHTML = `
             <form id="movimentacao-form">
@@ -698,44 +705,54 @@ if (codigoInput) {
         document.getElementById('quantidade-final').value = (produto.quantidade !== undefined && produto.quantidade !== null) ? produto.quantidade : '';
 
         // Imagem
-        const preview = document.getElementById('image-preview');
-        if (preview) {
-            // Limpa imagens antigas e ícones
-            Array.from(preview.childNodes).forEach(node => {
-                if (node.tagName === 'IMG' || node.tagName === 'I') {
-                    preview.removeChild(node);
-                }
-            });
-        
-            if (produto.url_imagem) {
-                // Mostra skeleton/spinner enquanto carrega
-                preview.innerHTML = `
-                    <div class="skeleton-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:skeleton-loading 1.2s infinite;">
-                        <i class="fa fa-spinner fa-spin" style="font-size:32px;color:#aaa;" id="img-skeleton"></i>
-                    </div>
-                `;
-                const img = document.createElement('img');
-                img.src = produto.url_imagem;
-                img.alt = 'Imagem do produto';
-                img.style.maxWidth = '100%';
-                img.style.height = '100%';
-                img.loading = 'lazy';
-                img.onload = function() {
-                    preview.innerHTML = '';
-                    preview.appendChild(img);
-                };
-                img.onerror = function() {
-                    const skeleton = document.getElementById('img-skeleton');
-                    if (skeleton) skeleton.outerHTML = '<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>';
-                };
-            } else {
-                // Mostra ícone padrão imediatamente
-                preview.innerHTML = `
-                    <i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>
-                `;
-            }
+    const preview = document.getElementById('image-preview');
+    if (preview) {
+        // Limpa imagens antigas e ícones
+        preview.innerHTML = '';
+
+        if (produto.url_imagem) {
+            // Cria skeleton
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-img';
+            skeleton.style.cssText = `
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                display: flex; align-items: center; justify-content: center;
+                background: linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);
+                background-size: 200% 100%; animation: skeleton-loading 1.2s infinite;
+                z-index: 1;
+            `;
+            skeleton.innerHTML = `<i class="fa fa-spinner fa-spin" style="font-size:32px;color:#aaa;"></i>`;
+
+            // Cria imagem
+            const img = document.createElement('img');
+            img.src = produto.url_imagem;
+            img.alt = 'Imagem do produto';
+            img.style.cssText = `
+                max-width: 100%; height: 100%; object-fit: contain;
+                display: block; opacity: 0; transition: opacity 0.2s;
+                position: relative; z-index: 2;
+            `;
+            img.loading = 'eager'; // força carregamento rápido
+
+            // Adiciona ambos ao preview
+            preview.style.position = 'relative';
+            preview.appendChild(skeleton);
+            preview.appendChild(img);
+
+            // Quando carregar, mostra imagem e remove skeleton
+            img.onload = function() {
+                img.style.opacity = '1';
+                if (skeleton && skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
+            };
+            img.onerror = function() {
+                if (skeleton && skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
+                preview.innerHTML = `<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>`;
+            };
+        } else {
+            preview.innerHTML = `<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>`;
         }
-        
+    }
         atualizarQuantidadeFinal();
         aplicarEstiloInputs();
     }

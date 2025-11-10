@@ -25,12 +25,49 @@ public class FornecedorService {
     }
 
     public Fornecedor salvar(Fornecedor fornecedor) {
+        List<Fornecedor> todos = fornecedorRepository.findAll();
+        String emailNovo = fornecedor.getEmail() != null ? fornecedor.getEmail().trim().toLowerCase() : "";
+        String emailExtraNovo = fornecedor.getEmail_responsavel() != null ? fornecedor.getEmail_responsavel().trim().toLowerCase() : "";
+
+        for (Fornecedor f : todos) {
+            String emailExistente = f.getEmail() != null ? f.getEmail().trim().toLowerCase() : "";
+            String emailExtraExistente = f.getEmail_responsavel() != null ? f.getEmail_responsavel().trim().toLowerCase() : "";
+
+            // Verifica se o email principal ou extra já existe em outro fornecedor
+            if (!f.getId().equals(fornecedor.getId())) {
+                if (!emailNovo.isEmpty() && (emailNovo.equals(emailExistente) || emailNovo.equals(emailExtraExistente))) {
+                    throw new RuntimeException("E-mail já cadastrado para outro fornecedor!");
+                }
+                if (!emailExtraNovo.isEmpty() && (emailExtraNovo.equals(emailExistente) || emailExtraNovo.equals(emailExtraExistente))) {
+                    throw new RuntimeException("E-mail extra já cadastrado para outro fornecedor!");
+                }
+            }
+        }
         return fornecedorRepository.save(fornecedor);
     }
 
     public Fornecedor atualizar(Long id, Fornecedor fornecedorAtualizado) {
         Optional<Fornecedor> opt = fornecedorRepository.findById(id);
         if (opt.isPresent()) {
+            List<Fornecedor> todos = fornecedorRepository.findAll();
+            String emailNovo = fornecedorAtualizado.getEmail() != null ? fornecedorAtualizado.getEmail().trim().toLowerCase() : "";
+            String emailExtraNovo = fornecedorAtualizado.getEmail_responsavel() != null ? fornecedorAtualizado.getEmail_responsavel().trim().toLowerCase() : "";
+
+            for (Fornecedor f : todos) {
+                String emailExistente = f.getEmail() != null ? f.getEmail().trim().toLowerCase() : "";
+                String emailExtraExistente = f.getEmail_responsavel() != null ? f.getEmail_responsavel().trim().toLowerCase() : "";
+
+                // compara com outros fornecedores (id diferente)
+                if (!f.getId().equals(id)) {
+                    if (!emailNovo.isEmpty() && (emailNovo.equals(emailExistente) || emailNovo.equals(emailExtraExistente))) {
+                        throw new RuntimeException("E-mail já cadastrado para outro fornecedor!");
+                    }
+                    if (!emailExtraNovo.isEmpty() && (emailExtraNovo.equals(emailExistente) || emailExtraNovo.equals(emailExtraExistente))) {
+                        throw new RuntimeException("E-mail extra já cadastrado para outro fornecedor!");
+                    }
+                }
+            }
+
             Fornecedor fornecedor = opt.get();
             fornecedor.setCodigo(fornecedorAtualizado.getCodigo());
             fornecedor.setNome_empresa(fornecedorAtualizado.getNome_empresa());

@@ -179,11 +179,11 @@ select#genero {
 
 .fa-arrow-left:hover,
 .fa-tags:hover,
-#categorias:hover {
+#gerenciar-categorias:hover span,
+#gerenciar-categorias:hover i {
     color: #1E94A3;
     transition: color 0.2s;
 }
-
 .categorias-table {
     display: flex;
     flex-direction: column;
