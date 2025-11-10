@@ -82,6 +82,10 @@ public class ProdutoService {
         return produtoRepository.findById(id);
     }
 
+    public Produto buscarPorCodigo(String codigo) {
+        return produtoRepository.findByCodigo(codigo).orElse(null);
+    }
+
     @Transactional
     public Produto atualizar(Long id, Produto novoProduto, MultipartFile foto) throws IOException {
         Produto p = produtoRepository.findById(id);

@@ -687,41 +687,16 @@ async function preencherCamposEdicaoFornecedor(f) {
         .filter(cb => cb.checked)
         .map(cb => cb.parentNode.textContent.trim());
     
-    // if (selecionados.length === 0) {
-    //     document.getElementById('edit-categorias').value = 'Selecione';
-    // } else if (todas.checked) {
-    //     document.getElementById('edit-categorias').value = 'Todas';
-    // } else {
-    //     document.getElementById('edit-categorias').value = selecionados.join(', ');
-    // }
-    
-    /*
-    // --- FUTURO: quando o backend retornar uma lista de IDs das categorias ---
-    const categoriaIdMap = {
-        1: 'CAMISA',
-        2: 'CAMISETA',
-        3: 'CALÇA',
-        4: 'BERMUDA',
-        5: 'VESTIDO',
-        6: 'SAPATO',
-        7: 'MEIA'
-    };
-    // Supondo que f.categorias seja um array de IDs, ex: [1,3,5]
-    if (Array.isArray(f.categorias)) {
-        checks.forEach(cb => cb.checked = false);
-        f.categorias.forEach(id => {
-            const nome = categoriaIdMap[id];
-            checks.slice(1).forEach(cb => {
-                if (cb.value === nome) cb.checked = true;
-            });
-        });
-        todas.checked = checks.slice(1).every(cb => cb.checked);
-        // Atualiza o input igual acima
-    }
-    */
 
     // ETAPA 2 e 3 - opcionais
-    document.getElementById('edit-nome-responsavel').value = f.nome_responsavel || '';
+    const editNomeResp = document.getElementById('edit-nome-responsavel');
+    if (editNomeResp) {
+        editNomeResp.value = f.nome_responsavel || '';
+        editNomeResp.addEventListener('input', function () {
+            this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+            this.value = this.value.replace(/[0-9]/g, '');
+        });
+    }
     document.getElementById('edit-email-responsavel').value = f.email_responsavel || '';
     document.getElementById('edit-telefone').value = f.telefone ? aplicarMascaraTelefone(f.telefone) : '';
     document.getElementById('edit-cep').value = f.cep ? aplicarMascaraCEP(f.cep) : '';
@@ -831,6 +806,7 @@ function fecharEditarFornecedor() {
 
 // Remover fornecedor
 function removerFornecedor(id, nomeFornecedor) {
+    nomeFornecedor = nomeFornecedor && nomeFornecedor.trim() ? nomeFornecedor : 'Fornecedor';
     Swal.fire({
         icon: 'warning',
         title: `Esta ação é irreversível!`,
@@ -1016,12 +992,12 @@ async function validarFornecedorEdit() {
     const nome = document.getElementById('edit-nome-empresa').value.trim();
     const cnpjMasked = document.getElementById('edit-cnpj').value.trim();
     const cnpj = cnpjMasked.replace(/\D/g, '');
-    const email = document.getElementById('edit-email').value.trim();
+    const email = document.getElementById('edit-email').value.trim().toLowerCase();
     const categorias = Array.from(document.querySelectorAll('.edit-categoria-multi-check:not(#edit-categoria-multi-todas)'));
     const algumaMarcada = categorias.some(cb => cb.checked);
 
     // Campos opcionais
-    // const nome_responsavel = document.getElementById('edit-nome-responsavel').value.trim();
+    const nome_responsavel = document.getElementById('edit-nome-responsavel').value.trim();
     const email_responsavel = document.getElementById('edit-email-responsavel').value.trim();
     const telefoneMasked = document.getElementById('edit-telefone').value.trim();
     const telefone = telefoneMasked.replace(/\D/g, '');
@@ -1183,6 +1159,64 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
+    if (email && email_responsavel && email === email_responsavel) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email repetido!',
+            text: 'O email da empresa e o extra não podem ser iguais',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-email-responsavel').focus();
+        return false;
+    }
+
+    const idAtual = window.editarFornecedorId;
+    const emailRepetido = fornecedoresOriginais.some(f =>
+        String(f.id) !== String(idAtual) &&
+        (
+            (f.email && f.email.toLowerCase() === email) ||
+            (f.email_responsavel && f.email_responsavel.toLowerCase() === email)
+        )
+    );
+    if (emailRepetido) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Este email já está em uso por outro fornecedor',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('edit-email').focus();
+        return false;
+    }
+
+    if (email_responsavel) {
+        const emailExtraRepetido = fornecedoresOriginais.some(f =>
+            String(f.id) !== String(idAtual) &&
+            (
+                (f.email && f.email.toLowerCase() === email_responsavel.toLowerCase()) ||
+                (f.email_responsavel && f.email_responsavel.toLowerCase() === email_responsavel.toLowerCase())
+            )
+        );
+        if (emailExtraRepetido) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Email extra já cadastrado!',
+                text: 'Este email extra já está em uso por outro fornecedor',
+                timer: 1500,
+                showConfirmButton: false,
+                timerProgressBar: true,
+                allowOutsideClick: false
+            });
+            document.getElementById('edit-email-responsavel').focus();
+            return false;
+        }
+    }
 
     // Categorias
     if (!categorias || categorias === 'Selecionar') {
@@ -1197,6 +1231,7 @@ async function validarFornecedorEdit() {
         });
         return false;
     }
+
 
     // Email extra (opcional, mas se preenchido deve ser válido)
     if (email_responsavel && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email_responsavel)) {
@@ -1478,44 +1513,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// window.addEventListener('DOMContentLoaded', function() {
-//     const checks = Array.from(document.querySelectorAll('.categoria-multi-check'));
-//     const todas = checks[0]; // O primeiro é "Todas"
 
-//     // "Todas" marca/desmarca todos
-//     todas.addEventListener('change', function() {
-//         checks.forEach(cb => cb.checked = todas.checked);
-//         atualizarPlaceholderCategoriaMulti();
-//     });
-
-//     // Se todos individuais marcados, marca "Todas". Se algum desmarcado, desmarca "Todas"
-//     checks.slice(1).forEach(cb => {
-//         cb.addEventListener('change', function() {
-//             todas.checked = checks.slice(1).every(c => c.checked);
-//             atualizarPlaceholderCategoriaMulti();
-//         });
-//     });
-
-//     function atualizarPlaceholderCategoriaMulti() {
-//         const input = document.getElementById('cad-categorias-input');
-//         const selecionados = checks.slice(1)
-//             .filter(cb => cb.checked)
-//             .map(cb => cb.parentNode.textContent.trim());
-//         todas.checked = checks.slice(1).every(cb => cb.checked);
-
-//         if (selecionados.length === 0) {
-//             input.value = 'Selecionar';
-//         } else if (todas.checked) {
-//             input.value = 'Todas';
-//         } else if (selecionados.length === 1) {
-//             input.value = selecionados[0];
-//         } else {
-//             input.value = selecionados.join(', ');
-//         }
-//     }
-
-//     atualizarPlaceholderCategoriaMulti();
-// });
 
 
 function showCheckboxesEditCategorias() {
@@ -1533,44 +1531,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Lógica dos checkboxes no editar
-// window.addEventListener('DOMContentLoaded', function() {
-//     const checks = Array.from(document.querySelectorAll('.edit-categoria-multi-check'));
-//     const todas = checks[0];
-//     const input = document.getElementById('edit-categorias');
 
-//     todas.addEventListener('change', function() {
-//         checks.forEach(cb => cb.checked = todas.checked);
-//         atualizarEditCategoriasInput();
-//     });
-
-//     checks.slice(1).forEach(cb => {
-//         cb.addEventListener('change', function() {
-//             todas.checked = checks.slice(1).every(c => c.checked);
-//             atualizarEditCategoriasInput();
-//         });
-//     });
-
-//     function atualizarEditCategoriasInput() {
-//         const selecionados = checks.slice(1)
-//             .filter(cb => cb.checked)
-//             .map(cb => cb.parentNode.textContent.trim());
-//         todas.checked = checks.slice(1).every(cb => cb.checked);
-
-//         if (selecionados.length === 0) {
-//             input.value = 'Selecionar';
-//         } else if (todas.checked) {
-//             input.value = 'Todas';
-//         } else if (selecionados.length === 1) {
-//             input.value = selecionados[0];
-//         } else {
-//             input.value = selecionados.join(', ');
-//         }
-//     }
-
-//     // Inicializa ao abrir modal de edição
-//     atualizarEditCategoriasInput();
-// });
 
 
 // Navegação entre etapas
@@ -1637,16 +1598,6 @@ function preencherRevisaoFornecedor() {
     document.getElementById('rev-estado').value = document.getElementById('cad-estado').value || '';
     document.getElementById('rev-numero').value = document.getElementById('cad-numero').value || '';
     document.getElementById('rev-observacoes').value = document.getElementById('cad-observacoes').value || '';
-
-    // Avatar
-    // const nome = document.getElementById('cad-nome-empresa').value || '';
-    // const iniciais = getIniciaisFornecedor(nome);
-    // const avatarDiv = document.getElementById('rev-avatar');
-    // const iniciaisSpan = document.getElementById('rev-avatar-iniciais');
-    // const icon = avatarDiv ? avatarDiv.querySelector('i.fa-user-tie') : null;
-    // if (avatarDiv) avatarDiv.style.background = corAvatarFornecedor(nome);
-    // if (iniciaisSpan) iniciaisSpan.textContent = iniciais;
-    // if (icon) icon.style.display = nome.trim() ? 'none' : '';
 }
 
 
@@ -1657,6 +1608,7 @@ document.getElementById('cad-codigo').addEventListener('input', function(e) {
 
 document.getElementById('cad-nome-responsavel').addEventListener('input', function() {
     this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+    this.value = this.value.replace(/[0-9]/g, '');
 });
 
 function mascaraTelefone(input) {
@@ -1773,8 +1725,8 @@ function aplicarMascaraTelefone(num) {
         const p2 = v.slice(2, 6);
         const p3 = v.slice(6, 10);
         return v.length > 6 ? `(${p1}) ${p2}-${p3}` :
-               v.length > 2 ? `(${p1}) ${p2}` :
-               p1 ? `(${p1}` : '';
+            v.length > 2 ? `(${p1}) ${p2}` :
+            p1 ? `(${p1}` : '';
     } else {
         // (00) 00000-0000
         const p1 = v.slice(0, 2);
@@ -1883,6 +1835,15 @@ document.getElementById('cad-cnpj').addEventListener('blur', function () {
     }
 });
 
+async function emailJaCadastrado(email) {
+    if (!email) return false;
+    const fornecedores = await fetch('/fornecedores').then(res => res.json());
+    return fornecedores.some(f =>
+        f.email?.toLowerCase() === email.toLowerCase() ||
+        f.email_responsavel?.toLowerCase() === email.toLowerCase()
+    );
+}
+
 // Validação da etapa 1 (padrão igual funcionários)
 async function validarEtapa1Fornecedor() {
     const codigo = document.getElementById('cad-codigo').value.trim();
@@ -1892,7 +1853,8 @@ async function validarEtapa1Fornecedor() {
     const nome = document.getElementById('cad-nome-empresa').value.trim();
     const cnpjMasked = document.getElementById('cad-cnpj').value.trim();
     const cnpj = cnpjMasked.replace(/\D/g, '');
-    const email = document.getElementById('cad-email').value.trim();
+    const email = document.getElementById('cad-email').value.trim().toLowerCase();
+    const emailExtra = document.getElementById('cad-email-responsavel').value.trim().toLowerCase();
 
     // Código obrigatório
     if (!codigo) {
@@ -2047,12 +2009,54 @@ async function validarEtapa1Fornecedor() {
         });
         return false;
     }
+    if (email && emailExtra && email.toLowerCase() === emailExtra.toLowerCase()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email repetido!',
+            text: 'O email da empresa e o extra não podem ser iguais',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-email-responsavel').focus();
+        return false;
+    }
+    if (await emailJaCadastrado(email)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email já cadastrado!',
+            text: 'Este email já está em uso',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-email').focus();
+        return false;
+    }
+    if (emailExtra && await emailJaCadastrado(emailExtra)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email extra já cadastrado!',
+            text: 'Este email extra já está em uso',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-email-responsavel').focus();
+        return false;
+    }
 
     return true;
 }
 
 function validarEtapa2Fornecedor() {
-    const emailExtra = document.getElementById('cad-email-responsavel').value.trim();
+    const emailExtra = document.getElementById('cad-email-responsavel').value.trim().toLowerCase();
+    const emailEmpresa = document.getElementById('cad-email').value.trim().toLowerCase();
+
+    // Validação de formato
     if (emailExtra && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailExtra)) {
         Swal.fire({
             icon: 'warning',
@@ -2065,6 +2069,43 @@ function validarEtapa2Fornecedor() {
         });
         document.getElementById('cad-email-responsavel').focus();
         return false;
+    }
+
+    // igual ao email da empresa
+    if (emailExtra && emailEmpresa && emailExtra === emailEmpresa) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Email repetido!',
+            text: 'O email extra não pode ser igual ao email da empresa',
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            allowOutsideClick: false
+        });
+        document.getElementById('cad-email-responsavel').focus();
+        return false;
+    }
+
+    // email ou email extra de outro fornecedor
+    if (emailExtra) {
+        for (const f of fornecedoresOriginais) {
+            if (
+                (f.email && f.email.toLowerCase() === emailExtra) ||
+                (f.email_responsavel && f.email_responsavel.toLowerCase() === emailExtra)
+            ) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email extra já cadastrado!',
+                    text: 'Este email extra já está em uso por outro fornecedor',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    allowOutsideClick: false
+                });
+                document.getElementById('cad-email-responsavel').focus();
+                return false;
+            }
+        }
     }
     return true;
 }
@@ -2291,33 +2332,6 @@ function atualizarPlaceholderCategoriaMulti() {
         if (chevron) chevron.style.color = '#888';
     }
 }
-// document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
-//     cb.addEventListener('change', atualizarPlaceholderCategoriaMulti);
-// });
-// atualizarPlaceholderCategoriaMulti();
-
-// document.getElementById('busca-fornecedor').addEventListener('input', filtrarFornecedores);
-// document.getElementById('filter-cnpj').addEventListener('input', filtrarFornecedores);
-// document.querySelectorAll('.categoria-multi-check-filtro').forEach(cb => {
-//     cb.addEventListener('change', filtrarFornecedores);
-// });
-
-// const todasFiltro = document.getElementById('categoria-multi-todas-filtro');
-// const checksFiltro = Array.from(document.querySelectorAll('.categoria-multi-check-filtro')).slice(1);
-
-// todasFiltro.addEventListener('change', function() {
-//     checksFiltro.forEach(cb => cb.checked = todasFiltro.checked);
-//     atualizarPlaceholderCategoriaMulti();
-//     filtrarFornecedores();
-// });
-
-// checksFiltro.forEach(cb => {
-//     cb.addEventListener('change', function() {
-//         todasFiltro.checked = checksFiltro.every(c => c.checked);
-//         atualizarPlaceholderCategoriaMulti();
-//         filtrarFornecedores();
-//     });
-// });
 
 document.getElementById('busca-fornecedor').addEventListener('input', filtrarFornecedores);
 document.getElementById('filter-cnpj').addEventListener('input', filtrarFornecedores);
@@ -2463,7 +2477,6 @@ async function carregarCategoriasCadastroFornecedor() {
     // Inicializa placeholder
     atualizarPlaceholder();
 }
-// document.addEventListener('DOMContentLoaded', carregarCategoriasCadastroFornecedor);
 
 function getCategoriasSelecionadasCadastro() {
     const container = document.getElementById('checkboxes-categoria-multi');
@@ -2472,9 +2485,6 @@ function getCategoriasSelecionadasCadastro() {
     if (todas && todas.checked) return categoriasBackend.map(cat => cat.id);
     return checks.slice(1).filter(cb => cb.checked).map(cb => Number(cb.value));
 }
-
-// const categoriasSelecionadas = getCategoriasSelecionadasCadastro();
-// formData.set('categorias', JSON.stringify(categoriasSelecionadas));
 
 
 async function carregarCategoriasEdicaoFornecedor(fornecedor) {

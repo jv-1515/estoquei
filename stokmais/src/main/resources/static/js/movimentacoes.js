@@ -1394,17 +1394,44 @@ function abrirEdicaoMovimentacao(id) {
             const preview = document.getElementById('edit-image-preview');
             preview.innerHTML = '';
             if (produto.url_imagem) {
+                // Skeleton loading
+                const skeleton = document.createElement('div');
+                skeleton.className = 'skeleton-img';
+                skeleton.style.cssText = `
+                    position: absolute;
+                    top: 0; left: 0; width: 100%; height: 100%;
+                    display: flex; align-items: center; justify-content: center;
+                    background: linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);
+                    background-size: 200% 100%; animation: skeleton-loading 1.2s infinite;
+                    z-index: 1;
+                `;
+                skeleton.innerHTML = `<i class="fa fa-spinner fa-spin" style="font-size:32px;color:#aaa;"></i>`;
+            
+                // Imagem real
                 const img = document.createElement('img');
                 img.src = produto.url_imagem;
                 img.alt = produto.nome ? `Imagem do produto: ${produto.nome}` : 'Imagem do produto';
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
+                img.style.cssText = `
+                    max-width: 100%; height: 100%; object-fit: contain;
+                    display: block; opacity: 0; transition: opacity 0.2s;
+                    position: relative; z-index: 2;
+                `;
+                img.loading = 'eager';
+            
+                preview.style.position = 'relative';
+                preview.appendChild(skeleton);
                 preview.appendChild(img);
+            
+                img.onload = function() {
+                    img.style.opacity = '1';
+                    if (skeleton && skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
+                };
+                img.onerror = function() {
+                    if (skeleton && skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
+                    preview.innerHTML = `<i class="fa-regular fa-image" style="font-size:32px;color:#ccc;"></i>`;
+                };
             } else {
-                const icon = document.createElement('i');
-                icon.className = 'fa-regular fa-image';
-                icon.style.fontSize = '30px';
-                preview.appendChild(icon);
+                preview.innerHTML = `<i class="fa-regular fa-image" style="font-size:30px"></i>`;
             }
 
             const inputValor = document.getElementById('edit-valor');

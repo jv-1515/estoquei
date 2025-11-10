@@ -313,4 +313,13 @@ public class ProdutoResource {
             return produtoMap;
         }).collect(Collectors.toList());
     }
+
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<Produto> buscarPorCodigo(@PathVariable String codigo) {
+        Produto produto = produtoService.buscarPorCodigo(codigo);
+        if (produto != null) {
+            return ResponseEntity.ok(produto);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

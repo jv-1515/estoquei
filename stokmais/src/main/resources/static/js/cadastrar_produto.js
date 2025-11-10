@@ -717,7 +717,7 @@ document.querySelector('.categorias-table').addEventListener('blur', function(e)
     if (!nomeAtual) return;
     if (/\d/.test(nomeAtual)) {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Nome inválido!',
         text: 'O nome não pode conter números!',
         timer: 2000,
@@ -733,7 +733,7 @@ document.querySelector('.categorias-table').addEventListener('blur', function(e)
     const nomes = categorias.map((cat, i) => i !== idx ? (cat.nome || '').trim().toLowerCase() : null).filter(n => n);
     if (nomes.includes(nomeAtual)) {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Categoria já cadastrada!',
         text: 'Escolha outro nome',
         timer: 2000,
