@@ -1867,7 +1867,7 @@ function aplicarFiltroLimiteFaixa() {
         limiteInput.style.border = '';
         limiteInput.style.color = '';
     }
-    const chevron = limiteInput.parentNode.querySelector('.chevron-categoria');
+    const chevron = limiteInput.parentNode.querySelector('.chevron-limite');
     if (chevron) chevron.style.color = ativo ? '#1e94a3' : '#888';
     filtrar();
 }

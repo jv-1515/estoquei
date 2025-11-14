@@ -87,7 +87,7 @@ h2 {
     right:6px;
     top:50%;
     transform:translateY(-50%);
-    color: #1E94A3;
+    color: #1E94A3 !important;
     pointer-events:none;
 }
 
