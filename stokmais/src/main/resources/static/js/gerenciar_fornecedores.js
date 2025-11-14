@@ -419,8 +419,13 @@ let filtrados = fornecedoresOriginais.filter(f => {
 function limpar() {
     document.getElementById('busca-fornecedor').value = '';
     document.getElementById('filter-cnpj').value = '';
-    todasFiltro.checked = false;
-    checksFiltro.forEach(cb => cb.checked = false);
+
+    const container = document.getElementById('checkboxes-categoria-multi-filtro');
+    const checks = Array.from(container.querySelectorAll('.categoria-multi-check-filtro'));
+    const todas = container.querySelector('#categoria-multi-todas-filtro');
+    checks.forEach(cb => cb.checked = false);
+    if (todas) todas.checked = false;
+
     atualizarPlaceholderCategoriaMulti();
     atualizarEstiloCnpjFiltro();
     filtrarFornecedores();
@@ -2310,7 +2315,7 @@ function atualizarPlaceholderCategoriaMulti() {
     const chevron = input.parentNode.querySelector('.chevron-categoria');
     const individuais = checks.slice(1);
     const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
-    let ativo = selecionados.length > 0;
+    let ativo = todas.checked || selecionados.length > 0;
 
     if (selecionados.length === 0) {
         input.value = 'Selecionar';
@@ -2392,15 +2397,29 @@ async function carregarCategoriasFiltro() {
         const individuais = checks.slice(1);
         const selecionados = individuais.filter(cb => cb.checked).map(cb => cb.parentNode.textContent.trim());
         todas.checked = individuais.length > 0 && individuais.every(cb => cb.checked);
+        
+        let ativo = true;
 
         if (selecionados.length === 0) {
             input.value = 'Selecionar';
+            ativo = false;
         } else if (todas.checked) {
             input.value = 'Todas';
         } else if (selecionados.length === 1) {
             input.value = selecionados[0];
         } else {
             input.value = selecionados.join(', ');
+        }
+
+        const chevron = input.parentNode.querySelector('.chevron-categoria');
+        if (ativo) {
+            input.style.border = '2px solid #1e94a3';
+            input.style.color = '#1e94a3';
+            if (chevron) chevron.style.color = '#1e94a3';
+        } else {
+            input.style.border = '';
+            input.style.color = '';
+            if (chevron) chevron.style.color = '#888';
         }
     }
 
