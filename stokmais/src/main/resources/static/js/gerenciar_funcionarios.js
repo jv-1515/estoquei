@@ -779,11 +779,13 @@ document.addEventListener('DOMContentLoaded', function() {
             filtrarFuncionarios();
             return;
         }
-        let encontrados = funcionariosTodos.filter(f =>
-            f.codigo.includes(termo) ||
-            (f.nome && f.nome.toLowerCase().includes(termo)) ||
-            (f.email && f.email.toLowerCase().includes(termo))
-        );
+        let encontrados = funcionariosTodos
+            .filter(f => f.id !== 1)
+            .filter(f =>
+                f.codigo.includes(termo) ||
+                (f.nome && f.nome.toLowerCase().includes(termo)) ||
+                (f.email && f.email.toLowerCase().includes(termo))
+            );
         encontrados.forEach(f => {
             let texto;
             if (/^\d+$/.test(termo)) {
@@ -810,6 +812,7 @@ document.addEventListener('DOMContentLoaded', function() {
             buscaSugestoes.appendChild(div);
         });
         buscaSugestoes.style.display = encontrados.length > 0 ? 'block' : 'none';
+        filtrarFuncionarios();
     });
 
     document.addEventListener('mousedown', function(e) {

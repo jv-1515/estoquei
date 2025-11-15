@@ -200,7 +200,7 @@ document.querySelector('form').addEventListener('submit', function(event) {
 
 
 
-    const precoInput = document.getElementById('preco');
+    // const precoInput = document.getElementById('preco');
     const precoLimpo = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
     const formData = new FormData(this);
     formData.set('preco', precoLimpo);
